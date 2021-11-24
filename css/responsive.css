@@ -1,0 +1,698 @@
+@media only screen and (min-width: 1920px) {
+  .bg{
+    background-size: cover !important;
+  }
+}
+@media only screen and (min-width: 1200px) {
+  .container {
+    width: 1200px;
+  }
+
+  .row {
+    margin-right: -10px;
+    margin-left: -10px;
+  }
+  .col-lg-1,
+  .col-lg-10,
+  .col-lg-11,
+  .col-lg-12,
+  .col-lg-2,
+  .col-lg-3,
+  .col-lg-4,
+  .col-lg-5,
+  .col-lg-6,
+  .col-lg-7,
+  .col-lg-8,
+  .col-lg-9,
+  .col-md-1,
+  .col-md-10,
+  .col-md-11,
+  .col-md-12,
+  .col-md-2,
+  .col-md-3,
+  .col-md-4,
+  .col-md-5,
+  .col-md-6,
+  .col-md-7,
+  .col-md-8,
+  .col-md-9,
+  .col-sm-1,
+  .col-sm-10,
+  .col-sm-11,
+  .col-sm-12,
+  .col-sm-2,
+  .col-sm-3,
+  .col-sm-4,
+  .col-sm-5,
+  .col-sm-6,
+  .col-sm-7,
+  .col-sm-8,
+  .col-sm-9,
+  .col-xs-1,
+  .col-xs-10,
+  .col-xs-11,
+  .col-xs-12,
+  .col-xs-2,
+  .col-xs-3,
+  .col-xs-4,
+  .col-xs-5,
+  .col-xs-6,
+  .col-xs-7,
+  .col-xs-8,
+  .col-xs-9 {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .top-bar .support {
+    margin-left: -15px;
+  }
+  .top-bar .whatsapp {
+    margin-left: 15px;
+  }
+  .top-bar .support img,
+  .top-bar .whatsapp img {
+    margin-right: 9px;
+  }
+  .top-bar .support p:last-child,
+  .top-bar .whatsapp p:last-child {
+    padding-top: 7px;
+  }
+  .top-bar .btn_my {
+    float: right;
+    margin-top: -4px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+  }
+  .top-bar .btn_my span {
+    margin-left: 14px;
+  }
+}
+@media only screen and (min-width: 992px) {
+  .header {
+    position: static;
+  }
+  .header__address{
+    display: block;
+    margin-top: 5px;
+    margin-left: 59px;
+    font-size: 14px;
+  }
+  .description {
+    display: none;
+  }
+  .main-content {
+    padding-top: 15px;
+  }
+}
+@media only screen and (min-width: 992px) and (max-width: 1200px) {
+  .top-bar .support img,
+  .top-bar .whatsapp img {
+    margin-right: 1px;
+  }
+  .top-bar .support p,
+  .top-bar .whatsapp p {
+    margin-bottom: 3px;
+    margin-top: 7px;
+  }
+  .header__address{
+    margin-left: 51px;
+    font-size: 14px;
+  }
+  .top-bar .support p:last-child,
+  .top-bar .whatsapp p:last-child {
+    font-size: 17px;
+    margin: 0;
+  }
+  .top-bar .btn_my {
+    padding: 0px 0 0 10px;
+  }
+  .top-bar .btn_my span {
+    padding: 15px 8px 14px 20px;
+  }
+  body {
+    overflow-x: hidden;
+  }
+  .advantages .inside,
+  .breaking_item {
+    padding: 35px 15px;
+  }
+  .advantages .inside figure {
+    margin-bottom: 17px;
+  }
+  .advantages .inside figure p {
+    /*font-size: 14px;*/
+  }
+  .advantages .inside p{
+    font-size: 16px;
+  }
+  .advantages .inside figure:before {
+    bottom: -4px;
+  }
+  header li {
+    margin-right: 15px;
+    padding: 17px 0;
+  }
+  header a {
+    font-size: 14px;
+  }
+  .services .img .top {
+    left: 10px;
+  }
+  .services .img .top span {
+    padding: 0 4px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .brand ul {
+    position: relative;
+    left: 50%;
+    transform: translateX(-44%);
+  }
+  .service .right {
+    height: 374px;
+  }
+  .service .btn_my {
+    margin-top: 30px;
+  }
+  .bg .inside h2{
+    font-size: 42px;
+  }
+  .bg form .form-control{
+    width: auto;
+    padding: 6px 12px; 
+  }
+  .bg form input.form-control[name="phone"]{
+    width: 100%;
+    padding-right: 72px;
+    position: relative;
+    margin-right: -60px;
+  }
+}
+@media only screen and (max-width: 992px) {
+  .example5 {
+    display: inline-block;
+    width: 100%;
+  }
+  .example5 span {
+    float: right;
+  }
+  .example5 + menu {
+    display: none;
+  }
+  .main-content {
+    padding-top: 0;
+  }
+  header li:last-child {
+    margin-bottom: 50px;
+  }
+  .header__address{
+    display: block;
+    padding-top: 5px;
+    margin-left: 27px;
+    font-size: 10px;
+  }
+  .bg{
+    background-position: 40% 83%;
+  }
+  .bg .inside{
+    margin-top: 50px;
+  }
+  .bg .inside.forget_list{
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .bg form{
+    width: 100%;
+  }
+  .bg form .btn-form,
+  .bg form .form-group:first-child{
+    display: inline-block;
+    width: calc(50% - 10px) !important;
+  }
+  .bg form .form-control{
+    width: 100%;
+  }
+  input.form-control{
+    padding-right: 70px;
+  }
+  .job-block .text h3{
+    font-size: 18px;
+  }
+}
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .top-bar .logo,
+  .top-bar .support {
+    margin-bottom: 10px;
+  }
+  .top-bar .support,
+  .top-bar .whatsapp {
+    margin-top: 4px;
+  }
+  .top-bar .support p:nth-child(2),
+  .top-bar .whatsapp p:nth-child(2) {
+    display: none;
+  }
+  .top-bar .support p:last-child,
+  .top-bar .whatsapp p:last-child {
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  .top-bar .support img,
+  .top-bar .whatsapp img {
+    height: 30px;
+    margin-right: 2px;
+  }
+  .top-bar .support {
+    text-align: left;
+  }
+  .top-bar .support img {
+    left: 0;
+    position: relative;
+  }
+
+  .header .last {
+    text-align: right;
+  }
+  .header .btn_my {
+    font-size: 11px;
+    height: 40px;
+    padding: 0 0 0 10px;
+  }
+  .header .btn_my span {
+    padding: 13px 14px;
+    right: -1px;
+  }
+  .header .btn_my span img {
+    width: 15px;
+    position: relative;
+    right: -4px;
+  }
+  #top-menu {
+    text-align: center;
+  }
+  #top-menu li {
+    display: block;
+    margin-right: 0;
+  }
+  .advantages .inside,
+  .breaking_item {
+    padding: 40px 24px 36px 24px;
+  }
+  .advantages .inside figure {
+    height: 60px;
+  }
+  .services .inside {
+    margin-bottom: 10px;
+    height: 375px;
+  }
+  .brand li {
+    width: 25%;
+    margin-right: -1px;
+  }
+  .job-block .text span {
+    font-size: 42px;
+    line-height: 40px;
+  }
+  .job-block .text p {
+    font-size: 14px;
+    line-height: 17px;
+  }
+  .service .btn_my {
+    margin-top: 25px;
+  }
+  .service .right {
+    height: 400px;
+  }
+  .service .right img {
+    padding-top: 75px;
+  }
+  .job-block .text{
+    margin-right: 0;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .top-bar {
+    text-align: center;
+    padding: 15px 0;
+  }
+  .top-bar .support,
+  .top-bar .whatsapp {
+    margin-top: 4px;
+  }
+  .top-bar .support p:nth-child(2),
+  .top-bar .whatsapp p:nth-child(2) {
+    display: none;
+  }
+  .top-bar .support p:last-child,
+  .top-bar .whatsapp p:last-child {
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  .top-bar .support img,
+  .top-bar .whatsapp img {
+    height: 30px;
+    margin-right: 2px;
+  }
+  .top-bar .support {
+    text-align: left;
+  }
+  .top-bar .support img {
+    left: 0;
+    position: relative;
+  }
+  .top-bar .btn_my {
+    font-size: 10px;
+    height: 40px;
+    padding: 0 0 0 3px;
+  }
+  .top-bar .btn_my span {
+    padding: 13px 11px;
+    right: -1px;
+  }
+  .top-bar .btn_my span img {
+    width: 15px;
+    position: relative;
+    right: -4px;
+  }
+  #popup .global .btn_my span {
+    padding: 18px 20px 15px 29px;
+  }
+  .call {
+    display: none;
+  }
+  .global .last p {
+    font-size: 12px;
+  }
+  #popup p {
+    margin-bottom: 15px;
+  }
+  .main-content {
+    padding-top: 0;
+  }
+  .bg.enabled:before {
+    display: none;
+  }
+  .bg:before {
+    display: none;
+  }
+  .bg form .btn_my {
+    /*right: 16px;
+    padding: 16px 17px 15px 20px;*/
+  }
+  .bg .inside {
+    margin: 60px 0;
+    width: 100%;
+  }
+  .bg .inside h2 {
+    font-size: 32px;
+    line-height: 36px;
+  }
+  .bg .inside h6 {
+    font-size: 20px;
+  }
+  header menu {
+    text-align: center;
+  }
+  header li {
+    width: 50%;
+    margin-right: 0;
+  }
+  .services .inside {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .services .img:before {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .services .img .top {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .brand .title {
+    font-size: 20px;
+  }
+  .brand li {
+    width: 49%;
+    margin-right: 4px;
+  }
+  .service .left {
+    margin-bottom: 20px;
+  }
+  .service .left,
+  .service .right {
+    width: 100%;
+    padding: 0;
+  }
+  .service tbody tr td:last-child {
+    padding-right: 10px;
+  }
+  .consultation .title {
+    font-size: 20px;
+  }
+  .consultation .title span:before {
+    display: none;
+  }
+   .advantages .title span:before {
+    display: none;
+  }
+  .consultation .global .form-group:nth-child(1) {
+    padding-right: 10px;
+  }
+  .consultation .global .form-group:nth-child(2) {
+    left: 0;
+  }
+  .consultation .global .form-group:nth-child(2):before {
+    right: 15px;
+  }
+  .global {
+    width: 100%;
+  }
+  .global input,
+  .global select {
+    width: 100%;
+  }
+  .copyright {
+    padding: 10px 0;
+  }
+  .copyright p {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  #popup .modal-dialog {
+    width: 100%;
+    margin: 30px auto;
+  }
+  #popup h2 {
+    font-size: 17px;
+  }
+  .advantages .inside,
+  .breaking_item{
+    min-height: auto;
+  }
+  .job-block .text{
+    padding-right: 20%;
+  }
+}
+@media only screen and (min-width: 320px) and (max-width: 680px) {
+  .header .logo,
+  .header .support,
+  .header .whatsapp,
+  .header .last {
+    width: 50%;
+  }
+  .header .whatsapp {
+    text-align: left;
+    padding-left: 40px;
+  }
+  .header .btn_my {
+    width: 100%;
+    font-size: 14px;
+  }
+  .header .btn_my span {
+    right: 0;
+    padding: 12px 18px;
+    position: absolute;
+  }
+  .header .support {
+    margin-bottom: 10px;
+  }
+  .header .support,
+  .header .whatsapp {
+    height: 43px;
+  }
+  .header .support p:last-child,
+  .header .whatsapp p:last-child {
+    font-size: 16px;
+  }
+}
+@media only screen and (min-width: 320px) and (max-width: 480px) {
+  .header .support,
+  .header .whatsapp {
+    height: 32px;
+  }
+  .header .support p:last-child,
+  .header .whatsapp p:last-child {
+    font-size: 11px;
+  }
+  .header .support img,
+  .header .whatsapp img {
+    height: 24px;
+  }
+  .header .whatsapp {
+    padding-left: 15px;
+  }
+  .header .btn_my {
+    font-size: 9px;
+    height: 30px;
+    text-align: left;
+    padding-left: 10px;
+  }
+  .header .btn_my span {
+    padding: 8px 12px;
+  }
+  .bg .inside {
+    padding: 20px 10px;
+  }
+  .bg .inside h2 {
+    font-size: 24px;
+    line-height: 27px;
+  }
+  .bg .inside p,
+  .bg .inside h6 {
+    font-size: 20px;
+    line-height: 23px;
+  }
+  .bg .inside form {
+    width: 100%;
+  }
+  .bg .inside form .form-group:first-child {
+    margin-right: 0;
+  }
+  .bg .inside form .btn_my {
+    right: 0;
+  }
+  .bg .inside form .form-control {
+    width: 100%;
+  }
+  .bg .inside form .btn-form input {
+    width: 100%;
+  }
+  .title {
+    font-size: 18px;
+  }
+  .title span:before {
+    top: -18px;
+  }
+  .advantages .inside {
+    padding: 20px;
+    text-align: center;
+  }
+  .advantages .inside figure {
+    text-align: center;
+    margin-bottom: 30px;
+    display: block;
+    height: auto;
+  }
+  .advantages .inside figure:before {
+    left: 50%;
+    bottom: -20px;
+    transform: translateX(-50%);
+    display: none;
+  }
+  .advantages .inside figure p{
+    margin-top: 5px;
+  }
+  .advantages .inside figure:after{
+    content: "";
+    bottom: -15px;
+    /* left: 0; */
+    display: inline-block;
+    width: 60px;
+    height: 2px;
+    background-color: #d0d0d0;
+    position: absolute;
+    left: 50%;
+    /* margin: 0 auto; */
+    transform: translatex(-50%);
+  }
+  .advantages .inside figure img {
+    margin: 0 auto;
+    display: block;
+  }
+  .services .img .top span {
+    font-size: 11px;
+    margin-bottom: 5px;
+    line-height: 20px;
+  }
+  .job-block .inside {
+    margin-bottom: 25px;
+  }
+  .job-block .text {
+    width: 300px;
+    margin-top: -17px;
+  }
+  .job-block .text span {
+    font-size: 32px;
+    line-height: 34px;
+  }
+  .job-block .text p {
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .brand .title {
+    margin-bottom: 30px;
+    font-size: 13px;
+  }
+  .brand li {
+    width: 48%;
+  }
+  .consultation .title {
+    font-size: 14px;
+  }
+  .consultation .global input,
+  .consultation .global select {
+    width: 100%;
+  }
+  .consultation .global .form-group:nth-child(2) {
+    left: 3px;
+  }
+  .consultation .btn_my {
+    margin-top: 20px;
+    width: 100%;
+  }
+  .consultation .btn_my span {
+    position: absolute;
+    right: 0;
+  }
+  .users .title span:before {
+    display: none;
+  }
+  .bg .inside.forget_list h2{
+    font-size: 36px;
+    line-height: 35px;
+  }
+
+}
+@media(max-width: 520px){
+  .bg form .btn-form, .bg form .form-group:first-child{
+    width: 100% !important;
+  }
+  .bg .inside form .btn_my {
+    right: 0;
+    padding: 16px 17px 15px 20px;
+  }
+  .bg form{
+    margin-left: 0;
+  }
+  .job-block .text{
+    margin-right: 0;
+    padding-right: 0;
+    width: 100%;
+  }
+  .job-block .text p {
+    font-size: 12px;
+    line-height: 17px;
+  }
+}
