@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.5">
+    <title>Спасибо за заявку | Техперсона</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,500,500i,700,700i&amp;subset=cyrillic,cyrillic-ext,latin-ext" rel="stylesheet">
+    <style>
+        .result-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        .result-box {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+        }
+        .result-box h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+        .result-box p {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .result-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .result-icon svg {
+            width: 60px;
+            height: 60px;
+            fill: white;
+        }
+        .btn-home {
+            background: #667eea;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .btn-home:hover {
+            background: #764ba2;
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <div class="result-box">
+            <div class="result-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                </svg>
+            </div>
+            <h1>{{ message|default:"Спасибо за вашу заявку!" }}</h1>
+            <p>Наш менеджер свяжется с вами в ближайшее время для уточнения деталей заказа.</p>
+            <p>Пожалуйста, оставайтесь на связи!</p>
+            <a href="{% url 'repair_service:index' %}" class="btn-home">Вернуться на главную</a>
+        </div>
+    </div>
+
+    <script>
+        // Автоматическое перенаправление через 5 секунд
+        setTimeout(function() {
+            window.location.href = "{% url 'repair_service:index' %}";
+        }, 5000);
+    </script>
+</body>
+</html>
