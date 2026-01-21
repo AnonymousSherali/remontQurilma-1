@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,7 +9,7 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-    
+
       gtag('config', 'UA-127963875-1');
     </script>
         <meta charset="UTF-8">
@@ -16,13 +17,13 @@
         <title>Ремонт стиральных машин в Казани на дому мастером | Техперсона</title>
         <meta name="description" content="Ремонт стиральных машин в Казани «Техперсона». 7 дней в неделю. Выезд мастера на дом от 1 часа. Только оригинальные запчасти для ремонта. Звоните!">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.5">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-        <link rel="stylesheet" type="text/css" href="css/responsive.css">
-        <link rel="stylesheet" type="text/css" href="css/animate.css">
-        <link rel="shortcut icon" href="favicons.ico" type="image/x-icon">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/responsive.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/animate.css' %}">
+        <link rel="shortcut icon" href="{% static 'favicons.ico' %}" type="image/x-icon">
         <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,500,500i,700,700i&amp;subset=cyrillic,cyrillic-ext,latin-ext" rel="stylesheet">
-        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
         <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
         <meta name="yandex-verification" content="0a03d5498c48d648">
     <link rel="stylesheet" href="https://code.jivosite.com/css/8ae0d64d.widget.css"></head>
@@ -32,27 +33,27 @@
                 __cs.push(["setCsAccount", "_robwp4OS1bq6fg3LFMMs1zh_ZF1Sq2S"]);
                 </script>
                 <script type="text/javascript" async="" src="https://app.comagic.ru/static/cs.min.js"></script>
-                
+
                 <script src="//code.jivosite.com/widget.js" data-jv-id="wCzGQN4m35" async=""></script>
     <div class="header">
         <div class="container">
             <div class="top-bar row">
                 <div class="col-md-3 col-sm-3  col-xs-3 logo">
-                    <img src="img/logo.png" alt="logo">
+                    <img src="{% static 'img/logo.png' %}" alt="logo">
                 </div>
                 <div class="col-md-3 col-sm-3 col-xs-3 support">
-                    <img src="img/support.svg" alt="support">
+                    <img src="{% static 'img/support.svg' %}" alt="support">
                     <p>Работаем без выходных</p>
                     <a href="tel:8 (843) 240-82-82"><p>8 (843) 240-82-82</p></a>
                     <span class="header__address">г. Казань, ул. Четаева 16</span>
                 </div>
                 <div class="col-md-3 col-sm-3 col-xs-3 whatsapp">
-                    <img src="img/whatsapptelegram.png" alt="whatsapp">
+                    <img src="{% static 'img/whatsapptelegram.png' %}" alt="whatsapp">
                     <p>WhatsApp/Telegram</p>
                     <p>8 (937) 28-28-555</p>
                 </div>
                 <div class="col-md-3 col-sm-3 col-xs-3 last">
-                    <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="img/phone.svg" alt="phone"></span></button>
+                    <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
                 </div>
             </div>
         </div>
@@ -96,23 +97,23 @@
                             <h1 class="title">РЕМОНТ СТИРАЛЬНОЙ МАШИНЫ НА ДОМУ В КАЗАНИ</h1>
                             <p>У вас сломалась стиральная машина? Мы починим! Оставьте свой номер телефона — и наш оператор свяжется с Вами.</p>
                             <div class="myModal">
-                                <button type="button" class="close"><img src="img/close.svg" alt=""></button>
+                                <button type="button" class="close"><img src="{% static 'img/close.svg' %}" alt=""></button>
                                 <h4>Ваш запрос<br>успешо отправлен</h4>
                                 <p>Вскоре, по указанному номеру, <br>с Вами свяжется наш менежер<br>Пожалуйста, оставайтесь на связи!</p>
                             </div>
                             <div class="form">
-                                <form method="POST" class="form-inline feedback" name="feedback" action="javascript:void(null);" onsubmit="call($('.feedback'))">
+                                <form method="POST" class="form-inline feedback" name="feedback" action="{% url 'repair_service:submit_request' %}" onsubmit="return submitForm(this);">
+                                    {% csrf_token %}
                                     <div class="form-group">
                                     <input type="text" class="form-control" name="name" placeholder="Ваше имя *" required="required">
                                     </div>
                                     <div class="form-group btn-form">
                                     <input type="text" class="form-control" name="phone" placeholder="Ваш номер *" required="required">
                                     </div>
-                                    <!--<input type="submit" id="submit">-->
                                     <button type="submit" class="btn_my" id="submit" onclick="ym('55890055','reachGoal', 'zayavka'); return true;"><svg id="SvgjsSvg1018" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="20" height="17" viewBox="0 0 20 17"><path id="SvgjsPath1020" d="M983 554.958L975.222 547.374V551.707C967.444 552.7909999999999 964.111 558.207 963 563.624C965.777 559.832 969.666 558.099 975.222 558.099V562.541Z " fill="#ffffff" fill-opacity="1" transform="matrix(1,0,0,1,-963,-547)"></path></svg></button>
                                     <div class="results" style="color:red; font-size:12px;"></div>
                                 </form>
-    
+
                             </div>
                             <h6>Выезд и диагностика в случае ремонта - бесплатны.</h6>
                         </div><!--inside-->
@@ -160,9 +161,9 @@
                     </table>
                 </div>
                 <div class="right">
-                    <img src="img/tools.jpg" alt="tools">
+                    <img src="{% static 'img/tools.jpg' %}" alt="tools">
                 </div>
-                <a href="#" class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="img/phone.svg" alt="phone"></span></a>
+                <a href="#" class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></a>
             </div>
         </div><!--service-->
         <div class="breaking_machine" id="palomki">
@@ -172,7 +173,7 @@
                     <div class="col-md-4 col-sm-6 col-xs-12">
                         <div class="breaking_item">
                             <figure>
-                                <img src="img/settings.svg" alt="item1">
+                                <img src="{% static 'img/settings.svg' %}" alt="item1">
                                 <h3>Использование неоригинальных запчастей при ремонте. </h3>
                             </figure>
                             <p>«Неродные» детали могут послужить заплаткой для машинки на какое-то время, но рано или поздно проблема вернется, на этот раз – в гораздо больших масштабах. Качественная услуга может быть оказана только с оригинальными запчастями.</p>
@@ -181,7 +182,7 @@
                     <div class="col-md-4 col-sm-6 col-xs-12">
                         <div class="breaking_item">
                             <figure>
-                                <img src="img/car-repair.svg" alt="item2">
+                                <img src="{% static 'img/car-repair.svg' %}" alt="item2">
                                 <h3>Неправильная диагностика.</h3>
                             </figure>
                             <p>Неточная диагностика приводит к потере денег и времени. К тому же, устранение неполадок не той детали, может усугубить проблему. Единственный способ избежать ошибок – доверить работу профессиональному мастеру.</p>
@@ -190,7 +191,7 @@
                     <div class="col-md-4 col-sm-6 col-xs-12">
                         <div class="breaking_item">
                             <figure>
-                                <img src="img/user.svg" alt="item3">
+                                <img src="{% static 'img/user.svg' %}" alt="item3">
                                 <h3>Привлечение к работе специалиста с недостаточным опытом. </h3>
                             </figure>
                             <p>Работа мастеров-самоучек и новичков обойдется дешевле, но это сомнительная экономия. Часто последствия работы таких специалистов приходится исправлять более опытным мастерам.</p>
@@ -198,7 +199,7 @@
                     </div>
                 </div>
                 <span class="breaking_bottom_span">Лучше один раз заказать услугу у профессионалов, чем терять деньги и устранять последствия некачественной работы!</span>
-                <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="img/phone.svg" alt="phone"></span></button>
+                <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
             </div>
         </div>
         <div class="advantages" id="preimushchestva">
@@ -208,7 +209,7 @@
                     <div class="col-md-4 col-sm-6 col-xs-12">
                         <div class="inside">
                             <figure>
-                                <img src="img/employer.svg" alt="employer">
+                                <img src="{% static 'img/employer.svg' %}" alt="employer">
                                 <p>Будьте уверены в качестве ремонта</p>
                             </figure>
                             <p>Устранение неисправностей производят мастера, прошедшие обучение в специализированных сервисных центрах, специалисты с опытом работы более 10 лет. Наши мастера всегда точно определяют причину неисправности. Технику мы ремонтируем только с использованием оригинальных запчастей. Все это гарантирует высокое качество ремонта.</p>
@@ -217,7 +218,7 @@
                     <div class="col-md-4 col-sm-6 col-xs-12">
                         <div class="inside">
                             <figure>
-                                <img src="img/clock.svg" alt="clock">
+                                <img src="{% static 'img/clock.svg' %}" alt="clock">
                                 <p>Приглашайте мастера в удобное время, даже вечером и в выходные</p>
                             </figure>
                             <p>Мастер приедет в день обращения или в любой дрогой удобный для вас день. Мы работаем без выходных, с 8.00 до 22.00.</p>
@@ -226,17 +227,17 @@
                     <div class="col-md-4 col-sm-6 col-xs-12">
                         <div class="inside">
                             <figure>
-                                <img src="img/van.svg" alt="van">
+                                <img src="{% static 'img/van.svg' %}" alt="van">
                                 <p>Пользуйтесь отремонтированной машинкой уже в день обращения</p>
                             </figure>
                             <p>Вам не придется отдельно заказывать запчасти и ждать их поставки. Наши мастера полностью укомплектованы всем, что необходимо для устранения неисправностей. 99% машинок мы чиним при первом выезде специалиста.</p>
                         </div>
                     </div>
-    
+
                     <div class="col-md-4 col-sm-6 col-xs-12">
                         <div class="inside">
                             <figure>
-                                <img src="img/pointer.svg" alt="pointer">
+                                <img src="{% static 'img/pointer.svg' %}" alt="pointer">
                                 <p>Заказывайте услуги по адекватным ценам</p>
                             </figure>
                             <p>У нас действуют адекватные цены на услуги по диагностике, ремонту и подключению машинок. А за счет прямых поставок запчастей и комплектующих, ремонт у нас обойдется на 10-20% дешевле, чем в других компаниях.</p>
@@ -245,7 +246,7 @@
                     <div class="col-md-4 col-sm-6 col-xs-12">
                         <div class="inside">
                             <figure>
-                                <img src="img/thumbs_up.svg" alt="thumbs_up">
+                                <img src="{% static 'img/thumbs_up.svg' %}" alt="thumbs_up">
                                 <p>Получите ценные рекомендации от специалиста</p>
                             </figure>
                             <p>После устранения неисправностей мастер обязательно даст много полезных советов по дальнейшей эксплуатации вашей стиральной машины.</p>
@@ -254,14 +255,14 @@
                     <div class="col-md-4 col-sm-6 col-xs-12">
                         <div class="inside">
                             <figure>
-                                <img src="img/instruments.svg" alt="instruments">
+                                <img src="{% static 'img/instruments.svg' %}" alt="instruments">
                                 <p>Гарантия на нашу работу</p>
                             </figure>
                             <p>Заказывая услуги в компании «Техперсона», вы можете быть уверены в качестве. Мы предоставляем гарантию на основные виды работ.</p>
                         </div>
                     </div>
                 </div>
-                <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="img/phone.svg" alt="phone"></span></button>
+                <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
             </div>
         </div><!--advantages-->
         <div class="services container" id="uslugi">
@@ -271,57 +272,57 @@
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="inside">
                         <div class="img">
-                            <img src="img/srvice1.jpg" alt="srvice">
+                            <img src="{% static 'img/srvice1.jpg' %}" alt="srvice">
                             <div class="top">
                                 <span>Выезд и диагностика</span>
                                 <span></span>
                             </div>
                         </div>
                         <p class="last">Мастер по ремонту стиральных машин приедет к вам в кратчайшие сроки, точно определит причину неисправности, честно расскажет, стоит ли чинить машинку или лучше купить новую, сориентирует, сколько будет стоить работа и запчасти, и ответит на любые ваши вопросы.</p>
-                        <button>Подробнее<img src="img/arrow.png" alt="arrow"></button>
+                        <button>Подробнее<img src="{% static 'img/arrow.png' %}" alt="arrow"></button>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="inside">
                         <div class="img">
-                            <img src="img/srvice2.jpg" alt="srvice">
+                            <img src="{% static 'img/srvice2.jpg' %}" alt="srvice">
                             <div class="top">
                                 <span>Ремонтируем</span>
                                 <span>на дому</span>
                             </div>
                         </div>
                         <p class="last">Машинка не греет, не сливает воду, подтекает, не включается, не крутит барабан – эти и любые другие неисправности наш мастер устранит уже в день обращения.</p>
-                        <button>Подробнее<img src="img/arrow.png" alt="arrow"></button>
+                        <button>Подробнее<img src="{% static 'img/arrow.png' %}" alt="arrow"></button>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="inside">
                         <div class="img">
-                            <img src="img/srvice3.jpg" alt="srvice">
+                            <img src="{% static 'img/srvice3.jpg' %}" alt="srvice">
                             <div class="top">
                                 <span>Подключение</span>
                                 <span>стиральных машин</span>
                             </div>
                         </div>
                         <p class="last">Грамотно и профессионально произведем монтаж и подключение вашей стиральной машины. Быстро и недорого.</p>
-                        <button>Подробнее<img src="img/arrow.png" alt="arrow"></button>
+                        <button>Подробнее<img src="{% static 'img/arrow.png' %}" alt="arrow"></button>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="inside">
                         <div class="img">
-                            <img src="img/srvice4.jpg" alt="srvice">
+                            <img src="{% static 'img/srvice4.jpg' %}" alt="srvice">
                             <div class="top">
                                 <span>Продажа оригинальных,</span>
                                 <span>брендовых запчастей</span>
                             </div>
                         </div>
                         <p class="last">У нас можно заказать запчасти для машин всех популярных брендов. Мы наладили прямые поставки деталей, поэтому можем предложить адекватные цены.</p>
-                        <button>Подробнее<img src="img/arrow.png" alt="arrow"></button>
+                        <button>Подробнее<img src="{% static 'img/arrow.png' %}" alt="arrow"></button>
                     </div>
                 </div>
             </div>
-            <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="img/phone.svg" alt="phone"></span></button>
+            <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
         </div><!--services-->
         <div class="job-block" id="etapy_raboty">
             <div class="container">
@@ -329,7 +330,7 @@
                 <div class="row">
                     <div class="col-md-6 col-sm-6 col-xs-12">
                         <div class="inside">
-                            <img src="img/job1.png" alt="job">
+                            <img src="{% static 'img/job1.png' %}" alt="job">
                             <div class="text wow fadeInRight" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInRight;">
                                 <span><b>#1</b></span>
                                 <h3>Заявка</h3>
@@ -339,7 +340,7 @@
                     </div>
                     <div class="col-md-6 col-sm-6 col-xs-12">
                         <div class="inside">
-                            <img src="img/job2.png" alt="job">
+                            <img src="{% static 'img/job2.png' %}" alt="job">
                             <div class="text wow fadeInRight" data-wow-delay="0.4s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInRight;">
                                 <span><b>#2</b></span>
                                 <h3>Выезд специалиста и диагностика</h3>
@@ -349,7 +350,7 @@
                     </div>
                     <div class="col-md-6 col-sm-6 col-xs-12">
                         <div class="inside">
-                            <img src="img/job3.png" alt="job">
+                            <img src="{% static 'img/job3.png' %}" alt="job">
                             <div class="text wow fadeInRight" data-wow-delay="0.7s" style="visibility: visible; animation-delay: 0.7s; animation-name: fadeInRight;">
                                 <span><b>#3</b></span>
                                 <h3>Ремонтные работы</h3>
@@ -359,7 +360,7 @@
                     </div>
                     <div class="col-md-6 col-sm-6 col-xs-12">
                         <div class="inside">
-                            <img src="img/job4.png" alt="job">
+                            <img src="{% static 'img/job4.png' %}" alt="job">
                             <div class="text wow fadeInRight" data-wow-delay="1s" style="visibility: visible; animation-delay: 1s; animation-name: fadeInRight;">
                                 <span><b>#4</b></span>
                                 <h3>Оплата</h3>
@@ -368,7 +369,7 @@
                         </div>
                     </div>
                 </div>
-                <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="img/phone.svg" alt="phone"></span></button>
+                <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
             </div>
         </div><!--job-block-->
         <div class="brand" id="brendy">
@@ -376,294 +377,130 @@
                 <div class="title"><span>Бренды, с которыми мы Работаем</span></div>
                 <ul>
                     <li>
-                        <img src="img/brand1.png" alt="brand">
+                        <img src="{% static 'img/brand1.png' %}" alt="brand">
                         <p class="text-center">Zanussi</p>
                     </li>
                     <li>
-                        <img src="img/brand2.png" alt="brand">
+                        <img src="{% static 'img/brand2.png' %}" alt="brand">
                         <p class="text-center">Samsung</p>
                     </li>
                     <li>
-                        <img src="img/brand3.png" alt="brand">
+                        <img src="{% static 'img/brand3.png' %}" alt="brand">
                         <p class="text-center">Candy</p>
                     </li>
                     <li>
-                        <img src="img/brand4.png" alt="brand">
+                        <img src="{% static 'img/brand4.png' %}" alt="brand">
                         <p class="text-center">Siemens</p>
                     </li>
                     <li>
-                        <img src="img/brand5.png" alt="brand">
+                        <img src="{% static 'img/brand5.png' %}" alt="brand">
                         <p class="text-center">LG</p>
                     </li>
                     <li>
-                        <img src="img/brand6.png" alt="brand">
+                        <img src="{% static 'img/brand6.png' %}" alt="brand">
                         <p class="text-center">Bosch</p>
                     </li>
                     <li>
-                        <img src="img/brand7.png" alt="brand">
+                        <img src="{% static 'img/brand7.png' %}" alt="brand">
                         <p class="text-center">Gorenje</p>
                     </li>
-    
+
                     <li>
-                        <img src="img/brand8.png" alt="brand">
+                        <img src="{% static 'img/brand8.png' %}" alt="brand">
                         <p class="text-center">Indesit</p>
                     </li>
                     <li>
-                        <img src="img/brand9.png" alt="brand">
+                        <img src="{% static 'img/brand9.png' %}" alt="brand">
                         <p class="text-center">Hansa</p>
                     </li>
                     <li>
-                        <img src="img/brand10.png" alt="brand">
+                        <img src="{% static 'img/brand10.png' %}" alt="brand">
                         <p class="text-center">Electrolux</p>
                     </li>
                     <li>
-                        <img src="img/brand11.png" alt="brand">
+                        <img src="{% static 'img/brand11.png' %}" alt="brand">
                         <p class="text-center">Beko</p>
                     </li>
                     <li>
-                        <img src="img/brand12.png" alt="brand">
+                        <img src="{% static 'img/brand12.png' %}" alt="brand">
                         <p class="text-center">Ariston</p>
                     </li>
                     <li>
-                        <img src="img/brand13.png" alt="brand">
+                        <img src="{% static 'img/brand13.png' %}" alt="brand">
                         <p class="text-center">Miele</p>
                     </li>
                     <li>
-                        <img src="img/brand14.png" alt="brand">
+                        <img src="{% static 'img/brand14.png' %}" alt="brand">
                         <p class="text-center">Atlant</p>
                     </li>
-    
+
                     <li>
-                        <img src="img/brand15.png" alt="brand">
+                        <img src="{% static 'img/brand15.png' %}" alt="brand">
                         <p class="text-center">Ardo</p>
                     </li>
                     <li>
-                        <img src="img/brand16.png" alt="brand">
+                        <img src="{% static 'img/brand16.png' %}" alt="brand">
                         <p class="text-center">Asko</p>
                     </li>
                     <li>
-                        <img src="img/brand17.png" alt="brand">
+                        <img src="{% static 'img/brand17.png' %}" alt="brand">
                         <p class="text-center">Daewoo</p>
                     </li>
                     <li>
-                        <img src="img/brand18.png" alt="brand">
+                        <img src="{% static 'img/brand18.png' %}" alt="brand">
                         <p class="text-center">Brandt</p>
                     </li>
                     <li>
-                        <img src="img/brand19.png" alt="brand">
+                        <img src="{% static 'img/brand19.png' %}" alt="brand">
                         <p class="text-center">Smeg</p>
                     </li>
                     <li>
-                        <img src="img/brand20.png" alt="brand">
+                        <img src="{% static 'img/brand20.png' %}" alt="brand">
                         <p class="text-center">Vestel</p>
                     </li>
                     <li>
-                        <img src="img/brand21.png" alt="brand">
+                        <img src="{% static 'img/brand21.png' %}" alt="brand">
                         <p class="text-center">Whirpool</p>
                     </li>
-    
+
                     <li>
-                        <img src="img/brand22.png" alt="brand">
+                        <img src="{% static 'img/brand22.png' %}" alt="brand">
                         <p class="text-center">Zerowatt</p>
                     </li>
                     <li>
-                        <img src="img/brand23.png" alt="brand">
+                        <img src="{% static 'img/brand23.png' %}" alt="brand">
                         <p class="text-center">Neff</p>
                     </li>
                     <li>
-                        <img src="img/brand24.png" alt="brand">
+                        <img src="{% static 'img/brand24.png' %}" alt="brand">
                         <p class="text-center">Kaiser</p>
                     </li>
                     <li>
-                        <img src="img/brand25.png" alt="brand">
+                        <img src="{% static 'img/brand25.png' %}" alt="brand">
                         <p class="text-center">Renova</p>
                     </li>
                     <li>
-                        <img src="img/brand26.png" alt="brand">
+                        <img src="{% static 'img/brand26.png' %}" alt="brand">
                         <p class="text-center">Haier</p>
                     </li>
                     <li>
-                        <img src="img/brand27.png" alt="brand">
+                        <img src="{% static 'img/brand27.png' %}" alt="brand">
                         <p class="text-center">AEG</p>
                     </li>
                 </ul>
-                <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="img/phone.svg" alt="phone"></span></button>
+                <button class="btn_my" data-toggle="modal" data-target="#popup">Вызвать мастера<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
             </div>
         </div><!--brand-->
         <div class="users" id="otzyvy_kliyentov">
-            <!-- <div class="container">
-                <div class="title"><span>Отзывы наших клиентов</span></div>
-                <div class="row">
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id119832581"><img src="img/vk/id119832581.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Эльвира</h4>
-                                <a href="http://vk.com/id119832581"><span><img src="img/vk.png" alt="vk">- id119832581</span></a>
-                                <p>Сервисный центр просто супер вызвала мастера поменяли резинку в барабане, быстро и качественно оч оч довольна теперь она снова работает ура! Спасибки огромное!</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id9502168"><img src="img/vk/id9502168.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Булат</h4>
-                                <a href="http://vk.com/id9502168"><span><img src="img/vk.png" alt="vk">- id9502168</span></a>
-                                <p>Хочу сказать что у вас лучший сервис в городе. Не зря мне вас посоветовали.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id58176875"><img src="img/vk/id58176875.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Рузиля</h4>
-                                <a href="http://vk.com/id58176875"><span><img src="img/vk.png" alt="vk">- id58176875</span></a>
-                                <p>Спасибо, мне очень понравилась Работа мастера! Если будут проблемы именно к вам и обратимся и посоветует своим друзьям!!)</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id57902795"><img src="img/vk/id57902795.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Алина</h4>
-                                <a href="http://vk.com/id57902795"><span><img src="img/vk.png" alt="vk">- id57902795</span></a>
-                                <p>Мне очень понравилась мастер. Здорово все отремонтировал! Спасибо большое!</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id33534487"><img src="img/vk/id33534487.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Венера</h4>
-                                <a href="http://vk.com/id33534487"><span><img src="img/vk.png" alt="vk">- id33534487</span></a>
-                                <p>Доброе утро.хочу отблагодарить компанию Техперсона,за то что они вошли в мое положение и отремонтировали стиральную машину...А заплатила я чуть позже.....Отдельное спасибо оператору....ответственный молодой человек...</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id9512277"><img src="img/vk/id9512277.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Рамиль</h4>
-                                <a href="http://vk.com/id9512277"><span><img src="img/vk.png" alt="vk">- id9512277</span></a>
-                                <p>Отличный сервис, хорошие, знающие свое дело ребята! Не первый раз их вызываю,не жалею что вообще с ними связался.своим только эту компанию советую....Так держать! Успехов и процветания вам!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row bottom">
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id19716666"><img src="img/vk/id19716666.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Эльвира</h4>
-                                <a href="http://vk.com/id19716666"><span><img src="img/vk.png" alt="vk">- id19716666</span></a>
-                                <p>Здравствуйте,хочу выразить благодарность вашему мастеру Ильнуру.Он в свой праздничный выходной день не стал отказывать,приехал вовремя,быстро сделал.Очень выручил,огромное спасибо.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id34155707"><img src="img/vk/id34155707.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Аня</h4>
-                                <a href="http://vk.com/id34155707"><span><img src="img/vk.png" alt="vk">- id34155707</span></a>
-                                <p>В один прекрасный момент у меня сломалась машина,просто перестала крутить барабан,пришлось вызвать мастера.мне посоветовали вашу фирму.Понравилось что приехали вовремя,в назначенное время.спасибо мастеру Ильнуру.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id199513729"><img src="img/vk/id199513729.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Марат</h4>
-                                <a href="http://vk.com/id199513729"><span><img src="img/vk.png" alt="vk">- id199513729</span></a>
-                                <p>Добрый вечер. Стиральная машинка не грела воду, но когда мастер там что то поменял все заработало! Отдельное спасибо мастеру Ильнуру, очень приятный молодой человек</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row hiden">
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id53665290"><img src="img/vk/id53665290.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Регина</h4>
-                                <a href="http://vk.com/id53665290"><span><img src="img/vk.png" alt="vk">- id53665290</span></a>
-                                <p>Профессиональный подход к работе и компетентные мастера,цены тоже нормальные,да и сделали они больше чем нужно было....))) Я очень довольна. Большое спасибо!</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id145757097"><img src="img/vk/id145757097.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Рустам</h4>
-                                <a href="http://vk.com/id145757097"><span><img src="img/vk.png" alt="vk">- id145757097</span></a>
-                                <p>Огромное спасибо Руслану за реанимацию нашей стиральной машины. До этого мастера из двух других компаний посоветовали купить новую, при этом даже не хотели смотреть ее:). Руслан не пожалел времени на внимательную диагностику. Ремонт, затраты на который ни в какое сравнение не идут с приобретением новой машины, произвел четко и быстро, кроме этого приходил в четко обозначенное время. Поэтому спасибо, спасибо и еще раз спасибо! Сомневающимся я бы посоветовал дать вашей стиральной машине еще один шанс.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id87084637"><img src="img/vk/id87084637.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Алина</h4>
-                                <a href="http://vk.com/id87084637"><span><img src="img/vk.png" alt="vk">- id87084637</span></a>
-                                <p>Добрый день, вчера приезжал ваш мастер, хочу отметить что очень приятный молодой парень приехал, несмотря на кучу моих вопросов все спокойно и понятно объяснил. Дал советы по уходу за машинкой, сказал если будут вопросы, звонить. Мастер добрый и отзывчивый, спасибо.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row hiden">
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id41453672"><img src="img/vk/id41453672.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Марат</h4>
-                                <a href="http://vk.com/id41453672"><span><img src="img/vk.png" alt="vk">- id41453672</span></a>
-                                <p>Добрый день!!!!хочу оставить положительный отзыв об этой компании потому что уже давно не сталкивался с такими приятными добродушными мастерами,ответственные...и терпеливые..потому что когда они приехали я был злой...и им попали...но они проявили терпение...все сделали четко....и еще гарантию выписали..молодцы...!!!я доволен.спасибо.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id37926646"><img src="img/vk/id37926646.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Эльвира</h4>
-                                <a href="http://vk.com/id37926646"><span><img src="img/vk.png" alt="vk">- id37926646</span></a>
-                                <p>Привет!!Наконец то моя машинка снова стирает, я хочу выразить свою благодарность мастеру Ильнуру , действительно МАСТЕР своего дело!Всем довольна, быстро и не дорого.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-xs-12">
-                        <div class="inside">
-                            <a href="http://vk.com/id164419991"><img src="img/vk/id164419991.jpg" alt="user"></a>
-                            <div class="right">
-                                <h4>Альбина</h4>
-                                <a href="http://vk.com/id164419991"><span><img src="img/vk.png" alt="vk">- id164419991</span></a>
-                                <p>Здравствуйте. Хотелось бы сказать спасибо за ремонт,отдельное спасибо мастеру Денису приехал даже раньше чем обещал, сделал все чисто и быстро. Очень довольна.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="btn_my">Все отзывы<span><img src="img/message.svg" alt="message"></span></div>
-            </div> -->
             <div class="container">
     <!-- Put this script tag to the <head> of your page -->
             <div class="title"><span>Отзывы наших клиентов</span></div>
             <script type="text/javascript" src="https://vk.com/js/api/openapi.js?162"></script>
-    
+
             <script type="text/javascript">
                 VK.init({apiId: 7180992, onlyWidgets: true});
             </script>
-            
+
             <!-- Put this div tag to the place, where the Comments block will be -->
             <div id="vk_comments" style="width: 100%; height: 730.067px; background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%;"><iframe name="fXD7bcac" src="https://vk.com/widget_comments.php?app=7180992&amp;width=100%25&amp;_ver=1&amp;limit=10&amp;height=0&amp;mini=auto&amp;norealtime=0&amp;page=0&amp;status_publish=0&amp;attach=*&amp;url=https%3A%2F%2Fwww.tehpersona.ru%2F&amp;title=%D0%A0%D0%B5%D0%BC%D0%BE%D0%BD%D1%82%20%D1%81%D1%82%D0%B8%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D1%85%20%D0%BC%D0%B0%D1%88%D0%B8%D0%BD%20%D0%B2%20%D0%9A%D0%B0%D0%B7%D0%B0%D0%BD%D0%B8%20%D0%BD%D0%B0%20%D0%B4%D0%BE%D0%BC%D1%83%20%D0%BC%D0%B0%D1%81%D1%82%D0%B5%D1%80%D0%BE%D0%BC%20%7C%20%D0%A2%D0%B5%D1%85%D0%BF%D0%B5%D1%80%D1%81%D0%BE%D0%BD%D0%B0&amp;description=%D0%A0%D0%B5%D0%BC%D0%BE%D0%BD%D1%82%20%D1%81%D1%82%D0%B8%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D1%85%20%D0%BC%D0%B0%D1%88%D0%B8%D0%BD%20%D0%B2%20%D0%9A%D0%B0%D0%B7%D0%B0%D0%BD%D0%B8%20%C2%AB%D0%A2%D0%B5%D1%85%D0%BF%D0%B5%D1%80%D1%81%D0%BE%D0%BD%D0%B0%C2%BB.%207%20%D0%B4%D0%BD%D0%B5%D0%B9%20%D0%B2%20%D0%BD%D0%B5%D0%B4%D0%B5%D0%BB%D1%8E.%20%D0%92%D1%8B%D0%B5%D0%B7%D0%B4%20%D0%BC%D0%B0%D1%81%D1%82%D0%B5%D1%80%D0%B0%20%D0%BD%D0%B0%20%D0%B4%D0%BE%D0%BC%20%D0%BE%D1%82%201%20%D1%87%D0%B0%D1%81%D0%B0.%20%D0%A2%D0%BE%D0%BB%D1%8C%D0%BA%D0%BE%20%D0%BE%D1%80%D0%B8%D0%B3%D0%B8%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B5%20%D0%B7%D0%B0%D0%BF%D1%87%D0%B0%D1%81%D1%82%D0%B8%20%D0%B4%D0%BB%D1%8F%20%D1%80%D0%B5%D0%BC%D0%BE%D0%BD%D1%82%D0%B0.%20%D0%97%D0%B2%D0%BE%D0%BD%D0%B8%D1%82%D0%B5!&amp;image=&amp;startWidth=1170&amp;referrer=&amp;175926594f0" scrolling="no" id="vkwidget1" style="overflow: hidden; height: 730.067px;" width="100%" height="133" frameborder="0"></iframe></div>
             <script type="text/javascript">
@@ -671,12 +508,13 @@
             </script>
             </div>
         </div><!--users-->
-    
+
         <div class="consultation" id="konsultatsiya">
             <div class="container">
                 <div class="title"><span>Остались вопросы?</span></div>
                 <p class="consultation_text">Заполните форму на сайте или сразу звоните по телефону: 8 (843) 240-82-82.<br>Наши специалисты проконсультируют вас и предоставят любую интересующую вас информацию!</p>
-                <form method="POST" class="global feedback2" name="feedback" action="javascript:void(null);" onsubmit="call($('.feedback2'))">
+                <form method="POST" class="global feedback2" name="feedback" action="{% url 'repair_service:submit_request' %}" onsubmit="return submitForm(this);">
+                    {% csrf_token %}
                     <div class="form-group">
                         <label for="exampleInputname">Ваше имя<span>*</span></label>
                         <input type="text" class="form-control" name="name" required="required">
@@ -687,7 +525,7 @@
                     </div>
                     <div class="last">
                         <p class="results"></p>
-                        <button type="submit" class="btn_my" id="submit" onclick="ym('55890055','reachGoal', 'zayavka'); return true;">Отправить<span><img src="img/send.svg" alt=""></span></button>
+                        <button type="submit" class="btn_my" id="submit" onclick="ym('55890055','reachGoal', 'zayavka'); return true;">Отправить<span><img src="{% static 'img/send.svg' %}" alt=""></span></button>
                     </div>
                 </form>
             </div>
@@ -698,27 +536,27 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="info">
-                            <p><img src="img/phone2.svg" alt="phone">Телефон менеджера</p>
+                            <p><img src="{% static 'img/phone2.svg' %}" alt="phone">Телефон менеджера</p>
                             <a href="tel:8 (843) 240-82-82"><p class="last">8 (843) 240-82-82</p></a>
                         </div><!--info-->
                         <div class="info">
-                            <p><img src="img/whatsapp.svg" alt="whatsapp"><img src="img/printer.svg" alt="telegram">WhatsApp и Telegram</p>
+                            <p><img src="{% static 'img/whatsapp.svg' %}" alt="whatsapp"><img src="{% static 'img/printer.svg' %}" alt="telegram">WhatsApp и Telegram</p>
                             <p class="last">8 (937) 28-28-555</p>
                         </div><!--info-->
                         <div class="info">
-                            <p><img src="img/pointer2.svg" alt="pointer2">Адрес офиса</p>
+                            <p><img src="{% static 'img/pointer2.svg' %}" alt="pointer2">Адрес офиса</p>
                             <p class="last">г. Казань, ул. Четаева 16</p>
                         </div><!--info-->
                         <div class="info">
-                            <p><img src="img/envelope.svg" alt="envelope">E-mail</p>
+                            <p><img src="{% static 'img/envelope.svg' %}" alt="envelope">E-mail</p>
                             <p class="last"><a href="mailto:tehpersona@list.ru">tehpersona@gmail.com</a></p>
                         </div><!--info-->
                         <div class="info">
-                            <p><img src="img/vk.png" alt="vkantakte">Мы Вконтакте </p>
+                            <p><img src="{% static 'img/vk.png' %}" alt="vkantakte">Мы Вконтакте </p>
                             <p class="last"><a href="https://m.vk.com/club29935357">Техперсона</a></p>
                         </div><!--info-->
                         <div class="info">
-                            <p><img src="img/instagram.svg" alt="instagram">Мы в Instagram </p>
+                            <p><img src="{% static 'img/instagram.svg' %}" alt="instagram">Мы в Instagram </p>
                             <p class="last"><a href="https://www.instagram.com/remont_stiralnih_mashin_kzn116/">remont_stiralnih_mashin_kzn116</a></p>
                         </div><!--info-->
                     </div>
@@ -726,24 +564,22 @@
                 </div>
                 <div class="copyright">
                     <p class="pull-left">Copyright © 2009-2020 Техперсона. Все права защищены.</p>
-                    
+
                 </div>
             </div>
         </div><!--contact-->
     </div><!--main-content-->
-    <!--<div class="call">
-        <img src="img/call_back.svg" alt="call_back" data-toggle="modal" data-target="#popup">
-    </div>-->
-    
+
     <div class="modal fade" id="popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><img src="img/close.svg" alt=""></span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><img src="{% static 'img/close.svg' %}" alt=""></span></button>
                   </div>
                 <div class="modal-body text-center">
                     <h2>Вызов/консультация Мастера</h2>
-                    <form method="POST" class="global feedback3" name="feedback" action="javascript:void(null);" onsubmit="call($('.feedback3'))">
+                    <form method="POST" class="global feedback3" name="feedback" action="{% url 'repair_service:submit_request' %}" onsubmit="return submitForm(this);">
+                        {% csrf_token %}
                         <div class="form-group">
                             <label for="exampleInputname">Ваше имя<span>*</span></label>
                             <input type="text" class="form-control" name="name" required="required">
@@ -754,22 +590,21 @@
                         </div>
                         <div class="last">
                             <p class="results"></p>
-                            <button type="submit" class="btn_my" id="submit" onclick="ym('55890055','reachGoal', 'zayavka'); return true;">Отправить<span><img src="img/send.svg" alt=""></span></button>
+                            <button type="submit" class="btn_my" id="submit" onclick="ym('55890055','reachGoal', 'zayavka'); return true;">Отправить<span><img src="{% static 'img/send.svg' %}" alt=""></span></button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <!-- <a href="#0" class="cd-top"><svg id="SvgjsSvg1000" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="27" height="17" viewBox="0 0 27 17"><path id="SvgjsPath1007" d="M1076.99 419.493L1080.03 422.532L1090 412.546L1099.97 422.532L1103 419.493L1090 406.467Z " fill="#f5f4f2" fill-opacity="1" transform="matrix(1,0,0,1,-1076,-406)"></path></svg></a> -->
-    
-        
+
+
         <!-- Yandex.Metrika counter -->
         <script type="text/javascript">
              (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
              m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
              (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-        
+
              ym(55890055, "init", {
                         clickmap:true,
                         trackLinks:true,
@@ -779,30 +614,51 @@
         </script>
         <noscript><div><img src="https://mc.yandex.ru/watch/55890055" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
         <!-- /Yandex.Metrika counter -->
-    
+
     <script type="text/javascript">
-        function call(el){
-            var msg = el.serialize();
-            $.ajax({
-              type: 'POST',
-              url: 'process.php',
-              data: msg,
-              success: function(data) {
-                 if (data==true) {
-                     location.href = 'result.html';
-                     el.trigger('reset'); /* очищаем форму */
-                 }
-                 else {
-                     el.find('.results').html(data);
-                     alert('Проверить правильность введенные вами данные.');
-                 }
-              }
+        function submitForm(form) {
+            var formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Показываем сообщение об успехе
+                    var myModal = document.querySelector('.myModal');
+                    if (myModal) {
+                        myModal.style.display = 'block';
+                        setTimeout(function() {
+                            myModal.style.display = 'none';
+                        }, 5000);
+                    }
+                    // Очищаем форму
+                    form.reset();
+                    // Закрываем модальное окно если оно открыто
+                    var modal = document.querySelector('#popup');
+                    if (modal) {
+                        $(modal).modal('hide');
+                    }
+                } else {
+                    alert('Ошибка: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла ошибка при отправке формы');
             });
+
+            return false; // Предотвращаем стандартную отправку формы
         }
     </script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/wow.min.js"></script>
-    <script type="text/javascript" src="js/jquery.maskedinput.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/wow.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.maskedinput.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
     </body>
     </html>
