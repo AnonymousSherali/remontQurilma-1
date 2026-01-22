@@ -114,7 +114,7 @@ $(document).ready(function() {
     );
   });
    $(function() {
-            $("input[name='phone']").mask('+7 (999) 999-9999');
+            $("input[name='phone']").mask('+998 (99) 999-99-99');
 
             // Contents of textboxes will be selected when receiving focus.
             $("input[type=text]")
@@ -182,7 +182,7 @@ var myMap;
 
 function init(){
     myMap = new ymaps.Map ("map", {
-        center: [55.823231, 49.141716],
+        center: [41.311151, 69.279737],
         zoom: 16
     });
 
@@ -197,7 +197,7 @@ function init(){
       iconImageOffset: [-25, -70]
     });
 
-    myPlacemark1 = new ymaps.Placemark([55.823231, 49.141716], {
+    myPlacemark1 = new ymaps.Placemark([41.311151, 69.279737], {
       balloonContentHeader: '<img src="img/pointer23.svg" class="mc__logo">',
     });
 

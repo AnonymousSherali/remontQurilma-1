@@ -450,7 +450,7 @@ $(document).ready(function(){
 	$(function() {
         $.mask.definitions['~'] = "[+-]";
         //$("#date").mask("99/99/9999",{placeholder:"mm/dd/yyyy",completed:function(){alert("completed!");}});
-        $(".phone").mask("+7 (999) 999-9999");
+        $(".phone").mask("+998 (99) 999-99-99");
         $("input").blur(function() {
             $("#info").html("Unmasked value: " + $(this).mask());
         }).dblclick(function() {

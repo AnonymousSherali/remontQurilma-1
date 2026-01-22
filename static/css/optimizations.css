@@ -1,0 +1,366 @@
+/*
+ * TechService Optimizatsiyalar
+ * Sayt ko'rinishini yaxshilash va foydalanuvchi tajribasini oshirish
+ */
+
+/* ===== Umumiy yaxshilanishlar ===== */
+
+/* Smooth scrolling for all browsers */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Better focus states for accessibility */
+a:focus,
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+    outline: 2px solid #55cd6c;
+    outline-offset: 2px;
+}
+
+/* Improved loading animation */
+.loading {
+    pointer-events: none;
+    opacity: 0.6;
+    position: relative;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    margin-left: -10px;
+    border: 3px solid #55cd6c;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== Forma yaxshilash ===== */
+
+/* Better form input styles */
+.form-control {
+    transition: all 0.3s ease;
+    border: 2px solid #ddd;
+}
+
+.form-control:focus {
+    border-color: #55cd6c;
+    box-shadow: 0 0 8px rgba(85, 205, 108, 0.3);
+}
+
+/* Form validation feedback */
+.form-control.error {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+.form-control.success {
+    border-color: #28a745;
+    background-color: #f0fff4;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 13px;
+    margin-top: 5px;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.error-message.show {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== Tugma yaxshilash ===== */
+
+/* Improved button hover effects */
+.btn_my {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn_my:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(85, 205, 108, 0.4);
+}
+
+.btn_my:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Button loading state */
+.btn_my.loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn_my.loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid white;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+/* ===== Modal yaxshilash ===== */
+
+/* Smooth modal animations */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: scale(0.9);
+}
+
+.modal.in .modal-dialog {
+    transform: scale(1);
+}
+
+/* Better modal backdrop */
+.modal-backdrop {
+    transition: opacity 0.3s ease;
+}
+
+/* ===== Mobil menyu yaxshilash ===== */
+
+/* Smooth mobile menu transition */
+menu {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-menu {
+    transition: transform 0.3s ease;
+}
+
+.mobile-menu.rotate {
+    transform: rotate(90deg);
+}
+
+/* ===== Card hover effects ===== */
+
+/* Service cards hover effect */
+.services .inside {
+    transition: all 0.3s ease;
+}
+
+.services .inside:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Image optimization ===== */
+
+/* Better image loading */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+img[data-src] {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+img[data-src].loaded {
+    opacity: 1;
+}
+
+/* ===== Scroll to top button ===== */
+
+.cd-top {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cd-top:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== Loading skeleton ===== */
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 25%,
+        #e0e0e0 50%,
+        #f0f0f0 75%
+    );
+    background-size: 200% 100%;
+    animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ===== Toast notifications ===== */
+
+.toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    transform: translateX(400px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast.success {
+    border-left: 4px solid #28a745;
+}
+
+.toast.error {
+    border-left: 4px solid #dc3545;
+}
+
+.toast.info {
+    border-left: 4px solid #17a2b8;
+}
+
+/* ===== Responsive improvements ===== */
+
+@media (max-width: 768px) {
+    /* Better mobile padding */
+    .container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    /* Larger touch targets for mobile */
+    .btn_my,
+    button,
+    a.btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Better form spacing on mobile */
+    .form-control {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    /* Toast on mobile */
+    .toast {
+        left: 15px;
+        right: 15px;
+        bottom: 15px;
+    }
+}
+
+/* ===== Print styles ===== */
+
+@media print {
+    .no-print,
+    header,
+    footer,
+    .mobile-menu,
+    .cd-top,
+    button,
+    .btn_my {
+        display: none !important;
+    }
+}
+
+/* ===== Performance optimizations ===== */
+
+/* Will-change for better animation performance */
+.btn_my,
+.services .inside,
+.cd-top {
+    will-change: transform;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ===== Accessibility improvements ===== */
+
+/* Skip to main content link */
+.skip-to-main {
+    position: absolute;
+    left: -9999px;
+    z-index: 999;
+    padding: 1em;
+    background-color: #55cd6c;
+    color: white;
+    text-decoration: none;
+}
+
+.skip-to-main:focus {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+}
+
+/* Better focus visible */
+:focus-visible {
+    outline: 2px solid #55cd6c;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .btn_my {
+        border: 2px solid currentColor;
+    }
+}
+
+/* ===== Text selection ===== */
+
+::selection {
+    background-color: #55cd6c;
+    color: white;
+}
+
+::-moz-selection {
+    background-color: #55cd6c;
+    color: white;
+}
