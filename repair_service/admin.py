@@ -10,16 +10,16 @@ class ServiceRequestAdmin(admin.ModelAdmin):
     readonly_fields = ['created_at', 'updated_at']
 
     fieldsets = [
-        ('Информация о клиенте', {
+        ('Mijoz haqida ma\'lumot', {
             'fields': ['name', 'phone', 'email']
         }),
-        ('Информация о технике', {
+        ('Texnika haqida ma\'lumot', {
             'fields': ['appliance_type', 'brand', 'problem_description']
         }),
-        ('Статус и комментарии', {
+        ('Status va izohlar', {
             'fields': ['status', 'admin_notes']
         }),
-        ('Системная информация', {
+        ('Tizim ma\'lumotlari', {
             'fields': ['created_at', 'updated_at'],
             'classes': ['collapse']
         }),
