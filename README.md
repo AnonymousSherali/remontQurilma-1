@@ -237,19 +237,27 @@ Tavsif: Mexanik qismlar va yig'malar ta'mirlash
 
 ## Production uchun sozlash
 
-### 1. SECRET_KEY ni o'zgartiring
+### 1. .env faylini yarating
 
-`config/settings.py` faylida:
+`.env.example` faylini nusxalab `.env` yarating:
 
-```python
-SECRET_KEY = 'o-zgingizning-xavfsiz-maxfiy-kalitingiz'
+```bash
+cp .env.example .env
 ```
 
-### 2. DEBUG rejimini o'chiring
+Keyin `.env` faylini tahrirlang:
 
-```python
-DEBUG = False
-ALLOWED_HOSTS = ['techservice.uz', 'www.techservice.uz', 'sizning-domeningiz.uz']
+```env
+DJANGO_SECRET_KEY=o-zgingizning-xavfsiz-maxfiy-kalitingiz-bu-yerda
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=techservice.uz,www.techservice.uz
+DJANGO_CSRF_TRUSTED_ORIGINS=https://techservice.uz
+```
+
+### 2. Xavfsiz SECRET_KEY yaratish
+
+```bash
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
 ### 3. PostgreSQL ma'lumotlar bazasini sozlang (tavsiya etiladi)
