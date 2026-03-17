@@ -1,2 +1,7 @@
+# Asosiy bog'liqliklar
 Django==4.2.11
-Pillow>=11.0.0
+Pillow==11.1.0
+
+# Production uchun (ixtiyoriy)
+# gunicorn==21.2.0
+# psycopg2-binary==2.9.9
