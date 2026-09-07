@@ -1,12 +1,6 @@
 $(document).ready(function() {
 	new WOW().init();
 
-	$('.hiden').hide();
-	$('.users').click(function() {
-		$('.bottom').toggleClass('open');
-		$('.hiden').slideToggle().show();
-	});
-
 	$('.services .last span').hide();
 
 	$('.services .inside button').click(function() {
@@ -27,57 +21,13 @@ $(document).ready(function() {
     $('menu').slideToggle();
   });
 
-	$(window).scroll(function () {
-	    var sc = $(window).scrollTop()
-	    if (sc > 200) {
-	        $(".main-content .bg").addClass("enabled");
-	    } else {
-	        $(".main-content .bg").removeClass("enabled");
-	    }
-	});
-  // $(window).resize(function(){
-  //   if( $(document).width() < 992 ) {
-  //     if($(window).scrollTop() > 100){
-  //       $('header').addClass('enabled');
-  //     }
-  //     $('menu').addClass('menuTrigger');
-  //     MenuPosition();
-  //   }else{
-  //     $('#top-menu').removeAttr('style');
-  //     $('header').css('position', 'relative').removeAttr('class');
-  //     $('menu').removeClass('menuTrigger');
-  //     $('.top-bar').removeAttr('style');
-  //   }
-  // })
-  // if( $(document).width() < 992 ) {
-  //     if($(window).scrollTop() > 100){
-  //       $('header').addClass('enabled');
-  //     }
-  //     $('menu').addClass('menuTrigger');
-  //     MenuPosition();
-  //   }else{
-  //     $('#top-menu').removeAttr('style');
-  //     $('header').css('position', 'relative').removeAttr('class');
-  //     $('menu').removeClass('menuTrigger');
-  //     $('.top-bar').removeAttr('style');
-  //   }
-  function MenuPosition(){
-      $(document).on('click','.menuTrigger li', function() {
-        //$('.menuTrigger li').removeClass('active');
-        $('.mobile-menu').removeClass('rotate');
-        $('menu').slideUp();
-      });
-
-      $(window).scroll(function () {
-        var sc = $(window).scrollTop()
-        if (sc > 100) {
-            $("header").addClass("enabled");
-        } else {
-            $("header").removeClass("enabled");
-        }
-      });
-      $('header').removeAttr('style');
-  }
+  // Mobil menyuda havola bosilganda menyuni yopamiz
+  $('#top-menu a').click(function() {
+    if ($(window).width() < 992) {
+      $('.mobile-menu').removeClass('rotate');
+      $('menu').slideUp();
+    }
+  });
 
 	$(window).scroll(function () {
 	    var sc = $(window).scrollTop()
@@ -177,32 +127,42 @@ $(window).scroll(function(){
          $("[href='#"+id+"']").parent().addClass("active");
    //}
 });
-ymaps.ready(init);
+// Yandex xaritasi. Xarita bloki yoki API mavjud bo'lmasa, jimgina o'tkazib yuboriladi.
 var myMap;
 
-function init(){
-    myMap = new ymaps.Map ("map", {
-        center: [41.311151, 69.279737],
-        zoom: 16
-    });
+function initMap() {
+    var el = document.getElementById('map');
+    if (!el) { return; }
 
-    myMap.controls.remove('searchControl').remove('trafficControl').remove('geolocationControl');
+    var lat = parseFloat(el.dataset.lat) || 41.311151;
+    var lng = parseFloat(el.dataset.lng) || 69.279737;
+    var pin = el.dataset.pin || '';
+    var coords = [lat, lng];
+
+    myMap = new ymaps.Map('map', {
+        center: coords,
+        zoom: 16,
+        controls: ['zoomControl']
+    });
 
     myMap.behaviors.disable(['drag', 'scrollZoom']);
 
-    myPin = new ymaps.GeoObjectCollection({}, {
-      iconLayout: 'default#image',
-      iconImageHref: 'img/pointer23.svg',
-      iconImageSize: [60, 64],
-      iconImageOffset: [-25, -70]
-    });
+    var pinOptions = pin ? {
+        iconLayout: 'default#image',
+        iconImageHref: pin,
+        iconImageSize: [60, 64],
+        iconImageOffset: [-25, -70]
+    } : {};
 
-    myPlacemark1 = new ymaps.Placemark([41.311151, 69.279737], {
-      balloonContentHeader: '<img src="img/pointer23.svg" class="mc__logo">',
-    });
+    var collection = new ymaps.GeoObjectCollection({}, pinOptions);
+    collection.add(new ymaps.Placemark(coords, {
+        balloonContentHeader: 'TechService',
+        balloonContentBody: "Toshkent shahar"
+    }));
 
+    myMap.geoObjects.add(collection);
+}
 
-    myPin.add(myPlacemark1);
-
-    myMap.geoObjects.add(myPin);
+if (typeof ymaps !== 'undefined' && document.getElementById('map')) {
+    ymaps.ready(initMap);
 }

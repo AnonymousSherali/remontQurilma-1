@@ -7,6 +7,25 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+def load_dotenv(path):
+    """.env faylini o'qib, muhit o'zgaruvchilariga yozadi.
+
+    Tashqi kutubxonaga bog'liq emas. Allaqachon mavjud muhit o'zgaruvchilari
+    ustidan yozilmaydi — serverdagi haqiqiy sozlama har doim ustun turadi.
+    """
+    if not path.exists():
+        return
+    for raw_line in path.read_text(encoding='utf-8').splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+        key, _, value = line.partition('=')
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+load_dotenv(BASE_DIR / '.env')
+
 # --- Security ---
 # Production uchun: .env faylga ko'chiring yoki muhit o'zgaruvchisi qiling
 SECRET_KEY = os.environ.get(
@@ -27,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',  # narxlarni ajratuvchi bilan chiqarish uchun
     'repair_service',
 ]
 
@@ -96,3 +116,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # --- CSRF ---
 _csrf = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '')
 CSRF_TRUSTED_ORIGINS = [h.strip() for h in _csrf.split(',') if h.strip()]
+
+# --- Production xavfsizligi ---
+# Faqat DEBUG=False bo'lganda yoqiladi, shunda lokal ishlash buzilmaydi.
+if not DEBUG:
+    SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'True') == 'True'
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = int(os.environ.get('DJANGO_HSTS_SECONDS', 31536000))  # 1 yil
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    # Nginx/reverse-proxy orqasida HTTPS ni to'g'ri aniqlash uchun
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

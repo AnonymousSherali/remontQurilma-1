@@ -1,361 +1,295 @@
 /**
- * TechService - Optimizatsiyalar
- * Form validation va UX yaxshilash
+ * TechService - UX yaxshilashlar
+ *
+ * Diqqat: mobil menyu va menyu bo'yicha silliq skroll main.js da bajariladi.
+ * Bu yerda ularni takrorlamaymiz, aks holda hodisa ikki marta ishlov beriladi.
  */
 
-(function($) {
+(function ($) {
     'use strict';
 
-    // Toast notification system
-    const Toast = {
-        show: function(message, type = 'info', duration = 3000) {
-            const toast = $('<div class="toast ' + type + '">' + message + '</div>');
-            $('body').append(toast);
+    // ---------- Toast bildirishnomalari ----------
+    var Toast = {
+        show: function (message, type, duration) {
+            type = type || 'info';
+            duration = duration || 3500;
 
-            setTimeout(() => toast.addClass('show'), 10);
+            var $toast = $('<div/>', { 'class': 'toast ' + type, 'role': 'status', text: message });
+            $('body').append($toast);
 
-            setTimeout(() => {
-                toast.removeClass('show');
-                setTimeout(() => toast.remove(), 300);
+            // Brauzer boshlang'ich holatni chizishi uchun keyingi kadrni kutamiz
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () { $toast.addClass('show'); });
+            });
+
+            setTimeout(function () {
+                $toast.removeClass('show');
+                setTimeout(function () { $toast.remove(); }, 300);
             }, duration);
         },
-
-        success: function(message, duration) {
-            this.show(message, 'success', duration);
-        },
-
-        error: function(message, duration) {
-            this.show(message, 'error', duration);
-        },
-
-        info: function(message, duration) {
-            this.show(message, 'info', duration);
-        }
+        success: function (m, d) { this.show(m, 'success', d); },
+        error: function (m, d) { this.show(m, 'error', d); },
+        info: function (m, d) { this.show(m, 'info', d); }
     };
 
-    // Form validation
-    const FormValidator = {
-        // Telefon raqamni tekshirish
-        validatePhone: function(phone) {
-            // +998 (XX) XXX-XX-XX format
-            const phoneRegex = /^\+998\s?\(\d{2}\)\s?\d{3}-\d{2}-\d{2}$/;
-            return phoneRegex.test(phone);
+    // ---------- Forma validatsiyasi ----------
+    // Diqqat: bu faqat qulaylik uchun. Haqiqiy tekshiruv serverda (views.py).
+    var Validator = {
+        phoneRe: /^\+998\s?\(?\d{2}\)?\s?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/,
+        emailRe: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+
+        rules: {
+            name: function (v) {
+                return v.trim().length >= 2 ? null : 'Ism kamida 2 ta belgidan iborat bo\'lishi kerak';
+            },
+            phone: function (v) {
+                if (!v.trim()) { return 'Telefon raqamni kiriting'; }
+                return Validator.phoneRe.test(v.trim())
+                    ? null
+                    : 'Telefon raqamini to\'g\'ri formatda kiriting: +998 (XX) XXX-XX-XX';
+            },
+            email: function (v) {
+                if (!v.trim()) { return null; } // Email ixtiyoriy
+                return Validator.emailRe.test(v.trim()) ? null : 'Email manzilini to\'g\'ri formatda kiriting';
+            }
         },
 
-        // Emailni tekshirish
-        validateEmail: function(email) {
-            if (!email) return true; // Email ixtiyoriy
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        },
-
-        // Ismni tekshirish
-        validateName: function(name) {
-            return name && name.trim().length >= 2;
-        },
-
-        // Muammo tavsifini tekshirish
-        validateDescription: function(description) {
-            return description && description.trim().length >= 10;
-        },
-
-        // Inputga xato ko'rsatish
-        showError: function($input, message) {
-            $input.addClass('error').removeClass('success');
-
-            let $error = $input.next('.error-message');
-            if ($error.length === 0) {
+        showError: function ($input, message) {
+            $input.addClass('error').removeClass('success').attr('aria-invalid', 'true');
+            var $error = $input.siblings('.error-message');
+            if (!$error.length) {
                 $error = $('<div class="error-message"></div>');
                 $input.after($error);
             }
-
             $error.text(message).addClass('show');
         },
 
-        // Inputdan xatoni olib tashlash
-        clearError: function($input) {
-            $input.removeClass('error').addClass('success');
-            $input.next('.error-message').removeClass('show');
+        clearError: function ($input) {
+            $input.removeClass('error').attr('aria-invalid', null);
+            if ($input.val().trim()) { $input.addClass('success'); }
+            $input.siblings('.error-message').removeClass('show');
         },
 
-        // To'liq formani tekshirish
-        validateForm: function($form) {
-            let isValid = true;
-            const self = this;
-
-            // Ism tekshirish
-            const $name = $form.find('input[name="name"]');
-            if (!this.validateName($name.val())) {
-                this.showError($name, 'Iltimos, to\'liq ismingizni kiriting (kamida 2 ta harf)');
-                isValid = false;
-            } else {
-                this.clearError($name);
+        checkField: function ($input) {
+            var rule = this.rules[$input.attr('name')];
+            if (!rule) { return true; }
+            var message = rule($input.val() || '');
+            if (message) {
+                this.showError($input, message);
+                return false;
             }
+            this.clearError($input);
+            return true;
+        },
 
-            // Telefon tekshirish
-            const $phone = $form.find('input[name="phone"]');
-            if (!this.validatePhone($phone.val())) {
-                this.showError($phone, 'Telefon raqamni to\'g\'ri formatda kiriting: +998 (XX) XXX-XX-XX');
-                isValid = false;
-            } else {
-                this.clearError($phone);
-            }
-
-            // Email tekshirish (agar to'ldirilgan bo'lsa)
-            const $email = $form.find('input[name="email"]');
-            if ($email.length && $email.val() && !this.validateEmail($email.val())) {
-                this.showError($email, 'Email manzilni to\'g\'ri formatda kiriting');
-                isValid = false;
-            } else if ($email.length) {
-                this.clearError($email);
-            }
-
-            // Muammo tavsifi tekshirish
-            const $description = $form.find('textarea[name="problem_description"]');
-            if ($description.length && !this.validateDescription($description.val())) {
-                this.showError($description, 'Muammo haqida batafsil ma\'lumot bering (kamida 10 ta belgi)');
-                isValid = false;
-            } else if ($description.length) {
-                this.clearError($description);
-            }
-
-            return isValid;
+        checkForm: function ($form) {
+            var self = this;
+            var ok = true;
+            $form.find('[name]').each(function () {
+                if (!self.checkField($(this))) { ok = false; }
+            });
+            return ok;
         }
     };
 
-    // Form yuborish optimizatsiyasi
-    function setupFormSubmit() {
-        $('form').on('submit', function(e) {
-            const $form = $(this);
-            const $submitBtn = $form.find('button[type="submit"], .btn_my');
+    // ---------- AJAX orqali ariza yuborish ----------
+    // Har bir formaning yagona submit ishlovchisi. Inline onsubmit ishlatilmaydi.
+    function setupAjaxForms() {
+        $('.js-request-form').on('submit', function (event) {
+            event.preventDefault();
 
-            // Validatsiya
-            if (!FormValidator.validateForm($form)) {
-                e.preventDefault();
+            var $form = $(this);
+            var $button = $form.find('button[type="submit"]');
+            var $results = $form.find('.results');
+
+            if ($form.data('submitting')) { return; }
+
+            if (!Validator.checkForm($form)) {
                 Toast.error('Formadagi xatolarni to\'g\'rilang');
-                return false;
+                return;
             }
 
-            // Loading holatini ko'rsatish
-            $submitBtn.addClass('loading').prop('disabled', true);
-        });
-    }
+            $form.data('submitting', true);
+            $button.addClass('loading').prop('disabled', true);
+            $results.text('');
 
-    // Real-time validatsiya
-    function setupRealTimeValidation() {
-        // Ism uchun
-        $('input[name="name"]').on('blur', function() {
-            const $this = $(this);
-            if (!FormValidator.validateName($this.val())) {
-                FormValidator.showError($this, 'Iltimos, to\'liq ismingizni kiriting');
-            } else {
-                FormValidator.clearError($this);
-            }
-        });
+            // Yuborish tugagach — muvaffaqiyatli yoki xato — tugmani doim tiklaymiz
+            var release = function () {
+                $form.data('submitting', false);
+                $button.removeClass('loading').prop('disabled', false);
+            };
 
-        // Telefon uchun
-        $('input[name="phone"]').on('blur', function() {
-            const $this = $(this);
-            if (!FormValidator.validatePhone($this.val())) {
-                FormValidator.showError($this, 'Telefon raqamni to\'g\'ri formatda kiriting');
-            } else {
-                FormValidator.clearError($this);
-            }
-        });
-
-        // Email uchun
-        $('input[name="email"]').on('blur', function() {
-            const $this = $(this);
-            if ($this.val() && !FormValidator.validateEmail($this.val())) {
-                FormValidator.showError($this, 'Email manzilni to\'g\'ri formatda kiriting');
-            } else {
-                FormValidator.clearError($this);
-            }
-        });
-    }
-
-    // Lazy loading for images
-    function setupLazyLoading() {
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src;
-                        img.classList.add('loaded');
-                        observer.unobserve(img);
-                    }
-                });
-            });
-
-            document.querySelectorAll('img[data-src]').forEach(img => {
-                imageObserver.observe(img);
-            });
-        } else {
-            // Fallback for older browsers
-            $('img[data-src]').each(function() {
-                $(this).attr('src', $(this).data('src')).addClass('loaded');
-            });
-        }
-    }
-
-    // Smooth scroll to section
-    function setupSmoothScroll() {
-        $('a[href^="#"]').on('click', function(e) {
-            const target = $(this).attr('href');
-            if (target && target !== '#' && $(target).length) {
-                e.preventDefault();
-                const offset = $(window).width() > 992 ? $('.header').height() : 50;
-                $('html, body').animate({
-                    scrollTop: $(target).offset().top - offset
-                }, 500, 'swing');
-            }
-        });
-    }
-
-    // Improved mobile menu
-    function setupMobileMenu() {
-        $('.mobile-menu').on('click', function() {
-            const $menu = $('menu');
-            const isOpen = $menu.is(':visible');
-
-            if (isOpen) {
-                $menu.slideUp(300);
-            } else {
-                $menu.slideDown(300);
-            }
-        });
-
-        // Close menu when clicking on a link
-        $('menu a').on('click', function() {
-            if ($(window).width() < 992) {
-                $('menu').slideUp(300);
-                $('.mobile-menu').removeClass('rotate');
-            }
-        });
-    }
-
-    // Form input animation
-    function setupInputAnimations() {
-        $('.form-control').on('focus', function() {
-            $(this).parent().addClass('focused');
-        }).on('blur', function() {
-            if (!$(this).val()) {
-                $(this).parent().removeClass('focused');
-            }
-        });
-
-        // Check if inputs have values on page load
-        $('.form-control').each(function() {
-            if ($(this).val()) {
-                $(this).parent().addClass('focused');
-            }
-        });
-    }
-
-    // Prevent double submit
-    function preventDoubleSubmit() {
-        let submitted = false;
-        $('form').on('submit', function() {
-            if (submitted) {
-                return false;
-            }
-            submitted = true;
-
-            // Reset after 5 seconds (in case of error)
-            setTimeout(() => {
-                submitted = false;
-            }, 5000);
-        });
-    }
-
-    // Save form data to localStorage (draft)
-    function setupFormDraft() {
-        const STORAGE_KEY = 'techservice_form_draft';
-
-        // Load draft
-        function loadDraft() {
-            try {
-                const draft = localStorage.getItem(STORAGE_KEY);
-                if (draft) {
-                    const data = JSON.parse(draft);
-                    Object.keys(data).forEach(key => {
-                        $(`[name="${key}"]`).val(data[key]);
+            fetch($form.attr('action'), {
+                method: 'POST',
+                body: new FormData(this),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            })
+                .then(function (response) {
+                    return response.json().then(function (data) {
+                        return { ok: response.ok, data: data };
                     });
-                }
-            } catch (e) {
-                console.log('Draft yuklashda xato:', e);
-            }
-        }
+                })
+                .then(function (result) {
+                    release();
 
-        // Save draft
-        function saveDraft() {
-            try {
-                const data = {};
-                $('form').find('input, textarea, select').each(function() {
-                    const name = $(this).attr('name');
-                    if (name) {
-                        data[name] = $(this).val();
+                    if (result.ok && result.data.success) {
+                        onSuccess($form, result.data.message);
+                        return;
                     }
+
+                    // Server maydon bo'yicha xatolarni qaytardi
+                    if (result.data.errors) {
+                        $.each(result.data.errors, function (field, message) {
+                            var $input = $form.find('[name="' + field + '"]');
+                            if ($input.length) {
+                                Validator.showError($input, message);
+                            } else {
+                                $results.text(message);
+                            }
+                        });
+                        Toast.error('Formadagi xatolarni to\'g\'rilang');
+                        return;
+                    }
+
+                    var msg = result.data.message || 'Xatolik yuz berdi. Keyinroq urinib ko\'ring.';
+                    $results.text(msg);
+                    Toast.error(msg);
+                })
+                .catch(function (error) {
+                    release();
+                    console.error('Ariza yuborishda xatolik:', error);
+                    var msg = 'Tarmoq xatosi. Internetni tekshirib, qaytadan urinib ko\'ring.';
+                    $results.text(msg);
+                    Toast.error(msg);
                 });
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            } catch (e) {
-                console.log('Draft saqlashda xato:', e);
+        });
+    }
+
+    function onSuccess($form, message) {
+        clearDraft();
+        $form[0].reset();
+        $form.find('.form-control').removeClass('success error');
+        $form.find('.error-message').removeClass('show');
+
+        Toast.success(message || 'Arizangiz qabul qilindi!', 5000);
+
+        // Modal ichidan yuborilgan bo'lsa — modalni yopamiz
+        var $modal = $form.closest('.modal');
+        if ($modal.length) { $modal.modal('hide'); }
+
+        // Sahifadagi tasdiq oynasi
+        var $confirm = $('.myModal');
+        if ($confirm.length) {
+            $confirm.show();
+            setTimeout(function () { $confirm.hide(); }, 5000);
+        }
+    }
+
+    // ---------- Maydondan chiqqanda tekshirish ----------
+    function setupRealTimeValidation() {
+        $('.js-request-form').on('blur', '[name]', function () {
+            var $input = $(this);
+            if ($input.val() && $input.val().trim()) {
+                Validator.checkField($input);
             }
-        }
+        });
 
-        // Clear draft
-        function clearDraft() {
-            localStorage.removeItem(STORAGE_KEY);
-        }
+        // Foydalanuvchi tuzatishni boshlasa, xato belgisini olib tashlaymiz
+        $('.js-request-form').on('input', '.error', function () {
+            $(this).removeClass('error').siblings('.error-message').removeClass('show');
+        });
+    }
 
-        // Load on page load
+    // ---------- Forma qoralamasi (localStorage) ----------
+    var STORAGE_KEY = 'techservice_form_draft';
+    // Faqat bu maydonlar saqlanadi. CSRF tokeni hech qachon saqlanmaydi —
+    // eskirgan token keyingi yuborishni buzadi va uni saqlash xavfsiz emas.
+    var DRAFT_FIELDS = ['name', 'phone', 'email', 'problem_description'];
+
+    function loadDraft() {
+        try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) { return; }
+            var data = JSON.parse(raw);
+            DRAFT_FIELDS.forEach(function (field) {
+                if (data[field]) {
+                    $('.js-request-form').find('[name="' + field + '"]').val(data[field]);
+                }
+            });
+        } catch (e) {
+            console.warn('Qoralamani yuklab bo\'lmadi:', e);
+        }
+    }
+
+    function saveDraft() {
+        try {
+            var data = {};
+            DRAFT_FIELDS.forEach(function (field) {
+                var value = $('.js-request-form').find('[name="' + field + '"]')
+                    .filter(function () { return !!$(this).val(); })
+                    .first().val();
+                if (value) { data[field] = value; }
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.warn('Qoralamani saqlab bo\'lmadi:', e);
+        }
+    }
+
+    function clearDraft() {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* e'tiborsiz */ }
+    }
+
+    function setupFormDraft() {
         loadDraft();
-
-        // Save on input change
-        $('form').find('input, textarea, select').on('change', saveDraft);
-
-        // Clear on successful submit
-        $('form').on('submit', function() {
-            setTimeout(clearDraft, 1000);
+        $('.js-request-form').on('change', '[name]', function () {
+            if (DRAFT_FIELDS.indexOf($(this).attr('name')) !== -1) { saveDraft(); }
         });
     }
 
-    // Keyboard navigation improvements
+    // ---------- Rasmlarni kechiktirib yuklash ----------
+    function setupLazyLoading() {
+        var images = document.querySelectorAll('img[data-src]');
+        if (!images.length) { return; }
+
+        if (!('IntersectionObserver' in window)) {
+            images.forEach(function (img) {
+                img.src = img.dataset.src;
+                img.classList.add('loaded');
+            });
+            return;
+        }
+
+        var observer = new IntersectionObserver(function (entries, obs) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) { return; }
+                var img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.add('loaded');
+                obs.unobserve(img);
+            });
+        }, { rootMargin: '200px' });
+
+        images.forEach(function (img) { observer.observe(img); });
+    }
+
+    // ---------- Modalni Escape bilan yopish ----------
     function setupKeyboardNavigation() {
-        // ESC to close modal
-        $(document).on('keydown', function(e) {
-            if (e.key === 'Escape') {
-                $('.modal').modal('hide');
-                $('.myModal').hide();
-            }
-        });
-
-        // Enter to submit form (except in textarea)
-        $('form input').on('keydown', function(e) {
-            if (e.key === 'Enter' && !$(this).is('textarea')) {
-                e.preventDefault();
-                $(this).closest('form').submit();
-            }
+        $(document).on('keydown', function (event) {
+            if (event.key !== 'Escape') { return; }
+            $('.modal.in').modal('hide');
+            $('.myModal').hide();
         });
     }
 
-    // Initialize all optimizations
-    $(document).ready(function() {
-        setupFormSubmit();
+    $(document).ready(function () {
+        setupAjaxForms();
         setupRealTimeValidation();
-        setupLazyLoading();
-        setupSmoothScroll();
-        setupMobileMenu();
-        setupInputAnimations();
-        preventDoubleSubmit();
         setupFormDraft();
+        setupLazyLoading();
         setupKeyboardNavigation();
-
-        console.log('TechService optimizatsiyalari yuklandi ✓');
     });
 
-    // Make Toast available globally
     window.Toast = Toast;
-
 })(jQuery);

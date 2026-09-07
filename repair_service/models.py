@@ -76,6 +76,16 @@ class Testimonial(models.Model):
     def __str__(self):
         return f"{self.client_name}dan sharh ({self.rating}/5)"
 
+    @property
+    def stars_filled(self):
+        """Shablonda to'ldirilgan yulduzlarni chizish uchun"""
+        return range(self.rating)
+
+    @property
+    def stars_empty(self):
+        """Shablonda bo'sh yulduzlarni chizish uchun"""
+        return range(5 - self.rating)
+
 
 class Brand(models.Model):
     """Texnika brendlari modeli"""
