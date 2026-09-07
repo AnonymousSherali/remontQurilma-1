@@ -1,4 +1,4 @@
-{% load static %}
+{% load static humanize %}
 <!DOCTYPE html>
 <html lang="uz">
     <head>
@@ -85,16 +85,26 @@
                                 <p>Tez orada ko'rsatilgan raqam orqali<br>sizga menejerimiz bog'lanadi<br>Iltimos, aloqada bo'ling!</p>
                             </div>
                             <div class="form">
-                                <form method="POST" class="form-inline feedback" name="feedback" action="{% url 'repair_service:submit_request' %}" onsubmit="return submitForm(this);">
+                                {% if errors %}
+                                <div class="form-errors" role="alert">
+                                    <strong>Arizani yuborib bo'lmadi:</strong>
+                                    <ul>
+                                        {% for message in errors.values %}<li>{{ message }}</li>{% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                                <form method="POST" class="form-inline feedback js-request-form" name="feedback" action="{% url 'repair_service:submit_request' %}">
                                     {% csrf_token %}
                                     <div class="form-group">
-                                    <input type="text" class="form-control" name="name" placeholder="Ismingiz *" required="required">
+                                    <label for="hero-name" class="sr-only">Ismingiz</label>
+                                    <input type="text" id="hero-name" class="form-control" name="name" placeholder="Ismingiz *" required="required">
                                     </div>
                                     <div class="form-group btn-form">
-                                    <input type="text" class="form-control" name="phone" placeholder="Telefon raqamingiz *" required="required">
+                                    <label for="hero-phone" class="sr-only">Telefon raqamingiz</label>
+                                    <input type="tel" id="hero-phone" class="form-control" name="phone" placeholder="Telefon raqamingiz *" required="required">
                                     </div>
-                                    <button type="submit" class="btn_my" id="submit"><svg id="SvgjsSvg1018" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="20" height="17" viewBox="0 0 20 17"><path id="SvgjsPath1020" d="M983 554.958L975.222 547.374V551.707C967.444 552.7909999999999 964.111 558.207 963 563.624C965.777 559.832 969.666 558.099 975.222 558.099V562.541Z " fill="#ffffff" fill-opacity="1" transform="matrix(1,0,0,1,-963,-547)"></path></svg></button>
-                                    <div class="results" style="color:red; font-size:12px;"></div>
+                                    <button type="submit" class="btn_my"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="20" height="17" viewBox="0 0 20 17" aria-hidden="true"><path d="M983 554.958L975.222 547.374V551.707C967.444 552.7909999999999 964.111 558.207 963 563.624C965.777 559.832 969.666 558.099 975.222 558.099V562.541Z " fill="#ffffff" fill-opacity="1" transform="matrix(1,0,0,1,-963,-547)"></path></svg></button>
+                                    <div class="results" role="alert" style="color:red; font-size:12px;"></div>
                                 </form>
 
                             </div>
@@ -116,6 +126,16 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for service in services %}
+                            <tr>
+                                <td>{{ service.name }}</td>
+                                {% if service.price_from %}
+                                <td>{{ service.price_from|floatformat:0|intcomma }} so'mdan</td>
+                                {% else %}
+                                <td class="text-uppercase">Bepul</td>
+                                {% endif %}
+                            </tr>
+                            {% empty %}
                             <tr>
                                 <td>Ustani chaqirish</td>
                                 <td class="text-uppercase">Bepul</td>
@@ -140,6 +160,7 @@
                                 <td>Kapital ta'mir</td>
                                 <td>300,000 so'mdan</td>
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -359,6 +380,12 @@
             <div class="container">
                 <div class="title"><span>Biz Ishlayotgan Brendlar</span></div>
                 <ul>
+                    {% for brand in brands %}
+                    <li>
+                        {% if brand.logo %}<img src="{{ brand.logo.url }}" alt="{{ brand.name }}">{% endif %}
+                        <p class="text-center">{{ brand.name }}</p>
+                    </li>
+                    {% empty %}
                     <li>
                         <img src="{% static 'img/brand1.png' %}" alt="brand">
                         <p class="text-center">Zanussi</p>
@@ -467,6 +494,7 @@
                         <img src="{% static 'img/brand27.png' %}" alt="brand">
                         <p class="text-center">AEG</p>
                     </li>
+                    {% endfor %}
                 </ul>
                 <button class="btn_my" data-toggle="modal" data-target="#popup">Ustani chaqirish<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
             </div>
@@ -474,7 +502,25 @@
         <div class="users" id="mijoz_sharhlari">
             <div class="container">
                 <div class="title"><span>Mijozlarimiz Sharhlari</span></div>
-                <p style="text-align: center; padding: 40px 0; font-size: 18px;">Mijozlar sharhlarini bu yerda ko'rishingiz mumkin</p>
+                <div class="row testimonial-list">
+                    {% for testimonial in testimonials %}
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="testimonial-card">
+                            <div class="testimonial-stars" aria-label="Reyting: {{ testimonial.rating }} / 5">
+                                {% for _ in testimonial.stars_filled %}<span class="star on">&#9733;</span>{% endfor %}
+                                {% for _ in testimonial.stars_empty %}<span class="star">&#9734;</span>{% endfor %}
+                            </div>
+                            <p class="testimonial-text">{{ testimonial.text }}</p>
+                            <p class="testimonial-author">{{ testimonial.client_name }}</p>
+                            <p class="testimonial-date">{{ testimonial.created_at|date:"d.m.Y" }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-xs-12">
+                        <p class="testimonial-placeholder">Hozircha sharhlar yo'q. Birinchi bo'lib fikringizni qoldiring!</p>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div><!--users-->
 
@@ -482,19 +528,23 @@
             <div class="container">
                 <div class="title"><span>Savollar qoldimi?</span></div>
                 <p class="consultation_text">Saytda shaklni to'ldiring yoki darhol qo'ng'iroq qiling: +998 90 123-45-67.<br>Mutaxassislarimiz sizga maslahat berishadi va barcha kerakli ma'lumotlarni taqdim etishadi!</p>
-                <form method="POST" class="global feedback2" name="feedback" action="{% url 'repair_service:submit_request' %}" onsubmit="return submitForm(this);">
+                <form method="POST" class="global feedback2 js-request-form" name="feedback" action="{% url 'repair_service:submit_request' %}">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="exampleInputname">Ismingiz<span>*</span></label>
-                        <input type="text" class="form-control" name="name" required="required">
+                        <label for="consult-name">Ismingiz<span>*</span></label>
+                        <input type="text" id="consult-name" class="form-control" name="name" required="required">
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputtel">Telefon raqamingiz<span>*</span></label>
-                        <input type="text" class="form-control" name="phone" required="required">
+                        <label for="consult-phone">Telefon raqamingiz<span>*</span></label>
+                        <input type="tel" id="consult-phone" class="form-control" name="phone" required="required">
+                    </div>
+                    <div class="form-group">
+                        <label for="consult-problem">Muammoni qisqacha tasvirlab bering</label>
+                        <textarea id="consult-problem" class="form-control" name="problem_description" rows="3" placeholder="Masalan: mashina suvni chiqarmayapti"></textarea>
                     </div>
                     <div class="last">
-                        <p class="results"></p>
-                        <button type="submit" class="btn_my" id="submit">Yuborish<span><img src="{% static 'img/send.svg' %}" alt=""></span></button>
+                        <p class="results" role="alert"></p>
+                        <button type="submit" class="btn_my">Yuborish<span><img src="{% static 'img/send.svg' %}" alt=""></span></button>
                     </div>
                 </form>
             </div>
@@ -522,7 +572,11 @@
                         </div><!--info-->
                     </div>
                 <div class="col-md-8">
-                    <div id="map" style="width: 100%; height: 400px; border-radius: 10px; overflow: hidden;"></div>
+                    <div id="map"
+                         data-pin="{% static 'img/pointer2.svg' %}"
+                         data-lat="41.311151"
+                         data-lng="69.279737"
+                         style="width: 100%; height: 400px; border-radius: 10px; overflow: hidden;"></div>
                 </div>
                 </div>
                 <div class="copyright">
@@ -540,19 +594,23 @@
                   </div>
                 <div class="modal-body text-center">
                     <h2>Usta chaqirish/Konsultatsiya</h2>
-                    <form method="POST" class="global feedback3" name="feedback" action="{% url 'repair_service:submit_request' %}" onsubmit="return submitForm(this);">
+                    <form method="POST" class="global feedback3 js-request-form" name="feedback" action="{% url 'repair_service:submit_request' %}">
                         {% csrf_token %}
                         <div class="form-group">
-                            <label for="exampleInputname">Ismingiz<span>*</span></label>
-                            <input type="text" class="form-control" name="name" required="required">
+                            <label for="popup-name">Ismingiz<span>*</span></label>
+                            <input type="text" id="popup-name" class="form-control" name="name" required="required">
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputtel">Telefon raqamingiz<span>*</span></label>
-                            <input type="text" class="form-control" name="phone" required="required">
+                            <label for="popup-phone">Telefon raqamingiz<span>*</span></label>
+                            <input type="tel" id="popup-phone" class="form-control" name="phone" required="required">
+                        </div>
+                        <div class="form-group">
+                            <label for="popup-problem">Muammoni qisqacha tasvirlab bering</label>
+                            <textarea id="popup-problem" class="form-control" name="problem_description" rows="3" placeholder="Masalan: mashina suvni chiqarmayapti"></textarea>
                         </div>
                         <div class="last">
-                            <p class="results"></p>
-                            <button type="submit" class="btn_my" id="submit">Yuborish<span><img src="{% static 'img/send.svg' %}" alt=""></span></button>
+                            <p class="results" role="alert"></p>
+                            <button type="submit" class="btn_my">Yuborish<span><img src="{% static 'img/send.svg' %}" alt=""></span></button>
                         </div>
                     </form>
                 </div>
@@ -560,44 +618,6 @@
         </div>
     </div>
 
-    <script type="text/javascript">
-        function submitForm(form) {
-            var formData = new FormData(form);
-
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    var myModal = document.querySelector('.myModal');
-                    if (myModal) {
-                        myModal.style.display = 'block';
-                        setTimeout(function() {
-                            myModal.style.display = 'none';
-                        }, 5000);
-                    }
-                    form.reset();
-                    var modal = document.querySelector('#popup');
-                    if (modal && typeof $ !== 'undefined') {
-                        $(modal).modal('hide');
-                    }
-                } else {
-                    alert('Xatolik: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Xatolik:', error);
-                alert('Shaklni yuborishda xatolik yuz berdi');
-            });
-
-            return false;
-        }
-    </script>
     <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/wow.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.maskedinput.js' %}"></script>

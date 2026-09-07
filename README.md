@@ -32,11 +32,14 @@ remontQurilma-1/
 │   └── asgi.py           # ASGI konfiguratsiyasi
 ├── repair_service/        # Asosiy dastur (app)
 │   ├── migrations/       # Ma'lumotlar bazasi migratsiyalari
-│   ├── __init__.py
+│   ├── management/
+│   │   └── commands/
+│   │       └── seed_demo.py   # Namunaviy ma'lumot yuklash buyrug'i
 │   ├── models.py         # Ma'lumotlar modellari
-│   ├── views.py          # Ko'rinishlar (views)
+│   ├── views.py          # Ko'rinishlar + server validatsiyasi
 │   ├── urls.py           # App URL marshrutlari
 │   ├── admin.py          # Admin panel sozlamalari
+│   ├── tests.py          # Testlar (21 ta)
 │   └── apps.py           # App konfiguratsiyasi
 ├── templates/             # HTML shablonlar
 │   ├── index.html        # Asosiy sahifa
@@ -45,16 +48,18 @@ remontQurilma-1/
 │   ├── css/              # CSS stillar
 │   │   ├── bootstrap.min.css
 │   │   ├── style.css
-│   │   └── responsive.css
+│   │   ├── responsive.css
+│   │   └── optimizations.css  # Sharh kartochkalari, xato uslublari, UX
 │   ├── js/               # JavaScript fayllar
-│   │   ├── jquery.min.js
+│   │   ├── jquery.js
 │   │   ├── bootstrap.min.js
-│   │   ├── main.js
-│   │   └── boshqalar...
+│   │   ├── main.js            # Menyu, skroll, Yandex xarita
+│   │   └── optimizations.js   # AJAX forma, validatsiya, toast
 │   └── img/              # Rasmlar
 ├── media/                 # Yuklangan fayllar (logotiplar)
 ├── manage.py             # Django boshqaruv skripti
 ├── requirements.txt      # Python bog'liqliklar
+├── .env.example          # Muhit sozlamalari namunasi
 └── README.md            # Ushbu fayl
 ```
 
@@ -98,7 +103,17 @@ Ko'rsatmalarga rioya qiling va admin hisobini yarating:
 - Email: administrator@techservice.uz
 - Password: xavfsiz parol kiriting
 
-### 5-qadam: Development serverni ishga tushiring
+### 5-qadam: Namunaviy ma'lumotlarni yuklang (ixtiyoriy)
+
+```bash
+python manage.py seed_demo
+```
+
+Bu buyruq bazaga 6 ta xizmat, 16 ta brend va 6 ta sharh qo'shadi — sayt darhol
+to'ldirilgan holda ko'rinadi. Takroran ishga tushirsangiz nusxa yaratmaydi.
+Eskilarini o'chirib qayta yuklash uchun: `python manage.py seed_demo --reset`
+
+### 6-qadam: Development serverni ishga tushiring
 
 ```bash
 python manage.py runserver
@@ -155,6 +170,31 @@ Admin panel orqali quyidagilarni boshqarish mumkin:
 - Logotip yuklash
 - Ko'rsatish tartibini sozlash
 - Faol/nofaol qilish
+
+## Shablon va backend bog'lanishi
+
+Sayt kontenti bazadan olinadi, lekin **baza bo'sh bo'lsa asl dizayndagi
+ma'lumotlar ko'rinib turadi**. Bu `{% for %} ... {% empty %} ... {% endfor %}`
+orqali amalga oshirilgan:
+
+| Bo'lim | Manba | Baza bo'sh bo'lganda |
+|---|---|---|
+| Narxlar jadvali | `Service` (faol) | Asl 6 qatorli narxlar |
+| Brendlar | `Brand` (faol) | Asl 27 ta brend logotipi |
+| Mijozlar sharhlari | `Testimonial` (nashr qilingan) | "Hozircha sharhlar yo'q" xabari |
+
+Ya'ni admin paneldan xizmat yoki brend qo'shsangiz, u darhol saytda paydo
+bo'ladi va statik ro'yxat o'rnini egallaydi.
+
+## Testlar
+
+```bash
+python manage.py test repair_service
+```
+
+21 ta test qamrab oladi: sahifa ochilishi, bazadan kontent chiqishi, faol
+bo'lmagan yozuvlar yashirilishi, forma validatsiyasi (ism, telefon, email),
+AJAX va AJAX'siz yuborish, `seed_demo` buyrug'i.
 
 ## Ma'lumotlar bazasi modellari
 
@@ -260,7 +300,23 @@ DJANGO_CSRF_TRUSTED_ORIGINS=https://techservice.uz
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-### 3. PostgreSQL ma'lumotlar bazasini sozlang (tavsiya etiladi)
+`.env` fayli `config/settings.py` tomonidan avtomatik o'qiladi — qo'shimcha
+kutubxona kerak emas. Serverda haqiqiy muhit o'zgaruvchisi o'rnatilgan bo'lsa,
+u `.env` dagi qiymatdan ustun turadi.
+
+### 3. Xavfsizlik sozlamalari avtomatik yoqiladi
+
+`DJANGO_DEBUG=False` bo'lganda quyidagilar o'zi yoqiladi:
+HTTPS'ga yo'naltirish, HSTS (1 yil), `Secure` cookie'lar, `X-Frame-Options: DENY`,
+`nosniff` va reverse-proxy orqasida HTTPS ni to'g'ri aniqlash.
+
+Tekshirish:
+
+```bash
+python manage.py check --deploy
+```
+
+### 4. PostgreSQL ma'lumotlar bazasini sozlang (tavsiya etiladi)
 
 ```python
 DATABASES = {
@@ -275,20 +331,20 @@ DATABASES = {
 }
 ```
 
-### 4. Statik fayllarni to'plang
+### 5. Statik fayllarni to'plang
 
 ```bash
 python manage.py collectstatic
 ```
 
-### 5. WSGI server o'rnating (Gunicorn)
+### 6. WSGI server o'rnating (Gunicorn)
 
 ```bash
 pip install gunicorn
 gunicorn config.wsgi:application --bind 0.0.0.0:8000
 ```
 
-### 6. Nginx konfiguratsiyasi (namuna)
+### 7. Nginx konfiguratsiyasi (namuna)
 
 ```nginx
 server {

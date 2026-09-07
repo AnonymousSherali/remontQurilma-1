@@ -85,7 +85,7 @@ img {
 }
 
 .btn-history-back:hover > span {
-	background: url(../img/bg_btn_hover.png);
+	background: #1f7a0a;
 }
 
 .btn_my {
@@ -116,7 +116,7 @@ img {
   border-bottom-right-radius: 5px;
 }
 .btn_my:hover span {
-  background: url(../img/bg_btn_hover.png);
+  background: #1f7a0a;
 }
 .btn_my:hover {
   color: #fff;
@@ -477,7 +477,6 @@ html.send_done:before {
   height: 6px;
   display: block;
   position: absolute;
-  background: url(../img/arrow_down.png);
 }
 #popup .global input,
 #popup .global textarea,
@@ -1200,7 +1199,6 @@ a:focus {
   height: 6px;
   display: block;
   position: absolute;
-  background: url(../img/arrow_down.png);
 }
 .consultation .global label {
   margin-bottom: 9px;
