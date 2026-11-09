@@ -1,0 +1,112 @@
+{% load static %}<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="format-detection" content="telephone=no">
+  <title>{% block title %}{{ SITE.name }} — uyingiz uchun ishonchli ustalar{% endblock %}</title>
+  <meta name="description" content="{% block description %}Santexnik, elektrik, kir yuvish mashinasi va maishiy texnika ustalari. Eng yaqin tekshirilgan ustani toping, baholarini ko'ring va ariza qoldiring.{% endblock %}">
+  <meta name="theme-color" content="#059669">
+  <meta property="og:title" content="{% block og_title %}{{ SITE.name }} — ishonchli ustalar{% endblock %}">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}has-mobile-cta{% endblock %}">
+  <a class="skip-link" href="#main">Asosiy mazmunga o'tish</a>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="logo" href="{% url 'repair_service:index' %}" aria-label="{{ SITE.name }} — bosh sahifa">
+        <span class="logo__mark" aria-hidden="true">🛠</span>{{ SITE.name }}
+      </a>
+      <button class="btn btn--ghost nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menyu">☰</button>
+      <nav class="nav__links" id="nav-links" aria-label="Asosiy menyu">
+        {% url 'masters:list' as masters_url %}
+        <a href="{{ masters_url }}" {% if request.path == masters_url %}aria-current="page"{% endif %}>Ustalar</a>
+        <a href="{% url 'repair_service:index' %}#qanday-ishlaydi">Qanday ishlaydi</a>
+        <a href="{% url 'repair_service:index' %}#narxlar">Narxlar</a>
+        {% if user.is_authenticated and user.master %}
+          <a href="{% url 'masters:dashboard' %}">Kabinet</a>
+        {% elif user.is_authenticated and user.is_staff %}
+          <a href="{% url 'admin:index' %}">Admin</a>
+        {% else %}
+          <a href="{% url 'masters:register' %}">Usta bo'lish</a>
+          <a href="{% url 'masters:login' %}">Kirish</a>
+        {% endif %}
+        <a class="btn btn--primary btn--sm" href="tel:{{ SITE.phone }}">📞 {{ SITE.phone_display }}</a>
+      </nav>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="container messages" role="status">
+      {% for message in messages %}
+        <div class="alert alert--{% if message.tags == 'error' %}error{% elif message.tags %}{{ message.tags }}{% else %}info{% endif %}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main id="main">{% block content %}{% endblock %}</main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="{% url 'repair_service:index' %}"><span class="logo__mark" aria-hidden="true">🛠</span>{{ SITE.name }}</a>
+          <p class="muted small" style="margin-top:1rem">Uyingizdagi nosozliklar uchun tekshirilgan ustalar. Faqat haqiqiy mijozlar qoldirgan baholar.</p>
+        </div>
+        <div>
+          <h4>Mijozlarga</h4>
+          <ul>
+            <li><a href="{% url 'masters:list' %}">Usta topish</a></li>
+            <li><a href="{% url 'repair_service:index' %}#ariza">Ariza qoldirish</a></li>
+            <li><a href="{% url 'repair_service:index' %}#narxlar">Narxlar</a></li>
+            <li><a href="{% url 'repair_service:index' %}#savollar">Savollar</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Ustalarga</h4>
+          <ul>
+            <li><a href="{% url 'masters:register' %}">Ro'yxatdan o'tish</a></li>
+            <li><a href="{% url 'masters:login' %}">Kabinetga kirish</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Bog'lanish</h4>
+          <ul>
+            <li><a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></li>
+            {% if SITE.telegram %}<li><a href="https://t.me/{{ SITE.telegram }}" rel="noopener">Telegram: @{{ SITE.telegram }}</a></li>{% endif %}
+            <li><a href="mailto:{{ SITE.email }}">{{ SITE.email }}</a></li>
+            <li class="muted">{{ SITE.address }}</li>
+            <li class="muted">{{ SITE.hours }}</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© {% now "Y" %} {{ SITE.name }}. Barcha huquqlar himoyalangan.</span>
+        <span>Shaxsiy ma'lumotlar faqat ariza bo'yicha bog'lanish uchun ishlatiladi.</span>
+      </div>
+    </div>
+  </footer>
+
+  {% block mobile_cta %}
+  <div class="mobile-cta">
+    <a class="btn" href="tel:{{ SITE.phone }}">📞 Qo'ng'iroq</a>
+    <a class="btn btn--primary" href="{% url 'masters:list' %}">Usta topish</a>
+  </div>
+  {% endblock %}
+
+  <div class="toast-stack" aria-live="polite"></div>
+
+  <script>
+    window.TS_MAPS_URL = "https://api-maps.yandex.ru/2.1/?lang=uz_UZ{% if YANDEX_MAPS_API_KEY %}&apikey={{ YANDEX_MAPS_API_KEY|urlencode }}{% endif %}";
+  </script>
+  <script src="{% static 'js/app.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,7 +1,9 @@
-# Asosiy bog'liqliklar
-Django==4.2.11
-Pillow==11.1.0
+# Django 5.2 — LTS (xavfsizlik yangilanishlari 2028-yil apreligacha).
+# Avvalgi 4.2 LTS ning qo'llab-quvvatlanishi 2026-yil aprelida tugagan.
+Django>=5.2,<5.3
+Pillow>=11.0
+django-unfold==0.91.0   # zamonaviy admin dizayni
 
 # Production uchun (ixtiyoriy)
-# gunicorn==21.2.0
-# psycopg2-binary==2.9.9
+# gunicorn==23.0.0
+# psycopg[binary]==3.2.3

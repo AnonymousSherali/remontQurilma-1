@@ -1,627 +1,256 @@
-{% load static humanize %}
-<!DOCTYPE html>
-<html lang="uz">
-    <head>
-    <meta charset="UTF-8">
-    <meta name="format-detection" content="telephone=no">
-    <title>Kir yuvish mashinalarini ta'mirlash | TechService</title>
-    <meta name="description" content="Kir yuvish mashinalarini professional ta'mirlash xizmati. Haftaning 7 kuni. Tez va sifatli xizmat. Qo'ng'iroq qiling!">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.5">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/animate.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/optimizations.css' %}">
-    <link rel="shortcut icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,500,500i,700,700i&amp;subset=cyrillic,cyrillic-ext,latin-ext" rel="stylesheet">
-    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
-    <script src="https://api-maps.yandex.ru/2.1/?lang=uz_UZ" type="text/javascript"></script>
-    </head>
-    <body>
-    <div class="header">
-        <div class="container">
-            <div class="top-bar row">
-                <div class="col-md-3 col-sm-3  col-xs-3 logo">
-                    <img src="{% static 'img/logo.png' %}" alt="logo">
-                </div>
-                <div class="col-md-3 col-sm-3 col-xs-3 support">
-                    <img src="{% static 'img/support.svg' %}" alt="support">
-                    <p>Dam olish kunlarisiz ishlaymiz</p>
-                    <a href="tel:+998901234567"><p>+998 90 123-45-67</p></a>
-                    <span class="header__address">Toshkent shahar</span>
-                </div>
-                <div class="col-md-3 col-sm-3 col-xs-3 whatsapp">
-                    <img src="{% static 'img/whatsapptelegram.png' %}" alt="whatsapp">
-                    <p>WhatsApp/Telegram</p>
-                    <p>+998 90 123-45-67</p>
-                </div>
-                <div class="col-md-3 col-sm-3 col-xs-3 last">
-                    <button class="btn_my" data-toggle="modal" data-target="#popup">Ustani chaqirish<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
-                </div>
-            </div>
-        </div>
-        <header>
-            <div class="container">
-                <div class="mobile-menu example5"><span></span></div>
-                <menu id="top-menu">
-                    <li><a href="#muammolar">Muammolar</a></li>
-                    <li><a href="#afzalliklar">Afzalliklar</a></li>
-                    <li><a href="#xizmatlar">Xizmatlar</a></li>
-                    <li><a href="#ish_bosqichlari">Ish bosqichlari</a></li>
-                    <li><a href="#brendlar">Brendlar</a></li>
-                    <li><a href="#mijoz_sharhlari">Mijozlar sharhlari</a></li>
-                    <li class=""><a href="#narxlar">Narxlar</a></li>
-                    <li><a href="#konsultatsiya">Konsultatsiya</a></li>
-                    <li><a href="#kontaktlar">Kontaktlar</a></li>
-                </menu>
-            </div>
-    </header>
-    </div>
-    <div class="main-content">
-        <div class="bg">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="inside forget_list">
-                            <p>Biz 50 000 dan ortiq kir yuvish mashinalarini ta'mirladik.</p>
-                            <h2>Nega bizga ishonishadi:</h2>
-                            <ul>
-                                <li><span>Faqat asl, brendli ehtiyot qismlardan foydalanamiz</span></li>
-                                <li><span>Murojaat kunining o'zida ta'mirlaymiz</span></li>
-                                <li><span>Shaharning barcha hududlariga chiqamiz</span></li>
-                                <li><span>10 yildan ortiq tajribaga ega professional ustalar</span></li>
-                                <li><span>Ta'mirlash holatida bepul chiqish va diagnostika</span></li>
-                                <li><span>Halol ishlaymiz va mijozlarimizga hurmat bilan munosabatda bo'lamiz</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-7">
-                        <div class="inside">
-                            <h1 class="title">KIR YUVISH MASHINASINI UY SHAROITIDA TA'MIRLASH</h1>
-                            <p>Sizning kir yuvish mashinangiz ishdan chiqdimi? Biz tuzatamiz! Telefon raqamingizni qoldiring va operatorimiz siz bilan bog'lanadi.</p>
-                            <div class="myModal">
-                                <button type="button" class="close"><img src="{% static 'img/close.svg' %}" alt=""></button>
-                                <h4>Sizning so'rovingiz<br>muvaffaqiyatli yuborildi</h4>
-                                <p>Tez orada ko'rsatilgan raqam orqali<br>sizga menejerimiz bog'lanadi<br>Iltimos, aloqada bo'ling!</p>
-                            </div>
-                            <div class="form">
-                                {% if errors %}
-                                <div class="form-errors" role="alert">
-                                    <strong>Arizani yuborib bo'lmadi:</strong>
-                                    <ul>
-                                        {% for message in errors.values %}<li>{{ message }}</li>{% endfor %}
-                                    </ul>
-                                </div>
-                                {% endif %}
-                                <form method="POST" class="form-inline feedback js-request-form" name="feedback" action="{% url 'repair_service:submit_request' %}">
-                                    {% csrf_token %}
-                                    <div class="form-group">
-                                    <label for="hero-name" class="sr-only">Ismingiz</label>
-                                    <input type="text" id="hero-name" class="form-control" name="name" placeholder="Ismingiz *" required="required">
-                                    </div>
-                                    <div class="form-group btn-form">
-                                    <label for="hero-phone" class="sr-only">Telefon raqamingiz</label>
-                                    <input type="tel" id="hero-phone" class="form-control" name="phone" placeholder="Telefon raqamingiz *" required="required">
-                                    </div>
-                                    <button type="submit" class="btn_my"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="20" height="17" viewBox="0 0 20 17" aria-hidden="true"><path d="M983 554.958L975.222 547.374V551.707C967.444 552.7909999999999 964.111 558.207 963 563.624C965.777 559.832 969.666 558.099 975.222 558.099V562.541Z " fill="#ffffff" fill-opacity="1" transform="matrix(1,0,0,1,-963,-547)"></path></svg></button>
-                                    <div class="results" role="alert" style="color:red; font-size:12px;"></div>
-                                </form>
+{% extends "base.html" %}
+{% load static humanize ui %}
 
-                            </div>
-                            <h6>Ta'mirlash holatida chiqish va diagnostika - bepul.</h6>
-                        </div><!--inside-->
-                    </div>
-                </div>
-            </div>
-        </div><!--bg-->
-        <div class="service" id="narxlar">
-            <div class="container active">
-                <div class="title"><span>Xizmatlar Narxi</span></div>
-                <div class="left">
-                    <table>
-                        <thead>
-                            <tr>
-                                <td>Ta'mirlash turi</td>
-                                <td>Narxi</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for service in services %}
-                            <tr>
-                                <td>{{ service.name }}</td>
-                                {% if service.price_from %}
-                                <td>{{ service.price_from|floatformat:0|intcomma }} so'mdan</td>
-                                {% else %}
-                                <td class="text-uppercase">Bepul</td>
-                                {% endif %}
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td>Ustani chaqirish</td>
-                                <td class="text-uppercase">Bepul</td>
-                            </tr>
-                            <tr>
-                                <td>Kir yuvish mashinasini diagnostika qilish</td>
-                                <td class="text-uppercase">Bepul</td>
-                            </tr>
-                            <tr>
-                                <td>Diagnostika (ta'mirlamasdan)</td>
-                                <td>50,000 so'm</td>
-                            </tr>
-                            <tr>
-                                <td>Kichik ta'mir (bitta detal almashtirish)</td>
-                                <td>100,000 so'mdan</td>
-                            </tr>
-                            <tr>
-                                <td>O'rtacha ta'mir</td>
-                                <td>200,000 so'mdan</td>
-                            </tr>
-                            <tr>
-                                <td>Kapital ta'mir</td>
-                                <td>300,000 so'mdan</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="right">
-                    <img src="{% static 'img/tools.jpg' %}" alt="tools">
-                </div>
-                <a href="#" class="btn_my" data-toggle="modal" data-target="#popup">Ustani chaqirish<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></a>
-            </div>
-        </div><!--service-->
-        <div class="breaking_machine" id="muammolar">
-            <div class="container">
-                <div class="title"><span>NEGA KIR YUVISH MASHINASI ISHDAN CHIQADI?</span></div>
-                <div class="row">
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="breaking_item">
-                            <figure>
-                                <img src="{% static 'img/settings.svg' %}" alt="item1">
-                                <h3>Asl bo'lmagan ehtiyot qismlardan foydalanish</h3>
-                            </figure>
-                            <p>Sifatsiz detaller vaqtinchalik masalani hal qilishi mumkin, lekin ertami-kechmi muammo qaytib keladi va bu safar yanada kattaroq. Sifatli xizmat faqat asl ehtiyot qismlar bilan ko'rsatilishi mumkin.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="breaking_item">
-                            <figure>
-                                <img src="{% static 'img/car-repair.svg' %}" alt="item2">
-                                <h3>Noto'g'ri diagnostika</h3>
-                            </figure>
-                            <p>Noto'g'ri diagnostika pul va vaqtni yo'qotishga olib keladi. Bundan tashqari, noto'g'ri detal ta'mirlash muammoni yanada kuchaytirishı mumkin. Xatolardan qochishning yagona yo'li - professional ustalarga ishonish.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="breaking_item">
-                            <figure>
-                                <img src="{% static 'img/user.svg' %}" alt="item3">
-                                <h3>Tajribasiz mutaxassislar jalb etish</h3>
-                            </figure>
-                            <p>O'z-o'zini o'rgatgan va yangi boshlanuvchilar xizmati arzonroq bo'lishi mumkin, ammo bu shubhali tejamkorlik. Ko'pincha bunday mutaxassislarning ishi oqibatlarini tajribali ustalar tuzatishi kerak bo'ladi.</p>
-                        </div>
-                    </div>
-                </div>
-                <span class="breaking_bottom_span">Professionallardan bir marta xizmat buyurtma qilish yaxshi, qolgani esa pul yo'qotish va sifatsiz ishning oqibatlarini bartaraf etish!</span>
-                <button class="btn_my" data-toggle="modal" data-target="#popup">Ustani chaqirish<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
-            </div>
-        </div>
-        <div class="advantages" id="afzalliklar">
-            <div class="container">
-                <div class="title"><span>BIZGA MUROJAAT QILISHNING 6 SABABI</span></div>
-                <div class="row">
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="inside">
-                            <figure>
-                                <img src="{% static 'img/employer.svg' %}" alt="employer">
-                                <p>Ta'mirlash sifatiga ishonch hosil qiling</p>
-                            </figure>
-                            <p>Nosozliklarni ixtisoslashgan servis markazlarida o'qitilgan, 10 yildan ortiq tajribaga ega ustalar bartaraf etadi. Bizning ustalarimiz har doim nosozlik sababini aniq aniqlaydi. Texnikani faqat asl ehtiyot qismlardan foydalanib ta'mirlaymiz. Bularning barchasi yuqori sifatli ta'mirlashni kafolatlaydi.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="inside">
-                            <figure>
-                                <img src="{% static 'img/clock.svg' %}" alt="clock">
-                                <p>Ustani qulay vaqtda, hatto kechqurun va dam olish kunlari ham chaqiring</p>
-                            </figure>
-                            <p>Usta murojaat kunida yoki siz uchun qulay bo'lgan boshqa kunda keladi. Biz dam olish kunlarisiz, 8:00 dan 22:00 gacha ishlaymiz.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="inside">
-                            <figure>
-                                <img src="{% static 'img/van.svg' %}" alt="van">
-                                <p>Ta'mirlangan mashinadan murojaat kunining o'zida foydalaning</p>
-                            </figure>
-                            <p>Ehtiyot qismlarni alohida buyurtma qilish va ularni kutishingiz shart emas. Bizning ustalarimiz nosozliklarni bartaraf etish uchun zarur bo'lgan hamma narsa bilan to'liq jihozlangan. Mashinalarning 99% ini birinchi chiqishda ta'mirlaymiz.</p>
-                        </div>
-                    </div>
+{% block content %}
+<section class="hero">
+  <div class="container hero__grid">
+    <div>
+      <span class="eyebrow">🛠 Santexnik · Elektrik · Maishiy texnika</span>
+      <h1 class="hero__title">Uyingizdagi nosozlik uchun <span>eng yaqin ishonchli usta</span></h1>
+      <p class="hero__lead">Yo'nalishni tanlang, joylashuvingizni yoqing — yaqin atrofdagi tekshirilgan ustalarni haqiqiy mijozlar baholari bilan ko'rasiz.</p>
 
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="inside">
-                            <figure>
-                                <img src="{% static 'img/pointer.svg' %}" alt="pointer">
-                                <p>Adekvat narxlarda xizmatlarni buyurtma qiling</p>
-                            </figure>
-                            <p>Bizda diagnostika, ta'mirlash va mashinalarni ulash xizmatlari uchun adekvat narxlar mavjud. To'g'ridan-to'g'ri ehtiyot qismlari va komponentlar yetkazib berish hisobiga ta'mirlash bizda boshqa kompaniyalarga qaraganda 10-20% arzonroq.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="inside">
-                            <figure>
-                                <img src="{% static 'img/thumbs_up.svg' %}" alt="thumbs_up">
-                                <p>Mutaxassisdan qimmatli tavsiyalar oling</p>
-                            </figure>
-                            <p>Nosozliklarni bartaraf etgandan so'ng, usta albatta kir yuvish mashinangizni keyingi foydalanish bo'yicha ko'plab foydali maslahatlar beradi.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="inside">
-                            <figure>
-                                <img src="{% static 'img/instruments.svg' %}" alt="instruments">
-                                <p>Ishimizga kafolat</p>
-                            </figure>
-                            <p>Bizdan xizmatlarni buyurtma qilish orqali sifatga ishonch hosil qilishingiz mumkin. Biz asosiy ish turlariga kafolat beramiz.</p>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn_my" data-toggle="modal" data-target="#popup">Ustani chaqirish<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
-            </div>
-        </div><!--advantages-->
-        <div class="services container" id="xizmatlar">
-            <div class="title"><span>Bizning Xizmatlar</span></div>
-            <p>Kir yuvish mashinasi uzoq vaqtdan beri zamonaviy va qulay shahar kvartirasini tasavvur qilish mumkin bo'lmagan qurilmalar sinfiga kiradi. Biz barcha ishlab chiqaruvchilar (Beko, Indesit, LG, Samsung, Candy, Zanussi, Bosch, Ariston, Electrolux va boshqalar) bilan ishlaymiz.</p>
-            <div class="row">
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="inside">
-                        <div class="img">
-                            <img src="{% static 'img/srvice1.jpg' %}" alt="srvice">
-                            <div class="top">
-                                <span>Chiqish va diagnostika</span>
-                                <span></span>
-                            </div>
-                        </div>
-                        <p class="last">Kir yuvish mashinalarini ta'mirlash bo'yicha usta sizga eng qisqa muddatda keladi, nosozlik sababini aniq aniqlaydi, mashinani ta'mirlash kerakmi yoki yangisini sotib olish yaxshiroqmi deb halollik bilan aytadi, ish va ehtiyot qismlar qancha turishini bildiradi va barcha savollaringizga javob beradi.</p>
-                        <button>Batafsil<img src="{% static 'img/arrow.svg' %}" alt="arrow"></button>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="inside">
-                        <div class="img">
-                            <img src="{% static 'img/srvice2.jpg' %}" alt="srvice">
-                            <div class="top">
-                                <span>Uyda</span>
-                                <span>ta'mirlaymiz</span>
-                            </div>
-                        </div>
-                        <p class="last">Mashina isitmayapti, suvni chiqarmayapti, oqayapti, yoqilmayapti, baraban aylanmayapti - bu va boshqa har qanday nosozliklarni ustamiz murojaat kunining o'zida bartaraf etadi.</p>
-                        <button>Batafsil<img src="{% static 'img/arrow.svg' %}" alt="arrow"></button>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="inside">
-                        <div class="img">
-                            <img src="{% static 'img/srvice3.jpg' %}" alt="srvice">
-                            <div class="top">
-                                <span>Kir yuvish</span>
-                                <span>mashinalarini ulash</span>
-                            </div>
-                        </div>
-                        <p class="last">Kir yuvish mashinangizni professional va to'g'ri o'rnatamiz va ulaymiz. Tez va arzon.</p>
-                        <button>Batafsil<img src="{% static 'img/arrow.svg' %}" alt="arrow"></button>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="inside">
-                        <div class="img">
-                            <img src="{% static 'img/srvice4.jpg' %}" alt="srvice">
-                            <div class="top">
-                                <span>Asl,</span>
-                                <span>brendli ehtiyot qismlar sotish</span>
-                            </div>
-                        </div>
-                        <p class="last">Bizdan barcha mashhur brendlar uchun ehtiyot qismlarni buyurtma qilishingiz mumkin. Biz to'g'ridan-to'g'ri detallar yetkazib berishni yo'lga qo'yganimiz uchun adekvat narxlarni taklif eta olamiz.</p>
-                        <button>Batafsil<img src="{% static 'img/arrow.svg' %}" alt="arrow"></button>
-                    </div>
-                </div>
-            </div>
-            <button class="btn_my" data-toggle="modal" data-target="#popup">Ustani chaqirish<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
-        </div><!--services-->
-        <div class="job-block" id="ish_bosqichlari">
-            <div class="container">
-                <div class="title"><span>Qanday Ishlaymiz</span></div>
-                <div class="row">
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                        <div class="inside">
-                            <img src="{% static 'img/job1.png' %}" alt="job">
-                            <div class="text wow fadeInRight" data-wow-delay="0.1s">
-                                <span><b>#1</b></span>
-                                <h3>Ariza</h3>
-                                <p>Saytda aloqa shakli orqali ariza qoldiring yoki bizga telefon qiling. Menejer manzil va ustaning chiqish vaqtini aniqlashtiradi.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                        <div class="inside">
-                            <img src="{% static 'img/job2.png' %}" alt="job">
-                            <div class="text wow fadeInRight" data-wow-delay="0.4s">
-                                <span><b>#2</b></span>
-                                <h3>Mutaxassis chiqishi va diagnostika</h3>
-                                <p>Usta sizga qulay vaqtda keladi, diagnostika o'tkazadi va nosozlik sababini aniqlaydi.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                        <div class="inside">
-                            <img src="{% static 'img/job3.png' %}" alt="job">
-                            <div class="text wow fadeInRight" data-wow-delay="0.7s">
-                                <span><b>#3</b></span>
-                                <h3>Ta'mirlash ishlari</h3>
-                                <p>Usta nosozliklarni bartaraf etadi va 20-30 daqiqadan so'ng mashinangiz to'liq ishga tayyor bo'ladi.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                        <div class="inside">
-                            <img src="{% static 'img/job4.png' %}" alt="job">
-                            <div class="text wow fadeInRight" data-wow-delay="1s">
-                                <span><b>#4</b></span>
-                                <h3>To'lov</h3>
-                                <p>Ta'mirlash amalga oshirilgandan so'ng mijoz xizmat uchun to'laydi. Biz naqd pul yoki bank kartalari bilan to'lovni qabul qilamiz.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn_my" data-toggle="modal" data-target="#popup">Ustani chaqirish<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
-            </div>
-        </div><!--job-block-->
-        <div class="brand" id="brendlar">
-            <div class="container">
-                <div class="title"><span>Biz Ishlayotgan Brendlar</span></div>
-                <ul>
-                    {% for brand in brands %}
-                    <li>
-                        {% if brand.logo %}<img src="{{ brand.logo.url }}" alt="{{ brand.name }}">{% endif %}
-                        <p class="text-center">{{ brand.name }}</p>
-                    </li>
-                    {% empty %}
-                    <li>
-                        <img src="{% static 'img/brand1.png' %}" alt="brand">
-                        <p class="text-center">Zanussi</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand2.png' %}" alt="brand">
-                        <p class="text-center">Samsung</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand3.png' %}" alt="brand">
-                        <p class="text-center">Candy</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand4.png' %}" alt="brand">
-                        <p class="text-center">Siemens</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand5.png' %}" alt="brand">
-                        <p class="text-center">LG</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand6.png' %}" alt="brand">
-                        <p class="text-center">Bosch</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand7.png' %}" alt="brand">
-                        <p class="text-center">Gorenje</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand8.png' %}" alt="brand">
-                        <p class="text-center">Indesit</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand9.png' %}" alt="brand">
-                        <p class="text-center">Hansa</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand10.png' %}" alt="brand">
-                        <p class="text-center">Electrolux</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand11.png' %}" alt="brand">
-                        <p class="text-center">Beko</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand12.png' %}" alt="brand">
-                        <p class="text-center">Ariston</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand13.png' %}" alt="brand">
-                        <p class="text-center">Miele</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand14.png' %}" alt="brand">
-                        <p class="text-center">Atlant</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand15.png' %}" alt="brand">
-                        <p class="text-center">Ardo</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand16.png' %}" alt="brand">
-                        <p class="text-center">Asko</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand17.png' %}" alt="brand">
-                        <p class="text-center">Daewoo</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand18.png' %}" alt="brand">
-                        <p class="text-center">Brandt</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand19.png' %}" alt="brand">
-                        <p class="text-center">Smeg</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand20.png' %}" alt="brand">
-                        <p class="text-center">Vestel</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand21.png' %}" alt="brand">
-                        <p class="text-center">Whirpool</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand22.png' %}" alt="brand">
-                        <p class="text-center">Zerowatt</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand23.png' %}" alt="brand">
-                        <p class="text-center">Neff</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand24.png' %}" alt="brand">
-                        <p class="text-center">Kaiser</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand25.png' %}" alt="brand">
-                        <p class="text-center">Renova</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand26.png' %}" alt="brand">
-                        <p class="text-center">Haier</p>
-                    </li>
-                    <li>
-                        <img src="{% static 'img/brand27.png' %}" alt="brand">
-                        <p class="text-center">AEG</p>
-                    </li>
-                    {% endfor %}
-                </ul>
-                <button class="btn_my" data-toggle="modal" data-target="#popup">Ustani chaqirish<span><img src="{% static 'img/phone.svg' %}" alt="phone"></span></button>
-            </div>
-        </div><!--brand-->
-        <div class="users" id="mijoz_sharhlari">
-            <div class="container">
-                <div class="title"><span>Mijozlarimiz Sharhlari</span></div>
-                <div class="row testimonial-list">
-                    {% for testimonial in testimonials %}
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="testimonial-card">
-                            <div class="testimonial-stars" aria-label="Reyting: {{ testimonial.rating }} / 5">
-                                {% for _ in testimonial.stars_filled %}<span class="star on">&#9733;</span>{% endfor %}
-                                {% for _ in testimonial.stars_empty %}<span class="star">&#9734;</span>{% endfor %}
-                            </div>
-                            <p class="testimonial-text">{{ testimonial.text }}</p>
-                            <p class="testimonial-author">{{ testimonial.client_name }}</p>
-                            <p class="testimonial-date">{{ testimonial.created_at|date:"d.m.Y" }}</p>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="col-xs-12">
-                        <p class="testimonial-placeholder">Hozircha sharhlar yo'q. Birinchi bo'lib fikringizni qoldiring!</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div><!--users-->
-
-        <div class="consultation" id="konsultatsiya">
-            <div class="container">
-                <div class="title"><span>Savollar qoldimi?</span></div>
-                <p class="consultation_text">Saytda shaklni to'ldiring yoki darhol qo'ng'iroq qiling: +998 90 123-45-67.<br>Mutaxassislarimiz sizga maslahat berishadi va barcha kerakli ma'lumotlarni taqdim etishadi!</p>
-                <form method="POST" class="global feedback2 js-request-form" name="feedback" action="{% url 'repair_service:submit_request' %}">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="consult-name">Ismingiz<span>*</span></label>
-                        <input type="text" id="consult-name" class="form-control" name="name" required="required">
-                    </div>
-                    <div class="form-group">
-                        <label for="consult-phone">Telefon raqamingiz<span>*</span></label>
-                        <input type="tel" id="consult-phone" class="form-control" name="phone" required="required">
-                    </div>
-                    <div class="form-group">
-                        <label for="consult-problem">Muammoni qisqacha tasvirlab bering</label>
-                        <textarea id="consult-problem" class="form-control" name="problem_description" rows="3" placeholder="Masalan: mashina suvni chiqarmayapti"></textarea>
-                    </div>
-                    <div class="last">
-                        <p class="results" role="alert"></p>
-                        <button type="submit" class="btn_my">Yuborish<span><img src="{% static 'img/send.svg' %}" alt=""></span></button>
-                    </div>
-                </form>
-            </div>
-        </div><!--consultation-->
-        <div class="contact" id="kontaktlar">
-            <div class="container">
-            <div class="title"><span>Bizning Kontaktlar</span></div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="info">
-                            <p><img src="{% static 'img/phone2.svg' %}" alt="phone">Menejer telefoni</p>
-                            <a href="tel:+998901234567"><p class="last">+998 90 123-45-67</p></a>
-                        </div><!--info-->
-                        <div class="info">
-                            <p><img src="{% static 'img/whatsapp.svg' %}" alt="whatsapp"><img src="{% static 'img/printer.svg' %}" alt="telegram">WhatsApp va Telegram</p>
-                            <p class="last">+998 90 123-45-67</p>
-                        </div><!--info-->
-                        <div class="info">
-                            <p><img src="{% static 'img/pointer2.svg' %}" alt="pointer2">Ofis manzili</p>
-                            <p class="last">Toshkent shahar</p>
-                        </div><!--info-->
-                        <div class="info">
-                            <p><img src="{% static 'img/envelope.svg' %}" alt="envelope">E-mail</p>
-                            <p class="last"><a href="mailto:info@techservice.uz">info@techservice.uz</a></p>
-                        </div><!--info-->
-                    </div>
-                <div class="col-md-8">
-                    <div id="map"
-                         data-pin="{% static 'img/pointer2.svg' %}"
-                         data-lat="41.311151"
-                         data-lng="69.279737"
-                         style="width: 100%; height: 400px; border-radius: 10px; overflow: hidden;"></div>
-                </div>
-                </div>
-                <div class="copyright">
-                    <p class="pull-left">Copyright © 2024 TechService. Barcha huquqlar himoyalangan.</p>
-                </div>
-            </div>
-        </div><!--contact-->
-    </div><!--main-content-->
-
-    <div class="modal fade" id="popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><img src="{% static 'img/close.svg' %}" alt=""></span></button>
-                  </div>
-                <div class="modal-body text-center">
-                    <h2>Usta chaqirish/Konsultatsiya</h2>
-                    <form method="POST" class="global feedback3 js-request-form" name="feedback" action="{% url 'repair_service:submit_request' %}">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="popup-name">Ismingiz<span>*</span></label>
-                            <input type="text" id="popup-name" class="form-control" name="name" required="required">
-                        </div>
-                        <div class="form-group">
-                            <label for="popup-phone">Telefon raqamingiz<span>*</span></label>
-                            <input type="tel" id="popup-phone" class="form-control" name="phone" required="required">
-                        </div>
-                        <div class="form-group">
-                            <label for="popup-problem">Muammoni qisqacha tasvirlab bering</label>
-                            <textarea id="popup-problem" class="form-control" name="problem_description" rows="3" placeholder="Masalan: mashina suvni chiqarmayapti"></textarea>
-                        </div>
-                        <div class="last">
-                            <p class="results" role="alert"></p>
-                            <button type="submit" class="btn_my">Yuborish<span><img src="{% static 'img/send.svg' %}" alt=""></span></button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+      {% if stats.masters or stats.completed %}
+      <div class="hero__trust">
+        {% if stats.masters %}<div class="stat"><div class="stat__value">{{ stats.masters|intcomma }}</div><div class="stat__label">tekshirilgan usta</div></div>{% endif %}
+        {% if stats.completed %}<div class="stat"><div class="stat__value">{{ stats.completed|intcomma }}</div><div class="stat__label">bajarilgan buyurtma</div></div>{% endif %}
+        {% if stats.rating %}<div class="stat"><div class="stat__value">★ {{ stats.rating|floatformat:1 }}</div><div class="stat__label">o'rtacha baho</div></div>{% endif %}
+      </div>
+      {% endif %}
     </div>
 
-    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/wow.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/jquery.maskedinput.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/optimizations.js' %}"></script>
-    </body>
-    </html>
+    <form class="card card--raised search-card" action="{% url 'masters:list' %}" method="get" role="search" aria-label="Usta qidirish">
+      <div class="card__title">Usta topish</div>
+      <div class="search-card__row">
+        <div class="field">
+          <label for="hero-category">Qanday usta kerak?</label>
+          <select id="hero-category" name="category">
+            <option value="">Barcha yo'nalishlar</option>
+            {% for c in categories %}<option value="{{ c.slug }}">{{ c.icon }} {{ c.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <input type="hidden" name="lat"><input type="hidden" name="lng">
+        <button type="button" class="btn btn--soft btn--block" data-geolocate>📍 Joylashuvimni aniqlash</button>
+        <div class="search-card__or">yoki</div>
+        <div class="field">
+          <label for="hero-district" class="sr-only">Tuman</label>
+          <select id="hero-district" name="district">
+            <option value="">Tumanni tanlang</option>
+            {% for slug, name in districts %}<option value="{{ slug }}">{{ name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="geo-status" aria-live="polite"></div>
+        <button type="submit" class="btn btn--primary btn--lg btn--block">Ustalarni ko'rsatish →</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+{% if categories %}
+<section class="section section--tint" id="yonalishlar">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Yo'nalishlar</span>
+      <h2>Qanday ish kerak?</h2>
+      <p class="lead">Har bir yo'nalishda faqat tekshiruvdan o'tgan ustalar.</p>
+    </div>
+    <div class="grid grid--cats">
+      {% for c in categories %}
+      <a class="cat-card" href="{{ c.get_absolute_url }}">
+        <span class="cat-card__icon" aria-hidden="true">{{ c.icon }}</span>
+        <span class="cat-card__name">{{ c.name }}</span>
+        <span class="cat-card__meta">{% if c.masters_total %}{{ c.masters_total }} ta usta{% else %}Tez orada{% endif %}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if top_masters %}
+<section class="section">
+  <div class="container">
+    <div class="results-bar" style="margin-top:0">
+      <div class="section-head" style="margin:0">
+        <span class="eyebrow">Eng yaxshilar</span>
+        <h2>Yuqori baholangan ustalar</h2>
+      </div>
+      <a class="btn" href="{% url 'masters:list' %}?sort=rating">Barchasi →</a>
+    </div>
+    <div class="grid grid--masters">
+      {% for master in top_masters %}{% include "partials/master_card.html" %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section {% if not top_masters %}{% else %}section--tint{% endif %}" id="qanday-ishlaydi">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Oddiy va shaffof</span>
+      <h2>Qanday ishlaydi</h2>
+    </div>
+    <div class="grid grid--4 steps">
+      <div class="step"><h3>Yo'nalish va joylashuv</h3><p class="muted">Santexnik, elektrik yoki boshqa ustani tanlang, joylashuvingizni yoqing yoki tumanni belgilang.</p></div>
+      <div class="step"><h3>Ustani tanlang</h3><p class="muted">Masofa, tajriba va mezonlar bo'yicha baholarni solishtiring.</p></div>
+      <div class="step"><h3>Ariza qoldiring</h3><p class="muted">Usta sizga qo'ng'iroq qilib, kelish vaqti va narxni oldindan kelishadi.</p></div>
+      <div class="step"><h3>Baholang</h3><p class="muted">Ish tugagach, maxsus havola orqali ustani 4 mezon bo'yicha baholaysiz.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Nega bizga ishonishadi</span>
+      <h2>Ishonch — tasodif emas</h2>
+    </div>
+    <div class="grid grid--4">
+      <div class="card"><div class="feature__icon">🪪</div><h3>Tekshirilgan ustalar</h3><p class="muted">Har bir usta saytda ko'rinishidan oldin administrator tomonidan tekshiriladi.</p></div>
+      <div class="card"><div class="feature__icon">⭐</div><h3>Faqat haqiqiy baholar</h3><p class="muted">Baho faqat bajarilgan buyurtmadan keyin qoldiriladi — soxta sharhlar yo'q.</p></div>
+      <div class="card"><div class="feature__icon">📍</div><h3>Eng yaqin usta</h3><p class="muted">Usta tezroq yetib keladi, yo'l uchun ortiqcha to'lov kamroq.</p></div>
+      <div class="card"><div class="feature__icon">💬</div><h3>Narx oldindan</h3><p class="muted">Usta ishni boshlashdan oldin narxni aytadi. Ariza qoldirish bepul.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint" id="narxlar">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Narxlar</span>
+      <h2>Taxminiy narxlar</h2>
+      <p class="lead">Yakuniy narx nosozlikka bog'liq — usta ko'rib chiqib, ishni boshlashdan oldin aytadi.</p>
+    </div>
+    <div class="card table-wrap">
+      {% regroup services by category as groups %}
+      {% for group in groups %}
+        {% if group.grouper %}<div class="price-group">{{ group.grouper.icon }} {{ group.grouper.name }}</div>{% elif groups|length > 1 %}<div class="price-group">Umumiy</div>{% endif %}
+        <table class="price-table">
+          {% if forloop.first %}<thead><tr><th>Xizmat</th><th>Narx</th></tr></thead>{% endif %}
+          <tbody>
+            {% for service in group.list %}
+            <tr>
+              <td>{{ service.name }}{% if service.description %}<div class="muted small">{{ service.description }}</div>{% endif %}</td>
+              <td>{% if service.price_from %}{{ service.price_from|floatformat:0|intcomma }} so'mdan{% else %}Bepul{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% empty %}
+        <table class="price-table">
+          <thead><tr><th>Xizmat</th><th>Narx</th></tr></thead>
+          <tbody>
+            <tr><td>Ustani chaqirish (ta'mirlash buyurtma qilinsa)</td><td>Bepul</td></tr>
+            <tr><td>Diagnostika (ta'mirlamasdan)</td><td>50 000 so'm</td></tr>
+            <tr><td>Kichik ta'mir (bitta detal almashtirish)</td><td>100 000 so'mdan</td></tr>
+            <tr><td>O'rtacha ta'mir</td><td>200 000 so'mdan</td></tr>
+            <tr><td>Kapital ta'mir</td><td>300 000 so'mdan</td></tr>
+          </tbody>
+        </table>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="ariza">
+  <div class="container">
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2.5rem;align-items:center">
+      <div>
+        <span class="eyebrow">Vaqtingiz yo'qmi?</span>
+        <h2>Ariza qoldiring — ustani o'zimiz topamiz</h2>
+        <p class="lead">Operatorimiz muammoingizga mos va sizga eng yaqin bo'lgan ustani biriktiradi. Odatda 15 daqiqa ichida qo'ng'iroq qilamiz.</p>
+        <p><a href="tel:{{ SITE.phone }}" class="btn btn--lg">📞 {{ SITE.phone_display }}</a></p>
+        <p class="muted small">{{ SITE.hours }}</p>
+      </div>
+      <div class="card card--raised">
+        {% if errors %}
+        <div class="alert alert--error form-errors" role="alert">
+          <div><strong>Arizani yuborib bo'lmadi:</strong>
+            <ul>{% for message in errors.values %}<li>{{ message }}</li>{% endfor %}</ul>
+          </div>
+        </div>
+        {% endif %}
+        {% include "partials/request_form.html" with form=form show_category=True prefix="main-" %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if reviews or testimonials %}
+<section class="section section--tint" id="baholar">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Mijozlar fikri</span>
+      <h2>Mijozlarimiz nima deydi</h2>
+    </div>
+    <div class="grid grid--3">
+      {% for review in reviews %}
+      <figure class="card review-card" style="margin:0">
+        <span class="rating">{% stars review.overall %} {{ review.overall|floatformat:1 }}</span>
+        <blockquote class="review-card__text" style="margin:0">{{ review.comment|default:"Baho qoldirildi, izohsiz."|truncatewords:40 }}</blockquote>
+        <figcaption class="review-card__author">
+          <span class="avatar" aria-hidden="true">{{ review.author_name|slice:":1"|upper }}</span>
+          <span>{{ review.author_name }}<br><a class="small" href="{{ review.master.get_absolute_url }}">Usta: {{ review.master.full_name }}</a></span>
+        </figcaption>
+      </figure>
+      {% endfor %}
+      {% for t in testimonials %}
+      <figure class="card review-card" style="margin:0">
+        <span class="rating">{% stars t.rating %} {{ t.rating }}.0</span>
+        <blockquote class="review-card__text" style="margin:0">{{ t.text|truncatewords:40 }}</blockquote>
+        <figcaption class="review-card__author">
+          <span class="avatar" aria-hidden="true">{{ t.client_name|slice:":1"|upper }}</span>
+          <span>{{ t.client_name }}<br><span class="muted small">{{ t.created_at|date:"d.m.Y" }}</span></span>
+        </figcaption>
+      </figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section" id="brendlar">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Maishiy texnika</span>
+      <h2>Ishlaydigan brendlarimiz</h2>
+    </div>
+    <div class="brands">
+      {% for brand in brands %}
+        <div class="brand">{% if brand.logo %}<img src="{{ brand.logo.url }}" alt="{{ brand.name }}" loading="lazy">{% else %}{{ brand.name }}{% endif %}</div>
+      {% empty %}
+        {% for path, name in fallback_brands %}
+          <div class="brand"><img src="{% static path %}" alt="{{ name }}" loading="lazy"></div>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint" id="savollar">
+  <div class="container" style="max-width:820px">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Savollar</span>
+      <h2>Ko'p beriladigan savollar</h2>
+    </div>
+    <div class="faq">
+      <details><summary>Ariza qoldirish pullikmi?</summary><p>Yo'q, ariza qoldirish bepul. To'lov faqat usta bajargan ish uchun, narx ishni boshlashdan oldin kelishiladi.</p></details>
+      <details><summary>Ustalar qanday tekshiriladi?</summary><p>Ro'yxatdan o'tgan har bir usta administrator tomonidan ko'rib chiqiladi: shaxsi va telefon raqami tasdiqlanadi. Tasdiqlanmaguncha usta qidiruvda ko'rinmaydi.</p></details>
+      <details><summary>Baholar soxta emasligini qanday bilaman?</summary><p>Baho faqat sayt orqali berilgan va bajarilgan buyurtmadan keyin, mijozga yuborilgan maxsus havola orqali qoldiriladi. Har bir buyurtma uchun bitta baho.</p></details>
+      <details><summary>Joylashuvim nima uchun kerak?</summary><p>Faqat sizga eng yaqin ustalarni ko'rsatish uchun. Koordinatalaringiz saqlanmaydi. Xohlamasangiz, tumanni tanlashingiz mumkin.</p></details>
+      <details><summary>Usta bo'lib qanday qo'shilaman?</summary><p>«Usta bo'lish» sahifasida ro'yxatdan o'ting, yo'nalish va ish hududingizni kiriting. Tekshiruvdan so'ng profilingiz saytda paydo bo'ladi.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="cta">
+      <div>
+        <h2>Siz ustamisiz?</h2>
+        <p>Yaqin atrofingizdagi mijozlardan buyurtma oling. Ro'yxatdan o'tish bepul, baholaringiz sizni boshqalardan ajratib turadi.</p>
+      </div>
+      <a class="btn btn--lg" href="{% url 'masters:register' %}">Usta sifatida qo'shilish →</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

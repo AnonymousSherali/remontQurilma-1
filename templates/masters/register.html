@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Usta sifatida ro'yxatdan o'tish | {{ SITE.name }}{% endblock %}
+{% block body_class %}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+
+{% block content %}
+<div class="container auth-wrap">
+  <div class="card card--raised auth-card auth-card--wide">
+    <span class="eyebrow">Ustalar uchun</span>
+    <h1 style="font-size:1.9rem">Ro'yxatdan o'tish</h1>
+    <p class="muted">Bepul. Profilingiz administrator tekshiruvidan so'ng (odatda 1 ish kuni) qidiruvda ko'rinadi.</p>
+
+    {% if form.non_field_errors %}
+      <div class="alert alert--error" role="alert"><ul>{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul></div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="form" novalidate data-clear-coords-on-district>
+      {% csrf_token %}
+      <fieldset class="form" style="border:0;padding:0;margin:0 0 1.5rem">
+        <legend class="card__title">Akkaunt</legend>
+        <div class="form-row">
+          {% include "partials/field.html" with field=form.full_name %}
+          {% include "partials/field.html" with field=form.phone %}
+        </div>
+        <div class="form-row">
+          {% include "partials/field.html" with field=form.password1 %}
+          {% include "partials/field.html" with field=form.password2 %}
+        </div>
+        <p class="field__help" style="margin:0">Parol kamida 8 ta belgi, faqat raqamlardan iborat bo'lmasin.</p>
+      </fieldset>
+
+      {% include "masters/_profile_fields.html" %}
+
+      {% include "partials/field.html" with field=form.consent %}
+      <button type="submit" class="btn btn--primary btn--lg btn--block">Ro'yxatdan o'tish</button>
+      <p class="muted small" style="text-align:center;margin:0">Akkauntingiz bormi? <a href="{% url 'masters:login' %}">Kirish</a></p>
+    </form>
+  </div>
+</div>
+{% endblock %}

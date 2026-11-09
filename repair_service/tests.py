@@ -1,140 +1,208 @@
 from io import StringIO
 
+from django.contrib.auth import get_user_model
+from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from .models import ServiceRequest, Service, Brand, Testimonial
+from masters.models import Category, Master, Review
+
+from .models import Brand, Service, ServiceRequest, Testimonial
+from .phone import format_phone, normalize_phone
 
 AJAX = {'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest'}
-VALID = {'name': 'Ali Valiyev', 'phone': '+998 (90) 123-45-67'}
+VALID = {'name': 'Ali Valiyev', 'phone': '+998 (90) 123-45-67', 'consent': 'on'}
+
+
+def make_master(name='Usta', phone='+998911111111', lat=41.3, lng=69.25, verified=True, categories=(), **extra):
+    user = get_user_model().objects.create_user(username=phone.lstrip('+'), password='x-Parol-123')
+    master = Master.objects.create(
+        user=user, full_name=name, phone=phone, latitude=lat, longitude=lng, is_verified=verified, **extra,
+    )
+    master.categories.set(categories)
+    return master
+
+
+class PhoneTests(TestCase):
+    def test_turli_yozilishlar_bir_xil_saqlanadi(self):
+        for raw in ['+998 (90) 123-45-67', '998901234567', '90 123 45 67', '+998901234567']:
+            self.assertEqual(normalize_phone(raw), '+998901234567')
+
+    def test_notogri_raqam(self):
+        for raw in ['', '12345', '+7 900 123 45 67', '+9989012345678']:
+            with self.assertRaises(ValidationError):
+                normalize_phone(raw)
+
+    def test_formatlash(self):
+        self.assertEqual(format_phone('+998901234567'), '+998 90 123-45-67')
+        self.assertEqual(format_phone('noma\'lum'), 'noma\'lum')
 
 
 class IndexPageTests(TestCase):
-    def test_index_ochiladi(self):
+    def test_bosh_sahifa_bosh_bazada_ochiladi(self):
         response = self.client.get(reverse('repair_service:index'))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'index.html')
+        self.assertContains(response, "Kapital ta'mir")  # zaxira narxlar
+        self.assertNotContains(response, 'tekshirilgan usta</div>')  # 0 ta usta — da'vo yo'q
 
-    def test_bazadagi_xizmatlar_korsatiladi(self):
-        Service.objects.create(name='Nasos almashtirish', price_from=120000)
-        response = self.client.get(reverse('repair_service:index'))
-        self.assertContains(response, 'Nasos almashtirish')
-
-    def test_xizmat_bolmasa_default_narxlar_qoladi(self):
-        response = self.client.get(reverse('repair_service:index'))
-        self.assertContains(response, "Kapital ta'mir")
-
-    def test_bazadagi_brendlar_korsatiladi(self):
+    def test_bazadagi_kontent_korsatiladi(self):
+        cat = Category.objects.create(name='Santexnik', slug='santexnik', icon='🚰')
+        Service.objects.create(name='Kran almashtirish', price_from=80000, category=cat)
         Brand.objects.create(name='Toshiba')
+        make_master('Bekzod Karimov', categories=[cat])
         response = self.client.get(reverse('repair_service:index'))
+        self.assertContains(response, 'Kran almashtirish')
         self.assertContains(response, 'Toshiba')
+        self.assertContains(response, 'Bekzod Karimov')
+        self.assertContains(response, '?category=santexnik')
 
-    def test_faol_bolmagan_yozuvlar_korsatilmaydi(self):
+    def test_faol_bolmagan_va_tasdiqlanmaganlar_korinmaydi(self):
         Brand.objects.create(name='YashirinBrend', is_active=False)
         Service.objects.create(name='YashirinXizmat', is_active=False)
+        make_master('Tekshirilmagan Usta', verified=False)
         response = self.client.get(reverse('repair_service:index'))
-        self.assertNotContains(response, 'YashirinBrend')
-        self.assertNotContains(response, 'YashirinXizmat')
+        for text in ('YashirinBrend', 'YashirinXizmat', 'Tekshirilmagan Usta'):
+            self.assertNotContains(response, text)
 
-    def test_sharhlar_yulduzlari_bilan_korsatiladi(self):
-        Testimonial.objects.create(client_name='Nodira', text="Zo'r ish", rating=4)
+    def test_haqiqiy_baho_bolsa_qolda_kiritilgan_sharh_chiqmaydi(self):
+        Testimonial.objects.create(client_name='Qolda Yozilgan', text='...', rating=5)
         response = self.client.get(reverse('repair_service:index'))
-        self.assertContains(response, 'Nodira')
-        self.assertContains(response, 'Zo&#x27;r ish')
+        self.assertContains(response, 'Qolda Yozilgan')
 
-    def test_nashr_qilinmagan_sharh_korsatilmaydi(self):
-        Testimonial.objects.create(
-            client_name='Yashirin', text="Ko'rinmasin", rating=1, is_published=False
-        )
+        master = make_master()
+        Review.objects.create(master=master, author_name='Haqiqiy Mijoz', quality=5, punctuality=5, price=5, politeness=5)
         response = self.client.get(reverse('repair_service:index'))
-        self.assertNotContains(response, 'Yashirin')
+        self.assertContains(response, 'Haqiqiy Mijoz')
+        self.assertNotContains(response, 'Qolda Yozilgan')
 
 
 class SubmitRequestTests(TestCase):
     def setUp(self):
+        cache.clear()
         self.url = reverse('repair_service:submit_request')
 
     def test_togri_ariza_saqlanadi(self):
-        response = self.client.post(self.url, VALID, **AJAX)
+        response = self.client.post(self.url, dict(VALID, problem_description='Kran oqyapti'), **AJAX)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()['success'])
-        self.assertEqual(ServiceRequest.objects.count(), 1)
-
         saved = ServiceRequest.objects.get()
-        self.assertEqual(saved.name, 'Ali Valiyev')
-        self.assertEqual(saved.status, 'new')
+        self.assertEqual(saved.phone, '+998901234567')  # yagona formatda
+        self.assertEqual(saved.problem_description, 'Kran oqyapti')
+        self.assertTrue(saved.consent)
+        self.assertIsNone(saved.email)
 
-    def test_muammo_tavsifi_saqlanadi(self):
-        payload = dict(VALID, problem_description='Suvni chiqarmayapti')
-        self.client.post(self.url, payload, **AJAX)
-        self.assertEqual(
-            ServiceRequest.objects.get().problem_description, 'Suvni chiqarmayapti'
-        )
-
-    def test_qisqa_ism_rad_etiladi(self):
-        response = self.client.post(self.url, dict(VALID, name='A'), **AJAX)
+    def test_roziliksiz_qabul_qilinmaydi(self):
+        data = dict(VALID)
+        data.pop('consent')
+        response = self.client.post(self.url, data, **AJAX)
         self.assertEqual(response.status_code, 400)
-        self.assertIn('name', response.json()['errors'])
-        self.assertEqual(ServiceRequest.objects.count(), 0)
+        self.assertIn('consent', response.json()['errors'])
 
-    def test_notogri_telefon_rad_etiladi(self):
-        response = self.client.post(self.url, dict(VALID, phone='8-905-123'), **AJAX)
-        self.assertEqual(response.status_code, 400)
-        self.assertIn('phone', response.json()['errors'])
-        self.assertEqual(ServiceRequest.objects.count(), 0)
-
-    def test_notogri_email_rad_etiladi(self):
-        response = self.client.post(self.url, dict(VALID, email='mavhum'), **AJAX)
-        self.assertEqual(response.status_code, 400)
-        self.assertIn('email', response.json()['errors'])
-
-    def test_email_ixtiyoriy(self):
-        response = self.client.post(self.url, dict(VALID, email=''), **AJAX)
-        self.assertTrue(response.json()['success'])
-        self.assertIsNone(ServiceRequest.objects.get().email)
-
-    def test_bir_nechta_xato_birga_qaytadi(self):
-        response = self.client.post(self.url, {'name': '', 'phone': ''}, **AJAX)
+    def test_validatsiya_xatolari(self):
+        response = self.client.post(self.url, {'name': 'A', 'phone': '555', 'email': 'x', 'consent': 'on'}, **AJAX)
         errors = response.json()['errors']
-        self.assertIn('name', errors)
-        self.assertIn('phone', errors)
+        self.assertEqual(set(errors), {'name', 'phone', 'email'})
+        self.assertEqual(ServiceRequest.objects.count(), 0)
 
-    def test_probellar_kesiladi(self):
-        self.client.post(self.url, dict(VALID, name='   Ali Valiyev   '), **AJAX)
-        self.assertEqual(ServiceRequest.objects.get().name, 'Ali Valiyev')
+    def test_bot_tuzogi(self):
+        response = self.client.post(self.url, dict(VALID, website='http://spam.example'), **AJAX)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(ServiceRequest.objects.count(), 0)
 
-    def test_js_siz_yuborishda_natija_sahifasi(self):
-        response = self.client.post(self.url, VALID)
-        self.assertTemplateUsed(response, 'result.html')
-        self.assertEqual(ServiceRequest.objects.count(), 1)
+    @override_settings(REQUEST_RATE_LIMIT=2)
+    def test_spam_cheklovi(self):
+        for _ in range(2):
+            self.assertEqual(self.client.post(self.url, VALID, **AJAX).status_code, 200)
+        self.assertEqual(self.client.post(self.url, VALID, **AJAX).status_code, 429)
 
-    def test_js_siz_xato_bosh_sahifada_korsatiladi(self):
-        response = self.client.post(self.url, {'name': '', 'phone': '123'})
-        self.assertTemplateUsed(response, 'index.html')
-        self.assertContains(response, "Arizani yuborib bo'lmadi")
-        self.assertContains(response, 'Ism kamida 2 ta belgidan')
+    def test_aniq_ustaga_ariza(self):
+        cat = Category.objects.create(name='Elektrik', slug='elektrik')
+        master = make_master(categories=[cat])
+        response = self.client.post(self.url, dict(VALID, master=master.pk), **AJAX)
+        self.assertIn(master.full_name, response.json()['message'])
+        saved = ServiceRequest.objects.get()
+        self.assertEqual(saved.master, master)
+        self.assertEqual(saved.category, cat)  # yo'nalish ustanikidan olinadi
 
-    def test_get_soravi_rad_etiladi(self):
+    def test_ustaga_boshqa_yonalish_arizasi_tuzatiladi(self):
+        plumber = Category.objects.create(name='Santexnik', slug='santexnik')
+        electrician = Category.objects.create(name='Elektrik', slug='elektrik')
+        master = make_master(categories=[plumber])
+        self.client.post(self.url, dict(VALID, master=master.pk, category=electrician.pk), **AJAX)
+        self.assertEqual(ServiceRequest.objects.get().category, plumber)
+
+    def test_tasdiqlanmagan_yoki_band_ustaga_ariza_berilmaydi(self):
+        hidden = make_master(phone='+998911111112', verified=False)
+        busy = make_master(phone='+998911111113', is_available=False)
+        for master in (hidden, busy):
+            response = self.client.post(self.url, dict(VALID, master=master.pk), **AJAX)
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('master', response.json()['errors'])
+        self.assertEqual(ServiceRequest.objects.count(), 0)
+
+    def test_js_siz_yuborish(self):
+        ok = self.client.post(self.url, VALID)
+        self.assertTemplateUsed(ok, 'result.html')
+        bad = self.client.post(self.url, {'name': '', 'phone': '1'})
+        self.assertEqual(bad.status_code, 400)
+        self.assertContains(bad, "Arizani yuborib bo'lmadi", status_code=400)
+
+    def test_get_rad_etiladi(self):
         self.assertEqual(self.client.get(self.url).status_code, 405)
 
 
-class TestimonialModelTests(TestCase):
-    def test_yulduzlar_soni(self):
-        testimonial = Testimonial.objects.create(client_name='X', text='y', rating=3)
-        self.assertEqual(len(testimonial.stars_filled), 3)
-        self.assertEqual(len(testimonial.stars_empty), 2)
+class AdminTests(TestCase):
+    def setUp(self):
+        self.admin = get_user_model().objects.create_superuser('admin', 'a@a.uz', 'Admin-parol-1')
+        self.client.force_login(self.admin)
+
+    def test_admin_sahifalari_ochiladi(self):
+        master = make_master()
+        request = ServiceRequest.objects.create(name='X', phone='+998901112233', master=master, status='completed')
+        urls = [
+            reverse('admin:index'),
+            reverse('admin:repair_service_servicerequest_changelist'),
+            reverse('admin:repair_service_servicerequest_change', args=[request.pk]),
+            reverse('admin:masters_master_changelist'),
+            reverse('admin:masters_master_change', args=[master.pk]),
+            reverse('admin:masters_review_changelist'),
+            reverse('admin:masters_category_changelist'),
+            reverse('admin:auth_user_changelist'),
+        ]
+        for url in urls:
+            with self.subTest(url=url):
+                self.assertEqual(self.client.get(url).status_code, 200)
+
+    def test_dashboard_korsatkichlari(self):
+        make_master(verified=False)
+        ServiceRequest.objects.create(name='X', phone='+998901112233')
+        response = self.client.get(reverse('admin:index'))
+        self.assertContains(response, 'Tasdiq kutayotgan ustalar')
+        kpis = {k['title']: k['value'] for k in response.context['kpis']}
+        self.assertEqual(kpis['Yangi arizalar'], 1)
+        self.assertEqual(kpis['Tasdiq kutayotgan ustalar'], 1)
+        self.assertEqual(response.context['chart_days'][-1]['count'], 1)
+
+    def test_ustani_tasdiqlash_amali(self):
+        master = make_master(verified=False)
+        self.client.post(reverse('admin:masters_master_changelist'), {
+            'action': 'verify', '_selected_action': [master.pk],
+        })
+        master.refresh_from_db()
+        self.assertTrue(master.is_verified)
 
 
 class SeedDemoCommandTests(TestCase):
-    def test_buyruq_malumot_qoshadi(self):
-        call_command('seed_demo', stdout=StringIO())
-        self.assertTrue(Service.objects.exists())
-        self.assertTrue(Brand.objects.exists())
-        self.assertTrue(Testimonial.objects.exists())
-
-    def test_takroriy_ishga_tushirish_nusxa_yaratmaydi(self):
-        call_command('seed_demo', stdout=StringIO())
-        count = Service.objects.count()
-        call_command('seed_demo', stdout=StringIO())
-        self.assertEqual(Service.objects.count(), count)
+    def test_buyruq_va_takrorlanmaslik(self):
+        call_command('seed_demo', '--masters', stdout=StringIO())
+        counts = (Category.objects.count(), Service.objects.count(), Master.objects.count(), Review.objects.count())
+        self.assertTrue(all(counts))
+        call_command('seed_demo', '--masters', stdout=StringIO())
+        self.assertEqual(
+            counts,
+            (Category.objects.count(), Service.objects.count(), Master.objects.count(), Review.objects.count()),
+        )
+        # Demo baholar ham faqat bajarilgan ariza orqali
+        self.assertFalse(Review.objects.filter(service_request__isnull=True).exists())

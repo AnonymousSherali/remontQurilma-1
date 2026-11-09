@@ -40,6 +40,7 @@ ALLOWED_HOSTS = [h.strip() for h in _allowed.split(',') if h.strip()] or (['*'] 
 
 # --- Applications ---
 INSTALLED_APPS = [
+    'unfold',  # zamonaviy admin dizayni — django.contrib.admin dan oldin turishi shart
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',  # narxlarni ajratuvchi bilan chiqarish uchun
     'repair_service',
+    'masters',
 ]
 
 MIDDLEWARE = [
@@ -73,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'repair_service.context_processors.site',
             ],
         },
     },
@@ -87,6 +90,11 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# --- Kesh (spamdan himoya hisoblagichlari uchun) ---
+# Bir nechta gunicorn worker bo'lsa, Redis yoki ma'lumotlar bazasi keshiga o'tkazing:
+# LocMem har bir jarayonda alohida bo'ladi.
+CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
 
 # --- Password validation ---
 AUTH_PASSWORD_VALIDATORS = [
@@ -130,3 +138,96 @@ if not DEBUG:
     X_FRAME_OPTIONS = 'DENY'
     # Nginx/reverse-proxy orqasida HTTPS ni to'g'ri aniqlash uchun
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# --- Kirish ---
+LOGIN_URL = 'masters:login'
+LOGIN_REDIRECT_URL = 'masters:dashboard'
+LOGOUT_REDIRECT_URL = 'repair_service:index'
+
+# --- Sayt kontaktlari (shablonlarda {{ SITE.phone }} va h.k.) ---
+# Haqiqiy ma'lumotlarni .env orqali kiriting — standart qiymatlar namunaviy!
+SITE_INFO = {
+    'name': os.environ.get('SITE_NAME', 'TechService'),
+    'phone': os.environ.get('SITE_PHONE', '+998901234567'),
+    'email': os.environ.get('SITE_EMAIL', 'info@techservice.uz'),
+    'address': os.environ.get('SITE_ADDRESS', 'Toshkent shahar'),
+    'telegram': os.environ.get('SITE_TELEGRAM', ''),  # masalan: techservice_uz
+    'hours': os.environ.get('SITE_HOURS', "Har kuni 08:00–22:00"),
+}
+
+# --- Integratsiyalar (ixtiyoriy) ---
+YANDEX_MAPS_API_KEY = os.environ.get('YANDEX_MAPS_API_KEY', '')
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '')
+REQUEST_RATE_LIMIT = int(os.environ.get('REQUEST_RATE_LIMIT', 5))  # 10 daqiqada bir IP'dan
+
+# --- Yuklanadigan fayllar ---
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
+# --- Admin dizayni (django-unfold) ---
+from django.urls import reverse_lazy  # noqa: E402
+
+UNFOLD = {
+    'SITE_TITLE': 'TechService admin',
+    'SITE_HEADER': 'TechService',
+    'SITE_SUBHEADER': 'Boshqaruv paneli',
+    'SITE_URL': '/',
+    'SITE_SYMBOL': 'handyman',
+    'SHOW_HISTORY': True,
+    'SHOW_VIEW_ON_SITE': True,
+    'DASHBOARD_CALLBACK': 'config.dashboard.dashboard_callback',
+    'COLORS': {
+        'primary': {
+            '50': '236 253 245', '100': '209 250 229', '200': '167 243 208', '300': '110 231 183',
+            '400': '52 211 153', '500': '16 185 129', '600': '5 150 105', '700': '4 120 87',
+            '800': '6 95 70', '900': '6 78 59', '950': '2 44 34',
+        },
+    },
+    'SIDEBAR': {
+        'show_search': True,
+        'show_all_applications': False,
+        'navigation': [
+            {
+                'title': 'Asosiy',
+                'items': [
+                    {'title': 'Boshqaruv paneli', 'icon': 'dashboard', 'link': reverse_lazy('admin:index')},
+                    {
+                        'title': 'Arizalar', 'icon': 'assignment',
+                        'link': reverse_lazy('admin:repair_service_servicerequest_changelist'),
+                        'badge': 'config.dashboard.badge_new_requests',
+                    },
+                ],
+            },
+            {
+                'title': 'Ustalar',
+                'items': [
+                    {
+                        'title': 'Ustalar', 'icon': 'engineering',
+                        'link': reverse_lazy('admin:masters_master_changelist'),
+                        'badge': 'config.dashboard.badge_pending_masters',
+                    },
+                    {'title': 'Kategoriyalar', 'icon': 'category',
+                     'link': reverse_lazy('admin:masters_category_changelist')},
+                    {'title': 'Baholar', 'icon': 'star', 'link': reverse_lazy('admin:masters_review_changelist')},
+                ],
+            },
+            {
+                'title': 'Sayt kontenti',
+                'items': [
+                    {'title': 'Narxlar', 'icon': 'sell', 'link': reverse_lazy('admin:repair_service_service_changelist')},
+                    {'title': 'Brendlar', 'icon': 'verified', 'link': reverse_lazy('admin:repair_service_brand_changelist')},
+                    {'title': "Sharhlar (qo'lda)", 'icon': 'reviews',
+                     'link': reverse_lazy('admin:repair_service_testimonial_changelist')},
+                ],
+            },
+            {
+                'title': 'Foydalanuvchilar',
+                'items': [
+                    {'title': 'Foydalanuvchilar', 'icon': 'person', 'link': reverse_lazy('admin:auth_user_changelist')},
+                    {'title': 'Guruhlar', 'icon': 'group', 'link': reverse_lazy('admin:auth_group_changelist')},
+                ],
+            },
+        ],
+    },
+}

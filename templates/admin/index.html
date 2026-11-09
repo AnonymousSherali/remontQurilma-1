@@ -1,0 +1,82 @@
+{% extends 'admin/base.html' %}
+{% load i18n unfold ui %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+  {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+
+  {# --- Asosiy ko'rsatkichlar --- #}
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+    {% for kpi in kpis %}
+      {% component "unfold/components/card.html" with href=kpi.href icon=kpi.icon footer=kpi.footer %}
+        {% component "unfold/components/text.html" %}{{ kpi.title }}{% endcomponent %}
+        {% component "unfold/components/title.html" with class="text-3xl" %}{{ kpi.value }}{% endcomponent %}
+      {% endcomponent %}
+    {% endfor %}
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    {# --- So'nggi 7 kun --- #}
+    {% component "unfold/components/card.html" with title="Arizalar: so'nggi 7 kun" class="lg:col-span-2" %}
+      <div style="display:flex;align-items:flex-end;gap:12px;height:180px">
+        {% for d in chart_days %}
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end">
+            <span class="text-xs font-semibold">{{ d.count }}</span>
+            <div class="bg-primary-500 rounded-t w-full" style="height:{% if d.count %}{{ d.percent }}{% else %}2{% endif %}%;min-height:3px;opacity:{% if d.count %}1{% else %}.25{% endif %}"></div>
+            <span class="text-xs text-font-subtle-light">{{ d.label }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endcomponent %}
+
+    {# --- Tasdiq kutayotgan ustalar --- #}
+    {% component "unfold/components/card.html" with title="Tasdiq kutayotgan ustalar" %}
+      {% for m in pending_masters %}
+        <a href="{% url 'admin:masters_master_change' m.pk %}" class="flex justify-between gap-2 py-3" style="border-bottom:1px solid rgba(127,127,127,.15)">
+          <span>
+            <span class="font-semibold">{{ m.full_name }}</span><br>
+            <span class="text-xs text-font-subtle-light">{% for c in m.categories.all %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+          </span>
+          <span class="text-xs text-font-subtle-light">{{ m.created_at|date:"d.m" }}</span>
+        </a>
+      {% empty %}
+        <p class="text-font-subtle-light">Hammasi ko'rib chiqilgan ✓</p>
+      {% endfor %}
+    {% endcomponent %}
+  </div>
+
+  {# --- So'nggi arizalar --- #}
+  {% component "unfold/components/card.html" with title="So'nggi arizalar" %}
+    <div style="overflow-x:auto">
+      <table class="w-full" style="border-collapse:collapse">
+        <thead>
+          <tr class="text-xs text-font-subtle-light" style="text-align:left">
+            <th class="py-3">#</th><th class="py-3">Mijoz</th><th class="py-3">Telefon</th><th class="py-3">Yo'nalish</th>
+            <th class="py-3">Usta</th><th class="py-3">Holat</th><th class="py-3">Sana</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in latest_requests %}
+            <tr style="border-top:1px solid rgba(127,127,127,.15)">
+              <td class="py-3"><a class="text-primary-600 font-semibold" href="{% url 'admin:repair_service_servicerequest_change' r.pk %}">{{ r.pk }}</a></td>
+              <td class="py-3">{{ r.name }}</td>
+              <td class="py-3">{{ r.phone|phone }}</td>
+              <td class="py-3">{{ r.category|default:"—" }}</td>
+              <td class="py-3">{% if r.master %}{{ r.master }}{% else %}<span style="color:#d97706;font-weight:600">Biriktirilmagan</span>{% endif %}</td>
+              <td class="py-3">{% component "unfold/helpers/label.html" with text=r.get_status_display variant=r.status_variant %}{% endcomponent %}</td>
+              <td class="py-3 text-xs text-font-subtle-light">{{ r.created_at|date:"d.m.Y H:i" }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="7" class="py-3 text-font-subtle-light">Hozircha ariza yo'q.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endcomponent %}
+</div>
+{% endblock %}

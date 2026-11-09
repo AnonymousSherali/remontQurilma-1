@@ -1,0 +1,12 @@
+{# Bitta forma maydoni: label + widget + yordam matni + xato. Ishlatish: {% include "partials/field.html" with field=form.name %} #}
+<div class="field{% if field.field.widget.input_type == 'checkbox' and not field.field.widget.allow_multiple_selected %} field--check{% endif %}{% if choices %} choice-grid{% endif %}">
+  {% if field.field.widget.input_type == 'checkbox' and not field.field.widget.allow_multiple_selected %}
+    <label class="check" for="{{ field.id_for_label }}">{{ field }} <span>{{ field.label }}</span></label>
+  {% else %}
+    <label for="{{ field.id_for_label }}"{% if choices %} id="{{ field.id_for_label }}-label"{% endif %}>{{ label|default:field.label }}{% if field.field.required %} <span class="req" aria-hidden="true">*</span>{% endif %}</label>
+    {{ field }}
+  {% endif %}
+  {% if field.help_text %}<div class="field__help">{{ field.help_text }}</div>{% endif %}
+  {% for error in field.errors %}<div class="field__error">{{ error }}</div>{% endfor %}
+  <div class="error-message" aria-live="polite"></div>
+</div>

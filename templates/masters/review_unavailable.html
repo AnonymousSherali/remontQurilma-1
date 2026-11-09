@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Baho qoldirib bo'lmaydi | {{ SITE.name }}{% endblock %}
+
+{% block content %}
+<div class="container auth-wrap">
+  <div class="card card--raised auth-card" style="text-align:center">
+    <div style="font-size:3rem;line-height:1;margin-bottom:1rem" aria-hidden="true">⏳</div>
+    <h1 style="font-size:1.6rem">Hozircha baho qoldirib bo'lmaydi</h1>
+    <p class="muted">
+      {% if service_request.status == 'cancelled' %}Bu buyurtma bekor qilingan.
+      {% elif not service_request.master %}Bu buyurtmaga hali usta biriktirilmagan.
+      {% else %}Usta ishni yakunlagach, havola faollashadi.{% endif %}
+    </p>
+    <a class="btn btn--primary" href="{% url 'repair_service:index' %}">Bosh sahifa</a>
+  </div>
+</div>
+{% endblock %}
