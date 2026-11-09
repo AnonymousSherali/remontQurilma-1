@@ -78,6 +78,15 @@
         <a class="btn btn--primary btn--lg" href="{{ order.get_review_url }}">⭐ {% translate "Ustani baholash" %}</a>
       {% endif %}
 
+      {% translate "Muammoni rasmga oling — usta nima kerakligini oldindan biladi va kerakli ehtiyot qismni olib keladi." as photo_hint %}
+      {% if photos or photo_kinds %}{% include "orders/_photos.html" with hint=photo_hint %}{% endif %}
+      {% if can_act and order.master %}
+      <form method="post" action="{% url 'repair_service:order_portfolio_toggle' order.review_token %}" class="portfolio-consent">{% csrf_token %}
+        <span class="small">{% if order.photos_in_portfolio %}✓ {% translate "Ish rasmlari (oldin/keyin) buyurtma tasdiqlangach usta portfoliosida ko'rsatilishi mumkin." %}{% else %}{% translate "Ish rasmlari usta portfoliosida ko'rsatilmaydi." %}{% endif %}</span>
+        <button class="btn btn--sm btn--ghost">{% if order.photos_in_portfolio %}{% translate "Ko'rsatmaslik" %}{% else %}{% translate "Ruxsat berish" %}{% endif %}</button>
+      </form>
+      {% endif %}
+
       <section class="card">
         <div class="card__title">{% translate "Tarix" %}</div>
         <ul class="events">

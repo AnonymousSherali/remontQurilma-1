@@ -17,6 +17,10 @@ urlpatterns = [
     path('buyurtma/<uuid:token>/tolov/<int:milestone_id>/', order_views.milestone_pay, name='milestone_pay'),
     path('buyurtma/<uuid:token>/chiqarish/<int:milestone_id>/', order_views.milestone_release,
          name='milestone_release'),
+    path('buyurtma/<uuid:token>/rasm/', order_views.order_photo_upload, name='order_photo_upload'),
+    path('buyurtma/<uuid:token>/rasm/<int:photo_id>/ochirish/', order_views.order_photo_delete,
+         name='order_photo_delete'),
+    path('buyurtma/<uuid:token>/portfolio/', order_views.order_portfolio_toggle, name='order_portfolio_toggle'),
     path('buyurtmalarim/', order_views.my_orders, name='my_orders'),
     path('buyurtmalarim/chiqish/', order_views.my_orders_logout, name='my_orders_logout'),
 ]

@@ -134,7 +134,8 @@ class TelegramBotTests(TestCase):
         self.client.force_login(admin)
         data = {'name': 'X', 'phone': '+998901112299', 'master': self.master.pk, 'status': 'new', 'quantity': 1,
                 'language': 'uz', 'milestones-TOTAL_FORMS': 0, 'milestones-INITIAL_FORMS': 0,
-                'events-TOTAL_FORMS': 0, 'events-INITIAL_FORMS': 0}
+                'events-TOTAL_FORMS': 0, 'events-INITIAL_FORMS': 0,
+                'photos-TOTAL_FORMS': 0, 'photos-INITIAL_FORMS': 0}
         with self.captureOnCommitCallbacks(execute=True):
             self.client.post(reverse('admin:repair_service_servicerequest_change', args=[order.pk]), data)
         order.refresh_from_db()

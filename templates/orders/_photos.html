@@ -1,0 +1,44 @@
+{% load i18n %}
+{# Buyurtma rasmlari. Kontekst: photo_groups, photo_kinds, photo_upload_url, photo_limit, hint #}
+<section class="card" id="rasmlar">
+  <div class="card__title">📷 {% translate "Rasmlar" %}</div>
+  {% for kind, label, items in photo_groups %}
+    <div class="photo-group">
+      <div class="photo-group__label">{{ label }} <span class="muted">· {{ items|length }}</span></div>
+      <div class="photo-grid">
+        {% for photo in items %}
+          <figure class="photo">
+            <a href="{{ photo.image.url }}" data-lightbox target="_blank" rel="noopener">
+              <img src="{% if photo.thumbnail %}{{ photo.thumbnail.url }}{% else %}{{ photo.image.url }}{% endif %}" alt="{{ label }}{% if photo.caption %}: {{ photo.caption }}{% endif %}" loading="lazy">
+            </a>
+            {% if photo.caption %}<figcaption>{{ photo.caption }}</figcaption>{% endif %}
+            {% if photo.deletable %}
+              <form method="post" action="{{ photo.delete_url }}" class="photo__del"
+                    onsubmit="return confirm('{% translate "Rasmni o'chirasizmi?" as q %}{{ q|escapejs }}')">{% csrf_token %}
+                <button type="submit" aria-label="{% translate "O'chirish" %}" title="{% translate "O'chirish" %}">✕</button></form>
+            {% endif %}
+          </figure>
+        {% endfor %}
+      </div>
+    </div>
+  {% empty %}
+    <p class="muted" style="margin-top:0">{% translate "Hozircha rasm yo'q." %}</p>
+  {% endfor %}
+
+  {% if photo_kinds %}
+  <form method="post" action="{{ photo_upload_url }}" enctype="multipart/form-data" class="photo-upload">{% csrf_token %}
+    {% if hint %}<p class="muted small" style="margin:0 0 .5rem">{{ hint }}</p>{% endif %}
+    {% if photo_kinds|length > 1 %}
+      <div class="choice-grid"><div>
+        {% for code, label in photo_kinds %}<label><input type="radio" name="kind" value="{{ code }}" {% if code == photo_default_kind %}checked{% endif %}> {{ label }}</label>{% endfor %}
+      </div></div>
+    {% else %}<input type="hidden" name="kind" value="{{ photo_kinds.0.0 }}">{% endif %}
+    <div class="photo-upload__row">
+      <input type="file" name="images" accept="image/jpeg,image/png,image/webp" multiple required aria-label="{% translate 'Rasmlar' %}">
+      <input type="text" name="caption" maxlength="200" placeholder="{% translate 'Izoh (ixtiyoriy)' %}" aria-label="{% translate 'Izoh' %}">
+      <button class="btn btn--primary">{% translate "Yuklash" %}</button>
+    </div>
+    <p class="muted small" style="margin:.4rem 0 0">{% blocktranslate with n=photo_limit %}JPG, PNG yoki WEBP, 10 MB gacha, ko'pi bilan {{ n }} ta. Joylashuv ma'lumotlari (GPS) avtomatik o'chiriladi.{% endblocktranslate %}</p>
+  </form>
+  {% endif %}
+</section>

@@ -13,7 +13,7 @@ from django.db import transaction
 
 from . import workflow
 from .customer_notify import notify_master_new_order
-from .models import Brand, OrderEvent, Service, ServiceRequest, Testimonial
+from .models import Brand, OrderEvent, OrderPhoto, Service, ServiceRequest, Testimonial
 from .phone import format_phone
 
 admin.site.site_header = 'TechService boshqaruv paneli'
@@ -30,6 +30,23 @@ STATUS_COLORS = {
     'Bekor qilindi': 'default',
     'Nizo': 'danger',
 }
+
+
+class OrderPhotoInline(TabularInline):
+    model = OrderPhoto
+    extra = 0
+    fields = ['preview', 'kind', 'uploaded_by', 'caption', 'is_hidden', 'created_at']
+    readonly_fields = ['preview', 'kind', 'uploaded_by', 'caption', 'created_at']
+    verbose_name_plural = 'Rasmlar (nizoda dalil)'
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    @display(description='Rasm')
+    def preview(self, obj):
+        thumb = obj.thumbnail or obj.image
+        return format_html('<a href="{}" target="_blank"><img src="{}" style="height:64px;border-radius:6px"></a>',
+                           obj.image.url, thumb.url) if thumb else '—'
 
 
 class OrderEventInline(TabularInline):
@@ -56,7 +73,7 @@ class ServiceRequestAdmin(ModelAdmin):
     date_hierarchy = 'created_at'
     list_per_page = 25
     actions = ['mark_cancelled']
-    inlines = [MilestoneInline, OrderEventInline]
+    inlines = [MilestoneInline, OrderPhotoInline, OrderEventInline]
 
     fieldsets = [
         ("Mijoz", {'fields': ['name', 'phone', 'email', 'address', 'consent']}),
@@ -136,6 +153,35 @@ class ServiceAdmin(ModelAdmin):
         if obj.is_per_unit:
             text += f' / {obj.get_unit_display()}'
         return text
+
+
+@admin.register(OrderPhoto)
+class OrderPhotoAdmin(ModelAdmin):
+    """Portfolio moderatsiyasi: nomaqbul rasmni saytdan yashirish (buyurtmada dalil sifatida qoladi)."""
+
+    list_display = ['preview', 'order', 'kind', 'uploaded_by', 'master', 'in_portfolio', 'is_hidden', 'created_at']
+    list_filter = ['kind', 'uploaded_by', 'is_hidden', 'created_at']
+    list_editable = ['is_hidden']
+    search_fields = ['order__id', 'order__master__full_name', 'caption']
+    readonly_fields = ['order', 'kind', 'uploaded_by', 'image', 'thumbnail', 'created_at']
+    list_per_page = 40
+
+    def has_add_permission(self, request):
+        return False
+
+    @display(description='Rasm')
+    def preview(self, obj):
+        thumb = obj.thumbnail or obj.image
+        return format_html('<img src="{}" style="height:56px;border-radius:6px">', thumb.url) if thumb else '—'
+
+    @display(description='Usta')
+    def master(self, obj):
+        return obj.order.master or '—'
+
+    @display(description='Portfolioda', boolean=True)
+    def in_portfolio(self, obj):
+        return (obj.order.status == ServiceRequest.STATUS_CONFIRMED and obj.order.photos_in_portfolio
+                and obj.kind != OrderPhoto.KIND_PROBLEM and not obj.is_hidden)
 
 
 @admin.register(Testimonial)

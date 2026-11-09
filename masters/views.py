@@ -17,6 +17,10 @@ from payments import services as payments
 from repair_service import workflow
 from repair_service.customer_notify import notify_quote
 from repair_service.forms import ServiceRequestForm
+from repair_service.models import OrderPhoto
+from repair_service.order_views import handle_photo_upload, photo_context
+from repair_service.photos import can_delete as can_delete_photo
+from repair_service.photos import portfolio
 from repair_service.models import ServiceRequest
 
 from .forms import (
@@ -118,6 +122,7 @@ def master_detail(request, pk):
     prices = Service.objects.filter(is_active=True, category__in=master.categories.all()).select_related('category')
     return render(request, 'masters/detail.html', {
         'master': master,
+        'portfolio': portfolio(master),
         'prices': prices.order_by('category__order', '-is_popular', 'order')[:8],
         'is_owner': is_owner,
         'reviews': reviews,
@@ -279,6 +284,8 @@ def order_detail(request, pk):
         'quote_deviation': deviation_percent(quote.amount, estimate) if quote else None,
         'money': payments.summary(order),
         'review_link': request.build_absolute_uri(order.get_review_url()),
+        **photo_context(request, order, workflow.MASTER, reverse('masters:order_photo_upload', args=[order.pk]),
+                        'masters:order_photo_delete', [order.pk]),
         'customer_link': request.build_absolute_uri(order.get_customer_url()),
     })
 
@@ -320,6 +327,26 @@ def quote_propose(request, pk):
     else:
         messages.error(request, '; '.join(e for errs in form.errors.values() for e in errs))
     return redirect(order.get_master_url())
+
+
+@login_required
+@require_POST
+def order_photo_upload(request, pk):
+    master, order = _own_order(request, pk)
+    handle_photo_upload(request, order, workflow.MASTER)
+    return redirect(order.get_master_url() + '#rasmlar')
+
+
+@login_required
+@require_POST
+def order_photo_delete(request, pk, photo_id):
+    master, order = _own_order(request, pk)
+    photo = get_object_or_404(OrderPhoto, pk=photo_id, order=order)
+    if not can_delete_photo(photo, workflow.MASTER):
+        raise Http404
+    photo.delete()
+    messages.info(request, _("Rasm o'chirildi."))
+    return redirect(order.get_master_url() + '#rasmlar')
 
 
 def review_create(request, token):

@@ -246,6 +246,8 @@ UNFOLD = {
                     {'title': 'Kategoriyalar', 'icon': 'category',
                      'link': reverse_lazy('admin:masters_category_changelist')},
                     {'title': 'Baholar', 'icon': 'star', 'link': reverse_lazy('admin:masters_review_changelist')},
+                    {'title': 'Ish rasmlari', 'icon': 'photo_library',
+                     'link': reverse_lazy('admin:repair_service_orderphoto_changelist')},
                 ],
             },
             {

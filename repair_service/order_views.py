@@ -20,8 +20,9 @@ from payments import services as payments
 from payments.models import Milestone, Quote
 from payments.providers import checkout_url, choices as payment_choices
 
+from . import photos as photo_rules
 from . import workflow
-from .models import ServiceRequest
+from .models import OrderPhoto, ServiceRequest
 
 
 def _order_by_token(token):
@@ -56,6 +57,9 @@ def order_detail(request, token):
         'estimate': order.catalog_estimate,
         'quote_deviation': deviation_percent(quote.amount, order.catalog_estimate) if quote else None,
         'deviation_limit': QUOTE_DEVIATION_LIMIT,
+        **photo_context(request, order, workflow.CUSTOMER if can_act else None,
+                        reverse('repair_service:order_photo_upload', args=[order.review_token]),
+                        'repair_service:order_photo_delete', [order.review_token]),
         'show_master_phone': order.master and order.status != ServiceRequest.STATUS_NEW,
     })
 
@@ -144,3 +148,73 @@ def my_orders(request):
 def my_orders_logout(request):
     otp.forget(request)
     return redirect(reverse('repair_service:my_orders'))
+
+
+# ---------- Rasmlar ----------
+
+def photo_context(request, order, actor, upload_url, delete_url_name, delete_args):
+    """Buyurtma sahifasidagi rasmlar bloki uchun kontekst (ikkala tomon uchun umumiy)."""
+    photos = list(order.photos.all())
+    for photo in photos:
+        photo.deletable = photo_rules.can_delete(photo, actor)
+        if photo.deletable:
+            photo.delete_url = reverse(delete_url_name, args=[*delete_args, photo.pk])
+    kinds = photo_rules.allowed_kinds(order, actor)
+    kind_labels = dict(OrderPhoto.KIND_CHOICES)
+    return {
+        'photos': photos,
+        'photo_groups': [(kind, kind_labels[kind], [p for p in photos if p.kind == kind])
+                         for kind, _label in OrderPhoto.KIND_CHOICES if any(p.kind == kind for p in photos)],
+        'photo_kinds': [(k, kind_labels[k]) for k in kinds],
+        'photo_upload_url': upload_url,
+        'photo_limit': photo_rules.MAX_PHOTOS_PER_SIDE,
+        # Ish boshlanmagan bo'lsa — "oldin", boshlangan bo'lsa — "keyin" rasmi kutiladi
+        'photo_default_kind': (OrderPhoto.KIND_AFTER if order.reached(ServiceRequest.STATUS_IN_PROGRESS)
+                               else OrderPhoto.KIND_BEFORE) if len(kinds) > 1 else (kinds[0] if kinds else ''),
+    }
+
+
+def handle_photo_upload(request, order, actor):
+    files = request.FILES.getlist('images')
+    if not files:
+        messages.error(request, _('Rasm tanlang'))
+        return
+    added, errors = photo_rules.add_photos(order, actor, request.POST.get('kind', ''), files,
+                                           request.POST.get('caption', ''))
+    for error in errors:
+        messages.error(request, error)
+    if added:
+        workflow.record(order, order.status, actor, note=_('%(n)s ta rasm yuklandi') % {'n': added})
+        messages.success(request, _('%(n)s ta rasm yuklandi') % {'n': added})
+
+
+@require_POST
+def order_photo_upload(request, token):
+    order = _order_by_token(token)
+    if not _can_act(request, order):
+        raise Http404
+    handle_photo_upload(request, order, workflow.CUSTOMER)
+    return redirect(order.get_customer_url() + '#rasmlar')
+
+
+@require_POST
+def order_photo_delete(request, token, photo_id):
+    order = _order_by_token(token)
+    photo = get_object_or_404(OrderPhoto, pk=photo_id, order=order)
+    if not _can_act(request, order) or not photo_rules.can_delete(photo, workflow.CUSTOMER):
+        raise Http404
+    photo.delete()
+    messages.info(request, _("Rasm o'chirildi."))
+    return redirect(order.get_customer_url() + '#rasmlar')
+
+
+@require_POST
+def order_portfolio_toggle(request, token):
+    order = _order_by_token(token)
+    if not _can_act(request, order):
+        raise Http404
+    order.photos_in_portfolio = not order.photos_in_portfolio
+    order.save(update_fields=['photos_in_portfolio'])
+    messages.info(request, _("Ish rasmlari usta portfoliosida ko'rsatiladi.") if order.photos_in_portfolio
+                  else _("Ish rasmlari usta portfoliosida ko'rsatilmaydi."))
+    return redirect(order.get_customer_url() + '#rasmlar')
