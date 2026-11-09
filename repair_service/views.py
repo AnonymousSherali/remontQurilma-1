@@ -4,6 +4,8 @@ from django.db import transaction
 from django.db.models import Avg, Count, ExpressionWrapper, F, FloatField, Q
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import get_language
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from masters.locations import DISTRICT_CHOICES
@@ -11,6 +13,8 @@ from masters.models import Category, Master, Review
 
 from .forms import ServiceRequestForm
 from .models import Brand, Service, ServiceRequest, Testimonial
+from . import workflow
+from .customer_notify import notify_order_created
 from .notifications import notify_new_request
 
 # Bazada brend bo'lmasa ko'rsatiladigan statik logolar (asl dizayndan)
@@ -40,7 +44,8 @@ def _landing_context():
     stats = {
         'masters': public_masters.count(),
         'categories': categories.count(),
-        'completed': ServiceRequest.objects.filter(status=ServiceRequest.STATUS_COMPLETED).count(),
+        'completed': ServiceRequest.objects.filter(
+            status__in=[ServiceRequest.STATUS_COMPLETED, ServiceRequest.STATUS_CONFIRMED]).count(),
         'rating': Review.objects.filter(is_published=True, master__is_verified=True).aggregate(
             avg=Avg(ExpressionWrapper(
                 (F('quality') + F('punctuality') + F('price') + F('politeness')) / 4.0,
@@ -64,6 +69,7 @@ def _landing_context():
         'fallback_brands': FALLBACK_BRANDS[:18],
         'districts': DISTRICT_CHOICES,
         'form': ServiceRequestForm(),
+        'status_timeline': workflow.showcase_timeline(),
     }
 
 
@@ -95,7 +101,7 @@ def submit_request(request):
     is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
     if _rate_limited(request):
-        message = "Juda ko'p ariza yuborildi. Iltimos, birozdan keyin urinib ko'ring yoki qo'ng'iroq qiling."
+        message = _("Juda ko'p ariza yuborildi. Iltimos, birozdan keyin urinib ko'ring yoki qo'ng'iroq qiling.")
         if is_ajax:
             return JsonResponse({'success': False, 'message': message}, status=429)
         return render(request, 'result.html', {'success': False, 'message': message}, status=429)
@@ -109,22 +115,29 @@ def submit_request(request):
         context.update({'errors': errors, 'form': form})
         return render(request, 'index.html', context, status=400)
 
-    service_request = form.save()
+    service_request = form.save(commit=False)
+    service_request.language = get_language() or settings.LANGUAGE_CODE
+    service_request.save()
+    workflow.record(service_request, ServiceRequest.STATUS_NEW, workflow.CUSTOMER)
     transaction.on_commit(lambda: notify_new_request(service_request))
+    transaction.on_commit(lambda: notify_order_created(service_request))
 
     if service_request.master:
-        message = f"Arizangiz {service_request.master.full_name}ga yuborildi. Usta tez orada qo'ng'iroq qiladi."
+        message = _("Arizangiz %(master)sga yuborildi. Usta tez orada qo'ng'iroq qiladi.") % {
+            'master': service_request.master.full_name}
     else:
-        message = "Arizangiz qabul qilindi! Operatorimiz eng yaqin ustani topib, siz bilan bog'lanadi."
+        message = _("Arizangiz qabul qilindi! Operatorimiz eng yaqin ustani topib, siz bilan bog'lanadi.")
+    track_url = service_request.get_customer_url()
 
     if is_ajax:
-        return JsonResponse({'success': True, 'message': message, 'request_id': service_request.id})
-    return render(request, 'result.html', {'success': True, 'message': message})
+        return JsonResponse({'success': True, 'message': message, 'request_id': service_request.id,
+                             'track_url': track_url})
+    return render(request, 'result.html', {'success': True, 'message': message, 'track_url': track_url})
 
 
 def result(request):
     """Ariza yuborish natijasi sahifasi"""
     return render(request, 'result.html', {
         'success': True,
-        'message': 'Arizangiz uchun rahmat!',
+        'message': _('Arizangiz uchun rahmat!'),
     })

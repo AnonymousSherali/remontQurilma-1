@@ -50,3 +50,24 @@ def query_with(querystring, **kwargs):
 @register.simple_tag
 def chips(items):
     return format_html_join('', '<span class="chip">{}</span>', ((str(i),) for i in items))
+
+
+@register.filter
+def tr(obj, field):
+    """Bazadagi matnni joriy tilda: rus tilida `name_ru` bo'sh bo'lmasa o'shani, aks holda asl matnni."""
+    from django.utils.translation import get_language
+    if obj is None:
+        return ''
+    if (get_language() or '').startswith('ru'):
+        value = getattr(obj, f'{field}_ru', '')
+        if value:
+            return value
+    return getattr(obj, field, '')
+
+
+@register.simple_tag(takes_context=True)
+def url_in_language(context, code):
+    """Joriy sahifaning boshqa tildagi manzili (hreflang va til almashtirish uchun)."""
+    from django.urls import translate_url
+    request = context['request']
+    return translate_url(request.get_full_path(), code)

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Ustani baholang | {{ SITE.name }}{% endblock %}
+{% block title %}{% translate "Ustani baholang" %} | {{ SITE.name }}{% endblock %}
 {% block body_class %}{% endblock %}
 {% block mobile_cta %}{% endblock %}
 
@@ -10,11 +11,12 @@
     <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem">
       <div class="avatar">{% if master.photo %}<img src="{{ master.photo.url }}" alt="">{% else %}{{ master.initials }}{% endif %}</div>
       <div>
-        <div class="muted small">Ariza #{{ service_request.pk }} · {{ service_request.created_at|date:"d.m.Y" }}</div>
-        <h1 style="font-size:1.4rem;margin:0">{{ master.full_name }}ni baholang</h1>
+        <div class="muted small">{% translate "Buyurtma" %} #{{ service_request.pk }} · {{ service_request.created_at|date:"d.m.Y" }}</div>
+        <h1 style="font-size:1.4rem;margin:0">{% if needs_confirm %}{% translate "Natijani tasdiqlang va baholang" %}{% else %}{% translate "Ustani baholang" %}{% endif %}: {{ master.full_name }}</h1>
       </div>
     </div>
-    <p class="muted">Bahoingiz boshqa mijozlarga to'g'ri usta tanlashda yordam beradi. Har bir mezon bo'yicha 1 dan 5 gacha yulduz qo'ying.</p>
+    {% if needs_confirm %}<div class="alert alert--info">{% translate "Yuborganingizda buyurtma tasdiqlanadi va ushlab turilgan to'lov ustaga o'tadi. Muammo bo'lsa, buyurtma sahifasida «Muammo bor» tugmasini bosing." %}</div>{% endif %}
+    <p class="muted">{% translate "Har bir mezon bo'yicha 1 dan 5 gacha yulduz qo'ying." %}</p>
 
     <form method="post" class="form" novalidate>
       {% csrf_token %}
@@ -29,7 +31,7 @@
       {% endfor %}
       {% include "partials/field.html" with field=form.comment %}
       {% include "partials/field.html" with field=form.author_name %}
-      <button type="submit" class="btn btn--primary btn--lg btn--block">Bahoni yuborish</button>
+      <button type="submit" class="btn btn--primary btn--lg btn--block">{% if needs_confirm %}{% translate "Tasdiqlash va baholash" %}{% else %}{% translate "Bahoni yuborish" %}{% endif %}</button>
     </form>
   </div>
 </div>

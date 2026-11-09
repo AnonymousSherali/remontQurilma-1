@@ -1,23 +1,23 @@
-{% load ui %}
+{% load i18n ui %}
 <article class="card master-card">
   <div class="master-card__head">
     <div class="avatar">{% if master.photo %}<img src="{{ master.photo.url }}" alt="" loading="lazy">{% else %}{{ master.initials }}{% endif %}</div>
     <div>
-      <a class="master-card__name" href="{{ master.get_absolute_url }}">{{ master.full_name }} <span class="verified" title="Tekshirilgan usta" aria-label="Tekshirilgan">✔</span></a>
+      <a class="master-card__name" href="{{ master.get_absolute_url }}">{{ master.full_name }} <span class="verified" title="{% translate 'Tekshirilgan usta' %}">✔</span></a>
       {% if master.reviews_count %}
         <span class="rating">{% stars master.rating_avg %} {{ master.rating_avg|floatformat:1 }} <span class="rating__count">({{ master.reviews_count }})</span></span>
       {% else %}
-        <span class="muted small">Hali baholanmagan</span>
+        <span class="muted small">{% translate "Hali baholanmagan" %}</span>
       {% endif %}
     </div>
   </div>
-  <div class="chips">{% for c in master.categories.all %}<span class="chip chip--brand">{{ c.icon }} {{ c.name }}</span>{% endfor %}</div>
+  <div class="chips">{% for c in master.categories.all %}<span class="chip chip--brand">{{ c.icon }} {{ c|tr:"name" }}</span>{% endfor %}</div>
   <div class="master-card__meta">
-    {% if master.distance_km is not None %}<span>📍 {{ master.distance_km|km }} uzoqlikda</span>{% elif master.address %}<span>📍 {{ master.address }}</span>{% endif %}
-    {% if master.experience_years %}<span>🧰 {{ master.experience_years }} yil tajriba</span>{% endif %}
+    {% if master.distance_km is not None %}<span>📍 {% blocktranslate with d=master.distance_km|km %}{{ d }} uzoqlikda{% endblocktranslate %}</span>{% elif master.address %}<span>📍 {{ master.address }}</span>{% endif %}
+    {% if master.experience_years %}<span>🧰 {% blocktranslate count y=master.experience_years %}{{ y }} yil tajriba{% plural %}{{ y }} yil tajriba{% endblocktranslate %}</span>{% endif %}
   </div>
   <div class="master-card__foot">
-    <a class="btn btn--primary" href="{{ master.get_absolute_url }}#ariza">Chaqirish</a>
-    <a class="btn" href="{{ master.get_absolute_url }}">Profil</a>
+    <a class="btn btn--primary" href="{{ master.get_absolute_url }}#ariza">{% translate "Chaqirish" %}</a>
+    <a class="btn" href="{{ master.get_absolute_url }}">{% translate "Profil" %}</a>
   </div>
 </article>

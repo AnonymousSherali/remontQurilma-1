@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n humanize %}
+
+{% block title %}{% translate "To'lov" %} | {{ SITE.name }}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+{% block body_class %}{% endblock %}
+
+{% block content %}
+<div class="container auth-wrap">
+  <div class="card card--raised auth-card">
+    <div class="alert alert--warning">🧪 {% translate "SINOV REJIMI: haqiqiy pul yechilmaydi. Production'da bu yerda Payme sahifasi ochiladi." %}</div>
+    <h1 style="font-size:1.5rem">{% translate "To'lov" %}</h1>
+    <p class="muted">{% translate "Buyurtma" %} #{{ order.pk }} · {{ milestone.title }}</p>
+    <div style="font-size:2rem;font-weight:800;margin:1rem 0">{{ milestone.amount|floatformat:0|intcomma }} {% translate "so'm" %}</div>
+    <form method="post" class="form">{% csrf_token %}
+      <div class="field"><label for="card">{% translate "Karta raqami" %}</label><input id="card" type="text" value="8600 0000 0000 0000" readonly></div>
+      <button class="btn btn--primary btn--lg btn--block">{% translate "To'lash" %}</button>
+    </form>
+    <p class="muted small" style="margin-top:1rem">{% translate "Mablag' bosqich bajarilguncha platformada ushlab turiladi va shundan keyingina ustaga o'tadi." %}</p>
+  </div>
+</div>
+{% endblock %}

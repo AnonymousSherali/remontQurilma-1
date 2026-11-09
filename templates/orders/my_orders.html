@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n ui %}
+
+{% block title %}{% translate "Mening buyurtmalarim" %} | {{ SITE.name }}{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}{% endblock %}
+
+{% block content %}
+<div class="container section" style="padding-top:2rem;max-width:860px">
+  <h1 style="font-size:2rem">{% translate "Mening buyurtmalarim" %}</h1>
+  {% if not phones %}
+    <p class="muted">{% translate "Buyurtma qoldirgan telefon raqamingizni kiriting — SMS kod bilan kirasiz. Parol kerak emas." %}</p>
+    {% include "partials/otp_gate.html" with purpose="login" reload=True %}
+  {% else %}
+    <div class="results-bar" style="margin-top:0">
+      <span class="muted">{% for p in phones %}{{ p|phone }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+      <form method="post" action="{% url 'repair_service:my_orders_logout' %}">{% csrf_token %}<button class="btn btn--ghost btn--sm">{% translate "Chiqish" %}</button></form>
+    </div>
+    <div class="card">
+      {% for order in orders %}
+        <a class="req-item" href="{{ order.get_customer_url }}" style="color:inherit">
+          <div>
+            <strong>#{{ order.pk }}{% if order.category %} · {{ order.category.icon }} {{ order.category|tr:"name" }}{% endif %}</strong>
+            <span class="badge badge--{{ order.status }}">{{ order.get_status_display }}</span>
+            <div class="muted small">{{ order.created_at|date:"d.m.Y H:i" }}{% if order.master %} · {{ order.master.full_name }}{% endif %}</div>
+          </div>
+          <span class="btn btn--sm">{% translate "Ochish" %} →</span>
+        </a>
+      {% empty %}
+        <div class="empty"><div class="empty__icon">📭</div><p class="muted">{% translate "Bu raqam bilan buyurtma topilmadi." %}</p>
+          <a class="btn btn--primary" href="{% url 'repair_service:index' %}#ariza">{% translate "Ariza qoldirish" %}</a></div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

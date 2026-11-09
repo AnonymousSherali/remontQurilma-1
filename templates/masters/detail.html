@@ -1,42 +1,42 @@
 {% extends "base.html" %}
-{% load ui %}
+{% load i18n ui %}
 
-{% block title %}{{ master.full_name }} — {% for c in master.categories.all %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% endfor %} | {{ SITE.name }}{% endblock %}
-{% block description %}{{ master.full_name }}: {% for c in master.categories.all %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% endfor %}. {% if master.reviews_count %}Reyting {{ master.rating_avg }} ({{ master.reviews_count }} baho).{% endif %} {{ master.address }}{% endblock %}
+{% block title %}{{ master.full_name }} — {% for c in master.categories.all %}{{ c|tr:"name" }}{% if not forloop.last %}, {% endif %}{% endfor %} | {{ SITE.name }}{% endblock %}
+{% block description %}{{ master.full_name }}: {% for c in master.categories.all %}{{ c|tr:"name" }}{% if not forloop.last %}, {% endif %}{% endfor %}. {{ master.address }}{% endblock %}
 
 {% block content %}
 <div class="container page-head">
-  <a href="{% url 'masters:list' %}" class="btn btn--ghost btn--sm">← Barcha ustalar</a>
+  <a href="{% url 'masters:list' %}" class="btn btn--ghost btn--sm">← {% translate "Barcha ustalar" %}</a>
 </div>
 
 <div class="container profile">
   <div style="display:grid;gap:1.5rem">
     {% if not master.is_verified %}
-      <div class="alert alert--warning">⏳ Profil hali tasdiqlanmagan — mijozlar uni ko'rmaydi. Faqat siz{% if user.is_staff %} va administrator{% endif %} ko'ryapsiz.</div>
+      <div class="alert alert--warning">⏳ {% translate "Profil hali tasdiqlanmagan — mijozlar uni ko'rmaydi." %}</div>
     {% endif %}
 
     <section class="card">
       <div class="profile__head">
         <div class="avatar avatar--lg">{% if master.photo %}<img src="{{ master.photo.url }}" alt="{{ master.full_name }}">{% else %}{{ master.initials }}{% endif %}</div>
         <div style="flex:1;min-width:220px">
-          <h1 style="font-size:1.75rem;margin-bottom:.35rem">{{ master.full_name }} {% if master.is_verified %}<span class="verified" title="Tekshirilgan usta">✔</span>{% endif %}</h1>
+          <h1 style="font-size:1.75rem;margin-bottom:.35rem">{{ master.full_name }} {% if master.is_verified %}<span class="verified" title="{% translate 'Tekshirilgan usta' %}">✔</span>{% endif %}</h1>
           {% if master.reviews_count %}
-            <div class="rating">{% stars master.rating_avg 'lg' %} <span style="font-size:1.25rem">{{ master.rating_avg|floatformat:1 }}</span> <span class="rating__count">{{ master.reviews_count }} ta baho</span></div>
-          {% else %}<div class="muted">Hali baholanmagan — birinchi mijoz bo'ling</div>{% endif %}
-          <div class="chips" style="margin-top:.75rem">{% for c in master.categories.all %}<a class="chip chip--brand" href="{{ c.get_absolute_url }}">{{ c.icon }} {{ c.name }}</a>{% endfor %}</div>
+            <div class="rating">{% stars master.rating_avg 'lg' %} <span style="font-size:1.25rem">{{ master.rating_avg|floatformat:1 }}</span> <span class="rating__count">{% blocktranslate count n=master.reviews_count %}{{ n }} ta baho{% plural %}{{ n }} ta baho{% endblocktranslate %}</span></div>
+          {% else %}<div class="muted">{% translate "Hali baholanmagan — birinchi mijoz bo'ling" %}</div>{% endif %}
+          <div class="chips" style="margin-top:.75rem">{% for c in master.categories.all %}<a class="chip chip--brand" href="{{ c.get_absolute_url }}">{{ c.icon }} {{ c|tr:"name" }}</a>{% endfor %}</div>
         </div>
       </div>
       <div class="grid grid--3" style="margin-top:1.5rem;gap:.75rem">
-        <div><div class="muted small">Tajriba</div><strong>{% if master.experience_years %}{{ master.experience_years }} yil{% else %}—{% endif %}</strong></div>
-        <div><div class="muted small">Hudud</div><strong>{{ master.address|default:"Toshkent" }}</strong></div>
-        <div><div class="muted small">Xizmat radiusi</div><strong>{{ master.service_radius_km }} km gacha boradi</strong></div>
+        <div><div class="muted small">{% translate "Tajriba" %}</div><strong>{% if master.experience_years %}{% blocktranslate count y=master.experience_years %}{{ y }} yil{% plural %}{{ y }} yil{% endblocktranslate %}{% else %}—{% endif %}</strong></div>
+        <div><div class="muted small">{% translate "Hudud" %}</div><strong>{{ master.address|default:"Toshkent" }}</strong></div>
+        <div><div class="muted small">{% translate "Xizmat radiusi" %}</div><strong>{% blocktranslate with r=master.service_radius_km %}{{ r }} km gacha boradi{% endblocktranslate %}</strong></div>
       </div>
-      {% if master.bio %}<hr style="border:0;border-top:1px solid var(--line);margin:1.5rem 0"><h3>Usta haqida</h3><p style="white-space:pre-line">{{ master.bio }}</p>{% endif %}
+      {% if master.bio %}<hr style="border:0;border-top:1px solid var(--line);margin:1.5rem 0"><h3>{% translate "Usta haqida" %}</h3><p style="white-space:pre-line">{{ master.bio }}</p>{% endif %}
     </section>
 
     {% if master.reviews_count %}
     <section class="card">
-      <div class="card__title">Mezonlar bo'yicha baho</div>
+      <div class="card__title">{% translate "Mezonlar bo'yicha baho" %}</div>
       <div class="criteria">
         {% for label, value in criteria %}
         <div class="criterion">
@@ -50,7 +50,7 @@
     {% endif %}
 
     <section class="card" id="baholar">
-      <div class="card__title">Mijozlar baholari {% if master.reviews_count %}<span class="muted" style="font-weight:600">({{ master.reviews_count }})</span>{% endif %}</div>
+      <div class="card__title">{% translate "Mijozlar baholari" %} {% if master.reviews_count %}<span class="muted" style="font-weight:600">({{ master.reviews_count }})</span>{% endif %}</div>
       {% for review in reviews %}
         <article class="review-item">
           <div class="review-item__head">
@@ -60,12 +60,12 @@
           <div class="rating">{% stars review.overall %} {{ review.overall|floatformat:1 }}</div>
           {% if review.comment %}<p style="margin:.5rem 0 0">{{ review.comment }}</p>{% endif %}
           <div class="chips" style="margin-top:.5rem">
-            <span class="chip">Sifat {{ review.quality }}</span><span class="chip">Vaqt {{ review.punctuality }}</span>
-            <span class="chip">Narx {{ review.price }}</span><span class="chip">Muomala {{ review.politeness }}</span>
+            <span class="chip">{% translate "Sifat" %} {{ review.quality }}</span><span class="chip">{% translate "Vaqt" %} {{ review.punctuality }}</span>
+            <span class="chip">{% translate "Narx" %} {{ review.price }}</span><span class="chip">{% translate "Muomala" %} {{ review.politeness }}</span>
           </div>
         </article>
       {% empty %}
-        <p class="muted" style="margin:0">Baholar faqat bajarilgan buyurtmadan keyin qoldiriladi.</p>
+        <p class="muted" style="margin:0">{% translate "Baholar faqat bajarilgan buyurtmadan keyin qoldiriladi." %}</p>
       {% endfor %}
       {% if reviews.has_other_pages %}
         <nav class="pagination">
@@ -80,26 +80,27 @@
   <aside class="profile__aside" id="ariza">
     <div class="card card--raised">
       {% if is_owner %}
-        <div class="card__title">Bu sizning profilingiz</div>
-        <p class="muted">Mijozlar shu sahifadan sizga ariza qoldiradi.</p>
-        <a class="btn btn--primary btn--block" href="{% url 'masters:profile_edit' %}">Profilni tahrirlash</a>
+        <div class="card__title">{% translate "Bu sizning profilingiz" %}</div>
+        <p class="muted">{% translate "Mijozlar shu sahifadan sizga ariza qoldiradi." %}</p>
+        <a class="btn btn--primary btn--block" href="{% url 'masters:profile_edit' %}">{% translate "Profilni tahrirlash" %}</a>
       {% elif not master.is_available %}
-        <div class="card__title">Usta hozir band</div>
-        <p class="muted">{{ master.full_name }} vaqtincha yangi buyurtma qabul qilmayapti.</p>
-        <a class="btn btn--primary btn--block" href="{% url 'masters:list' %}{% if master.categories.first %}?category={{ master.categories.first.slug }}{% endif %}">Boshqa ustani topish</a>
+        <div class="card__title">{% translate "Usta hozir band" %}</div>
+        <p class="muted">{% translate "Usta vaqtincha yangi buyurtma qabul qilmayapti." %}</p>
+        <a class="btn btn--primary btn--block" href="{% url 'masters:list' %}{% if master.categories.first %}?category={{ master.categories.first.slug }}{% endif %}">{% translate "Boshqa ustani topish" %}</a>
       {% else %}
-        <div class="card__title">Ustani chaqirish</div>
-        {% include "partials/request_form.html" with form=form show_category=True prefix="m-" button="Arizani ustaga yuborish" %}
+        <div class="card__title">{% translate "Ustani chaqirish" %}</div>
+        {% translate "Arizani ustaga yuborish" as send_label %}
+        {% include "partials/request_form.html" with form=form show_category=True prefix="m-" button=send_label %}
       {% endif %}
     </div>
     {{ map_points|json_script:"master-point" }}
-    <div class="map map--sm" data-map="master-point" hidden style="margin-top:1rem" role="region" aria-label="Ustaning ish hududi"></div>
+    <div class="map map--sm" data-map="master-point" hidden style="margin-top:1rem" role="region" aria-label="{% translate 'Ustaning ish hududi' %}"></div>
   </aside>
 </div>
 {% endblock %}
 
 {% block mobile_cta %}
   {% if not is_owner and master.is_available %}
-  <div class="mobile-cta"><a class="btn btn--primary" href="#ariza">Ustani chaqirish</a></div>
+  <div class="mobile-cta"><a class="btn btn--primary" href="#ariza">{% translate "Ustani chaqirish" %}</a></div>
   {% endif %}
 {% endblock %}

@@ -5,12 +5,24 @@ from django.urls import reverse
 from repair_service.models import ServiceRequest
 from repair_service.tests import make_master
 
+from payments import services as payments
+
 from .forms import ReviewForm
 from .geo import bounding_box, haversine_km
 from .models import Category, Master, Review
 from .services import search_masters
 
 CENTER = (41.311, 69.279)  # Toshkent markazi
+
+
+def verify_phone(client, phone, purpose='login'):
+    """Testda SMS kod bosqichini o'tkazib yuborish: raqamni sessiyada tasdiqlangan deb belgilaymiz."""
+    from django.utils import timezone
+    session = client.session
+    data = session.get('verified_phones', {})
+    data[f'{purpose}:{phone}'] = timezone.now().timestamp()
+    session['verified_phones'] = data
+    session.save()
 
 
 def review(master, score, **extra):
@@ -94,7 +106,7 @@ class SearchTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_api_yaxlitlangan_koordinata(self):
-        data = self.client.get(reverse('masters:api_list'), {'lat': CENTER[0], 'lng': CENTER[1]}).json()
+        data = self.client.get(reverse('api_masters'), {'lat': CENTER[0], 'lng': CENTER[1]}).json()
         self.assertEqual(data['count'], 2)
         first = data['results'][0]
         self.assertEqual(first['name'], 'Yaqin')
@@ -132,6 +144,14 @@ class RegistrationTests(TestCase):
             'latitude': '41.31112345678', 'longitude': '69.27998765432',  # brauzer 6 xonadan ko'p beradi
             'consent': 'on',
         }
+        verify_phone(self.client, '+998935557788', 'register')
+
+    def test_sms_tasdiqsiz_royxatdan_otib_bolmaydi(self):
+        self.client.session.flush()
+        self.client.cookies.clear()
+        response = self.client.post(reverse('masters:register'), self.data)
+        self.assertIn('phone', response.context['form'].errors)
+        self.assertFalse(Master.objects.exists())
 
     def test_royxatdan_otish(self):
         response = self.client.post(reverse('masters:register'), self.data)
@@ -157,6 +177,9 @@ class RegistrationTests(TestCase):
     def test_takroriy_raqam_va_parol(self):
         self.client.post(reverse('masters:register'), self.data)
         self.client.logout()
+        verify_phone(self.client, '+998935557788', 'register')
+        verify_phone(self.client, '+998935550000', 'register')
+        verify_phone(self.client, '+998935550001', 'register')
         response = self.client.post(reverse('masters:register'), dict(self.data, phone='93 555 77 88'))
         self.assertIn('phone', response.context['form'].errors)
         response = self.client.post(reverse('masters:register'), dict(self.data, phone='+998935550000', password2='boshqa'))
@@ -182,27 +205,55 @@ class DashboardTests(TestCase):
     def action(self, pk, name):
         return self.client.post(reverse('masters:request_action', args=[pk, name]))
 
-    def test_holat_otishlari(self):
-        self.action(self.request.pk, 'accept')
+    def status(self):
         self.request.refresh_from_db()
-        self.assertEqual(self.request.status, 'in_progress')
+        return self.request.status
+
+    def test_bosqichlar_navbat_bilan(self):
+        # Sakrab o'tib bo'lmaydi: qabul qilinmasdan "bajarildi" bo'lmaydi
         self.action(self.request.pk, 'complete')
-        self.request.refresh_from_db()
-        self.assertEqual(self.request.status, 'completed')
-        # Yakunlangan arizani bekor qilib bo'lmaydi
+        self.assertEqual(self.status(), 'new')
+        for action, expected in [('accept', 'accepted'), ('arrive', 'arrived')]:
+            self.action(self.request.pk, action)
+            self.assertEqual(self.status(), expected)
+        # Narx kelishilmaguncha ish boshlanmaydi
+        self.action(self.request.pk, 'start')
+        self.assertEqual(self.status(), 'arrived')
+        payments.propose_quote(self.request, 100000, 'cash')
+        payments.approve_quote(self.request)
+        for action, expected in [('start', 'in_progress'), ('complete', 'completed')]:
+            self.action(self.request.pk, action)
+            self.assertEqual(self.status(), expected)
+        # Bajarilgandan keyin usta bekor qila olmaydi va tasdiqlay olmaydi (bu mijozning ishi)
         self.action(self.request.pk, 'cancel')
-        self.request.refresh_from_db()
-        self.assertEqual(self.request.status, 'completed')
+        self.action(self.request.pk, 'confirm')
+        self.assertEqual(self.status(), 'completed')
+        self.assertEqual(
+            list(self.request.events.values_list('status', flat=True)),
+            ['accepted', 'arrived', 'in_progress', 'completed'],
+        )
+
+    def test_joyga_kelgach_bekor_qilib_bolmaydi(self):
+        self.action(self.request.pk, 'accept')
+        self.action(self.request.pk, 'arrive')
+        self.action(self.request.pk, 'cancel')
+        self.assertEqual(self.status(), 'arrived')
 
     def test_boshqa_ustaning_arizasi(self):
         foreign = ServiceRequest.objects.create(name='X', phone='+998901112234', master=self.other)
-        self.assertEqual(self.action(foreign.pk, 'complete').status_code, 404)
-        self.assertEqual(self.action(self.request.pk, 'delete').status_code, 404)
+        self.assertEqual(self.action(foreign.pk, 'accept').status_code, 404)
+        self.assertEqual(self.client.get(reverse('masters:order', args=[foreign.pk])).status_code, 404)
+        self.action(self.request.pk, 'hack')
+        self.assertEqual(self.status(), 'new')
 
-    def test_kabinetda_baho_havolasi(self):
-        self.action(self.request.pk, 'complete')
-        response = self.client.get(reverse('masters:dashboard'))
+    def test_buyurtma_sahifasida_mijoz_havolasi(self):
+        payments.propose_quote(self.request, 100000, 'cash')
+        payments.approve_quote(self.request)
+        for a in ('accept', 'arrive', 'start', 'complete'):
+            self.action(self.request.pk, a)
+        response = self.client.get(reverse('masters:order', args=[self.request.pk]))
         self.assertContains(response, str(self.request.review_token))
+        self.assertContains(response, 'tl--live')
 
     def test_bandlik(self):
         self.client.post(reverse('masters:toggle_availability'))
@@ -232,12 +283,17 @@ class ReviewFlowTests(TestCase):
         self.assertEqual(self.client.post(self.url, self.data).status_code, 403)
         self.assertFalse(Review.objects.exists())
 
-    def test_baholash_va_reyting(self):
+    def test_baholash_tasdiqlaydi_va_reyting(self):
         self.request.status = 'completed'
         self.request.save()
+        # Tasdiqlash pulni chiqaradi — SMS tasdiqsiz mumkin emas
+        self.assertEqual(self.client.get(self.url).status_code, 403)
+        verify_phone(self.client, self.request.phone)
         response = self.client.get(self.url)
         self.assertContains(response, 'Malika')  # ism oldindan to'ldirilgan
         self.client.post(self.url, self.data)
+        self.request.refresh_from_db()
+        self.assertEqual(self.request.status, 'confirmed')
         self.master.refresh_from_db()
         self.assertEqual(self.master.reviews_count, 1)
         self.assertEqual(str(self.master.rating_avg), '4.75')

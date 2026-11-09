@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load i18n humanize ui %}
+
+{% block title %}{% blocktranslate with id=order.pk %}Buyurtma #{{ id }}{% endblocktranslate %} | {{ SITE.name }}{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+{% block mobile_cta %}{% endblock %}
+{% block body_class %}{% endblock %}
+
+{% block content %}
+<section class="tl-section section" style="padding-top:2rem">
+  <div class="container">
+    <div class="results-bar" style="margin-top:0">
+      <div>
+        <span class="tl-eyebrow">{% translate "Buyurtma" %} #{{ order.pk }} · {{ order.created_at|date:"d.m.Y" }}</span>
+        <h1 style="font-size:clamp(1.6rem,3.5vw,2.4rem);margin:.5rem 0 0">{{ order.get_status_display }}</h1>
+      </div>
+      <a class="btn" href="{% url 'repair_service:my_orders' %}">{% translate "Mening buyurtmalarim" %}</a>
+    </div>
+    {% if order.status == 'disputed' %}<div class="alert alert--error">{% translate "Nizo ochilgan. Administrator ikkala tomon bilan bog'lanadi; to'lovlar muzlatilgan." %}</div>{% endif %}
+    {% if order.status == 'cancelled' %}<div class="alert alert--warning">{% translate "Buyurtma bekor qilingan." %}</div>{% endif %}
+    {% include "partials/order_timeline.html" with timeline=timeline live=True %}
+  </div>
+</section>
+
+<div class="container section" style="padding-top:2rem">
+  <div class="order-grid">
+    <div style="display:grid;gap:1.25rem">
+      {% if not can_act %}
+        {% include "partials/otp_gate.html" with phone=order.phone purpose="login" reload=True title=_("Buyurtmani boshqarish uchun raqamingizni tasdiqlang") %}
+      {% endif %}
+
+      {% if quote %}
+      <section class="card">
+        <div class="card__title">{% translate "Narx va to'lov" %}</div>
+        {% if quote.status == 'proposed' %}
+          <p style="margin:0 0 .25rem">{% translate "Usta taklif qilgan narx" %}:</p>
+          <div style="font-size:1.8rem;font-weight:800">{{ quote.amount|floatformat:0|intcomma }} {% translate "so'm" %}</div>
+          <div class="muted">{{ quote.get_plan_display }}</div>
+          {% if quote.note %}<p style="white-space:pre-line;margin:.75rem 0">{{ quote.note }}</p>{% endif %}
+          {% if can_act %}
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem">
+            <form method="post" action="{% url 'repair_service:quote_decision' order.review_token 'approve' %}">{% csrf_token %}<button class="btn btn--primary">{% translate "Narxga roziman" %}</button></form>
+            <form method="post" action="{% url 'repair_service:quote_decision' order.review_token 'reject' %}">{% csrf_token %}<button class="btn">{% translate "Rad etish" %}</button></form>
+          </div>
+          {% endif %}
+        {% elif quote.status == 'rejected' %}
+          <p class="muted" style="margin:0">{% translate "Siz narx taklifini rad etdingiz. Usta yangi taklif yuborishi mumkin." %}</p>
+        {% else %}
+          {% include "orders/_money.html" with side="customer" %}
+        {% endif %}
+      </section>
+      {% elif order.master %}
+      <section class="card"><div class="card__title">{% translate "Narx va to'lov" %}</div>
+        <p class="muted" style="margin:0">{% translate "Usta muammoni ko'rib chiqib, narx taklif qiladi. Rozi bo'lmaguningizcha ish boshlanmaydi." %}</p></section>
+      {% endif %}
+
+      {% if can_act and actions %}
+      <section class="card">
+        <div class="card__title">{% translate "Amallar" %}</div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          {% for action, label in actions %}
+            <form method="post" action="{% url 'repair_service:order_action' order.review_token action %}"
+                  {% if action != 'confirm' %}onsubmit="return confirm('{{ label|escapejs }}?')"{% endif %}>{% csrf_token %}
+              <button class="btn {% if action == 'confirm' %}btn--primary btn--lg{% elif action == 'dispute' %}btn--danger{% endif %}">{{ label }}</button>
+            </form>
+          {% endfor %}
+        </div>
+        {% if order.status == 'completed' %}<p class="muted small" style="margin:.75rem 0 0">{% translate "Tasdiqlashda ustani baholaysiz. Javob bermasangiz, 72 soatdan keyin buyurtma avtomatik tasdiqlanadi." %}</p>{% endif %}
+      </section>
+      {% endif %}
+
+      {% if order.status == 'confirmed' and order.can_be_reviewed %}
+        <a class="btn btn--primary btn--lg" href="{{ order.get_review_url }}">⭐ {% translate "Ustani baholash" %}</a>
+      {% endif %}
+
+      <section class="card">
+        <div class="card__title">{% translate "Tarix" %}</div>
+        <ul class="events">
+          {% for e in events %}<li><time>{{ e.created_at|date:"d.m H:i" }}</time><span><strong>{{ e.get_status_display }}</strong> · {{ e.get_actor_display }}{% if e.note %} — {{ e.note }}{% endif %}</span></li>{% endfor %}
+        </ul>
+      </section>
+    </div>
+
+    <aside style="display:grid;gap:1.25rem">
+      <section class="card">
+        <div class="card__title">{% translate "Usta" %}</div>
+        {% if order.master %}
+          <div style="display:flex;gap:.75rem;align-items:center">
+            <div class="avatar">{% if order.master.photo %}<img src="{{ order.master.photo.url }}" alt="">{% else %}{{ order.master.initials }}{% endif %}</div>
+            <div><a href="{{ order.master.get_absolute_url }}" style="font-weight:800;color:var(--ink)">{{ order.master.full_name }}</a>
+              {% if order.master.reviews_count %}<div class="rating">{% stars order.master.rating_avg %} {{ order.master.rating_avg|floatformat:1 }}</div>{% endif %}</div>
+          </div>
+          {% if show_master_phone and can_act %}<a class="btn btn--block" style="margin-top:1rem" href="tel:{{ order.master.phone }}">📞 {{ order.master.phone|phone }}</a>{% endif %}
+        {% else %}
+          <p class="muted" style="margin:0">{% translate "Operator sizga mos va yaqin ustani biriktirmoqda." %}</p>
+        {% endif %}
+      </section>
+      <section class="card">
+        <div class="card__title">{% translate "Buyurtma" %}</div>
+        <dl class="kv">
+          {% if order.category %}<dt>{% translate "Yo'nalish" %}</dt><dd>{{ order.category.icon }} {{ order.category|tr:"name" }}</dd>{% endif %}
+          {% if order.address %}<dt>{% translate "Manzil" %}</dt><dd>{{ order.address }}</dd>{% endif %}
+          {% if order.problem_description %}<dt>{% translate "Muammo" %}</dt><dd style="font-weight:400">{{ order.problem_description }}</dd>{% endif %}
+        </dl>
+      </section>
+      <p class="muted small">{% translate "Bu sahifa havolasini boshqalarga bermang." %} <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></p>
+    </aside>
+  </div>
+</div>
+{% endblock %}

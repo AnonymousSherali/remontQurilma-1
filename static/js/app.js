@@ -11,6 +11,18 @@
 (function () {
   'use strict';
 
+  // Tarjima qilingan matnlar base.html dagi <script id="js-i18n"> dan
+  var T = Object.assign({
+    resend: 'Qayta yuborish', debugCode: 'Sinov rejimi, kod:', network: "Tarmoq xatosi. Qaytadan urinib ko'ring.",
+    fixErrors: "Formadagi xatolarni to'g'rilang", genericError: "Xatolik yuz berdi. Keyinroq urinib ko'ring.",
+    copied: 'Havola nusxalandi', locating: 'Aniqlanmoqda…', located: '✓ Joylashuv aniqlandi',
+    geoUnsupported: 'Brauzeringiz joylashuvni aniqlay olmaydi. Tumanni tanlang.',
+    geoHttps: 'Joylashuv faqat HTTPS orqali ishlaydi. Hozircha tumanni tanlang.',
+    geoDenied: 'Joylashuvga ruxsat berilmadi. Brauzer sozlamalaridan ruxsat bering yoki tumanni tanlang.',
+    geoFailed: "Joylashuvni aniqlab bo'lmadi. Tumanni tanlang.", mapPicked: '✓ Joylashuv xaritada belgilandi',
+    track: 'Buyurtmani kuzatish →', reviews: 'baho', openProfile: 'Profilni ochish →', you: 'Siz',
+  }, (function () { var el = document.getElementById('js-i18n'); return el ? JSON.parse(el.textContent) : {}; })());
+
   // ---------------- Toast ----------------
   function toast(message, type) {
     var stack = document.querySelector('.toast-stack');
@@ -93,30 +105,28 @@
       var status = form.querySelector('.geo-status');
 
       if (!('geolocation' in navigator)) {
-        setStatus(status, "Brauzeringiz joylashuvni aniqlay olmaydi. Tumanni tanlang.", 'error');
+        setStatus(status, T.geoUnsupported, 'error');
         return;
       }
       if (!window.isSecureContext) {
-        setStatus(status, "Joylashuv faqat HTTPS orqali ishlaydi. Hozircha tumanni tanlang.", 'error');
+        setStatus(status, T.geoHttps, 'error');
         return;
       }
       btn.classList.add('is-loading');
-      setStatus(status, 'Aniqlanmoqda…');
+      setStatus(status, T.locating);
       navigator.geolocation.getCurrentPosition(function (pos) {
         btn.classList.remove('is-loading');
         if (lat) { lat.value = pos.coords.latitude.toFixed(6); }
         if (lng) { lng.value = pos.coords.longitude.toFixed(6); }
         if (district) { district.value = ''; }
-        setStatus(status, '✓ Joylashuv aniqlandi (aniqlik ~' + Math.round(pos.coords.accuracy) + ' m)', 'ok');
+        setStatus(status, T.located + ' (~' + Math.round(pos.coords.accuracy) + ' m)', 'ok');
         document.dispatchEvent(new CustomEvent('location:set', {
           detail: { lat: pos.coords.latitude, lng: pos.coords.longitude, form: form },
         }));
         if (btn.hasAttribute('data-autosubmit') && form.submit) { form.submit(); }
       }, function (err) {
         btn.classList.remove('is-loading');
-        var msg = err.code === 1
-          ? "Joylashuvga ruxsat berilmadi. Brauzer sozlamalaridan ruxsat bering yoki tumanni tanlang."
-          : "Joylashuvni aniqlab bo'lmadi. Tumanni tanlang.";
+        var msg = err.code === 1 ? T.geoDenied : T.geoFailed;
         setStatus(status, msg, 'error');
       }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
     });
@@ -202,6 +212,8 @@
           var done = form.parentNode.querySelector('.form-success');
           if (done) {
             done.querySelector('[data-message]').textContent = r.data.message;
+            var track = done.querySelector('[data-track]');
+            if (track && r.data.track_url) { track.href = r.data.track_url; track.hidden = false; }
             done.hidden = false;
             form.hidden = true;
           }
@@ -212,13 +224,13 @@
           Object.keys(r.data.errors).forEach(function (name) { showFieldError(form, name, r.data.errors[name]); });
           var first = form.querySelector('.is-invalid');
           if (first) { first.focus(); }
-          toast("Formadagi xatolarni to'g'rilang", 'error');
+          toast(T.fixErrors, 'error');
           return;
         }
-        toast(r.data.message || "Xatolik yuz berdi. Keyinroq urinib ko'ring.", 'error');
+        toast(r.data.message || T.genericError, 'error');
       }).catch(function () {
         release();
-        toast("Tarmoq xatosi. Internetni tekshirib, qaytadan urinib ko'ring.", 'error');
+        toast(T.network, 'error');
       });
     });
   });
@@ -236,7 +248,7 @@
     btn.addEventListener('click', function () {
       var input = document.querySelector(btn.dataset.copy);
       if (!input) { return; }
-      var done = function () { toast('Havola nusxalandi', 'success'); };
+      var done = function () { toast(T.copied, 'success'); };
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(input.value).then(done);
       } else {
@@ -244,6 +256,58 @@
         document.execCommand('copy');
         done();
       }
+    });
+  });
+
+  // ---------------- SMS kod (OTP) ----------------
+  document.querySelectorAll('[data-otp]').forEach(function (box) {
+    var phoneIn = box.querySelector('[data-otp-phone]');
+    var codeIn = box.querySelector('[data-otp-code]');
+    var err = box.querySelector('[data-otp-error]');
+    var debug = box.querySelector('[data-otp-debug]');
+    var csrf = box.querySelector('[name="csrfmiddlewaretoken"]').value;
+    var sendBtn = box.querySelector('[data-otp-send]');
+
+    function post(url, data) {
+      var body = new URLSearchParams(data);
+      body.append('purpose', box.dataset.purpose);
+      return fetch(url, {
+        method: 'POST', body: body, credentials: 'same-origin',
+        headers: { 'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest' },
+      }).then(function (r) { return r.json(); });
+    }
+
+    sendBtn.addEventListener('click', function () {
+      err.textContent = '';
+      sendBtn.classList.add('is-loading');
+      post(box.dataset.sendUrl, { phone: phoneIn.value }).then(function (data) {
+        sendBtn.classList.remove('is-loading');
+        if (!data.ok) { err.textContent = data.error; return; }
+        box.dataset.phoneVerified = data.phone;
+        box.querySelector('[data-step="code"]').hidden = false;
+        sendBtn.textContent = T.resend;
+        codeIn.focus();
+        if (data.debug_code) { debug.hidden = false; debug.textContent = T.debugCode + ' ' + data.debug_code; }
+      }).catch(function () { sendBtn.classList.remove('is-loading'); err.textContent = T.network; });
+    });
+
+    codeIn.addEventListener('input', function () {
+      codeIn.value = codeIn.value.replace(/\D/g, '').slice(0, 6);
+      if (codeIn.value.length === 6) { box.querySelector('[data-otp-verify]').click(); }
+    });
+
+    box.querySelector('[data-otp-verify]').addEventListener('click', function () {
+      err.textContent = '';
+      post(box.dataset.verifyUrl, { phone: phoneIn.value, code: codeIn.value }).then(function (data) {
+        if (!data.ok) { err.textContent = data.error; codeIn.select(); return; }
+        if (box.hasAttribute('data-reload')) { window.location.reload(); return; }
+        box.querySelectorAll('[data-step]').forEach(function (el) { el.hidden = true; });
+        debug.hidden = true;
+        box.querySelector('[data-otp-ok]').hidden = false;
+        var target = box.dataset.fillTarget && document.querySelector(box.dataset.fillTarget);
+        if (target) { target.value = phoneIn.value; target.readOnly = true; }
+        document.dispatchEvent(new CustomEvent('otp:verified', { detail: { phone: data.phone } }));
+      }).catch(function () { err.textContent = T.network; });
     });
   });
 
@@ -267,15 +331,15 @@
           hintContent: p.name,
           balloonContentHeader: p.name,
           balloonContentBody: (p.categories || []).join(', ') +
-            (p.reviews_count ? '<br>★ ' + p.rating.toFixed(1) + ' (' + p.reviews_count + ' baho)' : '') +
+            (p.reviews_count ? '<br>★ ' + p.rating.toFixed(1) + ' (' + p.reviews_count + ' ' + T.reviews + ')' : '') +
             (p.distance_km != null ? '<br>' + p.distance_km + ' km' : ''),
-          balloonContentFooter: '<a href="' + p.url + '">Profilni ochish →</a>',
+          balloonContentFooter: '<a href="' + p.url + '">' + T.openProfile + '</a>',
         }, { preset: 'islands#greenRepairShopIcon' }));
       });
       map.geoObjects.add(collection);
 
       if (el.dataset.lat && el.dataset.showOrigin) {
-        map.geoObjects.add(new ymaps.Placemark(center, { hintContent: 'Siz' }, { preset: 'islands#blueCircleDotIcon' }));
+        map.geoObjects.add(new ymaps.Placemark(center, { hintContent: T.you }, { preset: 'islands#blueCircleDotIcon' }));
       }
       if (points.length > 1) {
         map.setBounds(collection.getBounds(), { checkZoomRange: true, zoomMargin: 40 });
@@ -301,7 +365,7 @@
         lngIn.value = coords[1].toFixed(6);
         var district = form.querySelector('[name="district"]');
         if (district) { district.value = ''; }
-        setStatus(form.querySelector('.geo-status'), '✓ Joylashuv xaritada belgilandi', 'ok');
+        setStatus(form.querySelector('.geo-status'), T.mapPicked, 'ok');
       }
       map.events.add('click', function (e) { setPoint(e.get('coords')); });
       mark.events.add('dragend', function () { setPoint(mark.geometry.getCoordinates()); });

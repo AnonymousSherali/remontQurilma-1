@@ -1,14 +1,15 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Kirish | {{ SITE.name }}{% endblock %}
+{% block title %}{% translate "Kirish" %} | {{ SITE.name }}{% endblock %}
 {% block body_class %}{% endblock %}
 {% block mobile_cta %}{% endblock %}
 
 {% block content %}
 <div class="container auth-wrap">
   <div class="card card--raised auth-card">
-    <h1 style="font-size:1.75rem">Ustalar kabineti</h1>
-    <p class="muted">Ro'yxatdan o'tgan telefon raqamingiz va parolingiz bilan kiring.</p>
+    <h1 style="font-size:1.75rem">{% translate "Ustalar kabineti" %}</h1>
+    <p class="muted">{% translate "Ro'yxatdan o'tgan telefon raqamingiz va parolingiz bilan kiring." %}</p>
     {% if form.non_field_errors %}
       <div class="alert alert--error" role="alert">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>
     {% endif %}
@@ -16,11 +17,13 @@
       {% csrf_token %}
       <input type="hidden" name="next" value="{{ next }}">
       {% include "partials/field.html" with field=form.username %}
-      {% include "partials/field.html" with field=form.password label="Parol" %}
-      <button type="submit" class="btn btn--primary btn--lg btn--block">Kirish</button>
+      {% translate "Parol" as pw_label %}
+      {% include "partials/field.html" with field=form.password label=pw_label %}
+      <button type="submit" class="btn btn--primary btn--lg btn--block">{% translate "Kirish" %}</button>
     </form>
-    <p class="muted small" style="text-align:center;margin:1.25rem 0 0">Hali ro'yxatdan o'tmaganmisiz? <a href="{% url 'masters:register' %}">Usta bo'lish</a></p>
-    <p class="muted small" style="text-align:center;margin:.5rem 0 0">Parolni unutdingizmi? Administratorga qo'ng'iroq qiling: <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></p>
+    <p class="muted small" style="text-align:center;margin:1.25rem 0 0"><a href="{% url 'masters:password_reset' %}">{% translate "Parolni unutdingizmi?" %}</a></p>
+    <p class="muted small" style="text-align:center;margin:.5rem 0 0">{% translate "Hali ro'yxatdan o'tmaganmisiz?" %} <a href="{% url 'masters:register' %}">{% translate "Usta bo'lish" %}</a></p>
+    <p class="muted small" style="text-align:center;margin:.5rem 0 0">{% translate "Buyurtmachimisiz?" %} <a href="{% url 'repair_service:my_orders' %}">{% translate "Buyurtmalarimga SMS bilan kirish" %}</a></p>
   </div>
 </div>
 {% endblock %}

@@ -1,0 +1,41 @@
+{% load i18n humanize %}
+{# To'lov bosqichlari. Parametrlar: money, milestones, quote, side ('customer'|'master'), order #}
+{% if quote and quote.status == 'approved' and quote.is_online %}
+  {% widthratio money.released money.total 100 as rel_pct %}{% widthratio money.held money.total 100 as held_pct %}
+  <div class="money-bar" aria-hidden="true"><span class="is-released" style="width:{{ rel_pct }}%"></span><span class="is-held" style="width:{{ held_pct }}%"></span></div>
+  <div class="muted small" style="display:flex;gap:1rem;flex-wrap:wrap">
+    <span>🟩 {% translate "Ustaga chiqarilgan" %}: <strong>{{ money.released|floatformat:0|intcomma }}</strong></span>
+    <span>🟨 {% translate "Ushlab turilibdi" %}: <strong>{{ money.held|floatformat:0|intcomma }}</strong></span>
+    <span>{% translate "Jami" %}: <strong>{{ money.total|floatformat:0|intcomma }} {% translate "so'm" %}</strong></span>
+  </div>
+  <div style="margin-top:.5rem">
+  {% for m in milestones %}
+    <div class="milestone">
+      <div>
+        <div style="font-weight:700">{{ m.position }}. {{ m.title }}</div>
+        <span class="badge badge--{% if m.state == 'pending' %}pending_pay{% else %}{{ m.state }}{% endif %}">{{ m.get_state_display }}</span>
+        {% if side == 'master' %}<span class="muted small">· {% translate "sizga" %} {{ m.master_amount|floatformat:0|intcomma }} ({% translate "komissiya" %} {{ m.fee_percent|floatformat:0 }}%)</span>{% endif %}
+      </div>
+      <div style="text-align:right">
+        <div class="milestone__amount">{{ m.amount|floatformat:0|intcomma }} {% translate "so'm" %}</div>
+        {% if side == 'customer' %}
+          {% if m.can_pay %}
+            <form method="post" action="{% url 'repair_service:milestone_pay' order.review_token m.pk %}">{% csrf_token %}
+              <button class="btn btn--primary btn--sm" style="margin-top:.35rem">{% translate "To'lash" %}</button></form>
+          {% elif m.can_release %}
+            <form method="post" action="{% url 'repair_service:milestone_release' order.review_token m.pk %}"
+                  onsubmit="return confirm('{% translate "Bosqich bajarilganini tasdiqlaysizmi? Mablag' ustaga o'tadi." as q %}{{ q|escapejs }}')">{% csrf_token %}
+              <button class="btn btn--sm" style="margin-top:.35rem">{% translate "Bosqichni tasdiqlab, to'lash" %}</button></form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+  <p class="muted small" style="margin:.75rem 0 0">
+    {% if side == 'customer' %}{% blocktranslate %}Pul ustaga darhol o'tmaydi: bosqich bajarilguncha platformada ushlab turiladi. Muammo bo'lsa — «Muammo bor» tugmasi, pul admin hal qilguncha muzlatiladi.{% endblocktranslate %}
+    {% else %}{% blocktranslate %}Mijoz to'lagan qism «Ushlab turilibdi» — bu kafolat. Bosqich bajarilgach mijoz tasdiqlaydi yoki 48 soatdan keyin avtomatik chiqariladi.{% endblocktranslate %}{% endif %}
+  </p>
+{% elif quote and quote.status == 'approved' %}
+  <p style="margin:0">{% translate "Kelishilgan narx" %}: <strong>{{ quote.amount|floatformat:0|intcomma }} {% translate "so'm" %}</strong> — {% translate "to'lov ustaga to'g'ridan-to'g'ri (platforma kafolatisiz)." %}</p>
+{% endif %}

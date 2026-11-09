@@ -1,0 +1,18 @@
+{% load i18n %}
+{# Buyurtma bosqichlari. Parametrlar: timeline ({steps, progress}), live (bool) #}
+<div class="tl{% if live %} tl--live{% endif %}" role="list" aria-label="{% translate 'Buyurtma bosqichlari' %}">
+  <i class="tl__track" aria-hidden="true"><i class="tl__progress" style="width:{{ timeline.progress }}%;--p:{{ timeline.progress }}%"></i></i>
+  {% for step in timeline.steps %}
+  <div class="tl__step tl__step--{{ step.actor }} tl__step--{{ step.state }}" role="listitem" style="--col:{{ forloop.counter }}"
+       {% if step.state == 'current' %}aria-current="step"{% endif %}>
+    <span class="tl__dot" aria-hidden="true">{% if live and step.state == 'done' %}✓{% else %}{{ step.n }}{% endif %}</span>
+    <div class="tl__card">
+      <div class="tl__who">{% if step.actor == 'customer' %}{% translate "Buyurtmachi" %}{% else %}{% translate "Usta" %}{% endif %}</div>
+      <div class="tl__title">{{ step.title }}</div>
+      <p class="tl__desc">{{ step.description }}</p>
+      {% if live and step.at %}<div class="tl__time">{{ step.at|date:"d.m H:i" }}</div>{% endif %}
+      {% if live and step.state == 'current' %}<div class="tl__time">● {% translate "hozir shu bosqichda" %}</div>{% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>

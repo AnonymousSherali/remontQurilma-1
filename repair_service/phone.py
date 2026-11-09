@@ -8,8 +8,9 @@ raqamni turli formatda yozilgani uchun ikki xil deb hisoblash xatosi bo'lmaydi
 import re
 
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
-PHONE_ERROR = "Telefon raqamini to'g'ri kiriting: +998 (XX) XXX-XX-XX"
+PHONE_ERROR = _("Telefon raqamini to'g'ri kiriting: +998 (XX) XXX-XX-XX")
 
 
 def normalize_phone(value):

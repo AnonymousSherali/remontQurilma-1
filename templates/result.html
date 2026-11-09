@@ -1,16 +1,18 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}{% if success %}Ariza qabul qilindi{% else %}Xatolik{% endif %} | {{ SITE.name }}{% endblock %}
+{% block title %}{% if success %}{% translate "Ariza qabul qilindi" %}{% else %}{% translate "Xatolik" %}{% endif %} | {{ SITE.name }}{% endblock %}
 
 {% block content %}
 <div class="container auth-wrap">
   <div class="card card--raised auth-card" style="text-align:center">
     <div style="font-size:3rem;line-height:1;margin-bottom:1rem" aria-hidden="true">{% if success %}✅{% else %}⚠️{% endif %}</div>
-    <h1 style="font-size:1.75rem">{% if success %}Rahmat!{% else %}Arizani yuborib bo'lmadi{% endif %}</h1>
+    <h1 style="font-size:1.75rem">{% if success %}{% translate "Rahmat!" %}{% else %}{% translate "Arizani yuborib bo'lmadi" %}{% endif %}</h1>
     <p class="lead">{{ message }}</p>
-    {% if success %}<p class="muted">Iltimos, telefoningiz yoqilgan holda bo'lsin.</p>{% endif %}
+    {% if success %}<p class="muted">{% translate "Buyurtma holatini SMS'dagi havola orqali kuzatishingiz mumkin." %}</p>{% endif %}
     <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem">
-      <a href="{% url 'repair_service:index' %}" class="btn btn--primary">Bosh sahifaga qaytish</a>
+      {% if track_url %}<a href="{{ track_url }}" class="btn btn--primary">{% translate "Buyurtmani kuzatish" %} →</a>{% endif %}
+      <a href="{% url 'repair_service:index' %}" class="btn">{% translate "Bosh sahifa" %}</a>
       <a href="tel:{{ SITE.phone }}" class="btn">📞 {{ SITE.phone_display }}</a>
     </div>
   </div>
