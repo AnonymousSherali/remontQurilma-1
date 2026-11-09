@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Profilni tahrirlash | {{ SITE.name }}{% endblock %}
+{% block body_class %}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+
+{% block content %}
+<div class="container auth-wrap">
+  <div class="card card--raised auth-card auth-card--wide">
+    <a href="{% url 'masters:dashboard' %}" class="btn btn--ghost btn--sm">← Kabinet</a>
+    <h1 style="font-size:1.9rem;margin-top:1rem">Profilni tahrirlash</h1>
+
+    {% if form.non_field_errors %}
+      <div class="alert alert--error" role="alert"><ul>{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul></div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="form" novalidate data-clear-coords-on-district>
+      {% csrf_token %}
+      {% include "partials/field.html" with field=form.full_name %}
+      {% include "masters/_profile_fields.html" %}
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button type="submit" class="btn btn--primary btn--lg">Saqlash</button>
+        <a href="{{ master.get_absolute_url }}" class="btn btn--lg">Ommaviy profilni ko'rish</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

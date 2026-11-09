@@ -1,0 +1,321 @@
+/**
+ * TechService — sayt skriptlari (jQuery'siz).
+ *
+ *  - mobil menyu
+ *  - telefon maskasi:          <input data-phone>
+ *  - joylashuvni aniqlash:     <button data-geolocate>
+ *  - AJAX ariza formalari:     <form class="js-request-form">
+ *  - Yandex xarita:            <div data-map="points-json-id">, tanlash rejimi: data-map-picker
+ *  - nusxa olish:              <button data-copy="#input">
+ */
+(function () {
+  'use strict';
+
+  // ---------------- Toast ----------------
+  function toast(message, type) {
+    var stack = document.querySelector('.toast-stack');
+    if (!stack) {
+      stack = document.createElement('div');
+      stack.className = 'toast-stack';
+      stack.setAttribute('aria-live', 'polite');
+      document.body.appendChild(stack);
+    }
+    var el = document.createElement('div');
+    el.className = 'toast' + (type ? ' toast--' + type : '');
+    el.setAttribute('role', 'status');
+    el.textContent = message;
+    stack.appendChild(el);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.add('show'); }); });
+    setTimeout(function () {
+      el.classList.remove('show');
+      setTimeout(function () { el.remove(); }, 300);
+    }, type === 'error' ? 6000 : 4500);
+  }
+  window.toast = toast;
+
+  // ---------------- Mobil menyu ----------------
+  var toggle = document.querySelector('.nav__toggle');
+  var links = document.querySelector('.nav__links');
+  if (toggle && links) {
+    toggle.addEventListener('click', function () {
+      var open = links.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    links.addEventListener('click', function (e) {
+      if (e.target.closest('a')) { links.classList.remove('is-open'); toggle.setAttribute('aria-expanded', 'false'); }
+    });
+  }
+
+  // ---------------- Telefon maskasi: +998 (90) 123-45-67 ----------------
+  function formatPhone(value) {
+    var digits = value.replace(/\D/g, '');
+    if (digits.indexOf('998') === 0) { digits = digits.slice(3); }
+    digits = digits.slice(0, 9);
+    var out = '+998';
+    if (digits.length) { out += ' (' + digits.slice(0, 2); }
+    if (digits.length >= 2) { out += ')'; }
+    if (digits.length > 2) { out += ' ' + digits.slice(2, 5); }
+    if (digits.length > 5) { out += '-' + digits.slice(5, 7); }
+    if (digits.length > 7) { out += '-' + digits.slice(7, 9); }
+    return out;
+  }
+  function bindPhone(input) {
+    if (input.dataset.phoneBound) { return; }
+    input.dataset.phoneBound = '1';
+    input.setAttribute('inputmode', 'tel');
+    input.setAttribute('autocomplete', 'tel');
+    if (!input.placeholder) { input.placeholder = '+998 (90) 123-45-67'; }
+    input.addEventListener('focus', function () { if (!input.value) { input.value = '+998 '; } });
+    input.addEventListener('input', function () {
+      var prevLen = input.value.length;
+      input.value = formatPhone(input.value);
+      if (input.value.length < prevLen && input.value === '+998') { input.value = '+998 '; }
+    });
+    input.addEventListener('blur', function () { if (input.value.replace(/\D/g, '') === '998') { input.value = ''; } });
+  }
+  document.querySelectorAll('input[data-phone], input[name="phone"]').forEach(bindPhone);
+
+  // ---------------- Joylashuvni aniqlash ----------------
+  // HTTPS talab qilinadi (localhost bundan mustasno) — brauzer cheklovi.
+  function setStatus(el, text, kind) {
+    if (!el) { return; }
+    el.textContent = text;
+    el.classList.remove('is-ok', 'is-error');
+    if (kind) { el.classList.add('is-' + kind); }
+  }
+
+  document.querySelectorAll('[data-geolocate]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var form = btn.closest('form') || document;
+      var lat = form.querySelector('[name="lat"], [name="latitude"]');
+      var lng = form.querySelector('[name="lng"], [name="longitude"]');
+      var district = form.querySelector('[name="district"]');
+      var status = form.querySelector('.geo-status');
+
+      if (!('geolocation' in navigator)) {
+        setStatus(status, "Brauzeringiz joylashuvni aniqlay olmaydi. Tumanni tanlang.", 'error');
+        return;
+      }
+      if (!window.isSecureContext) {
+        setStatus(status, "Joylashuv faqat HTTPS orqali ishlaydi. Hozircha tumanni tanlang.", 'error');
+        return;
+      }
+      btn.classList.add('is-loading');
+      setStatus(status, 'Aniqlanmoqda…');
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        btn.classList.remove('is-loading');
+        if (lat) { lat.value = pos.coords.latitude.toFixed(6); }
+        if (lng) { lng.value = pos.coords.longitude.toFixed(6); }
+        if (district) { district.value = ''; }
+        setStatus(status, '✓ Joylashuv aniqlandi (aniqlik ~' + Math.round(pos.coords.accuracy) + ' m)', 'ok');
+        document.dispatchEvent(new CustomEvent('location:set', {
+          detail: { lat: pos.coords.latitude, lng: pos.coords.longitude, form: form },
+        }));
+        if (btn.hasAttribute('data-autosubmit') && form.submit) { form.submit(); }
+      }, function (err) {
+        btn.classList.remove('is-loading');
+        var msg = err.code === 1
+          ? "Joylashuvga ruxsat berilmadi. Brauzer sozlamalaridan ruxsat bering yoki tumanni tanlang."
+          : "Joylashuvni aniqlab bo'lmadi. Tumanni tanlang.";
+        setStatus(status, msg, 'error');
+      }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+    });
+  });
+
+  // Tuman tanlansa — eski GPS koordinatasini tozalaymiz (server tumanga qarab topadi)
+  document.querySelectorAll('select[name="district"]').forEach(function (sel) {
+    sel.addEventListener('change', function () {
+      var form = sel.closest('form');
+      if (!form || !sel.value) { return; }
+      ['lat', 'lng'].forEach(function (n) { var i = form.querySelector('[name="' + n + '"]'); if (i) { i.value = ''; } });
+      // Ro'yxatdan o'tish formasida koordinata maydonlarini ham tozalaymiz
+      if (form.hasAttribute('data-clear-coords-on-district')) {
+        ['latitude', 'longitude'].forEach(function (n) { var i = form.querySelector('[name="' + n + '"]'); if (i) { i.value = ''; } });
+      }
+      setStatus(form.querySelector('.geo-status'), '');
+    });
+  });
+
+  // ---------------- AJAX ariza formalari ----------------
+  function clearErrors(form) {
+    form.querySelectorAll('.is-invalid').forEach(function (el) { el.classList.remove('is-invalid'); el.removeAttribute('aria-invalid'); });
+    form.querySelectorAll('.error-message').forEach(function (el) { el.classList.remove('show'); el.textContent = ''; });
+    var box = form.querySelector('.results');
+    if (box) { box.textContent = ''; }
+  }
+
+  function showFieldError(form, name, message) {
+    var input = form.querySelector('[name="' + name + '"]');
+    if (!input || input.type === 'hidden') {
+      var box = form.querySelector('.results');
+      if (box) { box.textContent = message; }
+      return;
+    }
+    input.classList.add('is-invalid');
+    input.setAttribute('aria-invalid', 'true');
+    var holder = input.closest('.field, .check') || input.parentNode;
+    var err = holder.querySelector('.error-message');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'error-message';
+      holder.appendChild(err);
+    }
+    err.textContent = message;
+    err.classList.add('show');
+  }
+
+  document.querySelectorAll('.js-request-form').forEach(function (form) {
+    form.addEventListener('input', function (e) {
+      if (e.target.classList.contains('is-invalid')) {
+        e.target.classList.remove('is-invalid');
+        var holder = e.target.closest('.field, .check');
+        var err = holder && holder.querySelector('.error-message');
+        if (err) { err.classList.remove('show'); }
+      }
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (form.dataset.submitting) { return; }
+      clearErrors(form);
+
+      var btn = form.querySelector('[type="submit"]');
+      form.dataset.submitting = '1';
+      if (btn) { btn.classList.add('is-loading'); btn.disabled = true; }
+
+      var release = function () {
+        delete form.dataset.submitting;
+        if (btn) { btn.classList.remove('is-loading'); btn.disabled = false; }
+      };
+
+      fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        credentials: 'same-origin',
+      }).then(function (res) {
+        return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+      }).then(function (r) {
+        release();
+        if (r.ok && r.data.success) {
+          form.reset();
+          var done = form.parentNode.querySelector('.form-success');
+          if (done) {
+            done.querySelector('[data-message]').textContent = r.data.message;
+            done.hidden = false;
+            form.hidden = true;
+          }
+          toast(r.data.message, 'success');
+          return;
+        }
+        if (r.data.errors) {
+          Object.keys(r.data.errors).forEach(function (name) { showFieldError(form, name, r.data.errors[name]); });
+          var first = form.querySelector('.is-invalid');
+          if (first) { first.focus(); }
+          toast("Formadagi xatolarni to'g'rilang", 'error');
+          return;
+        }
+        toast(r.data.message || "Xatolik yuz berdi. Keyinroq urinib ko'ring.", 'error');
+      }).catch(function () {
+        release();
+        toast("Tarmoq xatosi. Internetni tekshirib, qaytadan urinib ko'ring.", 'error');
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-reset-form]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var wrap = btn.closest('.form-success');
+      var form = wrap && wrap.parentNode.querySelector('.js-request-form');
+      if (form) { form.hidden = false; wrap.hidden = true; }
+    });
+  });
+
+  // ---------------- Nusxa olish ----------------
+  document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var input = document.querySelector(btn.dataset.copy);
+      if (!input) { return; }
+      var done = function () { toast('Havola nusxalandi', 'success'); };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(input.value).then(done);
+      } else {
+        input.select();
+        document.execCommand('copy');
+        done();
+      }
+    });
+  });
+
+  // ---------------- Yandex xarita ----------------
+  // API faqat xarita bor sahifalarda yuklanadi. Yuklanmasa (kalit yo'q, tarmoq),
+  // sahifa xaritasiz ham to'liq ishlaydi.
+  function initMaps() {
+    document.querySelectorAll('[data-map]').forEach(function (el) {
+      var dataEl = document.getElementById(el.dataset.map);
+      var points = dataEl ? JSON.parse(dataEl.textContent) : [];
+      var center = el.dataset.lat ? [parseFloat(el.dataset.lat), parseFloat(el.dataset.lng)]
+        : (points.length ? [points[0].lat, points[0].lng] : [41.3111, 69.2797]);
+
+      el.hidden = false;
+      var map = new ymaps.Map(el, { center: center, zoom: points.length > 1 ? 11 : 13, controls: ['zoomControl', 'geolocationControl'] });
+      map.behaviors.disable('scrollZoom');
+
+      var collection = new ymaps.GeoObjectCollection();
+      points.forEach(function (p) {
+        collection.add(new ymaps.Placemark([p.lat, p.lng], {
+          hintContent: p.name,
+          balloonContentHeader: p.name,
+          balloonContentBody: (p.categories || []).join(', ') +
+            (p.reviews_count ? '<br>★ ' + p.rating.toFixed(1) + ' (' + p.reviews_count + ' baho)' : '') +
+            (p.distance_km != null ? '<br>' + p.distance_km + ' km' : ''),
+          balloonContentFooter: '<a href="' + p.url + '">Profilni ochish →</a>',
+        }, { preset: 'islands#greenRepairShopIcon' }));
+      });
+      map.geoObjects.add(collection);
+
+      if (el.dataset.lat && el.dataset.showOrigin) {
+        map.geoObjects.add(new ymaps.Placemark(center, { hintContent: 'Siz' }, { preset: 'islands#blueCircleDotIcon' }));
+      }
+      if (points.length > 1) {
+        map.setBounds(collection.getBounds(), { checkZoomRange: true, zoomMargin: 40 });
+      }
+    });
+
+    // Usta o'z joylashuvini xaritada bosib tanlaydi
+    document.querySelectorAll('[data-map-picker]').forEach(function (el) {
+      var form = el.closest('form');
+      var latIn = form.querySelector('[name="latitude"]');
+      var lngIn = form.querySelector('[name="longitude"]');
+      var start = latIn.value ? [parseFloat(latIn.value), parseFloat(lngIn.value)] : [41.3111, 69.2797];
+
+      el.hidden = false;
+      var map = new ymaps.Map(el, { center: start, zoom: latIn.value ? 14 : 11, controls: ['zoomControl', 'searchControl'] });
+      var mark = new ymaps.Placemark(start, {}, { draggable: true, preset: 'islands#greenDotIcon', visible: !!latIn.value });
+      map.geoObjects.add(mark);
+
+      function setPoint(coords) {
+        mark.geometry.setCoordinates(coords);
+        mark.options.set('visible', true);
+        latIn.value = coords[0].toFixed(6);
+        lngIn.value = coords[1].toFixed(6);
+        var district = form.querySelector('[name="district"]');
+        if (district) { district.value = ''; }
+        setStatus(form.querySelector('.geo-status'), '✓ Joylashuv xaritada belgilandi', 'ok');
+      }
+      map.events.add('click', function (e) { setPoint(e.get('coords')); });
+      mark.events.add('dragend', function () { setPoint(mark.geometry.getCoordinates()); });
+      document.addEventListener('location:set', function (e) {
+        if (e.detail.form === form) { setPoint([e.detail.lat, e.detail.lng]); map.setCenter([e.detail.lat, e.detail.lng], 15); }
+      });
+    });
+  }
+
+  if (document.querySelector('[data-map], [data-map-picker]') && window.TS_MAPS_URL) {
+    var s = document.createElement('script');
+    s.src = window.TS_MAPS_URL;
+    s.async = true;
+    s.onload = function () { if (window.ymaps) { ymaps.ready(initMaps); } };
+    document.head.appendChild(s);
+  }
+})();

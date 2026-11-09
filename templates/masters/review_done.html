@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Rahmat! | {{ SITE.name }}{% endblock %}
+
+{% block content %}
+<div class="container auth-wrap">
+  <div class="card card--raised auth-card" style="text-align:center">
+    <div style="font-size:3rem;line-height:1;margin-bottom:1rem" aria-hidden="true">{% if already %}ℹ️{% else %}🙏{% endif %}</div>
+    <h1 style="font-size:1.6rem">{% if already %}Bu buyurtma allaqachon baholangan{% else %}Bahoingiz uchun rahmat!{% endif %}</h1>
+    <p class="muted">{% if already %}Har bir buyurtma uchun faqat bitta baho qoldiriladi.{% else %}Fikringiz {{ master.full_name }} va boshqa mijozlar uchun muhim.{% endif %}</p>
+    <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem">
+      <a class="btn btn--primary" href="{{ master.get_absolute_url }}">Usta profili</a>
+      <a class="btn" href="{% url 'repair_service:index' %}">Bosh sahifa</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

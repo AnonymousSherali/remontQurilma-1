@@ -1,0 +1,30 @@
+{# Ro'yxatdan o'tish va profil tahrirlash uchun umumiy maydonlar #}
+<fieldset class="form" style="border:0;padding:0;margin:0">
+  <legend class="card__title">Ish yo'nalishi</legend>
+  {% include "partials/field.html" with field=form.categories choices=True %}
+  <div class="form-row">
+    {% include "partials/field.html" with field=form.experience_years %}
+    {% include "partials/field.html" with field=form.photo %}
+  </div>
+  {% include "partials/field.html" with field=form.bio %}
+</fieldset>
+
+<fieldset class="form" style="border:0;padding:0;margin:1.5rem 0 0">
+  <legend class="card__title">Ish hududi</legend>
+  <p class="muted small" style="margin-top:-.5rem">Mijozlar sizni masofa bo'yicha topadi. Aniq joylashuvingiz hech kimga ko'rsatilmaydi — xaritada ~1 km aniqlikda hudud chiqadi.</p>
+  {{ form.latitude }}{{ form.longitude }}
+  <div class="form-row">
+    <div class="field">
+      <span class="field__label">Joylashuv</span>
+      <button type="button" class="btn btn--soft" data-geolocate>📍 Hozirgi joylashuvimni olish</button>
+    </div>
+    {% include "partials/field.html" with field=form.district %}
+  </div>
+  <div class="geo-status {% if form.latitude.value %}is-ok{% endif %}" aria-live="polite">{% if form.latitude.value %}✓ Joylashuv saqlangan{% endif %}</div>
+  <div class="map map--sm" data-map-picker hidden role="application" aria-label="Joylashuvni xaritada belgilash"></div>
+  <p class="muted small" style="margin:0" data-map-hint>Xarita yuklansa, joyingizni bosib ham belgilashingiz mumkin.</p>
+  <div class="form-row">
+    {% include "partials/field.html" with field=form.address %}
+    {% include "partials/field.html" with field=form.service_radius_km %}
+  </div>
+</fieldset>

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Ustani baholang | {{ SITE.name }}{% endblock %}
+{% block body_class %}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+
+{% block content %}
+<div class="container auth-wrap">
+  <div class="card card--raised auth-card" style="width:min(100%,560px)">
+    <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem">
+      <div class="avatar">{% if master.photo %}<img src="{{ master.photo.url }}" alt="">{% else %}{{ master.initials }}{% endif %}</div>
+      <div>
+        <div class="muted small">Ariza #{{ service_request.pk }} · {{ service_request.created_at|date:"d.m.Y" }}</div>
+        <h1 style="font-size:1.4rem;margin:0">{{ master.full_name }}ni baholang</h1>
+      </div>
+    </div>
+    <p class="muted">Bahoingiz boshqa mijozlarga to'g'ri usta tanlashda yordam beradi. Har bir mezon bo'yicha 1 dan 5 gacha yulduz qo'ying.</p>
+
+    <form method="post" class="form" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        {% if field.name in "quality punctuality price politeness" %}
+          <div class="field">
+            <span class="field__label" id="{{ field.name }}-label">{{ field.label }} <span class="req">*</span></span>
+            {{ field }}
+            {% for e in field.errors %}<div class="field__error">{{ e }}</div>{% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+      {% include "partials/field.html" with field=form.comment %}
+      {% include "partials/field.html" with field=form.author_name %}
+      <button type="submit" class="btn btn--primary btn--lg btn--block">Bahoni yuborish</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
