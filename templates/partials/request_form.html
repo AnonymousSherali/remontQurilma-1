@@ -5,6 +5,21 @@
     {% csrf_token %}
     <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
     {% if form.master.value %}<input type="hidden" name="master" value="{{ form.master.value }}">{% endif %}
+    {% if selected %}
+      <input type="hidden" name="catalog_item" value="{{ selected.pk }}">
+      <div class="selected-item">
+        <div>
+          <div class="muted small">{% translate "Tanlangan xizmat" %}</div>
+          <strong>{{ selected|tr:"name" }}</strong>
+          <div class="selected-item__price">{% include "partials/price.html" with item=selected %}</div>
+        </div>
+        {% if selected.is_per_unit %}
+          <label class="selected-item__qty">{% translate "Miqdori" %} ({{ selected.get_unit_display }})
+            <input type="number" name="quantity" min="1" max="999" value="{{ form.quantity.value|default:1 }}" inputmode="numeric">
+          </label>
+        {% else %}<input type="hidden" name="quantity" value="1">{% endif %}
+      </div>
+    {% endif %}
 
     <div class="form-row">
       <div class="field">

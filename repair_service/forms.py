@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from masters.models import Category, Master
 
-from .models import ServiceRequest
+from .models import Service, ServiceRequest
 from .phone import normalize_phone
 
 
@@ -21,7 +21,8 @@ class ServiceRequestForm(forms.ModelForm):
 
     class Meta:
         model = ServiceRequest
-        fields = ['name', 'phone', 'email', 'address', 'category', 'master', 'problem_description', 'consent']
+        fields = ['name', 'phone', 'email', 'address', 'category', 'master', 'catalog_item', 'quantity',
+                  'problem_description', 'consent']
         error_messages = {
             'name': {'required': _('Ismingizni kiriting')},
             'phone': {'required': _('Telefon raqamni kiriting')},
@@ -34,6 +35,10 @@ class ServiceRequestForm(forms.ModelForm):
         self.fields['master'].queryset = Master.objects.public()
         self.fields['master'].required = False
         self.fields['master'].error_messages['invalid_choice'] = _('Bu usta hozir buyurtma qabul qilmaydi')
+        self.fields['catalog_item'].queryset = Service.objects.filter(is_active=True)
+        self.fields['catalog_item'].required = False
+        self.fields['quantity'].required = False
+        self.fields['quantity'].min_value = 1
 
     def clean_name(self):
         name = (self.cleaned_data.get('name') or '').strip()
@@ -52,9 +57,20 @@ class ServiceRequestForm(forms.ModelForm):
             raise forms.ValidationError(_('Spam aniqlandi'))
         return ''
 
+    def clean_quantity(self):
+        quantity = self.cleaned_data.get('quantity') or 1
+        if not 1 <= quantity <= 999:
+            raise forms.ValidationError(_("Miqdor 1 dan 999 gacha bo'lishi kerak"))
+        return quantity
+
     def clean(self):
         cleaned = super().clean()
         master = cleaned.get('master')
+        item = cleaned.get('catalog_item')
+        if item and item.category_id and not cleaned.get('category'):
+            cleaned['category'] = item.category  # katalogdan tanlangan xizmat yo'nalishni aniqlaydi
+        if item and master and item.category_id and not master.categories.filter(pk=item.category_id).exists():
+            self.add_error('catalog_item', _('Bu usta tanlangan xizmatni bajarmaydi. Boshqa ustani tanlang.'))
         category = cleaned.get('category')
         if master and not master.is_available:
             self.add_error('master', _('Bu usta hozir buyurtma qabul qilmayapti. Boshqa ustani tanlang.'))

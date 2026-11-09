@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 18:48+0500\n"
+"POT-Creation-Date: 2026-11-09 18:56+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -153,6 +153,14 @@ msgstr "Что входит в цену"
 msgid "Masalan: nasos almashtirish, ehtiyot qism narxi bilan"
 msgstr "Например: замена насоса, с учётом стоимости запчасти"
 
+#, python-format
+msgid ""
+"Narx katalogdagidan %(diff)s%% farq qiladi. Mijoz tushunishi uchun sababini "
+"yozing (masalan: qo'shimcha ehtiyot qism, murakkab joylashuv)."
+msgstr ""
+"Цена отличается от каталожной на %(diff)s%%. Укажите причину, чтобы клиент "
+"понял (например: дополнительная запчасть, сложный доступ)."
+
 msgid "Yangi parol"
 msgstr "Новый пароль"
 
@@ -165,6 +173,14 @@ msgid_plural "%(n)s yulduz"
 msgstr[0] "%(n)s звезда"
 msgstr[1] "%(n)s звезды"
 msgstr[2] "%(n)s звёзд"
+
+#, python-format
+msgid "~%(n)s daqiqa"
+msgstr "~%(n)s мин"
+
+#, python-format
+msgid "~%(n)s soat"
+msgstr "~%(n)s ч"
 
 msgid "Joriy joylashuvingiz"
 msgstr "Ваше текущее местоположение"
@@ -424,6 +440,12 @@ msgstr "Имя должно содержать не менее 2 символо�
 msgid "Spam aniqlandi"
 msgstr "Обнаружен спам"
 
+msgid "Miqdor 1 dan 999 gacha bo'lishi kerak"
+msgstr "Количество должно быть от 1 до 999"
+
+msgid "Bu usta tanlangan xizmatni bajarmaydi. Boshqa ustani tanlang."
+msgstr "Этот мастер не выполняет выбранную услугу. Выберите другого мастера."
+
 msgid "Bu usta hozir buyurtma qabul qilmayapti. Boshqa ustani tanlang."
 msgstr "Этот мастер сейчас не принимает заказы. Выберите другого мастера."
 
@@ -462,6 +484,30 @@ msgstr "Администратор"
 
 msgid "Tizim"
 msgstr "Система"
+
+msgid "Qat'iy narx"
+msgstr "Фиксированная цена"
+
+msgid "...dan (minimal narx)"
+msgstr "от ... (минимальная цена)"
+
+msgid "xizmat"
+msgstr "услуга"
+
+msgid "dona"
+msgstr "шт."
+
+msgid "metr"
+msgstr "м"
+
+msgid "m²"
+msgstr "м²"
+
+msgid "nuqta"
+msgstr "точка"
+
+msgid "soat"
+msgstr "час"
 
 msgid "Avval telefon raqamingizni SMS kod bilan tasdiqlang."
 msgstr "Сначала подтвердите номер телефона кодом из SMS."
@@ -687,6 +733,9 @@ msgstr "Главное меню"
 msgid "Ustalar"
 msgstr "Мастера"
 
+msgid "Narxlar"
+msgstr "Цены"
+
 msgid "Qanday ishlaydi"
 msgstr "Как это работает"
 
@@ -718,6 +767,9 @@ msgstr "Клиентам"
 msgid "Usta topish"
 msgstr "Найти мастера"
 
+msgid "Narxlar katalogi"
+msgstr "Каталог цен"
+
 msgid "Ariza qoldirish"
 msgstr "Оставить заявку"
 
@@ -748,6 +800,58 @@ msgstr "Персональные данные используются толь�
 
 msgid "Qo'ng'iroq"
 msgstr "Позвонить"
+
+msgid ""
+"Santexnik, elektrik va maishiy texnika ta'mirlash narxlari: aniq summa, "
+"narxga nima kiradi va qancha vaqt ketadi."
+msgstr ""
+"Цены на услуги сантехника, электрика и ремонт бытовой техники: точная сумма,"
+" что входит в цену и сколько займёт времени."
+
+msgid ""
+"Platforma narxlari — ish boshlanishidan oldin bilasiz. Usta joyida boshqa "
+"narx aytsa, sababini yozishi shart va siz farqni ko'rasiz."
+msgstr ""
+"Цены платформы — вы знаете их до начала работ. Если мастер на месте назовёт "
+"другую цену, он обязан указать причину, а вы увидите разницу."
+
+msgid "Xizmatni qidiring: kran, rozetka, konditsioner…"
+msgstr "Найдите услугу: кран, розетка, кондиционер…"
+
+msgid "Qidirish"
+msgstr "Найти"
+
+msgid "Barchasi"
+msgstr "Все"
+
+msgid "Umumiy"
+msgstr "Общее"
+
+msgid "Ommabop"
+msgstr "Популярное"
+
+msgid "Tanlangan"
+msgstr "Выбрано"
+
+msgid "Buyurtma berish"
+msgstr "Заказать"
+
+msgid ""
+"Hech narsa topilmadi. Boshqacha yozib ko'ring yoki ariza qoldiring — "
+"operator narxni aytadi."
+msgstr ""
+"Ничего не найдено. Попробуйте другой запрос или оставьте заявку — оператор "
+"назовёт цену."
+
+msgid "Ro'yxatdan xizmatni tanlang yoki muammoni yozing."
+msgstr "Выберите услугу из списка или опишите проблему."
+
+msgid ""
+"Diagnostikadan keyin usta aniq narxni taklif qiladi; siz rozi "
+"bo'lmaguningizcha ish boshlanmaydi."
+msgstr ""
+"После диагностики мастер предложит точную цену; без вашего согласия работа "
+"не начнётся."
 
 msgid "Santexnik · Elektrik · Maishiy texnika"
 msgstr "Сантехник · Электрик · Бытовая техника"
@@ -815,9 +919,6 @@ msgstr "Лучшие"
 
 msgid "Yuqori baholangan ustalar"
 msgstr "Мастера с высоким рейтингом"
-
-msgid "Barchasi"
-msgstr "Все"
 
 msgid "Buyurtma statuslari"
 msgstr "Статусы заказа"
@@ -890,20 +991,18 @@ msgstr ""
 "Нажимаете «Есть проблема» — деньги замораживаются, администратор выслушает "
 "обе стороны и примет решение."
 
-msgid "Narxlar"
-msgstr "Цены"
-
-msgid "Taxminiy narxlar"
-msgstr "Примерные цены"
+msgid "Narxni oldindan bilasiz"
+msgstr "Цену вы знаете заранее"
 
 msgid ""
-"Yakuniy narx nosozlikka bog'liq — usta ko'rib chiqib, ishni boshlashdan "
-"oldin aytadi."
+"Platforma narxlari. Usta joyida boshqa narx aytsa, sababini yozadi va siz "
+"farqni ko'rasiz."
 msgstr ""
-"Итоговая цена зависит от неисправности — мастер назовёт её до начала работ."
+"Цены платформы. Если мастер на месте назовёт другую цену, он укажет причину,"
+" а вы увидите разницу."
 
-msgid "Umumiy"
-msgstr "Общее"
+msgid "To'liq katalog"
+msgstr "Весь каталог"
 
 msgid "Xizmat"
 msgstr "Услуга"
@@ -911,15 +1010,11 @@ msgstr "Услуга"
 msgid "Narx"
 msgstr "Цена"
 
-#, python-format
-msgid "%(p)s so'mdan"
-msgstr "от %(p)s сум"
+msgid "Ustani chaqirish (ta'mirlash buyurtma qilinsa)"
+msgstr "Вызов мастера (при заказе ремонта)"
 
 msgid "Bepul"
 msgstr "Бесплатно"
-
-msgid "Ustani chaqirish (ta'mirlash buyurtma qilinsa)"
-msgstr "Вызов мастера (при заказе ремонта)"
 
 msgid "Diagnostika (ta'mirlamasdan)"
 msgstr "Диагностика (без ремонта)"
@@ -1222,6 +1317,9 @@ msgstr "О мастере"
 msgid "Mezonlar bo'yicha baho"
 msgstr "Оценка по критериям"
 
+msgid "Platforma narxlari. Usta aniq narxni ko'rib chiqqach taklif qiladi."
+msgstr "Цены платформы. Точную цену мастер предложит после осмотра."
+
 msgid "Mijozlar baholari"
 msgstr "Отзывы клиентов"
 
@@ -1296,9 +1394,6 @@ msgstr "Ближайшие"
 
 msgid "Eng yuqori baho"
 msgstr "Лучшие по рейтингу"
-
-msgid "Qidirish"
-msgstr "Найти"
 
 #, python-format
 msgid "%(n)s ta usta topildi"
@@ -1534,6 +1629,21 @@ msgstr "Цена и оплата"
 msgid "Usta taklif qilgan narx"
 msgstr "Цена, предложенная мастером"
 
+#, python-format
+msgid "Katalog bo'yicha: %(e)s so'm"
+msgstr "По каталогу: %(e)s сум"
+
+#, python-format
+msgid "katalogdan %(d)s%% qimmat"
+msgstr "на %(d)s%% дороже каталога"
+
+#, python-format
+msgid "katalogdan %(d)s%% arzon"
+msgstr "на %(d)s%% дешевле каталога"
+
+msgid "katalog narxiga mos"
+msgstr "соответствует каталогу"
+
 msgid "Narxga roziman"
 msgstr "Согласен с ценой"
 
@@ -1568,6 +1678,12 @@ msgstr "История"
 
 msgid "Operator sizga mos va yaqin ustani biriktirmoqda."
 msgstr "Оператор подбирает подходящего мастера рядом с вами."
+
+msgid "Taxminiy narx"
+msgstr "Ориентировочная цена"
+
+msgid "dan"
+msgstr "от"
 
 msgid "Manzil"
 msgstr "Адрес"
@@ -1619,6 +1735,16 @@ msgstr ""
 msgid "Mijoz oldingi narxni rad etdi. Yangi taklif yuboring."
 msgstr "Клиент отклонил предыдущую цену. Отправьте новое предложение."
 
+#, python-format
+msgid "Mijoz katalogdan tanlagan: %(e)s so'm."
+msgstr "Клиент выбрал в каталоге: %(e)s сум."
+
+#, python-format
+msgid "Narx 20%% dan ko'p farq qilsa, sababini yozing — mijoz farqni ko'radi."
+msgstr ""
+"Если цена отличается более чем на 20%%, укажите причину — клиент увидит "
+"разницу."
+
 msgid "Narxni mijozga yuborish"
 msgstr "Отправить цену клиенту"
 
@@ -1652,6 +1778,9 @@ msgstr "Телефон"
 
 msgid "xaritada"
 msgstr "на карте"
+
+msgid "Katalog narxi"
+msgstr "Цена по каталогу"
 
 msgid "Buyurtmani bekor qilasizmi?"
 msgstr "Отказаться от заказа?"
@@ -1721,6 +1850,20 @@ msgstr "Подтвердить"
 msgid "Raqam tasdiqlandi"
 msgstr "Номер подтверждён"
 
+#, python-format
+msgid "%(p)s so'm"
+msgstr "%(p)s сум"
+
+#, python-format
+msgid "%(p)s so'mdan"
+msgstr "от %(p)s сум"
+
+msgid "Tanlangan xizmat"
+msgstr "Выбранная услуга"
+
+msgid "Miqdori"
+msgstr "Количество"
+
 msgid "Masalan: Dilshod"
 msgstr "Например: Дилшод"
 
@@ -1787,6 +1930,12 @@ msgstr "Статус заказа можно отслеживать по ссы�
 
 msgid "Bosh sahifa"
 msgstr "Главная"
+
+#~ msgid ""
+#~ "Yakuniy narx nosozlikka bog'liq — usta ko'rib chiqib, ishni boshlashdan "
+#~ "oldin aytadi."
+#~ msgstr ""
+#~ "Итоговая цена зависит от неисправности — мастер назовёт её до начала работ."
 
 #~ msgid "Mijoz hali to'lamagan"
 #~ msgstr "Клиент ещё не оплатил"

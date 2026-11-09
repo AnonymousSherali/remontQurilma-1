@@ -117,38 +117,38 @@
 
 <section class="section section--tint" id="narxlar">
   <div class="container">
-    <div class="section-head">
-      <span class="eyebrow">{% translate "Narxlar" %}</span>
-      <h2>{% translate "Taxminiy narxlar" %}</h2>
-      <p class="lead">{% translate "Yakuniy narx nosozlikka bog'liq — usta ko'rib chiqib, ishni boshlashdan oldin aytadi." %}</p>
+    <div class="results-bar" style="margin-top:0">
+      <div class="section-head" style="margin:0">
+        <span class="eyebrow">{% translate "Narxlar" %}</span>
+        <h2>{% translate "Narxni oldindan bilasiz" %}</h2>
+        <p class="lead">{% translate "Platforma narxlari. Usta joyida boshqa narx aytsa, sababini yozadi va siz farqni ko'rasiz." %}</p>
+      </div>
+      <a class="btn" href="{% url 'repair_service:catalog' %}">{% translate "To'liq katalog" %} →</a>
     </div>
-    <div class="card table-wrap">
-      {% regroup services by category as groups %}
-      {% for group in groups %}
-        {% if group.grouper %}<div class="price-group">{{ group.grouper.icon }} {{ group.grouper|tr:"name" }}</div>{% elif groups|length > 1 %}<div class="price-group">{% translate "Umumiy" %}</div>{% endif %}
-        <table class="price-table">
-          {% if forloop.first %}<thead><tr><th>{% translate "Xizmat" %}</th><th>{% translate "Narx" %}</th></tr></thead>{% endif %}
-          <tbody>
-            {% for service in group.list %}
-            <tr>
-              <td>{{ service|tr:"name" }}{% with d=service|tr:"description" %}{% if d %}<div class="muted small">{{ d }}</div>{% endif %}{% endwith %}</td>
-              <td>{% if service.price_from %}{% blocktranslate with p=service.price_from|floatformat:0|intcomma %}{{ p }} so'mdan{% endblocktranslate %}{% else %}{% translate "Bepul" %}{% endif %}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% empty %}
-        <table class="price-table">
-          <thead><tr><th>{% translate "Xizmat" %}</th><th>{% translate "Narx" %}</th></tr></thead>
-          <tbody>
-            <tr><td>{% translate "Ustani chaqirish (ta'mirlash buyurtma qilinsa)" %}</td><td>{% translate "Bepul" %}</td></tr>
-            <tr><td>{% translate "Diagnostika (ta'mirlamasdan)" %}</td><td>{% translate "50 000 so'm" %}</td></tr>
-            <tr><td>{% translate "Kichik ta'mir (bitta detal almashtirish)" %}</td><td>{% translate "100 000 so'mdan" %}</td></tr>
-            <tr><td>{% translate "Kapital ta'mir" %}</td><td>{% translate "300 000 so'mdan" %}</td></tr>
-          </tbody>
-        </table>
+    {% if services %}
+    <div class="grid grid--3">
+      {% for item in services %}
+      <a class="card price-card" href="{% url 'repair_service:catalog' %}?item={{ item.pk }}#ariza">
+        <span class="muted small">{% if item.category %}{{ item.category.icon }} {{ item.category|tr:"name" }}{% endif %}</span>
+        <strong class="price-card__name">{{ item|tr:"name" }}</strong>
+        <span class="price-card__price">{% include "partials/price.html" %}</span>
+        {% if item.duration_minutes %}<span class="muted small">⏱ {{ item.duration_minutes|duration }}</span>{% endif %}
+      </a>
       {% endfor %}
     </div>
+    {% else %}
+    <div class="card table-wrap">
+      <table class="price-table">
+        <thead><tr><th>{% translate "Xizmat" %}</th><th>{% translate "Narx" %}</th></tr></thead>
+        <tbody>
+          <tr><td>{% translate "Ustani chaqirish (ta'mirlash buyurtma qilinsa)" %}</td><td>{% translate "Bepul" %}</td></tr>
+          <tr><td>{% translate "Diagnostika (ta'mirlamasdan)" %}</td><td>{% translate "50 000 so'm" %}</td></tr>
+          <tr><td>{% translate "Kichik ta'mir (bitta detal almashtirish)" %}</td><td>{% translate "100 000 so'mdan" %}</td></tr>
+          <tr><td>{% translate "Kapital ta'mir" %}</td><td>{% translate "300 000 so'mdan" %}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
   </div>
 </section>
 

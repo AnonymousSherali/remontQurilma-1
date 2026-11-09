@@ -1,0 +1,4 @@
+{% load i18n humanize %}{# Katalog narxi. Parametr: item (Service) #}{% spaceless %}
+{% if item.is_free %}{% translate "Bepul" %}
+{% else %}{% with p=item.price_from|floatformat:0|intcomma %}{% if item.price_type == 'fixed' %}{% blocktranslate %}{{ p }} so'm{% endblocktranslate %}{% else %}{% blocktranslate %}{{ p }} so'mdan{% endblocktranslate %}{% endif %}{% endwith %}{% if item.is_per_unit %}<span class="muted small"> / {{ item.get_unit_display }}</span>{% endif %}
+{% endif %}{% endspaceless %}

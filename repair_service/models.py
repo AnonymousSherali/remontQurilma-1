@@ -49,6 +49,12 @@ class ServiceRequest(models.Model):
         related_name='requests', verbose_name='Usta',
     )
     problem_description = models.TextField('Muammo tavsifi', blank=True)
+    # Mijoz katalogdan tanlagan xizmat — taxminiy narx shundan hisoblanadi
+    catalog_item = models.ForeignKey(
+        'Service', on_delete=models.SET_NULL, null=True, blank=True, related_name='requests',
+        verbose_name='Katalogdagi xizmat',
+    )
+    quantity = models.PositiveSmallIntegerField('Miqdori', default=1)
     appliance_type = models.CharField('Texnika turi', max_length=100, blank=True)
     brand = models.CharField('Brend', max_length=100, blank=True)
 
@@ -80,6 +86,13 @@ class ServiceRequest(models.Model):
 
     def __str__(self):
         return f"Ariza #{self.id} - {self.name} ({self.phone})"
+
+    @property
+    def catalog_estimate(self):
+        """Katalog bo'yicha taxminiy narx (tanlanmagan bo'lsa None)."""
+        if self.catalog_item_id is None or self.catalog_item.is_free:
+            return None
+        return self.catalog_item.estimate(self.quantity)
 
     def reached(self, status):
         """Buyurtma shu bosqichga yetganmi (yoki undan o'tganmi)."""
@@ -139,7 +152,29 @@ class OrderEvent(models.Model):
 
 
 class Service(models.Model):
-    """Narxlar ro'yxatidagi xizmat"""
+    """Narxlar katalogidagi xizmat: "Kran almashtirish — 80 000 so'm".
+
+    Platforma narxi — mijoz oldindan biladi. Usta joyida boshqa narx aytishi
+    mumkin, lekin katalogdan 20% dan ko'p farq qilsa sababini yozishi shart va
+    mijoz farqni ko'radi (payments.forms / QuoteForm).
+    """
+
+    PRICE_FIXED = 'fixed'
+    PRICE_FROM = 'from'
+    PRICE_TYPE_CHOICES = [
+        (PRICE_FIXED, _("Qat'iy narx")),
+        (PRICE_FROM, _('...dan (minimal narx)')),
+    ]
+
+    UNIT_SERVICE = 'service'
+    UNIT_CHOICES = [
+        (UNIT_SERVICE, _('xizmat')),
+        ('piece', _('dona')),
+        ('meter', _('metr')),
+        ('sqm', _('m²')),
+        ('point', _('nuqta')),
+        ('hour', _('soat')),
+    ]
 
     category = models.ForeignKey(
         'masters.Category', on_delete=models.SET_NULL, null=True, blank=True,
@@ -149,20 +184,46 @@ class Service(models.Model):
     name_ru = models.CharField('Xizmat nomi (ruscha)', max_length=200, blank=True)
     description = models.TextField('Tavsif', blank=True)
     description_ru = models.TextField('Tavsif (ruscha)', blank=True)
+    includes = models.TextField(
+        'Narxga nima kiradi', blank=True,
+        help_text="Har bir qator — alohida band. Masalan: «Eski kranni yechish», «Germetik»",
+    )
+    includes_ru = models.TextField('Narxga nima kiradi (ruscha)', blank=True)
     price_from = models.DecimalField(
-        'Narx (dan)', max_digits=10, decimal_places=2, default=0,
+        'Narx', max_digits=10, decimal_places=2, default=0,
         help_text="0 bo'lsa saytda «Bepul» deb ko'rsatiladi",
     )
+    price_type = models.CharField('Narx turi', max_length=10, choices=PRICE_TYPE_CHOICES, default=PRICE_FROM)
+    unit = models.CharField('Birlik', max_length=10, choices=UNIT_CHOICES, default=UNIT_SERVICE)
+    duration_minutes = models.PositiveIntegerField(
+        'Taxminiy vaqt (daqiqa)', null=True, blank=True, help_text="Mijozga «~1 soat» ko'rinishida chiqadi",
+    )
+    is_popular = models.BooleanField('Ommabop', default=False, help_text="Bosh sahifada ko'rsatiladi")
     is_active = models.BooleanField('Faol', default=True)
     order = models.IntegerField("Ko'rsatish tartibi", default=0)
 
     class Meta:
-        verbose_name = 'Xizmat narxi'
-        verbose_name_plural = 'Xizmatlar narxi'
+        verbose_name = 'Katalogdagi xizmat'
+        verbose_name_plural = 'Narxlar katalogi'
         ordering = ['order', 'name']
 
     def __str__(self):
         return self.name
+
+    @property
+    def is_free(self):
+        return not self.price_from
+
+    @property
+    def is_per_unit(self):
+        return self.unit != self.UNIT_SERVICE
+
+    def includes_list(self, lang=None):
+        text = self.includes_ru if (lang or '').startswith('ru') and self.includes_ru else self.includes
+        return [line.strip(' •-') for line in text.splitlines() if line.strip(' •-')]
+
+    def estimate(self, quantity=1):
+        return self.price_from * max(int(quantity or 1), 1)
 
 
 class Testimonial(models.Model):

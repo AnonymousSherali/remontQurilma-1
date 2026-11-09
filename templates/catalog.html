@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load i18n ui %}
+
+{% block title %}{% translate "Narxlar katalogi" %}{% if category %} — {{ category|tr:"name" }}{% endif %} | {{ SITE.name }}{% endblock %}
+{% block description %}{% translate "Santexnik, elektrik va maishiy texnika ta'mirlash narxlari: aniq summa, narxga nima kiradi va qancha vaqt ketadi." %}{% endblock %}
+
+{% block content %}
+<div class="container page-head">
+  <span class="eyebrow">{% translate "Narxlar" %}</span>
+  <h1 style="font-size:clamp(1.8rem,4vw,2.6rem)">{% translate "Narxlar katalogi" %}</h1>
+  <p class="lead" style="max-width:720px">{% translate "Platforma narxlari — ish boshlanishidan oldin bilasiz. Usta joyida boshqa narx aytsa, sababini yozishi shart va siz farqni ko'rasiz." %}</p>
+
+  <form method="get" class="catalog-filters" role="search">
+    {% if category %}<input type="hidden" name="category" value="{{ category.slug }}">{% endif %}
+    <input type="search" name="q" value="{{ query }}" placeholder="{% translate 'Xizmatni qidiring: kran, rozetka, konditsioner…' %}" aria-label="{% translate 'Qidirish' %}">
+    <button class="btn btn--primary">{% translate "Qidirish" %}</button>
+  </form>
+  <nav class="tabs" aria-label="{% translate "Yo'nalishlar" %}" style="margin-top:1rem">
+    <a class="tab {% if not category %}is-active{% endif %}" href="?{% if query %}q={{ query|urlencode }}{% endif %}">{% translate "Barchasi" %}</a>
+    {% for c in categories %}<a class="tab {% if category and category.pk == c.pk %}is-active{% endif %}" href="?category={{ c.slug }}{% if query %}&q={{ query|urlencode }}{% endif %}">{{ c.icon }} {{ c|tr:"name" }}</a>{% endfor %}
+  </nav>
+</div>
+
+<div class="container">
+  <div class="layout-split layout-split--form">
+    <div>
+      {% regroup items by category as groups %}
+      {% for group in groups %}
+        <section class="card catalog-group">
+          <h2 class="price-group" style="margin-top:0">{% if group.grouper %}{{ group.grouper.icon }} {{ group.grouper|tr:"name" }}{% else %}{% translate "Umumiy" %}{% endif %}</h2>
+          {% for item in group.list %}
+          <article class="catalog-item{% if selected and selected.pk == item.pk %} is-selected{% endif %}" id="xizmat-{{ item.pk }}">
+            <div class="catalog-item__main">
+              <h3 class="catalog-item__name">{{ item|tr:"name" }}{% if item.is_popular %} <span class="chip chip--brand">{% translate "Ommabop" %}</span>{% endif %}</h3>
+              {% with d=item|tr:"description" %}{% if d %}<p class="muted small" style="margin:.2rem 0 0">{{ d }}</p>{% endif %}{% endwith %}
+              {% get_current_language as LANG %}
+              {% with inc=item|includes_for:LANG %}{% if inc %}
+                <details class="catalog-item__inc"><summary>{% translate "Narxga nima kiradi" %}</summary>
+                  <ul>{% for line in inc %}<li>{{ line }}</li>{% endfor %}</ul></details>
+              {% endif %}{% endwith %}
+            </div>
+            <div class="catalog-item__side">
+              <div class="catalog-item__price">{% include "partials/price.html" %}</div>
+              {% if item.duration_minutes %}<div class="muted small">⏱ {{ item.duration_minutes|duration }}</div>{% endif %}
+              <a class="btn btn--sm {% if selected and selected.pk == item.pk %}btn--soft{% else %}btn--primary{% endif %}" href="?item={{ item.pk }}{% if category %}&category={{ category.slug }}{% endif %}#ariza">{% if selected and selected.pk == item.pk %}✓ {% translate "Tanlangan" %}{% else %}{% translate "Buyurtma berish" %}{% endif %}</a>
+            </div>
+          </article>
+          {% endfor %}
+        </section>
+      {% empty %}
+        <div class="card empty"><div class="empty__icon">🔎</div>
+          <p class="muted">{% translate "Hech narsa topilmadi. Boshqacha yozib ko'ring yoki ariza qoldiring — operator narxni aytadi." %}</p></div>
+      {% endfor %}
+    </div>
+
+    <aside class="layout-split__aside layout-split__aside--after" id="ariza">
+      <div class="card card--raised">
+        <div class="card__title">{% if selected %}{% translate "Buyurtma berish" %}{% else %}{% translate "Ariza qoldirish" %}{% endif %}</div>
+        {% if not selected %}<p class="muted small" style="margin-top:-.5rem">{% translate "Ro'yxatdan xizmatni tanlang yoki muammoni yozing." %}</p>{% endif %}
+        {% include "partials/request_form.html" with form=form show_category=True prefix="cat-" selected=selected %}
+      </div>
+      <p class="muted small" style="margin-top:.75rem">{% translate "Diagnostikadan keyin usta aniq narxni taklif qiladi; siz rozi bo'lmaguningizcha ish boshlanmaydi." %}</p>
+    </aside>
+  </div>
+</div>
+{% endblock %}

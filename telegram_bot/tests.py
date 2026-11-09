@@ -132,7 +132,7 @@ class TelegramBotTests(TestCase):
         order = ServiceRequest.objects.create(name='X', phone='+998901112299')
         admin = get_user_model().objects.create_superuser('a', 'a@a.uz', 'x-Parol-123')
         self.client.force_login(admin)
-        data = {'name': 'X', 'phone': '+998901112299', 'master': self.master.pk, 'status': 'new',
+        data = {'name': 'X', 'phone': '+998901112299', 'master': self.master.pk, 'status': 'new', 'quantity': 1,
                 'language': 'uz', 'milestones-TOTAL_FORMS': 0, 'milestones-INITIAL_FORMS': 0,
                 'events-TOTAL_FORMS': 0, 'events-INITIAL_FORMS': 0}
         with self.captureOnCommitCallbacks(execute=True):

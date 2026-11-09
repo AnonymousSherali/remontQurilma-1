@@ -38,7 +38,7 @@
     <div class="card kpi"><div class="kpi__value">{% if master.reviews_count %}★ {{ master.rating_avg|floatformat:1 }}{% else %}—{% endif %}</div><div class="kpi__label">{% blocktranslate count n=master.reviews_count %}{{ n }} ta baho{% plural %}{{ n }} ta baho{% endblocktranslate %}</div></div>
   </div>
 
-  <div class="layout-split" style="grid-template-columns:1fr 340px">
+  <div class="layout-split layout-split--narrow">
     <section class="card">
       <div class="card__title">{% translate "Buyurtmalar" %}</div>
       <nav class="tabs" aria-label="{% translate "Holat bo'yicha filtr" %}">

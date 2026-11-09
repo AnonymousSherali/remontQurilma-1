@@ -355,7 +355,13 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .results-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .75rem; margin: 1.5rem 0 1rem; }
 .layout-split { display: grid; grid-template-columns: 1fr 420px; gap: 1.5rem; align-items: start; }
 .layout-split__aside { position: sticky; top: 88px; }
-@media (max-width: 1100px) { .layout-split { grid-template-columns: 1fr; } .layout-split__aside { position: static; order: -1; } }
+.layout-split--form { grid-template-columns: 1fr 400px; }
+.layout-split--narrow { grid-template-columns: 1fr 340px; }
+@media (max-width: 1100px) {
+  .layout-split, .layout-split--form, .layout-split--narrow { grid-template-columns: 1fr; }
+  .layout-split__aside { position: static; order: -1; }  /* xarita ro'yxatdan oldin */
+  .layout-split__aside--after { order: 0; }             /* forma ro'yxatdan keyin */
+}
 .map { width: 100%; height: 420px; border-radius: var(--radius); overflow: hidden; background: var(--surface-2); border: 1px solid var(--line); }
 .map--sm { height: 260px; }
 .map[hidden] { display: none; }
@@ -539,3 +545,29 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .lang-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 .lang-switch button { border: 0; background: transparent; padding: .35rem .6rem; font: inherit; font-size: .8rem; font-weight: 700; color: var(--muted); cursor: pointer; }
 .lang-switch button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+
+/* ---------- Narxlar katalogi ---------- */
+.catalog-filters { display: flex; gap: .5rem; max-width: 640px; }
+.catalog-filters input { flex: 1; }
+.catalog-group { margin-bottom: 1.25rem; padding-bottom: .5rem; }
+.catalog-item { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 1rem 0; border-top: 1px solid var(--line); }
+.catalog-item.is-selected { background: var(--brand-50); margin: 0 -1rem; padding-inline: 1rem; border-radius: 12px; }
+.catalog-item__name { font-size: 1rem; margin: 0; display: flex; gap: .4rem; flex-wrap: wrap; align-items: center; }
+.catalog-item__side { display: grid; justify-items: end; gap: .3rem; align-content: start; text-align: right; }
+.catalog-item__price { font-weight: 800; font-size: 1.05rem; white-space: nowrap; }
+.catalog-item__inc { margin-top: .4rem; font-size: .88rem; }
+.catalog-item__inc summary { cursor: pointer; color: var(--brand); font-weight: 600; }
+.catalog-item__inc ul { margin: .4rem 0 0; padding-left: 1.1rem; color: var(--ink-2); }
+@media (max-width: 560px) { .catalog-item { grid-template-columns: 1fr; } .catalog-item__side { justify-items: start; text-align: left; } }
+.selected-item { display: flex; justify-content: space-between; gap: 1rem; align-items: center; flex-wrap: wrap;
+  padding: .85rem 1rem; border-radius: 12px; background: var(--brand-50); border: 1px solid color-mix(in srgb, var(--brand) 30%, transparent); }
+.selected-item__price { font-weight: 800; color: var(--brand); }
+.selected-item__qty { display: grid; gap: .25rem; font-size: .82rem; font-weight: 700; }
+.selected-item__qty input { width: 110px; min-height: 40px; }
+.deviation { display: inline-flex; gap: .35rem; align-items: center; font-weight: 700; font-size: .85rem; padding: .2rem .6rem; border-radius: 999px; }
+.deviation--up { background: color-mix(in srgb, var(--warning) 16%, transparent); color: var(--warning); }
+.deviation--ok { background: var(--brand-50); color: var(--brand); }
+.price-card { display: grid; gap: .35rem; color: var(--ink); transition: transform .2s, box-shadow .2s, border-color .2s; }
+.price-card:hover { color: var(--ink); transform: translateY(-2px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); }
+.price-card__name { font-size: 1.02rem; }
+.price-card__price { font-weight: 800; font-size: 1.15rem; color: var(--brand); }

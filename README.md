@@ -23,6 +23,21 @@ va **mezonlar bo'yicha baholash** platformasi. Django 5.2 LTS.
 - Ustalarni tasdiqlash / yashirish, arizaga usta biriktirish, baholarni moderatsiya qilish
 - Yangi ariza haqida Telegram xabari (ixtiyoriy)
 
+## Narxlar katalogi
+
+`/narxlar/` — platforma narxlari (Urban Company tajribasi): yo'nalish bo'yicha filtr,
+qidiruv (o'zbek va rus tilida), har bir xizmat uchun:
+
+- **qat'iy narx** yoki **"...dan"**, birlik (xizmat / dona / metr / m² / nuqta / soat);
+- **taxminiy vaqt** ("~40 daqiqa") va **narxga nima kiradi** ro'yxati;
+- "Buyurtma berish" — xizmat tanlangan holda ariza (miqdor bilan), taxminiy summa
+  buyurtmada saqlanadi va ustaga ko'rinadi.
+
+Usta narx taklif qilganda katalog narxi oldindan to'ldiriladi. Taklif katalogdan
+**20% dan ko'p farq qilsa, sababini yozish majburiy**, mijoz esa "katalogdan 35% qimmat"
+belgisini ko'radi. Katalog admin'da: **Sayt kontenti → Narxlar** (ruscha nomlar,
+"Ommabop" belgisi bosh sahifaga chiqaradi). Namunaviy 27 ta xizmat: `seed_demo`.
+
 ## Buyurtma bosqichlari
 
 Buyurtmachi va usta statuslarni **navbat bilan** belgilaydi; ikkalasi ham bir xil
@@ -211,7 +226,7 @@ static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuer
 python manage.py test
 ```
 
-111 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+123 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
 bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
 (rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
 (muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click protokoli, Telegram bot (ulash, tugmalar, xavfsizlik).

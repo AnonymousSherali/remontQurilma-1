@@ -49,6 +49,17 @@
     </section>
     {% endif %}
 
+    {% if prices %}
+    <section class="card">
+      <div class="results-bar" style="margin:0 0 .5rem"><div class="card__title" style="margin:0">{% translate "Narxlar" %}</div>
+        <a class="small" href="{% url 'repair_service:catalog' %}{% if master.categories.first %}?category={{ master.categories.first.slug }}{% endif %}">{% translate "To'liq katalog" %} →</a></div>
+      <table class="price-table"><tbody>
+        {% for item in prices %}<tr><td>{{ item|tr:"name" }}</td><td>{% include "partials/price.html" %}</td></tr>{% endfor %}
+      </tbody></table>
+      <p class="muted small" style="margin:.75rem 0 0">{% translate "Platforma narxlari. Usta aniq narxni ko'rib chiqqach taklif qiladi." %}</p>
+    </section>
+    {% endif %}
+
     <section class="card" id="baholar">
       <div class="card__title">{% translate "Mijozlar baholari" %} {% if master.reviews_count %}<span class="muted" style="font-weight:600">({{ master.reviews_count }})</span>{% endif %}</div>
       {% for review in reviews %}

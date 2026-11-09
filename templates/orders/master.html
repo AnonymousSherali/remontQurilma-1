@@ -35,6 +35,7 @@
         {% if quote_form %}
           {% if quote and quote.status == 'proposed' %}<div class="alert alert--info">{% blocktranslate with amount=quote.amount|floatformat:0|intcomma %}Taklifingiz ({{ amount }} so'm) mijoz javobini kutmoqda. Kerak bo'lsa o'zgartiring.{% endblocktranslate %}</div>{% endif %}
           {% if quote and quote.status == 'rejected' %}<div class="alert alert--warning">{% translate "Mijoz oldingi narxni rad etdi. Yangi taklif yuboring." %}</div>{% endif %}
+          {% if estimate %}<div class="alert alert--info">📋 {% blocktranslate with e=estimate|floatformat:0|intcomma %}Mijoz katalogdan tanlagan: {{ e }} so'm.{% endblocktranslate %} {% translate "Narx 20% dan ko'p farq qilsa, sababini yozing — mijoz farqni ko'radi." %}</div>{% endif %}
           <form method="post" action="{% url 'masters:quote_propose' order.pk %}" class="form">{% csrf_token %}
             {% include "partials/field.html" with field=quote_form.amount %}
             <div class="field choice-grid">
@@ -79,6 +80,8 @@
           <dt>{% translate "Ism" %}</dt><dd>{{ order.name }}</dd>
           <dt>{% translate "Telefon" %}</dt><dd><a href="tel:{{ order.phone }}">{{ order.phone|phone }}</a></dd>
           {% if order.address %}<dt>{% translate "Manzil" %}</dt><dd>{{ order.address }} <a class="small" target="_blank" rel="noopener" href="https://yandex.uz/maps/?text={{ order.address|urlencode }}">{% translate "xaritada" %} ↗</a></dd>{% endif %}
+          {% if order.catalog_item %}<dt>{% translate "Xizmat" %}</dt><dd>{{ order.catalog_item|tr:"name" }}{% if order.quantity > 1 %} × {{ order.quantity }}{% endif %}</dd>
+            {% if estimate %}<dt>{% translate "Katalog narxi" %}</dt><dd>{{ estimate|floatformat:0|intcomma }} {% translate "so'm" %}</dd>{% endif %}{% endif %}
           {% if order.category %}<dt>{% translate "Yo'nalish" %}</dt><dd>{{ order.category.icon }} {{ order.category|tr:"name" }}</dd>{% endif %}
           {% if order.problem_description %}<dt>{% translate "Muammo" %}</dt><dd style="font-weight:400">{{ order.problem_description }}</dd>{% endif %}
         </dl>

@@ -78,3 +78,29 @@ def url_in_language(context, code):
     from django.urls import translate_url
     request = context['request']
     return translate_url(request.get_full_path(), code)
+
+
+@register.filter
+def duration(minutes):
+    """90 -> "~1,5 soat", 40 -> "~40 daqiqa" (tilga qarab)."""
+    from django.utils.translation import gettext as _
+    if not minutes:
+        return ''
+    if minutes < 60:
+        return _('~%(n)s daqiqa') % {'n': minutes}
+    hours = minutes / 60
+    text = f'{hours:.1f}'.rstrip('0').rstrip('.').replace('.', ',')
+    return _('~%(n)s soat') % {'n': text}
+
+
+@register.filter
+def includes_for(item, lang):
+    return item.includes_list(lang)
+
+
+@register.filter
+def absval(value):
+    try:
+        return abs(value)
+    except TypeError:
+        return value

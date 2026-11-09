@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
+from masters.forms import QUOTE_DEVIATION_LIMIT, deviation_percent
 from otp import services as otp
 from payments import services as payments
 from payments.models import Milestone, Quote
@@ -52,6 +53,9 @@ def order_detail(request, token):
         'milestones': milestones,
         'money': payments.summary(order),
         'payment_providers': payment_choices(),
+        'estimate': order.catalog_estimate,
+        'quote_deviation': deviation_percent(quote.amount, order.catalog_estimate) if quote else None,
+        'deviation_limit': QUOTE_DEVIATION_LIMIT,
         'show_master_phone': order.master and order.status != ServiceRequest.STATUS_NEW,
     })
 

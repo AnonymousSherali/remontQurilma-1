@@ -39,6 +39,11 @@ def order_card(order):
     ]
     if order.category:
         lines.append(f'🔧 {escape(order.category.name)}')
+    if order.catalog_item:
+        qty = f' × {order.quantity}' if order.quantity > 1 else ''
+        estimate = order.catalog_estimate
+        price = f" — {int(estimate):,} so'm".replace(',', ' ') if estimate else ''
+        lines.append(f'📋 {escape(order.catalog_item.name)}{qty}{price}')
     if order.address:
         lines.append(f'📍 {escape(order.address)}')
     if order.problem_description:

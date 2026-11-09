@@ -14,6 +14,7 @@ from .tests import AJAX, VALID, make_master
 class CustomerOrderTests(TestCase):
     def setUp(self):
         cache.clear()
+        translation.activate('uz')
         ConsoleBackend.sent.clear()
         self.master = make_master()
 
@@ -91,6 +92,9 @@ class CustomerOrderTests(TestCase):
 
 
 class RussianTests(TestCase):
+    def tearDown(self):
+        translation.activate('uz')
+
     def test_rus_tilidagi_sahifalar(self):
         response = self.client.get('/ru/')
         self.assertEqual(response.status_code, 200)
