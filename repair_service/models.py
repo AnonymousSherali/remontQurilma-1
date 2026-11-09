@@ -66,6 +66,8 @@ class ServiceRequest(models.Model):
 
     # SMS orqali yuboriladigan buyurtma sahifasi tilini eslab qolamiz
     language = models.CharField('Til', max_length=5, default='uz')
+    # Tasdiqlangan buyurtma rasmlari usta portfoliosida ko'rinishi mumkinmi (mijoz o'chira oladi)
+    photos_in_portfolio = models.BooleanField('Rasmlar portfolioda', default=True)
     # Mijoz "Telegram'da kuzatish" ni bosgan bo'lsa — xabarlar SMS o'rniga Telegram'ga (bepul)
     telegram_chat_id = models.BigIntegerField('Mijoz Telegram chati', null=True, blank=True, db_index=True)
 
@@ -149,6 +151,52 @@ class OrderEvent(models.Model):
 
     def __str__(self):
         return f'#{self.order_id} {self.get_status_display()} ({self.get_actor_display()})'
+
+
+def _photo_path(instance, filename):
+    # Tasodifiy nom: rasm manzilini taxmin qilib bo'lmasin
+    return f'orders/{instance.order_id}/{uuid.uuid4().hex}.jpg'
+
+
+def _thumb_path(instance, filename):
+    return f'orders/{instance.order_id}/thumb_{uuid.uuid4().hex}.jpg'
+
+
+class OrderPhoto(models.Model):
+    """Buyurtma rasmi: mijozning muammo rasmi yoki ustaning "oldin/keyin" rasmlari.
+
+    Yuklashda EXIF (GPS joylashuv, telefon modeli) o'chiriladi — repair_service/photos.py.
+    """
+
+    KIND_PROBLEM = 'problem'
+    KIND_BEFORE = 'before'
+    KIND_AFTER = 'after'
+    KIND_CHOICES = [
+        (KIND_PROBLEM, _('Muammo')),
+        (KIND_BEFORE, _('Oldin')),
+        (KIND_AFTER, _('Keyin')),
+    ]
+
+    order = models.ForeignKey(ServiceRequest, on_delete=models.CASCADE, related_name='photos', verbose_name='Buyurtma')
+    kind = models.CharField('Turi', max_length=10, choices=KIND_CHOICES)
+    uploaded_by = models.CharField('Kim yukladi', max_length=10, choices=OrderEvent.ACTOR_CHOICES)
+    image = models.ImageField('Rasm', upload_to=_photo_path)
+    thumbnail = models.ImageField('Kichik nusxa', upload_to=_thumb_path, blank=True)
+    caption = models.CharField('Izoh', max_length=200, blank=True)
+    is_hidden = models.BooleanField(
+        'Portfoliodan yashirilgan', default=False,
+        help_text="Admin moderatsiyasi: nomaqbul rasm portfolioda ko'rinmaydi (buyurtmada qoladi)",
+    )
+    created_at = models.DateTimeField('Yuklangan', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Buyurtma rasmi'
+        verbose_name_plural = 'Buyurtma rasmlari'
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f'#{self.order_id} {self.get_kind_display()}'
+
 
 
 class Service(models.Model):

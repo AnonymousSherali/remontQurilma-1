@@ -49,6 +49,26 @@
     </section>
     {% endif %}
 
+    {% if portfolio %}
+    <section class="card" id="ishlar">
+      <div class="card__title">{% translate "Bajarilgan ishlar" %}</div>
+      <div class="portfolio">
+        {% for work in portfolio %}
+        <article class="work">
+          <div class="work__photos">
+            {% if work.before %}<a class="work__img" href="{{ work.before.0.image.url }}" data-lightbox><img src="{{ work.before.0.thumbnail.url }}" alt="{% translate 'Oldin' %}" loading="lazy"><span class="work__tag">{% translate "Oldin" %}</span></a>{% endif %}
+            <a class="work__img" href="{{ work.after.0.image.url }}" data-lightbox><img src="{{ work.after.0.thumbnail.url }}" alt="{% translate 'Keyin' %}" loading="lazy"><span class="work__tag work__tag--after">{% translate "Keyin" %}</span></a>
+          </div>
+          <div class="work__meta">
+            <strong>{% if work.order.catalog_item %}{{ work.order.catalog_item|tr:"name" }}{% elif work.order.category %}{{ work.order.category|tr:"name" }}{% endif %}</strong>
+            <span class="muted small">{{ work.order.updated_at|date:"m.Y" }}{% with r=work.order.review %}{% if r %} · ★ {{ r.overall }}{% endif %}{% endwith %}</span>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
     {% if prices %}
     <section class="card">
       <div class="results-bar" style="margin:0 0 .5rem"><div class="card__title" style="margin:0">{% translate "Narxlar" %}</div>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 18:56+0500\n"
+"POT-Creation-Date: 2026-11-09 19:14+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -231,6 +231,9 @@ msgstr "Заказ #%(id)s: %(status)s"
 
 msgid "Narx taklifi mijozga yuborildi."
 msgstr "Предложение цены отправлено клиенту."
+
+msgid "Rasm o'chirildi."
+msgstr "Фото удалено."
 
 #, python-format
 msgid "Kodni qayta yuborish uchun %(sec)s soniya kuting"
@@ -485,6 +488,15 @@ msgstr "Администратор"
 msgid "Tizim"
 msgstr "Система"
 
+msgid "Muammo"
+msgstr "Проблема"
+
+msgid "Oldin"
+msgstr "До"
+
+msgid "Keyin"
+msgstr "После"
+
 msgid "Qat'iy narx"
 msgstr "Фиксированная цена"
 
@@ -538,8 +550,37 @@ msgstr "Оплата выплачена: %(t)s"
 msgid "Mablag' ustaga chiqarildi. Rahmat!"
 msgstr "Средства выплачены мастеру. Спасибо!"
 
+msgid "Rasm tanlang"
+msgstr "Выберите фото"
+
+#, python-format
+msgid "%(n)s ta rasm yuklandi"
+msgstr "Загружено фото: %(n)s"
+
+msgid "Ish rasmlari usta portfoliosida ko'rsatiladi."
+msgstr "Фото работы будут показаны в портфолио мастера."
+
+msgid "Ish rasmlari usta portfoliosida ko'rsatilmaydi."
+msgstr "Фото работы не будут показаны в портфолио мастера."
+
 msgid "Telefon raqamini to'g'ri kiriting: +998 (XX) XXX-XX-XX"
 msgstr "Введите номер в формате: +998 (XX) XXX-XX-XX"
+
+msgid "Faqat JPG, PNG yoki WEBP rasm yuklang"
+msgstr "Загружайте только JPG, PNG или WEBP"
+
+msgid "Rasm juda katta"
+msgstr "Изображение слишком большое"
+
+msgid "Bu fayl rasm emas yoki buzilgan"
+msgstr "Файл не является изображением или повреждён"
+
+msgid "Hozir bu turdagi rasm yuklab bo'lmaydi"
+msgstr "Сейчас нельзя загрузить фото этого типа"
+
+#, python-format
+msgid "Bitta buyurtmaga ko'pi bilan %(n)s ta rasm"
+msgstr "Не более %(n)s фото на заказ"
 
 msgid ""
 "Juda ko'p ariza yuborildi. Iltimos, birozdan keyin urinib ko'ring yoki "
@@ -1317,6 +1358,9 @@ msgstr "О мастере"
 msgid "Mezonlar bo'yicha baho"
 msgstr "Оценка по критериям"
 
+msgid "Bajarilgan ishlar"
+msgstr "Выполненные работы"
+
 msgid "Platforma narxlari. Usta aniq narxni ko'rib chiqqach taklif qiladi."
 msgstr "Цены платформы. Точную цену мастер предложит после осмотра."
 
@@ -1607,6 +1651,32 @@ msgstr "Согласованная цена"
 msgid "to'lov ustaga to'g'ridan-to'g'ri (platforma kafolatisiz)."
 msgstr "оплата мастеру напрямую (без гарантии платформы)."
 
+msgid "Rasmlar"
+msgstr "Фото"
+
+msgid "Rasmni o'chirasizmi?"
+msgstr "Удалить фото?"
+
+msgid "O'chirish"
+msgstr "Удалить"
+
+msgid "Hozircha rasm yo'q."
+msgstr "Фото пока нет."
+
+msgid "Izoh (ixtiyoriy)"
+msgstr "Подпись (необязательно)"
+
+msgid "Yuklash"
+msgstr "Загрузить"
+
+#, python-format
+msgid ""
+"JPG, PNG yoki WEBP, 10 MB gacha, ko'pi bilan %(n)s ta. Joylashuv "
+"ma'lumotlari (GPS) avtomatik o'chiriladi."
+msgstr ""
+"JPG, PNG или WEBP, до 10 МБ, не более %(n)s шт. Данные о местоположении "
+"(GPS) удаляются автоматически."
+
 #, python-format
 msgid "Buyurtma #%(id)s"
 msgstr "Заказ #%(id)s"
@@ -1673,6 +1743,26 @@ msgstr ""
 msgid "Ustani baholash"
 msgstr "Оценить мастера"
 
+msgid ""
+"Muammoni rasmga oling — usta nima kerakligini oldindan biladi va kerakli "
+"ehtiyot qismni olib keladi."
+msgstr ""
+"Сфотографируйте проблему — мастер заранее поймёт, что нужно, и привезёт "
+"нужную запчасть."
+
+msgid ""
+"Ish rasmlari (oldin/keyin) buyurtma tasdiqlangach usta portfoliosida "
+"ko'rsatilishi mumkin."
+msgstr ""
+"Фото работы (до/после) после подтверждения заказа могут быть показаны в "
+"портфолио мастера."
+
+msgid "Ko'rsatmaslik"
+msgstr "Не показывать"
+
+msgid "Ruxsat berish"
+msgstr "Разрешить"
+
 msgid "Tarix"
 msgstr "История"
 
@@ -1687,9 +1777,6 @@ msgstr "от"
 
 msgid "Manzil"
 msgstr "Адрес"
-
-msgid "Muammo"
-msgstr "Проблема"
 
 msgid "Xabarlar Telegram'ga keladi."
 msgstr "Уведомления приходят в Telegram."
@@ -1766,6 +1853,13 @@ msgstr "Ссылка"
 
 msgid "Nusxa"
 msgstr "Копировать"
+
+msgid ""
+"Ishdan oldin va keyin rasmga oling: mijoz natijani ko'radi, tasdiqlangan "
+"ishlar portfoliongizga chiqadi, nizoda esa dalil bo'ladi."
+msgstr ""
+"Фотографируйте до и после работы: клиент видит результат, подтверждённые "
+"работы попадают в ваше портфолио, а в споре это доказательство."
 
 msgid "Mijoz"
 msgstr "Клиент"

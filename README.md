@@ -38,6 +38,25 @@ Usta narx taklif qilganda katalog narxi oldindan to'ldiriladi. Taklif katalogdan
 belgisini ko'radi. Katalog admin'da: **Sayt kontenti → Narxlar** (ruscha nomlar,
 "Ommabop" belgisi bosh sahifaga chiqaradi). Namunaviy 27 ta xizmat: `seed_demo`.
 
+## Ish rasmlari
+
+- **Mijoz** buyurtma sahifasida muammo rasmini yuklaydi (SMS-tasdiqdan keyin) — usta
+  kerakli ehtiyot qismni oldindan biladi.
+- **Usta** "Oldin" va "Keyin" rasmlarini yuklaydi (buyurtmani qabul qilgandan keyin).
+  Ish boshlanmagan bo'lsa "Oldin", boshlangan bo'lsa "Keyin" avtomatik tanlanadi.
+- Tasdiqlangan buyurtmalarning "oldin/keyin" juftliklari ustaning ommaviy profilida
+  **"Bajarilgan ishlar"** bo'limiga chiqadi. Mijoz buyurtma sahifasida buni o'chira oladi;
+  admin nomaqbul rasmni "Ish rasmlari" bo'limida yashiradi (buyurtmada dalil sifatida qoladi).
+- Xavfsizlik: faqat haqiqiy JPG/PNG/WEBP (Pillow bilan tekshiriladi), 10 MB gacha, bir
+  tomonga 12 ta; **EXIF butunlay o'chiriladi** (telefon rasmidagi GPS — mijozning uy
+  manzili), 1600 px gacha kichraytiriladi, fayl nomlari tasodifiy.
+- Nizo ochilgan yoki tasdiqlangan buyurtmada rasmni o'chirib bo'lmaydi — dalil saqlanadi;
+  lekin qo'shimcha rasm yuklash mumkin.
+
+> Eslatma: rasmlar `media/` orqali beriladi. Fayl nomlari taxmin qilib bo'lmaydigan,
+> lekin havolani bilgan odam rasmni ko'ra oladi. Kerak bo'lsa keyinroq rasmlarni
+> faqat buyurtma ishtirokchilariga beradigan himoyalangan ko'rinishga o'tkazish mumkin.
+
 ## Buyurtma bosqichlari
 
 Buyurtmachi va usta statuslarni **navbat bilan** belgilaydi; ikkalasi ham bir xil
@@ -226,7 +245,7 @@ static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuer
 python manage.py test
 ```
 
-123 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+137 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
 bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
 (rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
 (muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click protokoli, Telegram bot (ulash, tugmalar, xavfsizlik).

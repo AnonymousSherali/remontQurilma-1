@@ -65,6 +65,9 @@
       </section>
       {% endif %}
 
+      {% translate "Ishdan oldin va keyin rasmga oling: mijoz natijani ko'radi, tasdiqlangan ishlar portfoliongizga chiqadi, nizoda esa dalil bo'ladi." as photo_hint %}
+      {% include "orders/_photos.html" with hint=photo_hint %}
+
       <section class="card">
         <div class="card__title">{% translate "Tarix" %}</div>
         <ul class="events">

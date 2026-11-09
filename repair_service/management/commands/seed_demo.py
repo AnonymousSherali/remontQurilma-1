@@ -20,7 +20,8 @@ from django.db import transaction
 
 from masters.locations import TASHKENT_DISTRICTS
 from masters.models import Category, Master, Review
-from repair_service.models import Brand, OrderEvent, Service, ServiceRequest, Testimonial
+from repair_service.models import Brand, OrderEvent, OrderPhoto, Service, ServiceRequest, Testimonial
+from repair_service.photos import _encode
 
 # (slug, nomi, ruscha nomi, belgi, tavsif)
 CATEGORIES = [
@@ -115,6 +116,17 @@ COMMENTS = [
 ]
 
 
+def _demo_photo(kind, color, title):
+    """Namoyish uchun oddiy rasm (haqiqiy ish rasmi emas!)."""
+    from PIL import Image, ImageDraw
+    image = Image.new('RGB', (800, 800), color)
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((40, 40, 760, 760), outline=(255, 255, 255), width=6)
+    draw.text((80, 360), ('OLDIN' if kind == 'before' else 'KEYIN') + ' - DEMO', fill=(255, 255, 255), font_size=64)
+    draw.text((80, 460), title, fill=(255, 255, 255), font_size=36)
+    return _encode(image, 1600), _encode(image, 400)
+
+
 class Command(BaseCommand):
     help = "Bazani namunaviy ma'lumotlar bilan to'ldiradi"
 
@@ -202,6 +214,13 @@ class Command(BaseCommand):
                 )
                 for step, actor in zip(ServiceRequest.FLOW, ['customer', 'master', 'master', 'master', 'master', 'customer']):
                     OrderEvent.objects.create(order=request, status=step, actor=actor)
+                if j == 0 and i < 6:  # ba'zi ustalarga portfolio uchun demo "oldin/keyin" rasmlari
+                    for kind, color in (('before', (120, 113, 108)), ('after', (5, 150, 105))):
+                        full, thumb = _demo_photo(kind, color, name)
+                        photo = OrderPhoto(order=request, kind=kind, uploaded_by='master')
+                        photo.image.save('p.jpg', full, save=False)
+                        photo.thumbnail.save('t.jpg', thumb, save=False)
+                        photo.save()
                 base = rng.choice([3, 4, 4, 5, 5, 5])
                 Review.objects.create(
                     master=master, service_request=request, author_name=request.name,

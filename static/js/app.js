@@ -311,6 +311,21 @@
     });
   });
 
+  // ---------------- Rasmni katta ko'rish ----------------
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('[data-lightbox]');
+    if (!link || !window.HTMLDialogElement) { return; }
+    e.preventDefault();
+    var dialog = document.createElement('dialog');
+    dialog.className = 'lightbox';
+    dialog.innerHTML = '<button type="button" aria-label="×">✕</button><img alt="">';
+    dialog.querySelector('img').src = link.href;
+    dialog.addEventListener('close', function () { dialog.remove(); });
+    dialog.addEventListener('click', function (ev) { if (ev.target !== dialog.querySelector('img')) { dialog.close(); } });
+    document.body.appendChild(dialog);
+    dialog.showModal();
+  });
+
   // ---------------- Yandex xarita ----------------
   // API faqat xarita bor sahifalarda yuklanadi. Yuklanmasa (kalit yo'q, tarmoq),
   // sahifa xaritasiz ham to'liq ishlaydi.

@@ -571,3 +571,31 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .price-card:hover { color: var(--ink); transform: translateY(-2px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); }
 .price-card__name { font-size: 1.02rem; }
 .price-card__price { font-weight: 800; font-size: 1.15rem; color: var(--brand); }
+
+/* ---------- Rasmlar ---------- */
+.photo-group { margin-bottom: 1rem; }
+.photo-group__label { font-weight: 700; font-size: .9rem; margin-bottom: .5rem; }
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: .6rem; }
+.photo { position: relative; margin: 0; }
+.photo img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: var(--surface-2); }
+.photo figcaption { font-size: .78rem; color: var(--muted); margin-top: .25rem; }
+.photo__del { position: absolute; top: 4px; right: 4px; margin: 0; }
+.photo__del button { width: 26px; height: 26px; border-radius: 50%; border: 0; background: rgb(0 0 0 / .6); color: #fff; cursor: pointer; font-size: .8rem; }
+.photo-upload { border-top: 1px solid var(--line); padding-top: 1rem; margin-top: .5rem; display: grid; gap: .6rem; }
+.photo-upload__row { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.photo-upload__row input[type="text"] { flex: 1; min-width: 160px; }
+.portfolio-consent { display: flex; gap: .75rem; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  padding: .75rem 1rem; border: 1px dashed var(--line); border-radius: 12px; }
+.portfolio { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.work { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.work__photos { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
+.work__img { position: relative; display: block; }
+.work__img img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.work__tag { position: absolute; left: .5rem; bottom: .5rem; padding: .15rem .5rem; border-radius: 999px; font-size: .72rem; font-weight: 700;
+  background: rgb(0 0 0 / .6); color: #fff; }
+.work__tag--after { background: var(--brand); }
+.work__meta { padding: .7rem .9rem; display: grid; gap: .1rem; }
+.lightbox { border: 0; padding: 0; background: transparent; max-width: 95vw; max-height: 95vh; }
+.lightbox::backdrop { background: rgb(0 0 0 / .85); }
+.lightbox img { max-width: 95vw; max-height: 90vh; border-radius: 10px; display: block; }
+.lightbox button { position: fixed; top: 1rem; right: 1rem; width: 44px; height: 44px; border-radius: 50%; border: 0; font-size: 1.2rem; cursor: pointer; }
