@@ -24,23 +24,47 @@ def _customer_link(order):
         return _absolute(order.get_customer_url())
 
 
+def _to_customer(order, text):
+    """Telegram ulangan bo'lsa — Telegram (bepul), aks holda SMS."""
+    if order.telegram_chat_id:
+        from telegram_bot import client
+        with translation.override(order.language or 'uz'):
+            client.send_message(order.telegram_chat_id, text, [[(_('Buyurtmani ochish'), _customer_link(order))]])
+    else:
+        send_sms(order.phone, text, background=True)
+
+
+def _to_master(order, sms_text, with_card=False):
+    """Usta Telegram'ga ulangan bo'lsa — buyurtma kartasi va keyingi qadam tugmasi bilan."""
+    master = order.master
+    if master.telegram_chat_id:
+        from telegram_bot import client
+        from telegram_bot.handlers import master_buttons, order_card
+        text = f'{sms_text}\n\n{order_card(order)}' if with_card else sms_text
+        client.send_message(master.telegram_chat_id, text, master_buttons(order))
+    else:
+        send_sms(master.phone, sms_text, background=True)
+
+
 def notify_order_created(order):
     with translation.override(order.language or 'uz'):
-        send_sms(order.phone, _('Buyurtmangiz #%(id)s qabul qilindi. Holatini kuzating: %(url)s') % {
-            'id': order.pk, 'url': _customer_link(order)}, background=True)
+        _to_customer(order, _('Buyurtmangiz #%(id)s qabul qilindi. Holatini kuzating: %(url)s') % {
+            'id': order.pk, 'url': _customer_link(order)})
     if order.master:
         notify_master_new_order(order)
 
 
 def notify_master_new_order(order):
+    """Yangi buyurtma ustaga (saytdan to'g'ridan-to'g'ri yoki admin biriktirganda)."""
+    order = SR.objects.select_related('master', 'category').get(pk=order.pk)
     # Usta interfeysi sayt standart tilida
     with translation.override(settings.LANGUAGE_CODE):
-        send_sms(order.master.phone, _('Yangi buyurtma #%(id)s: %(name)s. Kabinet: %(url)s') % {
-            'id': order.pk, 'name': order.name, 'url': _absolute(order.get_master_url())}, background=True)
+        _to_master(order, _('Yangi buyurtma #%(id)s: %(name)s. Kabinet: %(url)s') % {
+            'id': order.pk, 'name': order.name, 'url': _absolute(order.get_master_url())}, with_card=True)
 
 
 def notify_status_change(order, actor):
-    order = SR.objects.select_related('master').get(pk=order.pk)
+    order = SR.objects.select_related('master', 'category').get(pk=order.pk)
     master = order.master
 
     if actor == OrderEvent.ACTOR_MASTER:
@@ -53,11 +77,11 @@ def notify_status_change(order, actor):
             }
             text = texts.get(order.status)
             if text:
-                send_sms(order.phone, text % {
+                _to_customer(order, text % {
                     'master': master.full_name if master else '',
                     'phone': format_phone(master.phone) if master else '',
                     'url': _customer_link(order),
-                }, background=True)
+                })
 
     elif actor == OrderEvent.ACTOR_CUSTOMER and master:
         with translation.override(settings.LANGUAGE_CODE):
@@ -68,11 +92,11 @@ def notify_status_change(order, actor):
             }
             text = texts.get(order.status)
             if text:
-                send_sms(master.phone, text % {'id': order.pk}, background=True)
+                _to_master(order, text % {'id': order.pk})
 
 
 def notify_quote(order):
     order = SR.objects.select_related('master', 'quote').get(pk=order.pk)
     with translation.override(order.language or 'uz'):
-        send_sms(order.phone, _("Usta narx taklif qildi: %(amount)s so'm. Ko'rib chiqing: %(url)s") % {
-            'amount': f'{int(order.quote.amount):,}'.replace(',', ' '), 'url': _customer_link(order)}, background=True)
+        _to_customer(order, _("Usta narx taklif qildi: %(amount)s so'm. Ko'rib chiqing: %(url)s") % {
+            'amount': f'{int(order.quote.amount):,}'.replace(',', ' '), 'url': _customer_link(order)})

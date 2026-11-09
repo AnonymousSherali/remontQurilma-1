@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'masters',
     'otp',
     'payments',
+    'telegram_bot',
 ]
 
 MIDDLEWARE = [
@@ -173,7 +174,8 @@ ESKIZ_PASSWORD = os.environ.get('ESKIZ_PASSWORD', '')
 SMS_SENDER = os.environ.get('SMS_SENDER', '4546')
 
 # --- To'lovlar (payments) ---
-PAYMENT_PROVIDER = os.environ.get('PAYMENT_PROVIDER', 'demo')  # demo | payme
+# Mijozga taklif qilinadigan tizimlar, vergul bilan: demo | payme | click
+PAYMENT_PROVIDERS = os.environ.get('PAYMENT_PROVIDERS', os.environ.get('PAYMENT_PROVIDER', 'demo'))
 ALLOW_DEMO_PAYMENTS = os.environ.get('ALLOW_DEMO_PAYMENTS', 'False') == 'True'
 PLATFORM_FEE_PERCENT = float(os.environ.get('PLATFORM_FEE_PERCENT', 10))
 AUTO_CONFIRM_HOURS = int(os.environ.get('AUTO_CONFIRM_HOURS', 72))
@@ -182,11 +184,17 @@ PAYME_MERCHANT_ID = os.environ.get('PAYME_MERCHANT_ID', '')
 PAYME_KEY = os.environ.get('PAYME_KEY', '')
 PAYME_TEST = os.environ.get('PAYME_TEST', 'True') == 'True'
 PAYME_ACCOUNT_KEY = os.environ.get('PAYME_ACCOUNT_KEY', 'milestone_id')
+CLICK_SERVICE_ID = os.environ.get('CLICK_SERVICE_ID', '')
+CLICK_MERCHANT_ID = os.environ.get('CLICK_MERCHANT_ID', '')
+CLICK_SECRET_KEY = os.environ.get('CLICK_SECRET_KEY', '')
+CLICK_MERCHANT_USER_ID = os.environ.get('CLICK_MERCHANT_USER_ID', '')
 
 # --- Integratsiyalar (ixtiyoriy) ---
 YANDEX_MAPS_API_KEY = os.environ.get('YANDEX_MAPS_API_KEY', '')
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '')
+TELEGRAM_BOT_USERNAME = os.environ.get('TELEGRAM_BOT_USERNAME', '')  # @ belgisisiz, masalan techservice_uz_bot
+TELEGRAM_WEBHOOK_SECRET = os.environ.get('TELEGRAM_WEBHOOK_SECRET', '')
 REQUEST_RATE_LIMIT = int(os.environ.get('REQUEST_RATE_LIMIT', 5))  # 10 daqiqada bir IP'dan
 
 # --- Yuklanadigan fayllar ---

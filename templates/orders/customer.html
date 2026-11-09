@@ -103,6 +103,18 @@
           {% if order.problem_description %}<dt>{% translate "Muammo" %}</dt><dd style="font-weight:400">{{ order.problem_description }}</dd>{% endif %}
         </dl>
       </section>
+      {% telegram_order_link order as tg_link %}
+      {% if tg_link %}
+      <section class="card">
+        {% if order.telegram_chat_id %}
+          <div class="card__title">✈️ Telegram</div><p class="muted" style="margin:0">{% translate "Xabarlar Telegram'ga keladi." %}</p>
+        {% else %}
+          <div class="card__title">✈️ {% translate "Telegram'da kuzatish" %}</div>
+          <p class="muted small" style="margin-top:0">{% translate "Holat o'zgarishlari SMS o'rniga Telegram'ga keladi." %}</p>
+          <a class="btn btn--block" href="{{ tg_link }}" target="_blank" rel="noopener">{% translate "Botni ochish" %}</a>
+        {% endif %}
+      </section>
+      {% endif %}
       <p class="muted small">{% translate "Bu sahifa havolasini boshqalarga bermang." %} <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></p>
     </aside>
   </div>

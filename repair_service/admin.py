@@ -9,7 +9,10 @@ from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationFo
 
 from payments.admin import MilestoneInline
 
+from django.db import transaction
+
 from . import workflow
+from .customer_notify import notify_master_new_order
 from .models import Brand, OrderEvent, Service, ServiceRequest, Testimonial
 from .phone import format_phone
 
@@ -94,6 +97,9 @@ class ServiceRequestAdmin(ModelAdmin):
         # Admin holatni o'zgartirsa ham timeline'da ko'rinsin
         if change and 'status' in form.changed_data:
             workflow.admin_set_status(obj, obj.status, note=f'{request.user}')
+        # Admin ustani biriktirsa — usta xabar oladi (avval xabar bormasdi)
+        if obj.master_id and 'master' in form.changed_data:
+            transaction.on_commit(lambda: notify_master_new_order(obj))
 
     @action(description="Tanlanganlarni bekor qilish", icon='cancel')
     def mark_cancelled(self, request, queryset):

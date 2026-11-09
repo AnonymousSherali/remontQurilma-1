@@ -60,6 +60,8 @@ class ServiceRequest(models.Model):
 
     # SMS orqali yuboriladigan buyurtma sahifasi tilini eslab qolamiz
     language = models.CharField('Til', max_length=5, default='uz')
+    # Mijoz "Telegram'da kuzatish" ni bosgan bo'lsa — xabarlar SMS o'rniga Telegram'ga (bepul)
+    telegram_chat_id = models.BigIntegerField('Mijoz Telegram chati', null=True, blank=True, db_index=True)
 
     # Mijozning maxfiy havolasi: /buyurtma/<kalit>/ (kuzatish) va /baho/<kalit>/
     review_token = models.UUIDField('Baho kaliti', default=uuid.uuid4, unique=True, editable=False)

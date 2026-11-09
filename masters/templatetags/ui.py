@@ -65,6 +65,13 @@ def tr(obj, field):
     return getattr(obj, field, '')
 
 
+@register.simple_tag
+def telegram_order_link(order):
+    """Mijoz uchun "Telegram'da kuzatish" havolasi (bot sozlanmagan bo'lsa bo'sh)."""
+    from telegram_bot.client import deep_link
+    return deep_link('o' + order.review_token.hex)
+
+
 @register.simple_tag(takes_context=True)
 def url_in_language(context, code):
     """Joriy sahifaning boshqa tildagi manzili (hreflang va til almashtirish uchun)."""

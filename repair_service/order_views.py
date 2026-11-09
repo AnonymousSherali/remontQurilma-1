@@ -17,7 +17,7 @@ from django.views.decorators.http import require_POST
 from otp import services as otp
 from payments import services as payments
 from payments.models import Milestone, Quote
-from payments.providers import checkout_url
+from payments.providers import checkout_url, choices as payment_choices
 
 from . import workflow
 from .models import ServiceRequest
@@ -51,6 +51,7 @@ def order_detail(request, token):
         'quote': quote,
         'milestones': milestones,
         'money': payments.summary(order),
+        'payment_providers': payment_choices(),
         'show_master_phone': order.master and order.status != ServiceRequest.STATUS_NEW,
     })
 
@@ -105,7 +106,7 @@ def milestone_pay(request, token, milestone_id):
     milestone = get_object_or_404(Milestone, pk=milestone_id, order=order, state=Milestone.STATE_PENDING)
     if not _can_act(request, order):
         raise Http404
-    return redirect(checkout_url(milestone, request))
+    return redirect(checkout_url(milestone, request, provider=request.POST.get('provider')))
 
 
 @require_POST

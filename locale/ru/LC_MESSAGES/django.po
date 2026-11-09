@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 17:17+0500\n"
+"POT-Creation-Date: 2026-11-09 18:48+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -363,6 +363,9 @@ msgstr "Открыть профиль →"
 msgid "Siz"
 msgstr "Вы"
 
+msgid "Buyurtmani ochish"
+msgstr "Открыть заказ"
+
 #, python-format
 msgid "Buyurtmangiz #%(id)s qabul qilindi. Holatini kuzating: %(url)s"
 msgstr "Ваш заказ #%(id)s принят. Следите за статусом: %(url)s"
@@ -578,6 +581,82 @@ msgstr "Клиент ещё не оплатил: %(names)s. Продолжите
 #, python-format
 msgid "Avtomatik: mijoz %(h)s soat ichida javob bermadi"
 msgstr "Автоматически: клиент не ответил в течение %(h)s ч"
+
+msgid "Saytda ochish"
+msgstr "Открыть на сайте"
+
+msgid "Havola noto'g'ri yoki eskirgan."
+msgstr "Ссылка неверна или устарела."
+
+msgid "Buyurtma topilmadi."
+msgstr "Заказ не найден."
+
+#, python-format
+msgid ""
+"✅ Buyurtma #%(id)s ulandi. Endi barcha o'zgarishlar shu yerga keladi.\n"
+"\n"
+"Hozirgi holat: <b>%(status)s</b>"
+msgstr ""
+"✅ Заказ #%(id)s подключён. Теперь все изменения будут приходить сюда.\n"
+"\n"
+"Текущий статус: <b>%(status)s</b>"
+
+msgid ""
+"Ulash havolasi eskirgan. Kabinetdan qaytadan «Telegram'ni ulash» ni bosing."
+msgstr ""
+"Ссылка для подключения устарела. Нажмите «Подключить Telegram» в кабинете "
+"ещё раз."
+
+msgid "Bu chat boshqa akkauntga ulangan."
+msgstr "Этот чат подключён к другому аккаунту."
+
+#, python-format
+msgid ""
+"✅ Salom, %(name)s! Akkauntingiz ulandi. Yangi buyurtmalar shu yerga tugmalar bilan keladi.\n"
+"\n"
+"/buyurtmalar — faol buyurtmalar\n"
+"/stop — o'chirish"
+msgstr ""
+"✅ Здравствуйте, %(name)s! Аккаунт подключён. Новые заказы будут приходить сюда с кнопками.\n"
+"\n"
+"/buyurtmalar — активные заказы\n"
+"/stop — отключить"
+
+#, python-format
+msgid ""
+"Assalomu alaykum! Bu %(site)s boti.\n"
+"\n"
+"• Buyurtmachilar: buyurtma sahifasidagi «Telegram'da kuzatish» tugmasini bosing.\n"
+"• Ustalar: kabinetda «Telegram'ni ulash» tugmasini bosing."
+msgstr ""
+"Здравствуйте! Это бот %(site)s.\n"
+"\n"
+"• Заказчикам: нажмите «Следить в Telegram» на странице заказа.\n"
+"• Мастерам: нажмите «Подключить Telegram» в кабинете."
+
+msgid "Saytga o'tish"
+msgstr "Перейти на сайт"
+
+msgid "Faol buyurtmalar yo'q."
+msgstr "Активных заказов нет."
+
+msgid "Ulangan buyurtmalar yo'q."
+msgstr "Подключённых заказов нет."
+
+msgid "Xabarlar o'chirildi. Endi xabarlar SMS orqali keladi."
+msgstr "Уведомления отключены. Теперь они будут приходить по SMS."
+
+msgid "Bu buyurtma sizga tegishli emas"
+msgstr "Этот заказ не ваш"
+
+msgid "Buyruqlar: /buyurtmalar, /stop"
+msgstr "Команды: /buyurtmalar, /stop"
+
+msgid "Telegram bot hali sozlanmagan. Administratorga murojaat qiling."
+msgstr "Telegram-бот ещё не настроен. Обратитесь к администратору."
+
+msgid "Telegram uzildi. Xabarlar SMS orqali keladi."
+msgstr "Telegram отключён. Уведомления будут приходить по SMS."
 
 msgid "Django site admin"
 msgstr "Администрирование сайта"
@@ -1085,6 +1164,22 @@ msgstr ""
 "Оценок пока нет. После завершения работы клиент подтвердит результат и "
 "оценит вас."
 
+msgid "Ulangan. Yangi buyurtmalar Telegram'ga tugmalar bilan keladi."
+msgstr "Подключено. Новые заказы приходят в Telegram с кнопками."
+
+msgid "Uzish"
+msgstr "Отключить"
+
+msgid ""
+"Buyurtmalarni Telegram'da oling va bir tugma bilan qabul qiling — saytga "
+"kirish shart emas."
+msgstr ""
+"Получайте заказы в Telegram и принимайте одной кнопкой — заходить на сайт не"
+" нужно."
+
+msgid "Telegram'ni ulash"
+msgstr "Подключить Telegram"
+
 msgid ""
 "Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga "
 "o'tkazadi."
@@ -1479,6 +1574,18 @@ msgstr "Адрес"
 
 msgid "Muammo"
 msgstr "Проблема"
+
+msgid "Xabarlar Telegram'ga keladi."
+msgstr "Уведомления приходят в Telegram."
+
+msgid "Telegram'da kuzatish"
+msgstr "Следить в Telegram"
+
+msgid "Holat o'zgarishlari SMS o'rniga Telegram'ga keladi."
+msgstr "Изменения статуса будут приходить в Telegram вместо SMS."
+
+msgid "Botni ochish"
+msgstr "Открыть бота"
 
 msgid "Bu sahifa havolasini boshqalarga bermang."
 msgstr "Не передавайте ссылку на эту страницу другим."
