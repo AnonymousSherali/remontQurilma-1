@@ -20,11 +20,12 @@ from repair_service.forms import ServiceRequestForm
 from repair_service.models import ServiceRequest
 
 from .forms import (
-    MasterProfileForm, MasterRegistrationForm, PasswordResetForm, PhoneLoginForm, QuoteForm, ReviewForm,
+    deviation_percent, MasterProfileForm, MasterRegistrationForm, PasswordResetForm, PhoneLoginForm, QuoteForm, ReviewForm,
 )
 from .geo import parse_coords
 from .locations import DISTRICT_CHOICES, district_coords, district_name
 from payments.models import Milestone
+from repair_service.models import Service
 
 from .models import Category, Master
 from .services import (
@@ -114,8 +115,10 @@ def master_detail(request, pk):
     form = ServiceRequestForm(initial={'master': master.pk, 'category': master.categories.first()})
     form.fields['category'].queryset = master.categories.all()
 
+    prices = Service.objects.filter(is_active=True, category__in=master.categories.all()).select_related('category')
     return render(request, 'masters/detail.html', {
         'master': master,
+        'prices': prices.order_by('category__order', '-is_popular', 'order')[:8],
         'is_owner': is_owner,
         'reviews': reviews,
         'criteria': master.criteria_breakdown(),
@@ -248,7 +251,11 @@ def order_detail(request, pk):
     """Ustaning buyurtma sahifasi: timeline, mijoz ma'lumotlari, keyingi qadam, narx va to'lovlar."""
     master, order = _own_order(request, pk)
     quote = payments.get_quote(order)
-    initial = {'amount': quote.amount, 'plan': quote.plan, 'note': quote.note} if quote else {}
+    estimate = order.catalog_estimate
+    if quote:
+        initial = {'amount': quote.amount, 'plan': quote.plan, 'note': quote.note}
+    else:
+        initial = {'amount': int(estimate) if estimate else None}
     next_action = workflow.next_master_action(order)
     blocked = []
     needs_quote = False
@@ -267,7 +274,9 @@ def order_detail(request, pk):
         'can_cancel': (workflow.MASTER, 'cancel') in workflow.TRANSITIONS
                       and order.status in workflow.TRANSITIONS[(workflow.MASTER, 'cancel')][0],
         'quote': quote,
-        'quote_form': QuoteForm(initial=initial) if payments.can_quote(order) else None,
+        'quote_form': QuoteForm(initial=initial, estimate=estimate) if payments.can_quote(order) else None,
+        'estimate': estimate,
+        'quote_deviation': deviation_percent(quote.amount, estimate) if quote else None,
         'money': payments.summary(order),
         'review_link': request.build_absolute_uri(order.get_review_url()),
         'customer_link': request.build_absolute_uri(order.get_customer_url()),
@@ -298,7 +307,7 @@ def request_action(request, pk, action):
 @require_POST
 def quote_propose(request, pk):
     master, order = _own_order(request, pk)
-    form = QuoteForm(request.POST)
+    form = QuoteForm(request.POST, estimate=order.catalog_estimate)
     if form.is_valid():
         try:
             payments.propose_quote(order, form.cleaned_data['amount'], form.cleaned_data['plan'],

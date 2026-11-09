@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('submit/', views.submit_request, name='submit_request'),
     path('result/', views.result, name='result'),
+    path('narxlar/', views.catalog, name='catalog'),
 
     # Buyurtmachi: kuzatish va boshqarish
     path('buyurtma/<uuid:token>/', order_views.order_detail, name='order'),

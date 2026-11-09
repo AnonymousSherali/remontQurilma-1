@@ -36,6 +36,11 @@
           <p style="margin:0 0 .25rem">{% translate "Usta taklif qilgan narx" %}:</p>
           <div style="font-size:1.8rem;font-weight:800">{{ quote.amount|floatformat:0|intcomma }} {% translate "so'm" %}</div>
           <div class="muted">{{ quote.get_plan_display }}</div>
+          {% if estimate %}<div style="margin-top:.5rem">{% blocktranslate with e=estimate|floatformat:0|intcomma %}Katalog bo'yicha: {{ e }} so'm{% endblocktranslate %} {% if quote_deviation is not None %}
+            {% if quote_deviation > deviation_limit %}<span class="deviation deviation--up">▲ {% blocktranslate with d=quote_deviation %}katalogdan {{ d }}% qimmat{% endblocktranslate %}</span>
+            {% elif quote_deviation < 0 %}<span class="deviation deviation--ok">▼ {% blocktranslate with d=quote_deviation|absval %}katalogdan {{ d }}% arzon{% endblocktranslate %}</span>
+            {% else %}<span class="deviation deviation--ok">✓ {% translate "katalog narxiga mos" %}</span>{% endif %}
+          {% endif %}</div>{% endif %}
           {% if quote.note %}<p style="white-space:pre-line;margin:.75rem 0">{{ quote.note }}</p>{% endif %}
           {% if can_act %}
           <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem">
@@ -98,11 +103,25 @@
       <section class="card">
         <div class="card__title">{% translate "Buyurtma" %}</div>
         <dl class="kv">
+          {% if order.catalog_item %}<dt>{% translate "Xizmat" %}</dt><dd>{{ order.catalog_item|tr:"name" }}{% if order.quantity > 1 %} × {{ order.quantity }}{% endif %}</dd>
+            {% if estimate %}<dt>{% translate "Taxminiy narx" %}</dt><dd>{{ estimate|floatformat:0|intcomma }} {% translate "so'm" %}{% if order.catalog_item.price_type == 'from' %} {% translate "dan" %}{% endif %}</dd>{% endif %}{% endif %}
           {% if order.category %}<dt>{% translate "Yo'nalish" %}</dt><dd>{{ order.category.icon }} {{ order.category|tr:"name" }}</dd>{% endif %}
           {% if order.address %}<dt>{% translate "Manzil" %}</dt><dd>{{ order.address }}</dd>{% endif %}
           {% if order.problem_description %}<dt>{% translate "Muammo" %}</dt><dd style="font-weight:400">{{ order.problem_description }}</dd>{% endif %}
         </dl>
       </section>
+      {% telegram_order_link order as tg_link %}
+      {% if tg_link %}
+      <section class="card">
+        {% if order.telegram_chat_id %}
+          <div class="card__title">✈️ Telegram</div><p class="muted" style="margin:0">{% translate "Xabarlar Telegram'ga keladi." %}</p>
+        {% else %}
+          <div class="card__title">✈️ {% translate "Telegram'da kuzatish" %}</div>
+          <p class="muted small" style="margin-top:0">{% translate "Holat o'zgarishlari SMS o'rniga Telegram'ga keladi." %}</p>
+          <a class="btn btn--block" href="{{ tg_link }}" target="_blank" rel="noopener">{% translate "Botni ochish" %}</a>
+        {% endif %}
+      </section>
+      {% endif %}
       <p class="muted small">{% translate "Bu sahifa havolasini boshqalarga bermang." %} <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></p>
     </aside>
   </div>

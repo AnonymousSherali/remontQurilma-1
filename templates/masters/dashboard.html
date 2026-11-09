@@ -38,7 +38,7 @@
     <div class="card kpi"><div class="kpi__value">{% if master.reviews_count %}★ {{ master.rating_avg|floatformat:1 }}{% else %}—{% endif %}</div><div class="kpi__label">{% blocktranslate count n=master.reviews_count %}{{ n }} ta baho{% plural %}{{ n }} ta baho{% endblocktranslate %}</div></div>
   </div>
 
-  <div class="layout-split" style="grid-template-columns:1fr 340px">
+  <div class="layout-split layout-split--narrow">
     <section class="card">
       <div class="card__title">{% translate "Buyurtmalar" %}</div>
       <nav class="tabs" aria-label="{% translate "Holat bo'yicha filtr" %}">
@@ -93,6 +93,15 @@
       </div>
       {% else %}
       <p class="muted">{% translate "Hali baho yo'q. Ish yakunlangach mijoz tasdiqlaydi va sizni baholaydi." %}</p>
+      {% endif %}
+      <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
+      <div class="card__title" style="font-size:1rem">✈️ Telegram</div>
+      {% if master.telegram_chat_id %}
+        <p class="small" style="margin-top:0">✓ {% translate "Ulangan. Yangi buyurtmalar Telegram'ga tugmalar bilan keladi." %}</p>
+        <form method="post" action="{% url 'telegram_bot:disconnect' %}">{% csrf_token %}<button class="btn btn--sm btn--ghost">{% translate "Uzish" %}</button></form>
+      {% else %}
+        <p class="small muted" style="margin-top:0">{% translate "Buyurtmalarni Telegram'da oling va bir tugma bilan qabul qiling — saytga kirish shart emas." %}</p>
+        <form method="post" action="{% url 'telegram_bot:connect' %}">{% csrf_token %}<button class="btn btn--sm btn--primary">{% translate "Telegram'ni ulash" %}</button></form>
       {% endif %}
       <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
       <p class="small muted" style="margin:0">💡 {% translate "Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga o'tkazadi." %}</p>

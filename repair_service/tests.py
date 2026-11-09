@@ -49,7 +49,7 @@ class IndexPageTests(TestCase):
 
     def test_bazadagi_kontent_korsatiladi(self):
         cat = Category.objects.create(name='Santexnik', slug='santexnik', icon='🚰')
-        Service.objects.create(name='Kran almashtirish', price_from=80000, category=cat)
+        Service.objects.create(name='Kran almashtirish', price_from=80000, category=cat, is_popular=True)
         Brand.objects.create(name='Toshiba')
         make_master('Bekzod Karimov', categories=[cat])
         response = self.client.get(reverse('repair_service:index'))

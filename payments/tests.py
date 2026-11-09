@@ -145,7 +145,7 @@ class CustomerPaymentViewTests(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertFalse(self.order.milestones.exists())
 
-    @override_settings(DEBUG=True, PAYMENT_PROVIDER='demo')
+    @override_settings(DEBUG=True, PAYMENT_PROVIDERS='demo')
     def test_narx_tolov_va_chiqarish(self):
         verify_phone(self.client, self.order.phone)
         self.client.post(reverse('repair_service:quote_decision', args=[self.order.review_token, 'approve']))
@@ -170,7 +170,7 @@ class CustomerPaymentViewTests(TestCase):
         self.assertEqual(self.client.get(reverse('payments:demo_checkout', args=[m1.pk])).status_code, 404)
 
 
-@override_settings(PAYME_KEY='secret', PAYME_ACCOUNT_KEY='milestone_id', PAYMENT_PROVIDER='payme')
+@override_settings(PAYME_KEY='secret', PAYME_ACCOUNT_KEY='milestone_id', PAYMENT_PROVIDERS='payme')
 class PaymeTests(TestCase):
     def setUp(self):
         order = make_order()

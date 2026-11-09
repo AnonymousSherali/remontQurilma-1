@@ -76,6 +76,8 @@ class Master(models.Model):
         help_text="Faqat tasdiqlangan ustalar saytda ko'rinadi. Shaxsini tekshirgandan keyin belgilang.",
     )
     is_available = models.BooleanField('Buyurtma qabul qiladi', default=True)
+    telegram_chat_id = models.BigIntegerField('Telegram chat', null=True, blank=True, unique=True,
+                                              help_text='Usta botga ulanganda avtomatik yoziladi')
 
     # Tez saralash uchun saqlab qo'yilgan qiymatlar. Baho qo'shilsa/o'chirilsa
     # signals.py orqali avtomatik yangilanadi.

@@ -101,7 +101,8 @@ class Payment(models.Model):
 
     PROVIDER_DEMO = 'demo'
     PROVIDER_PAYME = 'payme'
-    PROVIDER_CHOICES = [(PROVIDER_DEMO, 'Demo'), (PROVIDER_PAYME, 'Payme')]
+    PROVIDER_CLICK = 'click'
+    PROVIDER_CHOICES = [(PROVIDER_DEMO, 'Demo'), (PROVIDER_PAYME, 'Payme'), (PROVIDER_CLICK, 'Click')]
 
     # Payme holat kodlari bilan mos: 1 yaratilgan, 2 bajarilgan, -1/-2 bekor qilingan
     STATE_CREATED = 1

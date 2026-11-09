@@ -1,7 +1,7 @@
 """Payme Merchant API (JSON-RPC). Payme bizning /payments/payme/ manzilimizga so'rov yuboradi.
 
 Sozlash (.env):
-    PAYMENT_PROVIDER=payme
+    PAYMENT_PROVIDERS=payme (yoki payme,click)
     PAYME_MERCHANT_ID=...      Payme Business kabinetidan
     PAYME_KEY=...              kassa kaliti (test uchun test kaliti)
     PAYME_TEST=True            test.paycom.uz (sinov muhiti)

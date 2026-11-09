@@ -34,20 +34,48 @@ CATEGORIES = [
     ('qulf-eshik', 'Eshik va qulf', 'Двери и замки', '🔑', "Qulf ochish, almashtirish, eshik o'rnatish"),
 ]
 
-# (kategoriya slug, nomi, ruscha nomi, narx, tavsif, ruscha tavsif)
+# Narxlar katalogi (namunaviy narxlar — haqiqiy bozor narxlariga moslab admin'da o'zgartiring).
+# (kategoriya, nomi, ruscha, narx, turi, birlik, daqiqa, ommabop, "nima kiradi" (| bilan), ruscha)
 SERVICES = [
-    ('kir-yuvish-mashinasi', "Ustani chaqirish (ta'mirlash buyurtma qilinsa)", 'Вызов мастера (при заказе ремонта)', 0, '', ''),
-    ('kir-yuvish-mashinasi', "Diagnostika (ta'mirlamasdan)", 'Диагностика (без ремонта)', 50000, '', ''),
-    ('kir-yuvish-mashinasi', "Kichik ta'mir (bitta detal almashtirish)", 'Мелкий ремонт (замена одной детали)', 100000, '', ''),
-    ('kir-yuvish-mashinasi', "Kapital ta'mir", 'Капитальный ремонт', 300000, '', ''),
-    ('santexnik', 'Kran yoki smesitelni almashtirish', 'Замена крана или смесителя', 80000, '', ''),
-    ('santexnik', "Unitaz o'rnatish", 'Установка унитаза', 150000, '', ''),
-    ('santexnik', 'Tiqilib qolgan quvurni tozalash', 'Прочистка засора', 100000, '', ''),
-    ('elektrik', "Rozetka yoki o'chirgich o'rnatish", 'Установка розетки или выключателя', 40000, 'bir dona', 'за штуку'),
-    ('elektrik', "Lyustra o'rnatish", 'Установка люстры', 80000, '', ''),
-    ('elektrik', 'Kvartirada simlarni almashtirish', 'Замена проводки в квартире', 1500000, 'xona soniga qarab', 'зависит от числа комнат'),
-    ('konditsioner', "Konditsioner o'rnatish", 'Установка кондиционера', 400000, '', ''),
-    ('konditsioner', 'Tozalash va profilaktika', 'Чистка и профилактика', 150000, '', ''),
+    ('kir-yuvish-mashinasi', "Diagnostika (ta'mirlash buyurtma qilinsa — bepul)", 'Диагностика (бесплатно при ремонте)', 0, 'fixed', 'service', 30, False, '', ''),
+    ('kir-yuvish-mashinasi', "Diagnostika (ta'mirlamasdan)", 'Диагностика (без ремонта)', 50000, 'fixed', 'service', 30, False,
+     "Ustaning kelishi|Nosozlikni aniqlash|Ta'mir narxini aytish", 'Выезд мастера|Поиск неисправности|Расчёт стоимости ремонта'),
+    ('kir-yuvish-mashinasi', 'Nasosni almashtirish', 'Замена сливного насоса', 180000, 'from', 'service', 60, True,
+     "Eski nasosni yechish|Yangi nasosni o'rnatish|Sinov|Ehtiyot qism narxi alohida", 'Демонтаж насоса|Установка нового|Проверка|Запчасть оплачивается отдельно'),
+    ('kir-yuvish-mashinasi', "Podshipnik va salnik almashtirish", 'Замена подшипников и сальника', 450000, 'from', 'service', 240, False,
+     "Barabanni qismlarga ajratish|Podshipnik va salnik|Yig'ish va sinov", 'Разборка бака|Подшипники и сальник|Сборка и проверка'),
+    ('kir-yuvish-mashinasi', 'Isitish elementini (TEN) almashtirish', 'Замена ТЭНа', 200000, 'from', 'service', 60, False, '', ''),
+    ('santexnik', 'Kran yoki smesitelni almashtirish', 'Замена крана или смесителя', 80000, 'fixed', 'piece', 40, True,
+     "Eski kranni yechish|Yangisini o'rnatish|Germetik va lenta|Oqmasligini tekshirish", 'Демонтаж старого|Установка нового|Герметик и лента|Проверка на протечку'),
+    ('santexnik', "Unitaz o'rnatish", 'Установка унитаза', 250000, 'fixed', 'piece', 120, True,
+     "Eski unitazni olib tashlash|O'rnatish va ulash|Germetiklash", 'Демонтаж старого|Установка и подключение|Герметизация'),
+    ('santexnik', 'Tiqilgan quvurni tozalash', 'Прочистка засора', 120000, 'from', 'service', 60, True, '', ''),
+    ('santexnik', "Suv isitgich (boyler) o'rnatish", 'Установка бойлера', 300000, 'from', 'piece', 120, False, '', ''),
+    ('santexnik', 'Quvur almashtirish (polipropilen)', 'Замена труб (полипропилен)', 60000, 'from', 'meter', None, False,
+     "Eski quvurni yechish|Payvandlash|Material narxi alohida", 'Демонтаж|Пайка|Материал оплачивается отдельно'),
+    ('elektrik', "Rozetka yoki o'chirgich o'rnatish", 'Установка розетки или выключателя', 40000, 'fixed', 'point', 20, True,
+     "Eski rozetkani yechish|Yangisini ulash|Kuchlanishni tekshirish", 'Демонтаж старой|Подключение новой|Проверка напряжения'),
+    ('elektrik', "Lyustra o'rnatish", 'Установка люстры', 100000, 'from', 'piece', 60, True, '', ''),
+    ('elektrik', 'Avtomat (UZO) almashtirish', 'Замена автомата (УЗО)', 70000, 'fixed', 'piece', 30, False, '', ''),
+    ('elektrik', 'Kvartirada simlarni almashtirish', 'Замена проводки в квартире', 1500000, 'from', 'service', 960, False,
+     "Shtroba ochish|Yangi kabel tortish|Schyot va avtomatlarni ulash|Material narxi alohida", 'Штробление|Прокладка кабеля|Подключение щита|Материал отдельно'),
+    ('muzlatgich', 'Muzlatgich diagnostikasi', 'Диагностика холодильника', 70000, 'fixed', 'service', 40, False, '', ''),
+    ('muzlatgich', "Freon to'ldirish", 'Заправка фреоном', 350000, 'from', 'service', 90, True, '', ''),
+    ('muzlatgich', 'Termostatni almashtirish', 'Замена термостата', 200000, 'from', 'service', 60, False, '', ''),
+    ('konditsioner', "Konditsioner o'rnatish (7–12 BTU)", 'Установка кондиционера (7–12 BTU)', 450000, 'fixed', 'piece', 180, True,
+     "3 metrgacha trassa|Kronshteynlar|Vakuumlash|Ishga tushirish", 'Трасса до 3 м|Кронштейны|Вакуумирование|Запуск'),
+    ('konditsioner', 'Tozalash va profilaktika', 'Чистка и профилактика', 150000, 'fixed', 'piece', 60, True,
+     "Filtr va radiatorni yuvish|Drenajni tozalash|Bosimni tekshirish", 'Мойка фильтров и радиатора|Чистка дренажа|Проверка давления'),
+    ('konditsioner', "Freon to'ldirish", 'Заправка фреоном', 250000, 'from', 'piece', 60, False, '', ''),
+    ('elektronika', 'Televizor diagnostikasi', 'Диагностика телевизора', 60000, 'fixed', 'service', 40, False, '', ''),
+    ('elektronika', "Televizorni devorga o'rnatish", 'Установка телевизора на стену', 120000, 'fixed', 'piece', 60, True, '', ''),
+    ('elektronika', "Mikroto'lqinli pech ta'miri", 'Ремонт микроволновки', 150000, 'from', 'service', 60, False, '', ''),
+    ('mebel', "Shkaf yig'ish", 'Сборка шкафа', 200000, 'from', 'piece', 180, True, '', ''),
+    ('mebel', "Oshxona mebelini yig'ish", 'Сборка кухни', 120000, 'from', 'meter', None, False, '', ''),
+    ('mebel', "Polka yoki karniz o'rnatish", 'Установка полки или карниза', 50000, 'fixed', 'piece', 30, False, '', ''),
+    ('qulf-eshik', 'Eshik qulfini ochish', 'Вскрытие дверного замка', 150000, 'from', 'service', 30, True, '', ''),
+    ('qulf-eshik', 'Qulf almashtirish', 'Замена замка', 120000, 'fixed', 'piece', 60, False,
+     "Eski qulfni yechish|Yangisini o'rnatish|Qulf narxi alohida", 'Демонтаж старого|Установка нового|Замок оплачивается отдельно'),
 ]
 
 BRANDS = [
@@ -116,14 +144,13 @@ class Command(BaseCommand):
         self.stdout.write(f'Kategoriyalar: {len(categories)}')
 
         created = 0
-        for order, (slug, name, name_ru, price, description, description_ru) in enumerate(SERVICES, start=1):
-            service, is_new = Service.objects.get_or_create(
-                name=name,
-                defaults={'category': categories[slug], 'price_from': price, 'description': description, 'order': order},
-            )
-            if not service.name_ru:
-                service.name_ru, service.description_ru = name_ru, description_ru
-                service.save(update_fields=['name_ru', 'description_ru'])
+        for order, (slug, name, name_ru, price, price_type, unit, minutes, popular, includes, includes_ru) in enumerate(
+                SERVICES, start=1):
+            service, is_new = Service.objects.get_or_create(name=name, defaults={
+                'category': categories[slug], 'price_from': price, 'price_type': price_type, 'unit': unit,
+                'duration_minutes': minutes, 'is_popular': popular, 'order': order, 'name_ru': name_ru,
+                'includes': includes.replace('|', '\n'), 'includes_ru': includes_ru.replace('|', '\n'),
+            })
             created += is_new
         self.stdout.write(f"Narxlar: {created} ta yangi")
 

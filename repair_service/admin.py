@@ -9,7 +9,10 @@ from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationFo
 
 from payments.admin import MilestoneInline
 
+from django.db import transaction
+
 from . import workflow
+from .customer_notify import notify_master_new_order
 from .models import Brand, OrderEvent, Service, ServiceRequest, Testimonial
 from .phone import format_phone
 
@@ -49,7 +52,7 @@ class ServiceRequestAdmin(ModelAdmin):
     list_filter_submit = True
     search_fields = ['name', 'phone', 'email', 'address', 'problem_description', 'master__full_name']
     readonly_fields = ['created_at', 'updated_at', 'consent', 'review_link']
-    autocomplete_fields = ['master']
+    autocomplete_fields = ['master', 'catalog_item']
     date_hierarchy = 'created_at'
     list_per_page = 25
     actions = ['mark_cancelled']
@@ -57,7 +60,8 @@ class ServiceRequestAdmin(ModelAdmin):
 
     fieldsets = [
         ("Mijoz", {'fields': ['name', 'phone', 'email', 'address', 'consent']}),
-        ("Buyurtma", {'fields': ['category', 'master', 'problem_description', 'appliance_type', 'brand']}),
+        ("Buyurtma", {'fields': ['category', 'master', ('catalog_item', 'quantity'), 'problem_description',
+                                 'appliance_type', 'brand']}),
         ("Holat va izohlar", {'fields': ['status', 'admin_notes', 'review_link']}),
         ("Tizim ma'lumotlari", {'fields': ['created_at', 'updated_at'], 'classes': ['collapse']}),
     ]
@@ -94,6 +98,9 @@ class ServiceRequestAdmin(ModelAdmin):
         # Admin holatni o'zgartirsa ham timeline'da ko'rinsin
         if change and 'status' in form.changed_data:
             workflow.admin_set_status(obj, obj.status, note=f'{request.user}')
+        # Admin ustani biriktirsa — usta xabar oladi (avval xabar bormasdi)
+        if obj.master_id and 'master' in form.changed_data:
+            transaction.on_commit(lambda: notify_master_new_order(obj))
 
     @action(description="Tanlanganlarni bekor qilish", icon='cancel')
     def mark_cancelled(self, request, queryset):
@@ -108,14 +115,27 @@ class ServiceRequestAdmin(ModelAdmin):
 
 @admin.register(Service)
 class ServiceAdmin(ModelAdmin):
-    list_display = ['name', 'category', 'price_display', 'is_active', 'order']
-    list_filter = ['is_active', 'category']
-    search_fields = ['name', 'description']
-    list_editable = ['is_active', 'order']
+    list_display = ['name', 'category', 'price_display', 'duration_minutes', 'is_popular', 'is_active', 'order']
+    list_filter = ['is_active', 'is_popular', 'category', 'price_type']
+    search_fields = ['name', 'name_ru', 'description']
+    list_editable = ['is_popular', 'is_active', 'order']
+    fieldsets = [
+        (None, {'fields': ['category', 'name', 'description', 'includes']}),
+        ('Narx', {'fields': [('price_from', 'price_type', 'unit'), 'duration_minutes']}),
+        ('Ruscha', {'fields': ['name_ru', 'description_ru', 'includes_ru'], 'classes': ['collapse']}),
+        ('Ko\'rinish', {'fields': ['is_popular', 'is_active', 'order']}),
+    ]
 
     @display(description='Narx', ordering='price_from')
     def price_display(self, obj):
-        return f"{obj.price_from:,.0f} so'mdan".replace(',', ' ') if obj.price_from else 'Bepul'
+        if not obj.price_from:
+            return 'Bepul'
+        text = f"{obj.price_from:,.0f}".replace(',', ' ') + " so'm"
+        if obj.price_type == obj.PRICE_FROM:
+            text += 'dan'
+        if obj.is_per_unit:
+            text += f' / {obj.get_unit_display()}'
+        return text
 
 
 @admin.register(Testimonial)

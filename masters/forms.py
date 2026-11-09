@@ -200,6 +200,16 @@ class ReviewForm(forms.ModelForm):
             self.fields[name].choices = RATING_CHOICES
 
 
+# Usta narxi katalogdan shuncha foizdan ko'p farq qilsa — sababini yozishi shart
+QUOTE_DEVIATION_LIMIT = 20
+
+
+def deviation_percent(amount, estimate):
+    if not estimate:
+        return None
+    return round((float(amount) - float(estimate)) / float(estimate) * 100)
+
+
 class QuoteForm(forms.Form):
     amount = forms.IntegerField(label=_("Ish narxi (so'm)"), min_value=1000, max_value=1_000_000_000,
                                 widget=forms.NumberInput(attrs={'step': 1000, 'placeholder': '250000'}))
@@ -207,6 +217,22 @@ class QuoteForm(forms.Form):
     note = forms.CharField(label=_('Narxga nima kiradi'), required=False, max_length=1000,
                            widget=forms.Textarea(attrs={'rows': 3, 'placeholder': _('Masalan: nasos almashtirish, '
                                                                                      'ehtiyot qism narxi bilan')}))
+
+
+    def __init__(self, *args, estimate=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.estimate = estimate
+
+    def clean(self):
+        cleaned = super().clean()
+        amount = cleaned.get('amount')
+        diff = deviation_percent(amount, self.estimate) if amount else None
+        if diff is not None and abs(diff) > QUOTE_DEVIATION_LIMIT and not (cleaned.get('note') or '').strip():
+            self.add_error('note', _(
+                "Narx katalogdagidan %(diff)s%% farq qiladi. Mijoz tushunishi uchun sababini yozing "
+                "(masalan: qo'shimcha ehtiyot qism, murakkab joylashuv)."
+            ) % {'diff': f'{diff:+d}'})
+        return cleaned
 
 
 class PasswordResetForm(forms.Form):

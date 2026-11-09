@@ -32,6 +32,8 @@
       <nav class="nav__links" id="nav-links" aria-label="{% translate 'Asosiy menyu' %}">
         {% url 'masters:list' as masters_url %}
         <a href="{{ masters_url }}" {% if request.path == masters_url %}aria-current="page"{% endif %}>{% translate "Ustalar" %}</a>
+        {% url 'repair_service:catalog' as catalog_url %}
+        <a href="{{ catalog_url }}" {% if request.path == catalog_url %}aria-current="page"{% endif %}>{% translate "Narxlar" %}</a>
         <a href="{% url 'repair_service:index' %}#qanday-ishlaydi">{% translate "Qanday ishlaydi" %}</a>
         <a href="{% url 'repair_service:my_orders' %}">{% translate "Buyurtmalarim" %}</a>
         {% if user.is_authenticated and user.master %}
@@ -72,6 +74,7 @@
           <h4>{% translate "Mijozlarga" %}</h4>
           <ul>
             <li><a href="{% url 'masters:list' %}">{% translate "Usta topish" %}</a></li>
+            <li><a href="{% url 'repair_service:catalog' %}">{% translate "Narxlar katalogi" %}</a></li>
             <li><a href="{% url 'repair_service:index' %}#ariza">{% translate "Ariza qoldirish" %}</a></li>
             <li><a href="{% url 'repair_service:my_orders' %}">{% translate "Mening buyurtmalarim" %}</a></li>
             <li><a href="{% url 'repair_service:index' %}#savollar">{% translate "Savollar" %}</a></li>

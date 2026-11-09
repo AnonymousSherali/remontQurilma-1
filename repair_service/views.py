@@ -61,7 +61,8 @@ def _landing_context():
         'categories': categories,
         'top_masters': top_masters,
         'stats': stats,
-        'services': Service.objects.filter(is_active=True).select_related('category'),
+        # Bosh sahifada faqat ommabop xizmatlar; to'liq ro'yxat — /narxlar/
+        'services': Service.objects.filter(is_active=True, is_popular=True).select_related('category')[:12],
         'reviews': reviews,
         # Haqiqiy baholar bo'lmasa — admin kiritgan sharhlar zaxira sifatida
         'testimonials': [] if reviews else Testimonial.objects.filter(is_published=True)[:6],
@@ -140,4 +141,41 @@ def result(request):
     return render(request, 'result.html', {
         'success': True,
         'message': _('Arizangiz uchun rahmat!'),
+    })
+
+
+def catalog(request):
+    """Narxlar katalogi: yo'nalish bo'yicha filtr, qidiruv va tanlangan xizmatga buyurtma."""
+    categories = Category.objects.filter(is_active=True, services__is_active=True).distinct()
+    items = Service.objects.filter(is_active=True).select_related('category')
+
+    category = None
+    slug = request.GET.get('category')
+    if slug:
+        category = categories.filter(slug=slug).first()
+        if category:
+            items = items.filter(category=category)
+
+    query = (request.GET.get('q') or '')[:100].strip()
+    if query:
+        items = items.filter(
+            Q(name__icontains=query) | Q(name_ru__icontains=query)
+            | Q(description__icontains=query) | Q(description_ru__icontains=query)
+        )
+
+    selected = None
+    item_id = request.GET.get('item')
+    if item_id and item_id.isdigit():
+        selected = Service.objects.filter(pk=int(item_id), is_active=True).select_related('category').first()
+
+    initial = {}
+    if selected:
+        initial = {'catalog_item': selected.pk, 'category': selected.category_id, 'quantity': 1}
+    return render(request, 'catalog.html', {
+        'categories': categories,
+        'category': category,
+        'items': items.order_by('category__order', 'order', 'name'),
+        'query': query,
+        'selected': selected,
+        'form': ServiceRequestForm(initial=initial),
     })

@@ -23,6 +23,21 @@ va **mezonlar bo'yicha baholash** platformasi. Django 5.2 LTS.
 - Ustalarni tasdiqlash / yashirish, arizaga usta biriktirish, baholarni moderatsiya qilish
 - Yangi ariza haqida Telegram xabari (ixtiyoriy)
 
+## Narxlar katalogi
+
+`/narxlar/` — platforma narxlari (Urban Company tajribasi): yo'nalish bo'yicha filtr,
+qidiruv (o'zbek va rus tilida), har bir xizmat uchun:
+
+- **qat'iy narx** yoki **"...dan"**, birlik (xizmat / dona / metr / m² / nuqta / soat);
+- **taxminiy vaqt** ("~40 daqiqa") va **narxga nima kiradi** ro'yxati;
+- "Buyurtma berish" — xizmat tanlangan holda ariza (miqdor bilan), taxminiy summa
+  buyurtmada saqlanadi va ustaga ko'rinadi.
+
+Usta narx taklif qilganda katalog narxi oldindan to'ldiriladi. Taklif katalogdan
+**20% dan ko'p farq qilsa, sababini yozish majburiy**, mijoz esa "katalogdan 35% qimmat"
+belgisini ko'radi. Katalog admin'da: **Sayt kontenti → Narxlar** (ruscha nomlar,
+"Ommabop" belgisi bosh sahifaga chiqaradi). Namunaviy 27 ta xizmat: `seed_demo`.
+
 ## Buyurtma bosqichlari
 
 Buyurtmachi va usta statuslarni **navbat bilan** belgilaydi; ikkalasi ham bir xil
@@ -57,10 +72,17 @@ Upwork'dagi *milestone*lar va YouDo'dagi "Сделка без риска" g'oyas
 5. Platforma komissiyasi `PLATFORM_FEE_PERCENT` (standart 10%). Ustaga o'tkazilgan
    pullar admin'da "Ustaning kartasiga o'tkazildi" deb belgilanadi.
 
-To'lov tizimi: `PAYMENT_PROVIDER=demo` (sinov sahifasi, faqat `DEBUG=True` da) yoki
-`payme` (Payme Merchant API, `/payments/payme/`). **Payme integratsiyasi hujjat
-asosida yozilgan va testlar bilan qoplangan, lekin haqiqiy Payme sandbox'ida
-tekshirilmagan** — ishga tushirishdan oldin test.paycom.uz da barcha testlardan o'tkazing.
+To'lov tizimlari: `PAYMENT_PROVIDERS=payme,click` — mijoz har bir bosqichni Payme yoki
+Click bilan to'lashni tanlaydi. `demo` — sinov sahifasi (faqat `DEBUG=True` da).
+
+| Tizim | Manzil (kabinetda ko'rsatiladi) |
+|---|---|
+| Payme Merchant API | `/payments/payme/` (hisob maydoni: `milestone_id`) |
+| Click Shop API | `/payments/click/prepare/` va `/payments/click/complete/` |
+
+**Ikkala integratsiya ham rasmiy hujjat asosida yozilgan va protokol testlari bilan
+qoplangan, lekin haqiqiy sinov muhitida (Payme sandbox, Click test vositasi)
+tekshirilmagan** — ishga tushirishdan oldin o'sha yerdagi barcha testlardan o'tkazing.
 
 Avtomatik tasdiqlash va chiqarish uchun cron (har soatda):
 
@@ -91,6 +113,25 @@ matnlarini shablon sifatida oldindan moderatsiyadan o'tkazishni talab qiladi.
 Xabarnomalar: mijozga — ariza qabul qilinganda (kuzatish havolasi bilan), usta
 qabul qilganda, yetib kelganda, ishni yakunlaganda, narx taklif qilganda; ustaga —
 yangi buyurtma, mijoz tasdiqlaganda yoki nizo ochganda.
+
+## Telegram bot
+
+Bitta bot ikki vazifani bajaradi (admin'ga yangi ariza xabari ham shu bot orqali):
+
+- **Buyurtmachi** buyurtma sahifasida «Telegram'da kuzatish» ni bosadi — bot buyurtmaga
+  ulanadi va holat o'zgarishlari **SMS o'rniga Telegram'ga** keladi (SMS pulini tejaydi).
+- **Usta** kabinetda «Telegram'ni ulash» ni bosadi (bir martalik kod, 30 daqiqa).
+  Yangi buyurtmalar Telegram'ga **tugmalar bilan** keladi: «Qabul qilish» → «Joyga yetib
+  keldim» → … — saytga kirmasdan boshqaradi. Barcha qoidalar (navbat, narx, to'lov)
+  botda ham amal qiladi; tugma faqat shu buyurtma ustasining chatidan ishlaydi.
+- Buyruqlar: `/buyurtmalar`, `/stop` (uzish — xabarlar yana SMS'ga qaytadi).
+
+Sozlash: @BotFather'da bot yarating, `.env` ga `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`,
+`TELEGRAM_WEBHOOK_SECRET` yozing, saytni HTTPS'da ishga tushirib bir marta:
+
+```bash
+python manage.py telegram_webhook
+```
 
 ## Tillar
 
@@ -185,10 +226,10 @@ static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuer
 python manage.py test
 ```
 
-91 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+123 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
 bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
 (rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
-(muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari.
+(muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click protokoli, Telegram bot (ulash, tugmalar, xavfsizlik).
 
 ## Production
 
