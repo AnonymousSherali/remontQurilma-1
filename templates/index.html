@@ -1,45 +1,45 @@
 {% extends "base.html" %}
-{% load static humanize ui %}
+{% load static humanize i18n ui %}
 
 {% block content %}
 <section class="hero">
   <div class="container hero__grid">
     <div>
-      <span class="eyebrow">🛠 Santexnik · Elektrik · Maishiy texnika</span>
-      <h1 class="hero__title">Uyingizdagi nosozlik uchun <span>eng yaqin ishonchli usta</span></h1>
-      <p class="hero__lead">Yo'nalishni tanlang, joylashuvingizni yoqing — yaqin atrofdagi tekshirilgan ustalarni haqiqiy mijozlar baholari bilan ko'rasiz.</p>
+      <span class="eyebrow">🛠 {% translate "Santexnik · Elektrik · Maishiy texnika" %}</span>
+      <h1 class="hero__title">{% translate "Uyingizdagi nosozlik uchun" %} <span>{% translate "eng yaqin ishonchli usta" %}</span></h1>
+      <p class="hero__lead">{% translate "Yo'nalishni tanlang, joylashuvingizni yoqing — yaqin atrofdagi tekshirilgan ustalarni haqiqiy mijozlar baholari bilan ko'rasiz. Pul ish bajarilgandagina ustaga o'tadi." %}</p>
 
       {% if stats.masters or stats.completed %}
       <div class="hero__trust">
-        {% if stats.masters %}<div class="stat"><div class="stat__value">{{ stats.masters|intcomma }}</div><div class="stat__label">tekshirilgan usta</div></div>{% endif %}
-        {% if stats.completed %}<div class="stat"><div class="stat__value">{{ stats.completed|intcomma }}</div><div class="stat__label">bajarilgan buyurtma</div></div>{% endif %}
-        {% if stats.rating %}<div class="stat"><div class="stat__value">★ {{ stats.rating|floatformat:1 }}</div><div class="stat__label">o'rtacha baho</div></div>{% endif %}
+        {% if stats.masters %}<div class="stat"><div class="stat__value">{{ stats.masters|intcomma }}</div><div class="stat__label">{% translate "tekshirilgan usta" %}</div></div>{% endif %}
+        {% if stats.completed %}<div class="stat"><div class="stat__value">{{ stats.completed|intcomma }}</div><div class="stat__label">{% translate "bajarilgan buyurtma" %}</div></div>{% endif %}
+        {% if stats.rating %}<div class="stat"><div class="stat__value">★ {{ stats.rating|floatformat:1 }}</div><div class="stat__label">{% translate "o'rtacha baho" %}</div></div>{% endif %}
       </div>
       {% endif %}
     </div>
 
-    <form class="card card--raised search-card" action="{% url 'masters:list' %}" method="get" role="search" aria-label="Usta qidirish">
-      <div class="card__title">Usta topish</div>
+    <form class="card card--raised search-card" action="{% url 'masters:list' %}" method="get" role="search" aria-label="{% translate 'Usta qidirish' %}">
+      <div class="card__title">{% translate "Usta topish" %}</div>
       <div class="search-card__row">
         <div class="field">
-          <label for="hero-category">Qanday usta kerak?</label>
+          <label for="hero-category">{% translate "Qanday usta kerak?" %}</label>
           <select id="hero-category" name="category">
-            <option value="">Barcha yo'nalishlar</option>
-            {% for c in categories %}<option value="{{ c.slug }}">{{ c.icon }} {{ c.name }}</option>{% endfor %}
+            <option value="">{% translate "Barcha yo'nalishlar" %}</option>
+            {% for c in categories %}<option value="{{ c.slug }}">{{ c.icon }} {{ c|tr:"name" }}</option>{% endfor %}
           </select>
         </div>
         <input type="hidden" name="lat"><input type="hidden" name="lng">
-        <button type="button" class="btn btn--soft btn--block" data-geolocate>📍 Joylashuvimni aniqlash</button>
-        <div class="search-card__or">yoki</div>
+        <button type="button" class="btn btn--soft btn--block" data-geolocate>📍 {% translate "Joylashuvimni aniqlash" %}</button>
+        <div class="search-card__or">{% translate "yoki" %}</div>
         <div class="field">
-          <label for="hero-district" class="sr-only">Tuman</label>
+          <label for="hero-district" class="sr-only">{% translate "Tuman" %}</label>
           <select id="hero-district" name="district">
-            <option value="">Tumanni tanlang</option>
+            <option value="">{% translate "Tumanni tanlang" %}</option>
             {% for slug, name in districts %}<option value="{{ slug }}">{{ name }}</option>{% endfor %}
           </select>
         </div>
         <div class="geo-status" aria-live="polite"></div>
-        <button type="submit" class="btn btn--primary btn--lg btn--block">Ustalarni ko'rsatish →</button>
+        <button type="submit" class="btn btn--primary btn--lg btn--block">{% translate "Ustalarni ko'rsatish" %} →</button>
       </div>
     </form>
   </div>
@@ -49,16 +49,16 @@
 <section class="section section--tint" id="yonalishlar">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">Yo'nalishlar</span>
-      <h2>Qanday ish kerak?</h2>
-      <p class="lead">Har bir yo'nalishda faqat tekshiruvdan o'tgan ustalar.</p>
+      <span class="eyebrow">{% translate "Yo'nalishlar" %}</span>
+      <h2>{% translate "Qanday ish kerak?" %}</h2>
+      <p class="lead">{% translate "Har bir yo'nalishda faqat tekshiruvdan o'tgan ustalar." %}</p>
     </div>
     <div class="grid grid--cats">
       {% for c in categories %}
       <a class="cat-card" href="{{ c.get_absolute_url }}">
         <span class="cat-card__icon" aria-hidden="true">{{ c.icon }}</span>
-        <span class="cat-card__name">{{ c.name }}</span>
-        <span class="cat-card__meta">{% if c.masters_total %}{{ c.masters_total }} ta usta{% else %}Tez orada{% endif %}</span>
+        <span class="cat-card__name">{{ c|tr:"name" }}</span>
+        <span class="cat-card__meta">{% if c.masters_total %}{% blocktranslate count n=c.masters_total %}{{ n }} ta usta{% plural %}{{ n }} ta usta{% endblocktranslate %}{% else %}{% translate "Tez orada" %}{% endif %}</span>
       </a>
       {% endfor %}
     </div>
@@ -71,10 +71,10 @@
   <div class="container">
     <div class="results-bar" style="margin-top:0">
       <div class="section-head" style="margin:0">
-        <span class="eyebrow">Eng yaxshilar</span>
-        <h2>Yuqori baholangan ustalar</h2>
+        <span class="eyebrow">{% translate "Eng yaxshilar" %}</span>
+        <h2>{% translate "Yuqori baholangan ustalar" %}</h2>
       </div>
-      <a class="btn" href="{% url 'masters:list' %}?sort=rating">Barchasi →</a>
+      <a class="btn" href="{% url 'masters:list' %}?sort=rating">{% translate "Barchasi" %} →</a>
     </div>
     <div class="grid grid--masters">
       {% for master in top_masters %}{% include "partials/master_card.html" %}{% endfor %}
@@ -83,32 +83,34 @@
 </section>
 {% endif %}
 
-<section class="section {% if not top_masters %}{% else %}section--tint{% endif %}" id="qanday-ishlaydi">
+{# ---- Buyurtma statuslari: rasmdagi dizayn ---- #}
+<section class="tl-section section" id="qanday-ishlaydi">
   <div class="container">
-    <div class="section-head section-head--center">
-      <span class="eyebrow">Oddiy va shaffof</span>
-      <h2>Qanday ishlaydi</h2>
+    <span class="tl-eyebrow">{% translate "Buyurtma statuslari" %}</span>
+    <div class="tl-head">
+      <h2>{% translate "Har bir qadam —" %} <em>{% translate "ikkalasiga ko'rinadi" %}</em></h2>
+      <p>{% translate "Buyurtmachi va usta statuslarni navbat bilan belgilaydi. Hech kim yo'qolmaydi: kim qaysi bosqichda va buyurtma bilan hozir nima bo'layotgani ko'rinib turadi." %}</p>
     </div>
-    <div class="grid grid--4 steps">
-      <div class="step"><h3>Yo'nalish va joylashuv</h3><p class="muted">Santexnik, elektrik yoki boshqa ustani tanlang, joylashuvingizni yoqing yoki tumanni belgilang.</p></div>
-      <div class="step"><h3>Ustani tanlang</h3><p class="muted">Masofa, tajriba va mezonlar bo'yicha baholarni solishtiring.</p></div>
-      <div class="step"><h3>Ariza qoldiring</h3><p class="muted">Usta sizga qo'ng'iroq qilib, kelish vaqti va narxni oldindan kelishadi.</p></div>
-      <div class="step"><h3>Baholang</h3><p class="muted">Ish tugagach, maxsus havola orqali ustani 4 mezon bo'yicha baholaysiz.</p></div>
+    <div class="tl-legend">
+      <span><i class="dot dot--cust"></i>{% translate "Buyurtmachi" %}</span>
+      <span><i class="dot dot--mstr"></i>{% translate "Usta" %}</span>
     </div>
+    {% include "partials/order_timeline.html" with timeline=status_timeline live=False %}
   </div>
 </section>
 
 <section class="section">
   <div class="container">
     <div class="section-head section-head--center">
-      <span class="eyebrow">Nega bizga ishonishadi</span>
-      <h2>Ishonch — tasodif emas</h2>
+      <span class="eyebrow">{% translate "Xavfsiz to'lov" %}</span>
+      <h2>{% translate "Pul ish bajarilgandagina ustaga o'tadi" %}</h2>
+      <p class="lead">{% translate "Usta narxni oldindan aytadi. Siz rozi bo'lgach, to'lov platformada ushlab turiladi va har bir bosqich bajarilganda ustaga o'tadi." %}</p>
     </div>
     <div class="grid grid--4">
-      <div class="card"><div class="feature__icon">🪪</div><h3>Tekshirilgan ustalar</h3><p class="muted">Har bir usta saytda ko'rinishidan oldin administrator tomonidan tekshiriladi.</p></div>
-      <div class="card"><div class="feature__icon">⭐</div><h3>Faqat haqiqiy baholar</h3><p class="muted">Baho faqat bajarilgan buyurtmadan keyin qoldiriladi — soxta sharhlar yo'q.</p></div>
-      <div class="card"><div class="feature__icon">📍</div><h3>Eng yaqin usta</h3><p class="muted">Usta tezroq yetib keladi, yo'l uchun ortiqcha to'lov kamroq.</p></div>
-      <div class="card"><div class="feature__icon">💬</div><h3>Narx oldindan</h3><p class="muted">Usta ishni boshlashdan oldin narxni aytadi. Ariza qoldirish bepul.</p></div>
+      <div class="card"><div class="feature__icon">🧾</div><h3>{% translate "Narx oldindan" %}</h3><p class="muted">{% translate "Usta smeta yuboradi. Rozi bo'lmaguningizcha ish boshlanmaydi va narx o'zgarmaydi." %}</p></div>
+      <div class="card"><div class="feature__icon">🔒</div><h3>{% translate "Pul ushlab turiladi" %}</h3><p class="muted">{% translate "To'lagan pulingiz ustaga emas, platformaga tushadi va bosqich bajarilguncha saqlanadi." %}</p></div>
+      <div class="card"><div class="feature__icon">🧩</div><h3>{% translate "Bosqichma-bosqich" %}</h3><p class="muted">{% translate "Katta ishda: 30% avans va qolgani yakunda, yoki 3 teng qism — har biri o'z bosqichida." %}</p></div>
+      <div class="card"><div class="feature__icon">🛟</div><h3>{% translate "Nizo bo'lsa" %}</h3><p class="muted">{% translate "«Muammo bor» deysiz — pul muzlatiladi va administrator ikkala tomonni eshitib hal qiladi." %}</p></div>
     </div>
   </div>
 </section>
@@ -116,34 +118,33 @@
 <section class="section section--tint" id="narxlar">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">Narxlar</span>
-      <h2>Taxminiy narxlar</h2>
-      <p class="lead">Yakuniy narx nosozlikka bog'liq — usta ko'rib chiqib, ishni boshlashdan oldin aytadi.</p>
+      <span class="eyebrow">{% translate "Narxlar" %}</span>
+      <h2>{% translate "Taxminiy narxlar" %}</h2>
+      <p class="lead">{% translate "Yakuniy narx nosozlikka bog'liq — usta ko'rib chiqib, ishni boshlashdan oldin aytadi." %}</p>
     </div>
     <div class="card table-wrap">
       {% regroup services by category as groups %}
       {% for group in groups %}
-        {% if group.grouper %}<div class="price-group">{{ group.grouper.icon }} {{ group.grouper.name }}</div>{% elif groups|length > 1 %}<div class="price-group">Umumiy</div>{% endif %}
+        {% if group.grouper %}<div class="price-group">{{ group.grouper.icon }} {{ group.grouper|tr:"name" }}</div>{% elif groups|length > 1 %}<div class="price-group">{% translate "Umumiy" %}</div>{% endif %}
         <table class="price-table">
-          {% if forloop.first %}<thead><tr><th>Xizmat</th><th>Narx</th></tr></thead>{% endif %}
+          {% if forloop.first %}<thead><tr><th>{% translate "Xizmat" %}</th><th>{% translate "Narx" %}</th></tr></thead>{% endif %}
           <tbody>
             {% for service in group.list %}
             <tr>
-              <td>{{ service.name }}{% if service.description %}<div class="muted small">{{ service.description }}</div>{% endif %}</td>
-              <td>{% if service.price_from %}{{ service.price_from|floatformat:0|intcomma }} so'mdan{% else %}Bepul{% endif %}</td>
+              <td>{{ service|tr:"name" }}{% with d=service|tr:"description" %}{% if d %}<div class="muted small">{{ d }}</div>{% endif %}{% endwith %}</td>
+              <td>{% if service.price_from %}{% blocktranslate with p=service.price_from|floatformat:0|intcomma %}{{ p }} so'mdan{% endblocktranslate %}{% else %}{% translate "Bepul" %}{% endif %}</td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
       {% empty %}
         <table class="price-table">
-          <thead><tr><th>Xizmat</th><th>Narx</th></tr></thead>
+          <thead><tr><th>{% translate "Xizmat" %}</th><th>{% translate "Narx" %}</th></tr></thead>
           <tbody>
-            <tr><td>Ustani chaqirish (ta'mirlash buyurtma qilinsa)</td><td>Bepul</td></tr>
-            <tr><td>Diagnostika (ta'mirlamasdan)</td><td>50 000 so'm</td></tr>
-            <tr><td>Kichik ta'mir (bitta detal almashtirish)</td><td>100 000 so'mdan</td></tr>
-            <tr><td>O'rtacha ta'mir</td><td>200 000 so'mdan</td></tr>
-            <tr><td>Kapital ta'mir</td><td>300 000 so'mdan</td></tr>
+            <tr><td>{% translate "Ustani chaqirish (ta'mirlash buyurtma qilinsa)" %}</td><td>{% translate "Bepul" %}</td></tr>
+            <tr><td>{% translate "Diagnostika (ta'mirlamasdan)" %}</td><td>{% translate "50 000 so'm" %}</td></tr>
+            <tr><td>{% translate "Kichik ta'mir (bitta detal almashtirish)" %}</td><td>{% translate "100 000 so'mdan" %}</td></tr>
+            <tr><td>{% translate "Kapital ta'mir" %}</td><td>{% translate "300 000 so'mdan" %}</td></tr>
           </tbody>
         </table>
       {% endfor %}
@@ -155,16 +156,16 @@
   <div class="container">
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2.5rem;align-items:center">
       <div>
-        <span class="eyebrow">Vaqtingiz yo'qmi?</span>
-        <h2>Ariza qoldiring — ustani o'zimiz topamiz</h2>
-        <p class="lead">Operatorimiz muammoingizga mos va sizga eng yaqin bo'lgan ustani biriktiradi. Odatda 15 daqiqa ichida qo'ng'iroq qilamiz.</p>
+        <span class="eyebrow">{% translate "Vaqtingiz yo'qmi?" %}</span>
+        <h2>{% translate "Ariza qoldiring — ustani o'zimiz topamiz" %}</h2>
+        <p class="lead">{% translate "Operatorimiz muammoingizga mos va sizga eng yaqin ustani biriktiradi. Buyurtma holatini SMS'dagi havola orqali kuzatasiz." %}</p>
         <p><a href="tel:{{ SITE.phone }}" class="btn btn--lg">📞 {{ SITE.phone_display }}</a></p>
         <p class="muted small">{{ SITE.hours }}</p>
       </div>
       <div class="card card--raised">
         {% if errors %}
         <div class="alert alert--error form-errors" role="alert">
-          <div><strong>Arizani yuborib bo'lmadi:</strong>
+          <div><strong>{% translate "Arizani yuborib bo'lmadi:" %}</strong>
             <ul>{% for message in errors.values %}<li>{{ message }}</li>{% endfor %}</ul>
           </div>
         </div>
@@ -179,17 +180,17 @@
 <section class="section section--tint" id="baholar">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">Mijozlar fikri</span>
-      <h2>Mijozlarimiz nima deydi</h2>
+      <span class="eyebrow">{% translate "Mijozlar fikri" %}</span>
+      <h2>{% translate "Mijozlarimiz nima deydi" %}</h2>
     </div>
     <div class="grid grid--3">
       {% for review in reviews %}
       <figure class="card review-card" style="margin:0">
         <span class="rating">{% stars review.overall %} {{ review.overall|floatformat:1 }}</span>
-        <blockquote class="review-card__text" style="margin:0">{{ review.comment|default:"Baho qoldirildi, izohsiz."|truncatewords:40 }}</blockquote>
+        <blockquote class="review-card__text" style="margin:0">{% if review.comment %}{{ review.comment|truncatewords:40 }}{% else %}{% translate "Baho qoldirildi, izohsiz." %}{% endif %}</blockquote>
         <figcaption class="review-card__author">
           <span class="avatar" aria-hidden="true">{{ review.author_name|slice:":1"|upper }}</span>
-          <span>{{ review.author_name }}<br><a class="small" href="{{ review.master.get_absolute_url }}">Usta: {{ review.master.full_name }}</a></span>
+          <span>{{ review.author_name }}<br><a class="small" href="{{ review.master.get_absolute_url }}">{% translate "Usta" %}: {{ review.master.full_name }}</a></span>
         </figcaption>
       </figure>
       {% endfor %}
@@ -211,8 +212,8 @@
 <section class="section" id="brendlar">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">Maishiy texnika</span>
-      <h2>Ishlaydigan brendlarimiz</h2>
+      <span class="eyebrow">{% translate "Maishiy texnika" %}</span>
+      <h2>{% translate "Ishlaydigan brendlarimiz" %}</h2>
     </div>
     <div class="brands">
       {% for brand in brands %}
@@ -229,15 +230,17 @@
 <section class="section section--tint" id="savollar">
   <div class="container" style="max-width:820px">
     <div class="section-head section-head--center">
-      <span class="eyebrow">Savollar</span>
-      <h2>Ko'p beriladigan savollar</h2>
+      <span class="eyebrow">{% translate "Savollar" %}</span>
+      <h2>{% translate "Ko'p beriladigan savollar" %}</h2>
     </div>
     <div class="faq">
-      <details><summary>Ariza qoldirish pullikmi?</summary><p>Yo'q, ariza qoldirish bepul. To'lov faqat usta bajargan ish uchun, narx ishni boshlashdan oldin kelishiladi.</p></details>
-      <details><summary>Ustalar qanday tekshiriladi?</summary><p>Ro'yxatdan o'tgan har bir usta administrator tomonidan ko'rib chiqiladi: shaxsi va telefon raqami tasdiqlanadi. Tasdiqlanmaguncha usta qidiruvda ko'rinmaydi.</p></details>
-      <details><summary>Baholar soxta emasligini qanday bilaman?</summary><p>Baho faqat sayt orqali berilgan va bajarilgan buyurtmadan keyin, mijozga yuborilgan maxsus havola orqali qoldiriladi. Har bir buyurtma uchun bitta baho.</p></details>
-      <details><summary>Joylashuvim nima uchun kerak?</summary><p>Faqat sizga eng yaqin ustalarni ko'rsatish uchun. Koordinatalaringiz saqlanmaydi. Xohlamasangiz, tumanni tanlashingiz mumkin.</p></details>
-      <details><summary>Usta bo'lib qanday qo'shilaman?</summary><p>«Usta bo'lish» sahifasida ro'yxatdan o'ting, yo'nalish va ish hududingizni kiriting. Tekshiruvdan so'ng profilingiz saytda paydo bo'ladi.</p></details>
+      <details><summary>{% translate "Ariza qoldirish pullikmi?" %}</summary><p>{% translate "Yo'q, ariza qoldirish bepul. To'lov faqat usta bajargan ish uchun, narx ishni boshlashdan oldin kelishiladi." %}</p></details>
+      <details><summary>{% translate "Pulim qayerda turadi va qachon ustaga o'tadi?" %}</summary><p>{% translate "Onlayn to'lagan pulingiz platformada ushlab turiladi. Ustaga u siz tasdiqlagan bosqichda o'tadi. Agar usta ishni yakunlagach siz 72 soat ichida javob bermasangiz, buyurtma avtomatik tasdiqlanadi — usta ham himoyalangan bo'lishi kerak." %}</p></details>
+      <details><summary>{% translate "Naqd to'lasam bo'ladimi?" %}</summary><p>{% translate "Ha, usta «naqd» rejani tanlashi mumkin. Lekin bu holda platforma pul bo'yicha kafolat bera olmaydi." %}</p></details>
+      <details><summary>{% translate "Ish sifatsiz bo'lsa nima qilaman?" %}</summary><p>{% translate "Buyurtma sahifasida «Muammo bor» tugmasini bosing. Ushlab turilgan pul muzlatiladi, administrator ikkala tomonni eshitib, pulni ustaga chiqaradi yoki sizga qaytaradi." %}</p></details>
+      <details><summary>{% translate "Ustalar qanday tekshiriladi?" %}</summary><p>{% translate "Telefon raqami SMS orqali tasdiqlanadi, so'ng administrator shaxsini tekshiradi. Tasdiqlanmaguncha usta qidiruvda ko'rinmaydi." %}</p></details>
+      <details><summary>{% translate "Baholar soxta emasligini qanday bilaman?" %}</summary><p>{% translate "Baho faqat bajarilgan buyurtmadan keyin, buyurtmachi raqamini SMS bilan tasdiqlab qoldiriladi. Har bir buyurtma uchun bitta baho." %}</p></details>
+      <details><summary>{% translate "Joylashuvim nima uchun kerak?" %}</summary><p>{% translate "Faqat sizga eng yaqin ustalarni ko'rsatish uchun. Koordinatalaringiz saqlanmaydi. Xohlamasangiz, tumanni tanlashingiz mumkin." %}</p></details>
     </div>
   </div>
 </section>
@@ -246,10 +249,10 @@
   <div class="container">
     <div class="cta">
       <div>
-        <h2>Siz ustamisiz?</h2>
-        <p>Yaqin atrofingizdagi mijozlardan buyurtma oling. Ro'yxatdan o'tish bepul, baholaringiz sizni boshqalardan ajratib turadi.</p>
+        <h2>{% translate "Siz ustamisiz?" %}</h2>
+        <p>{% translate "Yaqin atrofingizdagi mijozlardan buyurtma oling. To'lov oldindan kafolatlanadi, baholaringiz sizni boshqalardan ajratib turadi." %}</p>
       </div>
-      <a class="btn btn--lg" href="{% url 'masters:register' %}">Usta sifatida qo'shilish →</a>
+      <a class="btn btn--lg" href="{% url 'masters:register' %}">{% translate "Usta sifatida qo'shilish" %} →</a>
     </div>
   </div>
 </section>

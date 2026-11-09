@@ -5,6 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Avg, Count
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
 RATING_VALIDATORS = [MinValueValidator(1), MaxValueValidator(5)]
@@ -19,9 +20,11 @@ class Category(models.Model):
     """Xizmat yo'nalishi: santexnik, elektrik, kir yuvish mashinasi ustasi..."""
 
     name = models.CharField('Nomi', max_length=100)
+    name_ru = models.CharField('Nomi (ruscha)', max_length=100, blank=True)
     slug = models.SlugField('URL nomi', max_length=100, unique=True)
     icon = models.CharField('Belgi (emoji)', max_length=8, blank=True, default='🔧')
     description = models.CharField('Qisqa tavsif', max_length=255, blank=True)
+    description_ru = models.CharField('Qisqa tavsif (ruscha)', max_length=255, blank=True)
     is_active = models.BooleanField('Faol', default=True)
     order = models.PositiveIntegerField("Ko'rsatish tartibi", default=0)
 
@@ -147,10 +150,10 @@ class Review(models.Model):
     """Mijoz bahosi. Faqat bajarilgan ariza orqali qoldiriladi — soxta baholarning oldi olinadi."""
 
     CRITERIA = [
-        ('quality', 'Ish sifati'),
-        ('punctuality', "O'z vaqtida kelishi"),
-        ('price', 'Narx adolatliligi'),
-        ('politeness', 'Muomala madaniyati'),
+        ('quality', _('Ish sifati')),
+        ('punctuality', _("O'z vaqtida kelishi")),
+        ('price', _('Narx adolatliligi')),
+        ('politeness', _('Muomala madaniyati')),
     ]
 
     master = models.ForeignKey(Master, on_delete=models.CASCADE, related_name='reviews', verbose_name='Usta')

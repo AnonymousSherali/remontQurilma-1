@@ -20,33 +20,34 @@ from django.db import transaction
 
 from masters.locations import TASHKENT_DISTRICTS
 from masters.models import Category, Master, Review
-from repair_service.models import Brand, Service, ServiceRequest, Testimonial
+from repair_service.models import Brand, OrderEvent, Service, ServiceRequest, Testimonial
 
+# (slug, nomi, ruscha nomi, belgi, tavsif)
 CATEGORIES = [
-    ('santexnik', 'Santexnik', '🚰', "Kran, unitaz, quvur, isitish tizimi"),
-    ('elektrik', 'Elektrik', '⚡', "Rozetka, simlar, schyotchik, yoritish"),
-    ('kir-yuvish-mashinasi', 'Kir yuvish mashinasi', '🧺', "Har qanday brend kir mashinalarini ta'mirlash"),
-    ('muzlatgich', 'Muzlatgich', '🧊', "Muzlatgich va muzlatish kameralari"),
-    ('konditsioner', 'Konditsioner', '❄️', "O'rnatish, tozalash, freon to'ldirish"),
-    ('elektronika', 'Televizor va elektronika', '📺', "Televizor, mikroto'lqinli pech, changyutkich"),
-    ('mebel', 'Mebel ustasi', '🪑', "Yig'ish, ta'mirlash, o'rnatish"),
-    ('qulf-eshik', 'Eshik va qulf', '🔑', "Qulf ochish, almashtirish, eshik o'rnatish"),
+    ('santexnik', 'Santexnik', 'Сантехник', '🚰', "Kran, unitaz, quvur, isitish tizimi"),
+    ('elektrik', 'Elektrik', 'Электрик', '⚡', "Rozetka, simlar, schyotchik, yoritish"),
+    ('kir-yuvish-mashinasi', 'Kir yuvish mashinasi', 'Стиральные машины', '🧺', "Har qanday brend kir mashinalarini ta'mirlash"),
+    ('muzlatgich', 'Muzlatgich', 'Холодильники', '🧊', "Muzlatgich va muzlatish kameralari"),
+    ('konditsioner', 'Konditsioner', 'Кондиционеры', '❄️', "O'rnatish, tozalash, freon to'ldirish"),
+    ('elektronika', 'Televizor va elektronika', 'Телевизоры и электроника', '📺', "Televizor, mikroto'lqinli pech, changyutkich"),
+    ('mebel', 'Mebel ustasi', 'Сборка и ремонт мебели', '🪑', "Yig'ish, ta'mirlash, o'rnatish"),
+    ('qulf-eshik', 'Eshik va qulf', 'Двери и замки', '🔑', "Qulf ochish, almashtirish, eshik o'rnatish"),
 ]
 
-# (kategoriya slug, nomi, narx, tavsif)
+# (kategoriya slug, nomi, ruscha nomi, narx, tavsif, ruscha tavsif)
 SERVICES = [
-    ('kir-yuvish-mashinasi', 'Ustani chaqirish (ta\'mirlash buyurtma qilinsa)', 0, ''),
-    ('kir-yuvish-mashinasi', 'Diagnostika (ta\'mirlamasdan)', 50000, ''),
-    ('kir-yuvish-mashinasi', 'Kichik ta\'mir (bitta detal almashtirish)', 100000, ''),
-    ('kir-yuvish-mashinasi', 'Kapital ta\'mir', 300000, ''),
-    ('santexnik', 'Kran yoki smesitelni almashtirish', 80000, ''),
-    ('santexnik', 'Unitaz o\'rnatish', 150000, ''),
-    ('santexnik', 'Tiqilib qolgan quvurni tozalash', 100000, ''),
-    ('elektrik', 'Rozetka yoki o\'chirgich o\'rnatish', 40000, 'bir dona'),
-    ('elektrik', 'Lyustra o\'rnatish', 80000, ''),
-    ('elektrik', 'Kvartirada simlarni almashtirish', 1500000, 'xona soniga qarab'),
-    ('konditsioner', 'Konditsioner o\'rnatish', 400000, ''),
-    ('konditsioner', 'Tozalash va profilaktika', 150000, ''),
+    ('kir-yuvish-mashinasi', "Ustani chaqirish (ta'mirlash buyurtma qilinsa)", 'Вызов мастера (при заказе ремонта)', 0, '', ''),
+    ('kir-yuvish-mashinasi', "Diagnostika (ta'mirlamasdan)", 'Диагностика (без ремонта)', 50000, '', ''),
+    ('kir-yuvish-mashinasi', "Kichik ta'mir (bitta detal almashtirish)", 'Мелкий ремонт (замена одной детали)', 100000, '', ''),
+    ('kir-yuvish-mashinasi', "Kapital ta'mir", 'Капитальный ремонт', 300000, '', ''),
+    ('santexnik', 'Kran yoki smesitelni almashtirish', 'Замена крана или смесителя', 80000, '', ''),
+    ('santexnik', "Unitaz o'rnatish", 'Установка унитаза', 150000, '', ''),
+    ('santexnik', 'Tiqilib qolgan quvurni tozalash', 'Прочистка засора', 100000, '', ''),
+    ('elektrik', "Rozetka yoki o'chirgich o'rnatish", 'Установка розетки или выключателя', 40000, 'bir dona', 'за штуку'),
+    ('elektrik', "Lyustra o'rnatish", 'Установка люстры', 80000, '', ''),
+    ('elektrik', 'Kvartirada simlarni almashtirish', 'Замена проводки в квартире', 1500000, 'xona soniga qarab', 'зависит от числа комнат'),
+    ('konditsioner', "Konditsioner o'rnatish", 'Установка кондиционера', 400000, '', ''),
+    ('konditsioner', 'Tozalash va profilaktika', 'Чистка и профилактика', 150000, '', ''),
 ]
 
 BRANDS = [
@@ -105,18 +106,24 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("Eski ma'lumotlar o'chirildi."))
 
         categories = {}
-        for order, (slug, name, icon, description) in enumerate(CATEGORIES, start=1):
+        for order, (slug, name, name_ru, icon, description) in enumerate(CATEGORIES, start=1):
             categories[slug], _ = Category.objects.get_or_create(
                 slug=slug, defaults={'name': name, 'icon': icon, 'description': description, 'order': order},
             )
+            if not categories[slug].name_ru:  # eski bazalarga ham ruscha nom qo'shiladi
+                categories[slug].name_ru = name_ru
+                categories[slug].save(update_fields=['name_ru'])
         self.stdout.write(f'Kategoriyalar: {len(categories)}')
 
         created = 0
-        for order, (slug, name, price, description) in enumerate(SERVICES, start=1):
-            _, is_new = Service.objects.get_or_create(
+        for order, (slug, name, name_ru, price, description, description_ru) in enumerate(SERVICES, start=1):
+            service, is_new = Service.objects.get_or_create(
                 name=name,
                 defaults={'category': categories[slug], 'price_from': price, 'description': description, 'order': order},
             )
+            if not service.name_ru:
+                service.name_ru, service.description_ru = name_ru, description_ru
+                service.save(update_fields=['name_ru', 'description_ru'])
             created += is_new
         self.stdout.write(f"Narxlar: {created} ta yangi")
 
@@ -164,8 +171,10 @@ class Command(BaseCommand):
                 request = ServiceRequest.objects.create(
                     name=rng.choice(CLIENT_NAMES), phone=f'+99899000{i:02d}{j:02d}',
                     master=master, category=categories[slugs[0]], consent=True,
-                    status=ServiceRequest.STATUS_COMPLETED,
+                    status=ServiceRequest.STATUS_CONFIRMED,
                 )
+                for step, actor in zip(ServiceRequest.FLOW, ['customer', 'master', 'master', 'master', 'master', 'customer']):
+                    OrderEvent.objects.create(order=request, status=step, actor=actor)
                 base = rng.choice([3, 4, 4, 5, 5, 5])
                 Review.objects.create(
                     master=master, service_request=request, author_name=request.name,

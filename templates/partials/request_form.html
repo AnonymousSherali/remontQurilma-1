@@ -1,20 +1,21 @@
-{# Ariza formasi. Parametrlar: form, show_category (bool), button (matn) #}
+{% load i18n ui %}
+{# Ariza formasi. Parametrlar: form, show_category (bool), button (matn), prefix (id lar uchun) #}
 <div class="request-form-wrap">
   <form method="post" action="{% url 'repair_service:submit_request' %}" class="form js-request-form" novalidate>
     {% csrf_token %}
-    <div class="hp" aria-hidden="true"><label>Sayt <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
     {% if form.master.value %}<input type="hidden" name="master" value="{{ form.master.value }}">{% endif %}
 
     <div class="form-row">
       <div class="field">
-        <label for="{{ prefix }}name">Ismingiz <span class="req" aria-hidden="true">*</span></label>
+        <label for="{{ prefix }}name">{% translate "Ismingiz" %} <span class="req" aria-hidden="true">*</span></label>
         <input type="text" id="{{ prefix }}name" name="name" required autocomplete="name" maxlength="100"
-               value="{{ form.name.value|default_if_none:'' }}" placeholder="Masalan: Dilshod">
+               value="{{ form.name.value|default_if_none:'' }}" placeholder="{% translate 'Masalan: Dilshod' %}">
         {% for e in form.name.errors %}<div class="field__error">{{ e }}</div>{% endfor %}
         <div class="error-message"></div>
       </div>
       <div class="field">
-        <label for="{{ prefix }}phone">Telefon <span class="req" aria-hidden="true">*</span></label>
+        <label for="{{ prefix }}phone">{% translate "Telefon" %} <span class="req" aria-hidden="true">*</span></label>
         <input type="tel" id="{{ prefix }}phone" name="phone" required data-phone
                value="{{ form.phone.value|default_if_none:'' }}">
         {% for e in form.phone.errors %}<div class="field__error">{{ e }}</div>{% endfor %}
@@ -22,56 +23,53 @@
       </div>
     </div>
 
-    {% if show_category %}
     <div class="form-row">
+      {% if show_category %}
       <div class="field">
-        <label for="{{ prefix }}category">Qanday usta kerak?</label>
+        <label for="{{ prefix }}category">{% translate "Qanday usta kerak?" %}</label>
         <select id="{{ prefix }}category" name="category">
-          <option value="">Bilmayman — operator yordam beradi</option>
+          <option value="">{% translate "Bilmayman — operator yordam beradi" %}</option>
           {% for c in form.fields.category.queryset %}
-            <option value="{{ c.pk }}" {% if form.category.value|stringformat:'s' == c.pk|stringformat:'s' %}selected{% endif %}>{{ c.icon }} {{ c.name }}</option>
+            <option value="{{ c.pk }}" {% if form.category.value|stringformat:'s' == c.pk|stringformat:'s' %}selected{% endif %}>{{ c.icon }} {{ c|tr:"name" }}</option>
           {% endfor %}
         </select>
         <div class="error-message"></div>
       </div>
+      {% endif %}
       <div class="field">
-        <label for="{{ prefix }}address">Manzil</label>
+        <label for="{{ prefix }}address">{% translate "Manzil" %}</label>
         <input type="text" id="{{ prefix }}address" name="address" maxlength="255" autocomplete="street-address"
-               value="{{ form.address.value|default_if_none:'' }}" placeholder="Tuman, ko'cha, uy">
+               value="{{ form.address.value|default_if_none:'' }}" placeholder="{% translate "Tuman, ko'cha, uy" %}">
         <div class="error-message"></div>
       </div>
     </div>
-    {% else %}
-    <div class="field">
-      <label for="{{ prefix }}address">Manzil</label>
-      <input type="text" id="{{ prefix }}address" name="address" maxlength="255" autocomplete="street-address" placeholder="Tuman, ko'cha, uy">
-      <div class="error-message"></div>
-    </div>
-    {% endif %}
 
     <div class="field">
-      <label for="{{ prefix }}problem">Muammoni qisqacha yozing</label>
+      <label for="{{ prefix }}problem">{% translate "Muammoni qisqacha yozing" %}</label>
       <textarea id="{{ prefix }}problem" name="problem_description" rows="3" maxlength="2000"
-                placeholder="Masalan: oshxonada kran oqyapti / kir mashina suvni chiqarmayapti">{{ form.problem_description.value|default_if_none:'' }}</textarea>
+                placeholder="{% translate 'Masalan: oshxonada kran oqyapti / kir mashina suvni chiqarmayapti' %}">{{ form.problem_description.value|default_if_none:'' }}</textarea>
       <div class="error-message"></div>
     </div>
 
     <label class="check">
       <input type="checkbox" name="consent" value="on" required>
-      <span>Shaxsiy ma'lumotlarim ariza bo'yicha bog'lanish uchun qayta ishlanishiga roziman <span class="req" aria-hidden="true">*</span></span>
+      <span>{% translate "Shaxsiy ma'lumotlarim buyurtma bo'yicha bog'lanish uchun qayta ishlanishiga roziman" %} <span class="req" aria-hidden="true">*</span></span>
       <span class="error-message"></span>
     </label>
 
     <p class="results field__error" role="alert"></p>
-    <button type="submit" class="btn btn--primary btn--lg btn--block">{{ button|default:"Ariza yuborish" }}</button>
-    <p class="muted small" style="margin:0;text-align:center">Ariza bepul. Usta kelib, narxni oldindan aytadi.</p>
+    <button type="submit" class="btn btn--primary btn--lg btn--block">{% if button %}{{ button }}{% else %}{% translate "Ariza yuborish" %}{% endif %}</button>
+    <p class="muted small" style="margin:0;text-align:center">{% translate "Ariza bepul. Usta narxni oldindan aytadi." %}</p>
   </form>
 
   <div class="form-success alert alert--success" hidden>
     <div>
-      <strong>✅ Rahmat!</strong>
+      <strong>✅ {% translate "Rahmat!" %}</strong>
       <p data-message style="margin:.25rem 0 .75rem"></p>
-      <button type="button" class="btn btn--sm" data-reset-form>Yana ariza qoldirish</button>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <a class="btn btn--primary btn--sm" data-track hidden href="#">{% translate "Buyurtmani kuzatish" %} →</a>
+        <button type="button" class="btn btn--sm" data-reset-form>{% translate "Yana ariza qoldirish" %}</button>
+      </div>
     </div>
   </div>
 </div>

@@ -1,43 +1,51 @@
-{% load static %}<!DOCTYPE html>
-<html lang="uz">
+{% load static i18n ui %}<!DOCTYPE html>
+{% get_current_language as LANG %}
+<html lang="{{ LANG }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="format-detection" content="telephone=no">
-  <title>{% block title %}{{ SITE.name }} — uyingiz uchun ishonchli ustalar{% endblock %}</title>
-  <meta name="description" content="{% block description %}Santexnik, elektrik, kir yuvish mashinasi va maishiy texnika ustalari. Eng yaqin tekshirilgan ustani toping, baholarini ko'ring va ariza qoldiring.{% endblock %}">
+  <title>{% block title %}{{ SITE.name }} — {% translate "uyingiz uchun ishonchli ustalar" %}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{% translate "Santexnik, elektrik, kir yuvish mashinasi va maishiy texnika ustalari. Eng yaqin tekshirilgan ustani toping, baholarini ko'ring va ariza qoldiring." %}{% endblock %}">
   <meta name="theme-color" content="#059669">
-  <meta property="og:title" content="{% block og_title %}{{ SITE.name }} — ishonchli ustalar{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{{ SITE.name }} — {% translate "ishonchli ustalar" %}{% endblock %}">
   <meta property="og:type" content="website">
+  {# Qidiruv tizimlari uchun: sahifaning boshqa tildagi versiyasi #}
+  {% get_available_languages as LANGS %}
+  {% for code, name in LANGS %}<link rel="alternate" hreflang="{{ code }}" href="{{ request.scheme }}://{{ request.get_host }}{% url_in_language code %}">{% endfor %}
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}has-mobile-cta{% endblock %}">
-  <a class="skip-link" href="#main">Asosiy mazmunga o'tish</a>
+  <a class="skip-link" href="#main">{% translate "Asosiy mazmunga o'tish" %}</a>
 
   <header class="site-header">
     <div class="container nav">
-      <a class="logo" href="{% url 'repair_service:index' %}" aria-label="{{ SITE.name }} — bosh sahifa">
+      <a class="logo" href="{% url 'repair_service:index' %}" aria-label="{{ SITE.name }}">
         <span class="logo__mark" aria-hidden="true">🛠</span>{{ SITE.name }}
       </a>
-      <button class="btn btn--ghost nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menyu">☰</button>
-      <nav class="nav__links" id="nav-links" aria-label="Asosiy menyu">
+      <button class="btn btn--ghost nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="{% translate 'Menyu' %}">☰</button>
+      <nav class="nav__links" id="nav-links" aria-label="{% translate 'Asosiy menyu' %}">
         {% url 'masters:list' as masters_url %}
-        <a href="{{ masters_url }}" {% if request.path == masters_url %}aria-current="page"{% endif %}>Ustalar</a>
-        <a href="{% url 'repair_service:index' %}#qanday-ishlaydi">Qanday ishlaydi</a>
-        <a href="{% url 'repair_service:index' %}#narxlar">Narxlar</a>
+        <a href="{{ masters_url }}" {% if request.path == masters_url %}aria-current="page"{% endif %}>{% translate "Ustalar" %}</a>
+        <a href="{% url 'repair_service:index' %}#qanday-ishlaydi">{% translate "Qanday ishlaydi" %}</a>
+        <a href="{% url 'repair_service:my_orders' %}">{% translate "Buyurtmalarim" %}</a>
         {% if user.is_authenticated and user.master %}
-          <a href="{% url 'masters:dashboard' %}">Kabinet</a>
+          <a href="{% url 'masters:dashboard' %}">{% translate "Kabinet" %}</a>
         {% elif user.is_authenticated and user.is_staff %}
           <a href="{% url 'admin:index' %}">Admin</a>
         {% else %}
-          <a href="{% url 'masters:register' %}">Usta bo'lish</a>
-          <a href="{% url 'masters:login' %}">Kirish</a>
+          <a href="{% url 'masters:register' %}">{% translate "Usta bo'lish" %}</a>
+          <a href="{% url 'masters:login' %}">{% translate "Kirish" %}</a>
         {% endif %}
+        <form action="{% url 'set_language' %}" method="post" class="lang-switch" aria-label="{% translate 'Til' %}">
+          {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+          {% for code, name in LANGS %}<button name="language" value="{{ code }}" aria-pressed="{% if code == LANG %}true{% else %}false{% endif %}" title="{{ name }}">{% if code == 'uz' %}UZ{% else %}RU{% endif %}</button>{% endfor %}
+        </form>
         <a class="btn btn--primary btn--sm" href="tel:{{ SITE.phone }}">📞 {{ SITE.phone_display }}</a>
       </nav>
     </div>
@@ -58,26 +66,26 @@
       <div class="footer-grid">
         <div>
           <a class="logo" href="{% url 'repair_service:index' %}"><span class="logo__mark" aria-hidden="true">🛠</span>{{ SITE.name }}</a>
-          <p class="muted small" style="margin-top:1rem">Uyingizdagi nosozliklar uchun tekshirilgan ustalar. Faqat haqiqiy mijozlar qoldirgan baholar.</p>
+          <p class="muted small" style="margin-top:1rem">{% translate "Uyingizdagi nosozliklar uchun tekshirilgan ustalar. Faqat haqiqiy mijozlar qoldirgan baholar. Pul ish bajarilgandagina ustaga o'tadi." %}</p>
         </div>
         <div>
-          <h4>Mijozlarga</h4>
+          <h4>{% translate "Mijozlarga" %}</h4>
           <ul>
-            <li><a href="{% url 'masters:list' %}">Usta topish</a></li>
-            <li><a href="{% url 'repair_service:index' %}#ariza">Ariza qoldirish</a></li>
-            <li><a href="{% url 'repair_service:index' %}#narxlar">Narxlar</a></li>
-            <li><a href="{% url 'repair_service:index' %}#savollar">Savollar</a></li>
+            <li><a href="{% url 'masters:list' %}">{% translate "Usta topish" %}</a></li>
+            <li><a href="{% url 'repair_service:index' %}#ariza">{% translate "Ariza qoldirish" %}</a></li>
+            <li><a href="{% url 'repair_service:my_orders' %}">{% translate "Mening buyurtmalarim" %}</a></li>
+            <li><a href="{% url 'repair_service:index' %}#savollar">{% translate "Savollar" %}</a></li>
           </ul>
         </div>
         <div>
-          <h4>Ustalarga</h4>
+          <h4>{% translate "Ustalarga" %}</h4>
           <ul>
-            <li><a href="{% url 'masters:register' %}">Ro'yxatdan o'tish</a></li>
-            <li><a href="{% url 'masters:login' %}">Kabinetga kirish</a></li>
+            <li><a href="{% url 'masters:register' %}">{% translate "Ro'yxatdan o'tish" %}</a></li>
+            <li><a href="{% url 'masters:login' %}">{% translate "Kabinetga kirish" %}</a></li>
           </ul>
         </div>
         <div>
-          <h4>Bog'lanish</h4>
+          <h4>{% translate "Bog'lanish" %}</h4>
           <ul>
             <li><a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></li>
             {% if SITE.telegram %}<li><a href="https://t.me/{{ SITE.telegram }}" rel="noopener">Telegram: @{{ SITE.telegram }}</a></li>{% endif %}
@@ -88,23 +96,24 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© {% now "Y" %} {{ SITE.name }}. Barcha huquqlar himoyalangan.</span>
-        <span>Shaxsiy ma'lumotlar faqat ariza bo'yicha bog'lanish uchun ishlatiladi.</span>
+        <span>© {% now "Y" %} {{ SITE.name }}. {% translate "Barcha huquqlar himoyalangan." %}</span>
+        <span>{% translate "Shaxsiy ma'lumotlar faqat buyurtma bo'yicha bog'lanish uchun ishlatiladi." %}</span>
       </div>
     </div>
   </footer>
 
   {% block mobile_cta %}
   <div class="mobile-cta">
-    <a class="btn" href="tel:{{ SITE.phone }}">📞 Qo'ng'iroq</a>
-    <a class="btn btn--primary" href="{% url 'masters:list' %}">Usta topish</a>
+    <a class="btn" href="tel:{{ SITE.phone }}">📞 {% translate "Qo'ng'iroq" %}</a>
+    <a class="btn btn--primary" href="{% url 'masters:list' %}">{% translate "Usta topish" %}</a>
   </div>
   {% endblock %}
 
   <div class="toast-stack" aria-live="polite"></div>
 
+  {{ js_i18n|json_script:"js-i18n" }}
   <script>
-    window.TS_MAPS_URL = "https://api-maps.yandex.ru/2.1/?lang=uz_UZ{% if YANDEX_MAPS_API_KEY %}&apikey={{ YANDEX_MAPS_API_KEY|urlencode }}{% endif %}";
+    window.TS_MAPS_URL = "https://api-maps.yandex.ru/2.1/?lang={% if LANG == 'ru' %}ru_RU{% else %}uz_UZ{% endif %}{% if YANDEX_MAPS_API_KEY %}&apikey={{ YANDEX_MAPS_API_KEY|urlencode }}{% endif %}";
   </script>
   <script src="{% static 'js/app.js' %}" defer></script>
   {% block scripts %}{% endblock %}

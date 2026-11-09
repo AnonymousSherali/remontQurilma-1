@@ -23,6 +23,92 @@ va **mezonlar bo'yicha baholash** platformasi. Django 5.2 LTS.
 - Ustalarni tasdiqlash / yashirish, arizaga usta biriktirish, baholarni moderatsiya qilish
 - Yangi ariza haqida Telegram xabari (ixtiyoriy)
 
+## Buyurtma bosqichlari
+
+Buyurtmachi va usta statuslarni **navbat bilan** belgilaydi; ikkalasi ham bir xil
+timeline'ni ko'radi (bosh sahifada namunasi, buyurtma sahifalarida jonli holati).
+
+| # | Kim | Holat | Shart |
+|---|---|---|---|
+| 01 | Buyurtmachi | Buyurtma yaratildi | — |
+| 02 | Usta | Qabul qilindi | — |
+| 03 | Usta | Joyida | — |
+| 04 | Usta | Ishda | narx kelishilgan + shu bosqich qismi to'langan |
+| 05 | Usta | Bajarildi | shu bosqich qismi to'langan (3 qismli rejada) |
+| 06 | Buyurtmachi | Tasdiqlandi | oxirgi qism to'langan; baho bilan birga |
+
+- Bosqichni sakrab o'tib bo'lmaydi; har bir o'tish vaqti bilan tarixga yoziladi.
+- Usta joyga kelgach bir tomonlama bekor qila olmaydi; buyurtmachi esa faqat
+  "Muammo bor" (nizo) ocha oladi — pul muzlatiladi, admin hal qiladi.
+- Usta "Bajarildi" deganidan keyin buyurtmachi 72 soat javob bermasa, buyurtma
+  avtomatik tasdiqlanadi (`AUTO_CONFIRM_HOURS`).
+
+## Bosqichma-bosqich to'lov (eskrou)
+
+Upwork'dagi *milestone*lar va YouDo'dagi "Сделка без риска" g'oyasi:
+
+1. Usta narx va to'lov rejasini taklif qiladi; mijoz SMS-tasdiq bilan rozi bo'ladi.
+2. Rejalar: **yakunda 100%**, **30% avans + 70%**, **3 teng qism**
+   (boshlanganda / bajarilganda / tasdiqlanganda) yoki **naqd** (platforma kafolatisiz).
+3. Mijoz to'lagan pul ustaga emas, platformada **ushlab turiladi**. Usta tegishli
+   bosqichni faqat shu qism to'langandan keyin belgilay oladi — bepul ishlamaydi.
+4. Bosqichga yetilgach mijoz "Bosqichni tasdiqlab, to'lash" ni bosadi yoki 48 soatdan
+   keyin avtomatik chiqariladi (`AUTO_RELEASE_HOURS`). Nizo ochilsa — hech narsa chiqmaydi.
+5. Platforma komissiyasi `PLATFORM_FEE_PERCENT` (standart 10%). Ustaga o'tkazilgan
+   pullar admin'da "Ustaning kartasiga o'tkazildi" deb belgilanadi.
+
+To'lov tizimi: `PAYMENT_PROVIDER=demo` (sinov sahifasi, faqat `DEBUG=True` da) yoki
+`payme` (Payme Merchant API, `/payments/payme/`). **Payme integratsiyasi hujjat
+asosida yozilgan va testlar bilan qoplangan, lekin haqiqiy Payme sandbox'ida
+tekshirilmagan** — ishga tushirishdan oldin test.paycom.uz da barcha testlardan o'tkazing.
+
+Avtomatik tasdiqlash va chiqarish uchun cron (har soatda):
+
+```bash
+0 * * * *  cd /srv/techservice && venv/bin/python manage.py process_orders
+```
+
+> ⚖️ Platforma hisobida boshqa shaxs (usta) uchun pul ushlab turish to'lov
+> xizmatlari bo'yicha qonunchilikka (ZRU-578 "To'lovlar va to'lov tizimlari
+> to'g'risida") tegishli bo'lishi mumkin. Ishga tushirishdan oldin yurist bilan
+> agentlik shartnomasi yoki litsenziyalangan to'lov tashkilotining "xavfsiz bitim"
+> xizmatidan foydalanish masalasini aniqlang.
+
+## SMS tasdiqlash
+
+`otp` ilovasi: 6 xonali kod, 5 daqiqa amal qiladi, 5 ta urinish, bir raqamga
+60 soniyada 1 / soatiga 5 ta, bir IP'dan soatiga 20 ta. Kod bazada xesh holida.
+
+Qayerda ishlatiladi: usta ro'yxatdan o'tishi, ustaning parolni tiklashi,
+buyurtmachining "Mening buyurtmalarim"ga kirishi va buyurtmadagi har qanday amal
+(narxga rozilik, to'lov, tasdiqlash, bekor qilish). Buyurtma havolasi faqat
+**ko'rish** imkonini beradi — havola begona qo'lga tushsa ham pul harakatlanmaydi.
+
+`SMS_BACKEND=console` — kod server konsoliga chiqadi (va `DEBUG=True` da sahifada
+ko'rsatiladi). `SMS_BACKEND=eskiz` — Eskiz.uz orqali haqiqiy SMS. Eskiz SMS
+matnlarini shablon sifatida oldindan moderatsiyadan o'tkazishni talab qiladi.
+
+Xabarnomalar: mijozga — ariza qabul qilinganda (kuzatish havolasi bilan), usta
+qabul qilganda, yetib kelganda, ishni yakunlaganda, narx taklif qilganda; ustaga —
+yangi buyurtma, mijoz tasdiqlaganda yoki nizo ochganda.
+
+## Tillar
+
+O'zbekcha (standart, `/ustalar/`) va ruscha (`/ru/ustalar/`). Sarlavhadagi UZ/RU
+tugmasi bilan almashtiriladi; qidiruv tizimlari uchun `hreflang` qo'yilgan.
+Kategoriya va narx nomlarining ruscha varianti admin'da `… (ruscha)` maydonlarida.
+Mijozga SMS buyurtma qaysi tilda berilgan bo'lsa, o'sha tilda yuboriladi.
+
+Matnlarni o'zgartirgach:
+
+```bash
+python manage.py makemessages -l ru   # GNU gettext kerak
+# locale/ru/LC_MESSAGES/django.po ni tahrirlang
+python manage.py compilemessages -l ru
+```
+
+Kompilyatsiya qilingan `django.mo` repozitoriyda bor — Windows'da gettext o'rnatish shart emas.
+
 ## Ishonch va xavfsizlik qarorlari
 
 | Muammo | Yechim |
@@ -99,10 +185,10 @@ static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuer
 python manage.py test
 ```
 
-50 ta test: telefon formati, masofa va qidiruv (radius, xizmat radiusi, Bayes
-reytingi, tuman), ro'yxatdan o'tish (takroriy raqam, O'zbekistondan tashqari
-koordinata, parol), kabinet holat o'tishlari, baholash oqimi, spam himoyasi,
-admin sahifalari, migratsiya va `seed_demo`.
+91 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
+(rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
+(muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari.
 
 ## Production
 
@@ -129,6 +215,8 @@ Nginx `/static/` → `staticfiles/`, `/media/` → `media/` ni o'zi berishi va
 - **HTTPS majburiy** — brauzerlar geolokatsiyani faqat HTTPS (yoki localhost) da beradi.
 - Bir nechta gunicorn worker bo'lsa, `CACHES` ni Redis'ga o'tkazing (spam hisoblagichi umumiy bo'lishi uchun).
 - SQLite o'rniga PostgreSQL tavsiya etiladi.
-- O'zbekiston qonunchiligiga ko'ra fuqarolarning shaxsga doir ma'lumotlari
-  O'zbekiston hududidagi serverlarda saqlanishi talab qilinadi — hosting tanlashda
-  hisobga oling va yurist bilan tekshiring.
+- Shaxsga doir ma'lumotlar: 2026-yil 27-martdan kuchga kirgan o'zgartirishlarga
+  ko'ra O'zbekistonda saqlash majburiyati asosan biometrik va genetik ma'lumotlarga
+  qoldirilgan; boshqalarini chet elda saqlash shartlar bilan ruxsat etilgan.
+  Hosting tanlashdan oldin amaldagi tahririni lex.uz da va yurist bilan tekshiring.
+- `process_orders` ni cron'ga qo'shing (yuqoriga qarang).

@@ -431,3 +431,111 @@ input[type="file"] { font: inherit; font-size: .9rem; }
   .site-header, .site-footer, .mobile-cta, .toast-stack, .btn { display: none !important; }
   body { background: #fff; color: #000; }
 }
+
+/* =========================================================================
+   Buyurtma timeline'i — buyurtmachi (to'q sariq) va usta (qora) navbat bilan
+   ========================================================================= */
+.tl-section { --cust: #f26b3a; --cust-50: #fff4ee; --cust-200: #fbd2bf; --mstr: #121a17;
+  background: #f4f4ef; color: #121a17; }
+@media (prefers-color-scheme: dark) {
+  .tl-section { background: #0d1311; color: #e7ece9; --mstr: #e7ece9; --cust-50: #2a1710; --cust-200: #6b3420; }
+}
+.tl-eyebrow { font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, monospace; font-size: .78rem;
+  font-weight: 700; letter-spacing: .14em; text-transform: uppercase; display: inline-flex; gap: .55rem; align-items: center; color: inherit; opacity: .75; }
+.tl-eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--cust); }
+.tl-head { display: grid; grid-template-columns: 1.1fr .9fr; gap: 2rem; align-items: end; margin: 1.25rem 0 2.25rem; }
+.tl-head h2 { font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.05; letter-spacing: -.035em; margin: 0; }
+.tl-head h2 em { display: block; font-style: normal; font-weight: 400; color: var(--cust); }
+.tl-head p { color: color-mix(in srgb, currentColor 65%, transparent); font-size: 1.05rem; margin: 0; }
+@media (max-width: 820px) { .tl-head { grid-template-columns: 1fr; } }
+.tl-legend { display: flex; gap: 1.5rem; font-size: .9rem; font-weight: 600; margin-bottom: 2rem; }
+.tl-legend span { display: inline-flex; align-items: center; gap: .5rem; }
+.tl-legend .dot { width: 11px; height: 11px; border-radius: 50%; }
+.dot--cust { border: 2px solid var(--cust); }
+.dot--mstr { background: var(--mstr); }
+
+.tl { --cols: 6; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  grid-template-rows: auto 64px auto; column-gap: 1rem; position: relative; }
+.tl__track { grid-row: 2; grid-column: 1 / -1; position: relative; align-self: center; height: 2px;
+  margin: 0 calc(100% / var(--cols) / 2); background: color-mix(in srgb, currentColor 22%, transparent); }
+.tl__progress { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, var(--cust), var(--mstr) 30%, var(--mstr) 70%, var(--cust)); transition: width .4s; }
+.tl__step { display: contents; }
+.tl__step > * { grid-column: var(--col); }  /* har bir qadam o'z ustunida: karta tepada yoki pastda */
+.tl__dot { grid-row: 2; align-self: center; justify-self: center; z-index: 1; width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center; font: 700 .8rem ui-monospace, "JetBrains Mono", Menlo, monospace; }
+.tl__step--master .tl__dot { background: var(--mstr); color: #fff; }
+@media (prefers-color-scheme: dark) { .tl__step--master .tl__dot { color: #121a17; } }
+.tl__step--customer .tl__dot { background: #fff; color: var(--cust); border: 2px solid var(--cust); }
+@media (prefers-color-scheme: dark) { .tl__step--customer .tl__dot { background: #0d1311; } }
+
+.tl__card { border-radius: 14px; padding: 1rem 1.1rem; background: #fff; border: 1px solid rgb(18 26 23 / .08);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .03); align-self: end; color: #121a17; }
+@media (prefers-color-scheme: dark) { .tl__card { background: #151d1a; border-color: #24302b; color: #e7ece9; } }
+.tl__step--customer .tl__card { grid-row: 1; background: var(--cust-50); border-color: var(--cust-200); margin-bottom: .25rem; }
+.tl__step--master .tl__card { grid-row: 3; align-self: start; margin-top: .25rem; }
+.tl__who { font: 700 .66rem ui-monospace, "JetBrains Mono", Menlo, monospace; letter-spacing: .14em; text-transform: uppercase; opacity: .6; }
+.tl__step--customer .tl__who { color: var(--cust); opacity: 1; }
+.tl__title { font-weight: 800; font-size: 1rem; margin: .35rem 0 .2rem; }
+.tl__desc { font-size: .86rem; line-height: 1.45; opacity: .7; margin: 0; }
+.tl__time { font: 600 .74rem ui-monospace, Menlo, monospace; margin-top: .5rem; opacity: .75; }
+
+/* Jonli holat (buyurtma sahifasida) */
+.tl--live .tl__step--upcoming .tl__card { opacity: .5; }
+.tl--live .tl__step--upcoming .tl__dot { background: transparent; color: color-mix(in srgb, currentColor 45%, transparent);
+  border: 2px dashed color-mix(in srgb, currentColor 30%, transparent); }
+.tl--live .tl__step--current .tl__dot { box-shadow: 0 0 0 6px color-mix(in srgb, var(--cust) 25%, transparent); animation: tl-pulse 1.8s ease-in-out infinite; }
+.tl--live .tl__step--master.tl__step--current .tl__dot { box-shadow: 0 0 0 6px color-mix(in srgb, var(--mstr) 18%, transparent); }
+.tl--live .tl__step--current .tl__card { outline: 2px solid var(--cust); outline-offset: 2px; }
+.tl--live .tl__step--master.tl__step--current .tl__card { outline-color: var(--mstr); }
+.tl--live .tl__step--stopped .tl__dot { background: #dc2626; border-color: #dc2626; color: #fff; }
+@keyframes tl-pulse { 50% { box-shadow: 0 0 0 11px transparent; } }
+.tl-wrap { overflow: visible; }
+
+@media (max-width: 860px) {
+  .tl { grid-template-columns: 40px 1fr; grid-template-rows: none; row-gap: .9rem; column-gap: 1rem; }
+  .tl__track { grid-row: 1 / span 6; grid-column: 1; width: 2px; height: auto; margin: 20px 0; justify-self: center; align-self: stretch; }
+  .tl__progress { inset: 0 0 auto 0; width: 100% !important; height: var(--p); background: linear-gradient(180deg, var(--cust), var(--mstr) 30%, var(--mstr) 70%, var(--cust)); }
+  .tl__step { display: contents; }
+  .tl__dot, .tl__step--customer .tl__card, .tl__step--master .tl__card { grid-row: auto; margin: 0; }
+  .tl__dot { grid-column: 1; align-self: start; }
+  .tl__card { grid-column: 2; align-self: stretch; }
+  .tl__step:nth-of-type(1) > * { grid-row: 1; } .tl__step:nth-of-type(2) > * { grid-row: 2; }
+  .tl__step:nth-of-type(3) > * { grid-row: 3; } .tl__step:nth-of-type(4) > * { grid-row: 4; }
+  .tl__step:nth-of-type(5) > * { grid-row: 5; } .tl__step:nth-of-type(6) > * { grid-row: 6; }
+}
+
+/* ---------- Buyurtma sahifasi ---------- */
+.order-grid { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; align-items: start; }
+@media (max-width: 980px) { .order-grid { grid-template-columns: 1fr; } }
+.kv { display: grid; grid-template-columns: 140px 1fr; gap: .55rem 1rem; margin: 0; }
+.kv dt { color: var(--muted); font-size: .9rem; }
+.kv dd { margin: 0; font-weight: 600; }
+.milestone { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: center; padding: .9rem 0; border-bottom: 1px solid var(--line); }
+.milestone:last-child { border-bottom: 0; }
+.milestone__amount { font-weight: 800; white-space: nowrap; }
+.badge--held { background: color-mix(in srgb, var(--warning) 16%, transparent); color: var(--warning); }
+.badge--released { background: var(--brand-50); color: var(--brand); }
+.badge--refunded { background: var(--danger-50); color: var(--danger); }
+.badge--pending_pay { background: var(--surface-2); color: var(--muted); }
+.badge--accepted, .badge--arrived { background: color-mix(in srgb, var(--info) 14%, transparent); color: var(--info); }
+.badge--confirmed { background: var(--brand-50); color: var(--brand); }
+.badge--disputed { background: var(--danger-50); color: var(--danger); }
+.money-bar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: var(--surface-2); margin: .75rem 0; }
+.money-bar span { display: block; }
+.money-bar .is-released { background: var(--brand); }
+.money-bar .is-held { background: var(--accent); }
+.events { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; font-size: .9rem; }
+.events li { display: grid; grid-template-columns: 110px 1fr; gap: .75rem; }
+.events time { color: var(--muted); font-family: ui-monospace, Menlo, monospace; font-size: .8rem; }
+
+/* SMS kod bloki */
+.otp-box { border: 1.5px dashed color-mix(in srgb, var(--brand) 45%, var(--line)); border-radius: var(--radius); padding: 1.1rem; background: var(--brand-50); }
+.otp-box__row { display: flex; gap: .5rem; flex-wrap: wrap; }
+.otp-box__row input { flex: 1; min-width: 160px; }
+.otp-code { letter-spacing: .4em; font-weight: 800; text-align: center; font-family: ui-monospace, Menlo, monospace; }
+.otp-debug { font-size: .8rem; color: var(--muted); margin-top: .5rem; }
+
+/* Til almashtirgich */
+.lang-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.lang-switch button { border: 0; background: transparent; padding: .35rem .6rem; font: inherit; font-size: .8rem; font-weight: 700; color: var(--muted); cursor: pointer; }
+.lang-switch button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }

@@ -1,0 +1,21 @@
+{% load i18n ui %}
+{# SMS kod bilan telefon raqamini tasdiqlash. Parametrlar: phone (ixtiyoriy, oldindan), purpose, reload (bool), title #}
+<div class="otp-box" data-otp data-purpose="{{ purpose|default:'login' }}" {% if reload %}data-reload{% endif %} {% if fill_target %}data-fill-target="{{ fill_target }}"{% endif %}
+     data-send-url="{% url 'otp_send' %}" data-verify-url="{% url 'otp_verify' %}">
+  {% csrf_token %}
+  <strong>{{ title|default:_("Telefon raqamingizni tasdiqlang") }}</strong>
+  <p class="muted small" style="margin:.25rem 0 .75rem">{% translate "Raqamingizga 6 xonali kod yuboramiz. Bu sizning buyurtmangizni boshqa hech kim boshqara olmasligi uchun." %}</p>
+  <div class="otp-box__row" data-step="phone">
+    <input type="tel" data-phone data-otp-phone value="{% if phone %}{{ phone|phone }}{% endif %}" {% if phone %}readonly{% endif %}
+           aria-label="{% translate 'Telefon raqam' %}">
+    <button type="button" class="btn btn--primary" data-otp-send>{% translate "Kod yuborish" %}</button>
+  </div>
+  <div class="otp-box__row" data-step="code" hidden style="margin-top:.6rem">
+    <input type="text" class="otp-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+           data-otp-code placeholder="••••••" aria-label="{% translate 'SMS kod' %}">
+    <button type="button" class="btn btn--primary" data-otp-verify>{% translate "Tasdiqlash" %}</button>
+  </div>
+  <div class="field__error" data-otp-error role="alert"></div>
+  <div class="otp-debug" data-otp-debug hidden></div>
+  <div class="geo-status is-ok" data-otp-ok hidden>✓ {% translate "Raqam tasdiqlandi" %}</div>
+</div>

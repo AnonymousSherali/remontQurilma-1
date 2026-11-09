@@ -1,47 +1,47 @@
 {% extends "base.html" %}
-{% load ui %}
+{% load i18n ui %}
 
-{% block title %}{% if category %}{{ category.name }} — {% endif %}Ustalar{% if location_label %} ({{ location_label }}){% endif %} | {{ SITE.name }}{% endblock %}
-{% block description %}{% if category %}{{ category.name }}: yaqin atrofdagi tekshirilgan ustalar, baholar va masofa.{% else %}Yaqin atrofdagi tekshirilgan ustalar: santexnik, elektrik, maishiy texnika.{% endif %}{% endblock %}
+{% block title %}{% if category %}{{ category|tr:"name" }} — {% endif %}{% translate "Ustalar" %}{% if location_label %} ({{ location_label }}){% endif %} | {{ SITE.name }}{% endblock %}
+{% block description %}{% if category %}{% blocktranslate with c=category|tr:"name" %}{{ c }}: yaqin atrofdagi tekshirilgan ustalar, baholar va masofa.{% endblocktranslate %}{% else %}{% translate "Yaqin atrofdagi tekshirilgan ustalar: santexnik, elektrik, maishiy texnika." %}{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container page-head">
-  <h1 style="font-size:clamp(1.6rem,3.5vw,2.4rem)">{% if category %}{{ category.icon }} {{ category.name }}{% else %}Ustalar{% endif %}</h1>
-  <p class="muted">{% if location_label %}{{ location_label }} atrofida {{ radius }} km radiusda{% else %}Joylashuvni yoqsangiz, eng yaqin ustalarni birinchi ko'rsatamiz{% endif %}</p>
+  <h1 style="font-size:clamp(1.6rem,3.5vw,2.4rem)">{% if category %}{{ category.icon }} {{ category|tr:"name" }}{% else %}{% translate "Ustalar" %}{% endif %}</h1>
+  <p class="muted">{% if location_label %}{% blocktranslate with place=location_label r=radius %}{{ place }} atrofida {{ r }} km radiusda{% endblocktranslate %}{% else %}{% translate "Joylashuvni yoqsangiz, eng yaqin ustalarni birinchi ko'rsatamiz" %}{% endif %}</p>
 
   <form class="card filters" method="get" action="" role="search">
     <div class="field">
-      <label for="f-category">Yo'nalish</label>
+      <label for="f-category">{% translate "Yo'nalish" %}</label>
       <select id="f-category" name="category">
-        <option value="">Barchasi</option>
-        {% for c in categories %}<option value="{{ c.slug }}" {% if category and category.pk == c.pk %}selected{% endif %}>{{ c.icon }} {{ c.name }}</option>{% endfor %}
+        <option value="">{% translate "Barchasi" %}</option>
+        {% for c in categories %}<option value="{{ c.slug }}" {% if category and category.pk == c.pk %}selected{% endif %}>{{ c.icon }} {{ c|tr:"name" }}</option>{% endfor %}
       </select>
     </div>
     <div class="field">
-      <label for="f-district">Joylashuv</label>
+      <label for="f-district">{% translate "Joylashuv" %}</label>
       <select id="f-district" name="district">
-        <option value="">{% if lat is not None and not district %}📍 Joriy joylashuv{% else %}Tumanni tanlang{% endif %}</option>
+        <option value="">{% if lat is not None and not district %}📍 {% translate "Joriy joylashuv" %}{% else %}{% translate "Tumanni tanlang" %}{% endif %}</option>
         {% for slug, name in districts %}<option value="{{ slug }}" {% if district == slug %}selected{% endif %}>{{ name }}</option>{% endfor %}
       </select>
       <input type="hidden" name="lat" value="{% if lat is not None and not district %}{{ lat|stringformat:'.6f' }}{% endif %}">
       <input type="hidden" name="lng" value="{% if lng is not None and not district %}{{ lng|stringformat:'.6f' }}{% endif %}">
     </div>
     <div class="field">
-      <label for="f-radius">Radius</label>
+      <label for="f-radius">{% translate "Radius" %}</label>
       <select id="f-radius" name="radius">
         {% for r in radius_choices %}<option value="{{ r }}" {% if r == radius %}selected{% endif %}>{{ r }} km</option>{% endfor %}
       </select>
     </div>
     <div class="field">
-      <label for="f-sort">Saralash</label>
+      <label for="f-sort">{% translate "Saralash" %}</label>
       <select id="f-sort" name="sort">
-        <option value="distance" {% if sort == 'distance' %}selected{% endif %}>Eng yaqin</option>
-        <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Eng yuqori baho</option>
+        <option value="distance" {% if sort == 'distance' %}selected{% endif %}>{% translate "Eng yaqin" %}</option>
+        <option value="rating" {% if sort == 'rating' %}selected{% endif %}>{% translate "Eng yuqori baho" %}</option>
       </select>
     </div>
     <div style="display:flex;gap:.5rem">
-      <button type="button" class="btn btn--soft" data-geolocate data-autosubmit title="Joylashuvimni aniqlash" aria-label="Joylashuvimni aniqlash">📍</button>
-      <button type="submit" class="btn btn--primary">Qidirish</button>
+      <button type="button" class="btn btn--soft" data-geolocate data-autosubmit title="{% translate 'Joylashuvimni aniqlash' %}" aria-label="{% translate 'Joylashuvimni aniqlash' %}">📍</button>
+      <button type="submit" class="btn btn--primary">{% translate "Qidirish" %}</button>
     </div>
     <div class="geo-status" style="grid-column:1/-1" aria-live="polite"></div>
   </form>
@@ -49,8 +49,8 @@
 
 <div class="container">
   <div class="results-bar">
-    <strong>{% if total %}{{ total }} ta usta topildi{% else %}Usta topilmadi{% endif %}</strong>
-    {% if category or location_label %}<a href="{% url 'masters:list' %}" class="btn btn--ghost btn--sm">Filtrlarni tozalash ✕</a>{% endif %}
+    <strong>{% if total %}{% blocktranslate count n=total %}{{ n }} ta usta topildi{% plural %}{{ n }} ta usta topildi{% endblocktranslate %}{% else %}{% translate "Usta topilmadi" %}{% endif %}</strong>
+    {% if category or location_label %}<a href="{% url 'masters:list' %}" class="btn btn--ghost btn--sm">{% translate "Filtrlarni tozalash" %} ✕</a>{% endif %}
   </div>
 
   <div class="layout-split">
@@ -59,25 +59,24 @@
         <div class="grid grid--masters">
           {% for master in page.object_list %}{% include "partials/master_card.html" %}{% endfor %}
         </div>
-
         {% if page.has_other_pages %}
-        <nav class="pagination" aria-label="Sahifalar">
-          {% if page.has_previous %}<a href="?{% query_with querystring page=page.previous_page_number %}" aria-label="Oldingi">←</a>{% endif %}
+        <nav class="pagination" aria-label="{% translate 'Sahifalar' %}">
+          {% if page.has_previous %}<a href="?{% query_with querystring page=page.previous_page_number %}">←</a>{% endif %}
           {% for n in page.paginator.page_range %}
             {% if n == page.number %}<span class="is-current" aria-current="page">{{ n }}</span>
             {% elif n > page.number|add:-3 and n < page.number|add:3 %}<a href="?{% query_with querystring page=n %}">{{ n }}</a>{% endif %}
           {% endfor %}
-          {% if page.has_next %}<a href="?{% query_with querystring page=page.next_page_number %}" aria-label="Keyingi">→</a>{% endif %}
+          {% if page.has_next %}<a href="?{% query_with querystring page=page.next_page_number %}">→</a>{% endif %}
         </nav>
         {% endif %}
       {% else %}
         <div class="card empty">
           <div class="empty__icon">🔎</div>
-          <h3>Bu hududda hozircha mos usta yo'q</h3>
-          <p class="muted">Radiusni kattalashtiring yoki ariza qoldiring — operatorimiz ustani o'zi topib beradi.</p>
+          <h3>{% translate "Bu hududda hozircha mos usta yo'q" %}</h3>
+          <p class="muted">{% translate "Radiusni kattalashtiring yoki ariza qoldiring — operatorimiz ustani o'zi topib beradi." %}</p>
           <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap">
-            {% if location_label and radius < 50 %}<a class="btn" href="?{% query_with querystring radius=50 %}">50 km gacha kengaytirish</a>{% endif %}
-            <a class="btn btn--primary" href="{% url 'repair_service:index' %}#ariza">Ariza qoldirish</a>
+            {% if location_label and radius < 50 %}<a class="btn" href="?{% query_with querystring radius=50 %}">{% translate "50 km gacha kengaytirish" %}</a>{% endif %}
+            <a class="btn btn--primary" href="{% url 'repair_service:index' %}#ariza">{% translate "Ariza qoldirish" %}</a>
           </div>
         </div>
       {% endif %}
@@ -88,8 +87,8 @@
       {{ map_points|json_script:"map-points" }}
       <div class="map" data-map="map-points" hidden
            {% if lat is not None %}data-lat="{{ lat|stringformat:'.6f' }}" data-lng="{{ lng|stringformat:'.6f' }}" data-show-origin="1"{% endif %}
-           role="region" aria-label="Ustalar xaritasi"></div>
-      <p class="muted small" style="margin-top:.5rem">Xaritada ustalarning taxminiy hududi ko'rsatiladi (~1 km aniqlikda) — aniq manzil maxfiy.</p>
+           role="region" aria-label="{% translate 'Ustalar xaritasi' %}"></div>
+      <p class="muted small" style="margin-top:.5rem">{% translate "Xaritada ustalarning taxminiy hududi ko'rsatiladi (~1 km aniqlikda) — aniq manzil maxfiy." %}</p>
     </aside>
     {% endif %}
   </div>

@@ -1,18 +1,19 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Baho qoldirib bo'lmaydi | {{ SITE.name }}{% endblock %}
+{% block title %}{% translate "Baho qoldirib bo'lmaydi" %} | {{ SITE.name }}{% endblock %}
 
 {% block content %}
 <div class="container auth-wrap">
   <div class="card card--raised auth-card" style="text-align:center">
     <div style="font-size:3rem;line-height:1;margin-bottom:1rem" aria-hidden="true">⏳</div>
-    <h1 style="font-size:1.6rem">Hozircha baho qoldirib bo'lmaydi</h1>
+    <h1 style="font-size:1.6rem">{% translate "Hozircha baho qoldirib bo'lmaydi" %}</h1>
     <p class="muted">
-      {% if service_request.status == 'cancelled' %}Bu buyurtma bekor qilingan.
-      {% elif not service_request.master %}Bu buyurtmaga hali usta biriktirilmagan.
-      {% else %}Usta ishni yakunlagach, havola faollashadi.{% endif %}
+      {% if service_request.status == 'cancelled' %}{% translate "Bu buyurtma bekor qilingan." %}
+      {% elif not service_request.master %}{% translate "Bu buyurtmaga hali usta biriktirilmagan." %}
+      {% else %}{% translate "Usta ishni yakunlagach, havola faollashadi." %}{% endif %}
     </p>
-    <a class="btn btn--primary" href="{% url 'repair_service:index' %}">Bosh sahifa</a>
+    <a class="btn btn--primary" href="{{ service_request.get_customer_url }}">{% translate "Buyurtma sahifasi" %}</a>
   </div>
 </div>
 {% endblock %}

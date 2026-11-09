@@ -1,8 +1,9 @@
-{# Yulduzli tanlov. CSS row-reverse bilan teskari tartibda chiziladi: 5 → 1 #}
+{% load i18n %}{# Yulduzli tanlov. CSS row-reverse bilan teskari tartibda chiziladi: 5 → 1 #}
 <div class="star-input" role="radiogroup" aria-labelledby="{{ widget.name }}-label">
   {% for group, options, index in widget.optgroups reversed %}{% for option in options %}
+    {% blocktranslate count n=option.value asvar star_label %}{{ n }} yulduz{% plural %}{{ n }} yulduz{% endblocktranslate %}
     <input type="radio" name="{{ widget.name }}" value="{{ option.value }}" id="{{ widget.attrs.id }}_{{ option.value }}"
            {% if option.selected %}checked{% endif %} {% if widget.required %}required{% endif %}>
-    <label for="{{ widget.attrs.id }}_{{ option.value }}" title="{{ option.value }} yulduz"><span aria-hidden="true">★</span><span class="sr-only">{{ option.value }} yulduz</span></label>
+    <label for="{{ widget.attrs.id }}_{{ option.value }}" title="{{ star_label }}"><span aria-hidden="true">★</span><span class="sr-only">{{ star_label }}</span></label>
   {% endfor %}{% endfor %}
 </div>

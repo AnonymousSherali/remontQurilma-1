@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load i18n humanize ui %}
+
+{% block title %}{% blocktranslate with id=order.pk %}Buyurtma #{{ id }}{% endblocktranslate %} | {{ SITE.name }}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+{% block body_class %}{% endblock %}
+
+{% block content %}
+<section class="tl-section section" style="padding-top:2rem">
+  <div class="container">
+    <div class="results-bar" style="margin-top:0">
+      <div>
+        <a href="{% url 'masters:dashboard' %}" class="btn btn--ghost btn--sm">← {% translate "Kabinet" %}</a>
+        <span class="tl-eyebrow" style="margin-left:.5rem">#{{ order.pk }} · {{ order.created_at|date:"d.m.Y H:i" }}</span>
+        <h1 style="font-size:clamp(1.6rem,3.5vw,2.4rem);margin:.5rem 0 0">{{ order.name }} — {{ order.get_status_display }}</h1>
+      </div>
+      {% if next_action %}
+        <form method="post" action="{% url 'masters:request_action' order.pk next_action.0 %}">{% csrf_token %}
+          <button class="btn btn--primary btn--lg" {% if blocked_by or needs_quote %}disabled{% endif %}>{{ next_action.1 }} →</button>
+        </form>
+      {% endif %}
+    </div>
+    {% if needs_quote %}<div class="alert alert--info">🧾 {% translate "Ishni boshlashdan oldin pastda narx taklif qiling — mijoz rozi bo'lgach davom etasiz." %}</div>{% endif %}
+    {% if blocked_by %}<div class="alert alert--warning">⏳ {% translate "Keyingi bosqichga o'tish uchun mijoz quyidagini to'lashi kerak" %}: {% for m in blocked_by %}{{ m.title }}{% if not forloop.last %}, {% endif %}{% endfor %}. {% translate "Bu sizning kafolatingiz — bepul ishlab qolmaysiz." %}</div>{% endif %}
+    {% if order.status == 'disputed' %}<div class="alert alert--error">{% translate "Mijoz nizo ochdi. Administrator siz bilan bog'lanadi; to'lovlar muzlatilgan." %}</div>{% endif %}
+    {% include "partials/order_timeline.html" with timeline=timeline live=True %}
+  </div>
+</section>
+
+<div class="container section" style="padding-top:2rem">
+  <div class="order-grid">
+    <div style="display:grid;gap:1.25rem">
+      <section class="card">
+        <div class="card__title">{% translate "Narx va to'lov" %}</div>
+        {% if quote_form %}
+          {% if quote and quote.status == 'proposed' %}<div class="alert alert--info">{% blocktranslate with amount=quote.amount|floatformat:0|intcomma %}Taklifingiz ({{ amount }} so'm) mijoz javobini kutmoqda. Kerak bo'lsa o'zgartiring.{% endblocktranslate %}</div>{% endif %}
+          {% if quote and quote.status == 'rejected' %}<div class="alert alert--warning">{% translate "Mijoz oldingi narxni rad etdi. Yangi taklif yuboring." %}</div>{% endif %}
+          <form method="post" action="{% url 'masters:quote_propose' order.pk %}" class="form">{% csrf_token %}
+            {% include "partials/field.html" with field=quote_form.amount %}
+            <div class="field choice-grid">
+              <span class="field__label">{{ quote_form.plan.label }}</span>
+              {{ quote_form.plan }}
+            </div>
+            {% include "partials/field.html" with field=quote_form.note %}
+            <button class="btn btn--primary">{% translate "Narxni mijozga yuborish" %}</button>
+          </form>
+        {% elif quote %}
+          <p style="margin:0 0 .5rem"><strong>{{ quote.amount|floatformat:0|intcomma }} {% translate "so'm" %}</strong> · {{ quote.get_plan_display }}</p>
+          {% include "orders/_money.html" with side="master" milestones=money.milestones %}
+        {% else %}
+          <p class="muted" style="margin:0">{% translate "Narx taklif qilish uchun buyurtmani qabul qiling." %}</p>
+        {% endif %}
+      </section>
+
+      {% if order.status == 'completed' or order.status == 'confirmed' %}
+      <section class="card">
+        <div class="card__title">{% translate "Mijozga havola" %}</div>
+        <p class="muted small" style="margin-top:0">{% translate "Mijoz SMS oladi. Kerak bo'lsa, bu havolani o'zingiz ham yuboring — u natijani tasdiqlab, sizni baholaydi." %}</p>
+        <div class="copy-box">
+          <input type="text" id="cust-link" value="{{ customer_link }}" readonly aria-label="{% translate 'Havola' %}">
+          <button type="button" class="btn btn--sm" data-copy="#cust-link">{% translate "Nusxa" %}</button>
+          <a class="btn btn--sm btn--soft" target="_blank" rel="noopener" href="https://t.me/share/url?url={{ customer_link|urlencode }}">Telegram</a>
+        </div>
+      </section>
+      {% endif %}
+
+      <section class="card">
+        <div class="card__title">{% translate "Tarix" %}</div>
+        <ul class="events">
+          {% for e in events %}<li><time>{{ e.created_at|date:"d.m H:i" }}</time><span><strong>{{ e.get_status_display }}</strong> · {{ e.get_actor_display }}{% if e.note %} — {{ e.note }}{% endif %}</span></li>{% endfor %}
+        </ul>
+      </section>
+    </div>
+
+    <aside style="display:grid;gap:1.25rem">
+      <section class="card">
+        <div class="card__title">{% translate "Mijoz" %}</div>
+        <dl class="kv">
+          <dt>{% translate "Ism" %}</dt><dd>{{ order.name }}</dd>
+          <dt>{% translate "Telefon" %}</dt><dd><a href="tel:{{ order.phone }}">{{ order.phone|phone }}</a></dd>
+          {% if order.address %}<dt>{% translate "Manzil" %}</dt><dd>{{ order.address }} <a class="small" target="_blank" rel="noopener" href="https://yandex.uz/maps/?text={{ order.address|urlencode }}">{% translate "xaritada" %} ↗</a></dd>{% endif %}
+          {% if order.category %}<dt>{% translate "Yo'nalish" %}</dt><dd>{{ order.category.icon }} {{ order.category|tr:"name" }}</dd>{% endif %}
+          {% if order.problem_description %}<dt>{% translate "Muammo" %}</dt><dd style="font-weight:400">{{ order.problem_description }}</dd>{% endif %}
+        </dl>
+      </section>
+      {% if can_cancel %}
+        <form method="post" action="{% url 'masters:request_action' order.pk 'cancel' %}"
+              onsubmit="return confirm('{% translate "Buyurtmani bekor qilasizmi?" as q %}{{ q|escapejs }}')">{% csrf_token %}
+          <button class="btn btn--danger btn--block">{% translate "Buyurtmadan voz kechish" %}</button></form>
+      {% else %}
+        <p class="muted small">{% translate "Joyga kelgandan keyin buyurtmani bir tomonlama bekor qilib bo'lmaydi. Muammo bo'lsa administratorga qo'ng'iroq qiling" %}: <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></p>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}

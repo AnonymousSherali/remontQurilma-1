@@ -3,11 +3,14 @@ from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, User
 from django.utils.html import format_html
-from unfold.admin import ModelAdmin
+from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import action, display
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
-from .models import Brand, Service, ServiceRequest, Testimonial
+from payments.admin import MilestoneInline
+
+from . import workflow
+from .models import Brand, OrderEvent, Service, ServiceRequest, Testimonial
 from .phone import format_phone
 
 admin.site.site_header = 'TechService boshqaruv paneli'
@@ -15,11 +18,27 @@ admin.site.site_title = 'TechService admin'
 admin.site.index_title = 'Boshqaruv paneli'
 
 STATUS_COLORS = {
-    'Yangi': 'info',
-    'Jarayonda': 'warning',
-    'Yakunlandi': 'success',
-    'Bekor qilindi': 'danger',
+    'Yaratildi': 'info',
+    'Qabul qilindi': 'primary',
+    'Joyida': 'warning',
+    'Ishda': 'warning',
+    'Bajarildi': 'success',
+    'Tasdiqlandi': 'success',
+    'Bekor qilindi': 'default',
+    'Nizo': 'danger',
 }
+
+
+class OrderEventInline(TabularInline):
+    model = OrderEvent
+    extra = 0
+    can_delete = False
+    fields = ['created_at', 'status', 'actor', 'note']
+    readonly_fields = fields
+    verbose_name_plural = 'Buyurtma tarixi (timeline)'
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(ServiceRequest)
@@ -33,7 +52,8 @@ class ServiceRequestAdmin(ModelAdmin):
     autocomplete_fields = ['master']
     date_hierarchy = 'created_at'
     list_per_page = 25
-    actions = ['mark_in_progress', 'mark_completed', 'mark_cancelled']
+    actions = ['mark_cancelled']
+    inlines = [MilestoneInline, OrderEventInline]
 
     fieldsets = [
         ("Mijoz", {'fields': ['name', 'phone', 'email', 'address', 'consent']}),
@@ -62,28 +82,28 @@ class ServiceRequestAdmin(ModelAdmin):
         if hasattr(obj, 'review'):
             return format_html('✅ Mijoz baho qoldirgan: ★ {}', obj.review.overall)
         if not obj.can_be_reviewed:
-            return 'Ariza yakunlangan va usta biriktirilgan bo\'lsa paydo bo\'ladi'
+            return "Usta 'Bajarildi' deganidan keyin paydo bo'ladi"
         return format_html(
             '<a href="{0}" target="_blank" rel="noopener">{0}</a><br>'
             '<small>Shu havolani mijozga yuboring (SMS/Telegram) — u ustani baholaydi.</small>',
             obj.get_review_url(),
         )
 
-    def _set_status(self, request, queryset, status):
-        updated = queryset.update(status=status)
-        messages.success(request, f'{updated} ta ariza yangilandi.')
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        # Admin holatni o'zgartirsa ham timeline'da ko'rinsin
+        if change and 'status' in form.changed_data:
+            workflow.admin_set_status(obj, obj.status, note=f'{request.user}')
 
-    @action(description="Tanlanganlarni 'Jarayonda' qilish", icon='pending')
-    def mark_in_progress(self, request, queryset):
-        self._set_status(request, queryset, ServiceRequest.STATUS_IN_PROGRESS)
-
-    @action(description="Tanlanganlarni 'Yakunlandi' qilish", icon='task_alt')
-    def mark_completed(self, request, queryset):
-        self._set_status(request, queryset, ServiceRequest.STATUS_COMPLETED)
-
-    @action(description="Tanlanganlarni 'Bekor qilindi' qilish", icon='cancel')
+    @action(description="Tanlanganlarni bekor qilish", icon='cancel')
     def mark_cancelled(self, request, queryset):
-        self._set_status(request, queryset, ServiceRequest.STATUS_CANCELLED)
+        count = 0
+        for order in queryset.exclude(status__in=[ServiceRequest.STATUS_CONFIRMED, ServiceRequest.STATUS_CANCELLED]):
+            order.status = ServiceRequest.STATUS_CANCELLED
+            order.save(update_fields=['status', 'updated_at'])
+            workflow.admin_set_status(order, order.status, note=f'{request.user}')
+            count += 1
+        messages.success(request, f'{count} ta buyurtma bekor qilindi.')
 
 
 @admin.register(Service)

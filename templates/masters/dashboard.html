@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% load ui %}
+{% load i18n humanize ui %}
 
-{% block title %}Kabinet | {{ SITE.name }}{% endblock %}
+{% block title %}{% translate "Kabinet" %} | {{ SITE.name }}{% endblock %}
 {% block body_class %}{% endblock %}
 {% block mobile_cta %}{% endblock %}
 
@@ -11,82 +11,64 @@
     <div style="display:flex;gap:1rem;align-items:center">
       <div class="avatar">{% if master.photo %}<img src="{{ master.photo.url }}" alt="">{% else %}{{ master.initials }}{% endif %}</div>
       <div>
-        <h1 style="font-size:1.5rem;margin:0">Salom, {{ master.full_name }}</h1>
-        {% if master.is_verified %}<span class="badge badge--completed">✔ Tasdiqlangan</span>{% else %}<span class="badge badge--pending">⏳ Tekshiruvda</span>{% endif %}
-        {% if master.is_available %}<span class="badge badge--new">Buyurtma qabul qilyapman</span>{% else %}<span class="badge badge--cancelled">Hozir bandman</span>{% endif %}
+        <h1 style="font-size:1.5rem;margin:0">{% blocktranslate with name=master.full_name %}Salom, {{ name }}{% endblocktranslate %}</h1>
+        {% if master.is_verified %}<span class="badge badge--completed">✔ {% translate "Tasdiqlangan" %}</span>{% else %}<span class="badge badge--pending">⏳ {% translate "Tekshiruvda" %}</span>{% endif %}
+        {% if master.is_available %}<span class="badge badge--new">{% translate "Buyurtma qabul qilyapman" %}</span>{% else %}<span class="badge badge--cancelled">{% translate "Hozir bandman" %}</span>{% endif %}
       </div>
     </div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap">
       <form method="post" action="{% url 'masters:toggle_availability' %}">{% csrf_token %}
-        <button class="btn">{% if master.is_available %}⏸ Band deb belgilash{% else %}▶ Buyurtma qabul qilish{% endif %}</button>
+        <button class="btn">{% if master.is_available %}⏸ {% translate "Band deb belgilash" %}{% else %}▶ {% translate "Buyurtma qabul qilish" %}{% endif %}</button>
       </form>
-      <a class="btn" href="{% url 'masters:profile_edit' %}">✏️ Profil</a>
-      <a class="btn" href="{{ master.get_absolute_url }}">👁 Ommaviy sahifa</a>
-      <form method="post" action="{% url 'masters:logout' %}">{% csrf_token %}<button class="btn btn--ghost">Chiqish</button></form>
+      <a class="btn" href="{% url 'masters:profile_edit' %}">✏️ {% translate "Profil" %}</a>
+      <a class="btn" href="{{ master.get_absolute_url }}">👁 {% translate "Ommaviy sahifa" %}</a>
+      <form method="post" action="{% url 'masters:logout' %}">{% csrf_token %}<button class="btn btn--ghost">{% translate "Chiqish" %}</button></form>
     </div>
   </div>
 
   {% if not master.is_verified %}
-  <div class="alert alert--warning">
-    <div><strong>Profilingiz tekshirilmoqda.</strong> Tasdiqlangandan keyin mijozlar sizni qidiruvda ko'radi. Tezlashtirish uchun administratorga qo'ng'iroq qiling: <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></div>
-  </div>
+  <div class="alert alert--warning"><div><strong>{% translate "Profilingiz tekshirilmoqda." %}</strong> {% translate "Tasdiqlangandan keyin mijozlar sizni qidiruvda ko'radi." %} <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></div></div>
   {% endif %}
 
   <div class="kpis" style="margin-bottom:1.5rem">
-    <div class="card kpi"><div class="kpi__value">{{ counts.new }}</div><div class="kpi__label">Yangi arizalar</div></div>
-    <div class="card kpi"><div class="kpi__value">{{ counts.in_progress }}</div><div class="kpi__label">Jarayonda</div></div>
-    <div class="card kpi"><div class="kpi__value">{{ counts.completed }}</div><div class="kpi__label">Bajarilgan</div></div>
-    <div class="card kpi"><div class="kpi__value">{% if master.reviews_count %}★ {{ master.rating_avg|floatformat:1 }}{% else %}—{% endif %}</div><div class="kpi__label">{{ master.reviews_count }} ta baho</div></div>
+    <div class="card kpi"><div class="kpi__value">{{ counts.new }}</div><div class="kpi__label">{% translate "Yangi buyurtmalar" %}</div></div>
+    <div class="card kpi"><div class="kpi__value">{{ counts.active }}</div><div class="kpi__label">{% translate "Jarayonda" %}</div></div>
+    <div class="card kpi"><div class="kpi__value">{{ counts.done }}</div><div class="kpi__label">{% translate "Bajarilgan" %}</div></div>
+    <div class="card kpi"><div class="kpi__value">{{ balance|floatformat:0|intcomma }}</div><div class="kpi__label">{% translate "Hisobingizda (so'm)" %}{% if held %} · {% blocktranslate with h=held|floatformat:0|intcomma %}{{ h }} kafolatlangan{% endblocktranslate %}{% endif %}</div></div>
+    <div class="card kpi"><div class="kpi__value">{% if master.reviews_count %}★ {{ master.rating_avg|floatformat:1 }}{% else %}—{% endif %}</div><div class="kpi__label">{% blocktranslate count n=master.reviews_count %}{{ n }} ta baho{% plural %}{{ n }} ta baho{% endblocktranslate %}</div></div>
   </div>
 
   <div class="layout-split" style="grid-template-columns:1fr 340px">
     <section class="card">
-      <div class="card__title">Arizalar</div>
-      <nav class="tabs" aria-label="Holat bo'yicha filtr">
-        <a class="tab {% if not status %}is-active{% endif %}" href="?">Barchasi</a>
-        {% for value, label in status_choices %}<a class="tab {% if status == value %}is-active{% endif %}" href="?status={{ value }}">{{ label }}</a>{% endfor %}
+      <div class="card__title">{% translate "Buyurtmalar" %}</div>
+      <nav class="tabs" aria-label="{% translate "Holat bo'yicha filtr" %}">
+        <a class="tab {% if not status %}is-active{% endif %}" href="?">{% translate "Barchasi" %}</a>
+        {% for value, label in status_tabs %}<a class="tab {% if status == value %}is-active{% endif %}" href="?status={{ value }}">{{ label }}</a>{% endfor %}
       </nav>
 
       {% for item in page.object_list %}
       <article class="req-item">
         <div>
           <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-            <strong>#{{ item.pk }} · {{ item.name }}</strong>
+            <a href="{{ item.get_master_url }}" style="font-weight:800;color:var(--ink)">#{{ item.pk }} · {{ item.name }}</a>
             <span class="badge badge--{{ item.status }}">{{ item.get_status_display }}</span>
-            {% if item.category %}<span class="chip">{{ item.category.icon }} {{ item.category.name }}</span>{% endif %}
+            {% if item.category %}<span class="chip">{{ item.category.icon }} {{ item.category|tr:"name" }}</span>{% endif %}
           </div>
           <div style="margin-top:.35rem"><a href="tel:{{ item.phone }}">📞 {{ item.phone|phone }}</a>{% if item.address %} · 📍 {{ item.address }}{% endif %}</div>
-          {% if item.problem_description %}<p class="muted" style="margin:.35rem 0 0">{{ item.problem_description }}</p>{% endif %}
+          {% if item.problem_description %}<p class="muted" style="margin:.35rem 0 0">{{ item.problem_description|truncatewords:25 }}</p>{% endif %}
           <div class="muted small" style="margin-top:.35rem">{{ item.created_at|date:"d.m.Y H:i" }}</div>
-
-          {% if item.status == 'completed' %}
-            {% if item.review %}
-              <div class="alert alert--success" style="margin:.75rem 0 0">Mijoz baho qoldirdi: ★ {{ item.review.overall }}</div>
-            {% else %}
-              <div style="margin-top:.75rem">
-                <div class="small"><strong>Baho havolasi</strong> — mijozga yuboring:</div>
-                <div class="copy-box">
-                  <input type="text" id="link-{{ item.pk }}" value="{{ item.review_link }}" readonly aria-label="Baho havolasi">
-                  <button type="button" class="btn btn--sm" data-copy="#link-{{ item.pk }}">Nusxa</button>
-                  <a class="btn btn--sm btn--soft" target="_blank" rel="noopener"
-                     href="https://t.me/share/url?url={{ item.review_link|urlencode }}&text={{ 'Iltimos, bajarilgan ishni baholang:'|urlencode }}">Telegram</a>
-                </div>
-              </div>
-            {% endif %}
-          {% endif %}
         </div>
         <div class="req-item__actions">
-          {% if item.status == 'new' %}
-            <form method="post" action="{% url 'masters:request_action' item.pk 'accept' %}">{% csrf_token %}<input type="hidden" name="return_status" value="{{ status }}"><button class="btn btn--sm btn--primary">Qabul qilish</button></form>
+          {% if item.next_action %}
+            <form method="post" action="{% url 'masters:request_action' item.pk item.next_action.0 %}">{% csrf_token %}
+              <input type="hidden" name="next" value="dashboard"><input type="hidden" name="return_status" value="{{ status }}">
+              <button class="btn btn--sm btn--primary">{{ item.next_action.1 }}</button></form>
           {% endif %}
-          {% if item.status == 'new' or item.status == 'in_progress' %}
-            <form method="post" action="{% url 'masters:request_action' item.pk 'complete' %}">{% csrf_token %}<input type="hidden" name="return_status" value="{{ status }}"><button class="btn btn--sm">✓ Bajarildi</button></form>
-            <form method="post" action="{% url 'masters:request_action' item.pk 'cancel' %}" onsubmit="return confirm('Arizani bekor qilasizmi?')">{% csrf_token %}<input type="hidden" name="return_status" value="{{ status }}"><button class="btn btn--sm btn--danger">Bekor qilish</button></form>
-          {% endif %}
+          <a class="btn btn--sm" href="{{ item.get_master_url }}">{% translate "Ochish" %} →</a>
         </div>
       </article>
       {% empty %}
-        <div class="empty"><div class="empty__icon">📭</div><p class="muted">Bu bo'limda arizalar yo'q.</p></div>
+        <div class="empty"><div class="empty__icon">📭</div><p class="muted">{% translate "Bu bo'limda buyurtmalar yo'q." %}</p></div>
       {% endfor %}
 
       {% if page.has_other_pages %}
@@ -99,7 +81,7 @@
     </section>
 
     <aside class="card">
-      <div class="card__title">Reytingingiz</div>
+      <div class="card__title">{% translate "Reytingingiz" %}</div>
       {% if master.reviews_count %}
       <div class="criteria">
         {% for label, value in criteria %}
@@ -110,10 +92,10 @@
         {% endfor %}
       </div>
       {% else %}
-      <p class="muted">Hali baho yo'q. Ishni yakunlagach, «Bajarildi» tugmasini bosing va chiqqan havolani mijozga yuboring.</p>
+      <p class="muted">{% translate "Hali baho yo'q. Ish yakunlangach mijoz tasdiqlaydi va sizni baholaydi." %}</p>
       {% endif %}
       <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
-      <p class="small muted" style="margin:0">💡 Reyting Bayes o'rtachasi bilan hisoblanadi: ko'p baho to'plagan usta qidiruvda yuqoriroq turadi.</p>
+      <p class="small muted" style="margin:0">💡 {% translate "Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga o'tkazadi." %}</p>
     </aside>
   </div>
 </div>

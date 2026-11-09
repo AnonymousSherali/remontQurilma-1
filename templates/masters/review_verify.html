@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Natijani tasdiqlash" %} | {{ SITE.name }}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+
+{% block content %}
+<div class="container auth-wrap">
+  <div class="card card--raised auth-card">
+    <h1 style="font-size:1.5rem">{% translate "Natijani tasdiqlash va baholash" %}</h1>
+    <p class="muted">{% translate "Tasdiqlaganingizdan keyin usta to'lovni oladi. Shuning uchun avval raqamingizni tasdiqlang." %}</p>
+    {% include "partials/otp_gate.html" with phone=order.phone purpose="login" reload=True %}
+    <p class="small" style="margin-top:1rem"><a href="{{ order.get_customer_url }}">← {% translate "Buyurtma sahifasi" %}</a></p>
+  </div>
+</div>
+{% endblock %}

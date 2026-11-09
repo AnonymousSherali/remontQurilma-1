@@ -50,11 +50,14 @@ INSTALLED_APPS = [
     'django.contrib.humanize',  # narxlarni ajratuvchi bilan chiqarish uchun
     'repair_service',
     'masters',
+    'otp',
+    'payments',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # til: /ru/ prefiksi yoki tanlangan til
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -106,6 +109,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # --- Internationalization ---
 LANGUAGE_CODE = 'uz'
+LANGUAGES = [
+    ('uz', "O'zbekcha"),
+    ('ru', 'Русский'),
+]
+LOCALE_PATHS = [BASE_DIR / 'locale']
 TIME_ZONE = 'Asia/Tashkent'
 USE_I18N = True
 USE_TZ = True
@@ -154,6 +162,26 @@ SITE_INFO = {
     'telegram': os.environ.get('SITE_TELEGRAM', ''),  # masalan: techservice_uz
     'hours': os.environ.get('SITE_HOURS', "Har kuni 08:00–22:00"),
 }
+
+# Saytning to'liq manzili — SMS'dagi havolalar uchun (https://techservice.uz)
+SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000')
+
+# --- SMS (otp/sms.py) ---
+SMS_BACKEND = os.environ.get('SMS_BACKEND', 'console')  # console | eskiz
+ESKIZ_EMAIL = os.environ.get('ESKIZ_EMAIL', '')
+ESKIZ_PASSWORD = os.environ.get('ESKIZ_PASSWORD', '')
+SMS_SENDER = os.environ.get('SMS_SENDER', '4546')
+
+# --- To'lovlar (payments) ---
+PAYMENT_PROVIDER = os.environ.get('PAYMENT_PROVIDER', 'demo')  # demo | payme
+ALLOW_DEMO_PAYMENTS = os.environ.get('ALLOW_DEMO_PAYMENTS', 'False') == 'True'
+PLATFORM_FEE_PERCENT = float(os.environ.get('PLATFORM_FEE_PERCENT', 10))
+AUTO_CONFIRM_HOURS = int(os.environ.get('AUTO_CONFIRM_HOURS', 72))
+AUTO_RELEASE_HOURS = int(os.environ.get('AUTO_RELEASE_HOURS', 48))
+PAYME_MERCHANT_ID = os.environ.get('PAYME_MERCHANT_ID', '')
+PAYME_KEY = os.environ.get('PAYME_KEY', '')
+PAYME_TEST = os.environ.get('PAYME_TEST', 'True') == 'True'
+PAYME_ACCOUNT_KEY = os.environ.get('PAYME_ACCOUNT_KEY', 'milestone_id')
 
 # --- Integratsiyalar (ixtiyoriy) ---
 YANDEX_MAPS_API_KEY = os.environ.get('YANDEX_MAPS_API_KEY', '')
@@ -210,6 +238,18 @@ UNFOLD = {
                     {'title': 'Kategoriyalar', 'icon': 'category',
                      'link': reverse_lazy('admin:masters_category_changelist')},
                     {'title': 'Baholar', 'icon': 'star', 'link': reverse_lazy('admin:masters_review_changelist')},
+                ],
+            },
+            {
+                'title': "To'lovlar",
+                'items': [
+                    {"title": "To'lov bosqichlari", 'icon': 'account_balance_wallet',
+                     'link': reverse_lazy('admin:payments_milestone_changelist')},
+                    {'title': 'Narx takliflari', 'icon': 'request_quote',
+                     'link': reverse_lazy('admin:payments_quote_changelist')},
+                    {'title': 'Tranzaksiyalar', 'icon': 'receipt_long',
+                     'link': reverse_lazy('admin:payments_payment_changelist')},
+                    {'title': 'SMS kodlar', 'icon': 'sms', 'link': reverse_lazy('admin:otp_phonecode_changelist')},
                 ],
             },
             {
