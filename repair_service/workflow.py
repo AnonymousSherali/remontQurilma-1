@@ -49,7 +49,8 @@ TRANSITIONS = {
     (MASTER, 'start'): ({SR.STATUS_ARRIVED}, SR.STATUS_IN_PROGRESS, gettext_lazy('Ishni boshladim')),
     (MASTER, 'complete'): ({SR.STATUS_IN_PROGRESS}, SR.STATUS_COMPLETED, gettext_lazy('Ish bajarildi')),
     # Usta kelib bo'lgach bir tomonlama bekor qila olmaydi — faqat nizo orqali
-    (MASTER, 'cancel'): ({SR.STATUS_NEW, SR.STATUS_ACCEPTED}, SR.STATUS_CANCELLED, gettext_lazy('Bekor qilish')),
+    # "Bekor qilish" emas, voz kechish: buyurtma lentaga qaytadi (release_to_feed)
+    (MASTER, 'cancel'): ({SR.STATUS_NEW, SR.STATUS_ACCEPTED}, SR.STATUS_NEW, gettext_lazy('Voz kechish')),
 
     (CUSTOMER, 'confirm'): ({SR.STATUS_COMPLETED}, SR.STATUS_CONFIRMED, gettext_lazy('Natijani tasdiqlash')),
     (CUSTOMER, 'cancel'): ({SR.STATUS_NEW, SR.STATUS_ACCEPTED}, SR.STATUS_CANCELLED, gettext_lazy('Buyurtmani bekor qilish')),
@@ -87,6 +88,8 @@ def apply(order, actor, action, note=''):
     from payments import services as payments
 
     order = SR.objects.select_for_update().get(pk=order.pk)
+    if actor == MASTER and action == 'cancel':
+        return release_to_feed(order, note)
     key = (actor, action)
     if key not in TRANSITIONS:
         raise WorkflowError(_("Noma'lum amal"))
@@ -117,6 +120,31 @@ def apply(order, actor, action, note=''):
 
     from .customer_notify import notify_status_change
     transaction.on_commit(lambda: notify_status_change(order, actor))
+    return order
+
+
+def release_to_feed(order, note=''):
+    """Usta buyurtmadan voz kechdi: buyurtma bekor bo'lmaydi, boshqa ustalar uchun lentaga qaytadi."""
+    from payments.models import Milestone, Quote
+
+    sources = TRANSITIONS[(MASTER, 'cancel')][0]
+    if order.status not in sources or order.master_id is None:
+        raise WorkflowError(_("Bu amalni hozirgi bosqichda bajarib bo'lmaydi"))
+    if order.milestones.exclude(state=Milestone.STATE_PENDING).exists():
+        raise WorkflowError(_("Mijoz to'lov qilgan — voz kechish uchun administratorga murojaat qiling"))
+    master = order.master
+    Quote.objects.filter(order=order).delete()  # narx shu usta bilan kelishilgan edi
+    order.milestones.all().delete()
+    order.declined_by.add(master)
+    order.master = None
+    order.status = SR.STATUS_NEW
+    order.open_since = timezone.now()
+    order.save(update_fields=['master', 'status', 'open_since', 'updated_at'])
+    record(order, SR.STATUS_NEW, MASTER, note or _('Usta voz kechdi: %(name)s') % {'name': master.full_name})
+
+    from .customer_notify import notify_open_order, notify_status_change
+    transaction.on_commit(lambda: notify_status_change(order, MASTER))
+    transaction.on_commit(lambda: notify_open_order(order))
     return order
 
 

@@ -611,3 +611,9 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .tariff__buy .btn { flex: 1; }
 .badge--top { background: color-mix(in srgb, var(--accent) 22%, transparent); color: #b45309; }
 .badge--pro { background: var(--ink); color: var(--surface); }
+
+/* ---------- Ochiq buyurtmalar lentasi ---------- */
+.feed-item { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+.feed-item__side { display: grid; gap: .3rem; justify-items: center; }
+.feed-item__price { color: var(--brand); margin-left: .4rem; white-space: nowrap; }
+@media (max-width: 560px) { .feed-item { grid-template-columns: 1fr; } .feed-item__side { justify-items: stretch; } .feed-item__side .btn { width: 100%; } }

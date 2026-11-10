@@ -6,6 +6,7 @@ SMS buyurtma yaratilgan tilda yuboriladi.
 """
 
 from django.conf import settings
+from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
 
@@ -52,6 +53,8 @@ def notify_order_created(order):
             'id': order.pk, 'url': _customer_link(order)})
     if order.master:
         notify_master_new_order(order)
+    else:
+        notify_open_order(order)
 
 
 def notify_master_new_order(order):
@@ -73,7 +76,7 @@ def notify_status_change(order, actor):
                 SR.STATUS_ACCEPTED: _('Usta %(master)s buyurtmangizni qabul qildi. Tel: %(phone)s. %(url)s'),
                 SR.STATUS_ARRIVED: _('Usta %(master)s yetib keldi. %(url)s'),
                 SR.STATUS_COMPLETED: _('Usta ishni yakunladi. Natijani tasdiqlang va baholang: %(url)s'),
-                SR.STATUS_CANCELLED: _('Usta buyurtmani bekor qildi. Boshqa usta topamiz: %(url)s'),
+                SR.STATUS_NEW: _('Usta buyurtmadan voz kechdi. Boshqa usta qidiryapmiz: %(url)s'),
             }
             text = texts.get(order.status)
             if text:
@@ -100,3 +103,24 @@ def notify_quote(order):
     with translation.override(order.language or 'uz'):
         _to_customer(order, _("Usta narx taklif qildi: %(amount)s so'm. Ko'rib chiqing: %(url)s") % {
             'amount': f'{int(order.quote.amount):,}'.replace(',', ' '), 'url': _customer_link(order)})
+
+
+def notify_open_order(order):
+    """Yangi ochiq buyurtma haqida yaqin atrofdagi ustalarga Telegram xabari ("Olish" tugmasi bilan).
+
+    Xabarda mijozning ismi, telefoni va aniq manzili yo'q — ular buyurtma olingach ochiladi.
+    """
+    from masters import feed
+    from telegram_bot import client
+    from telegram_bot.handlers import open_order_card
+
+    order = SR.objects.select_related('category', 'catalog_item').get(pk=order.pk)
+    if order.master_id is not None or order.status != SR.STATUS_NEW:
+        return
+    with translation.override(settings.LANGUAGE_CODE):
+        for master in feed.nearby_masters(order):
+            feed._annotate(order, master)  # shu ustaga nisbatan masofa
+            client.send_message(master.telegram_chat_id, open_order_card(order, master), [
+                [(_('✋ Olish'), f'c:{order.pk}')],
+                [(_('Ochiq buyurtmalar'), _absolute(reverse('masters:feed')))],
+            ])

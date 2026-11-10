@@ -38,6 +38,11 @@ class ServiceRequest(models.Model):
     phone = models.CharField('Telefon', max_length=20)
     email = models.EmailField('Email', blank=True, null=True)
     address = models.CharField('Manzil', max_length=255, blank=True)
+    # Taxminiy joylashuv (GPS yoki tuman markazi) — ochiq buyurtmalar lentasida ustaga masofani
+    # ko'rsatish uchun. Aniq manzil ustaga faqat buyurtmani olgandan keyin ko'rinadi.
+    district = models.CharField('Tuman', max_length=40, blank=True)
+    latitude = models.DecimalField('Kenglik', max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField('Uzunlik', max_digits=9, decimal_places=6, null=True, blank=True)
 
     # Muammo haqida ma'lumot
     category = models.ForeignKey(
@@ -68,6 +73,11 @@ class ServiceRequest(models.Model):
     language = models.CharField('Til', max_length=5, default='uz')
     # Tasdiqlangan buyurtma rasmlari usta portfoliosida ko'rinishi mumkinmi (mijoz o'chira oladi)
     photos_in_portfolio = models.BooleanField('Rasmlar portfolioda', default=True)
+    # Lentaga qayta tushgan vaqt (usta voz kechganda). Bo'sh bo'lsa — yaratilgan vaqt hisoblanadi.
+    open_since = models.DateTimeField('Lentada (qachondan)', null=True, blank=True)
+    # Buyurtmadan voz kechgan ustalar — lentada ularga qayta ko'rsatilmaydi
+    declined_by = models.ManyToManyField('masters.Master', blank=True, related_name='declined_orders',
+                                         verbose_name='Voz kechgan ustalar')
     # Mijoz "Telegram'da kuzatish" ni bosgan bo'lsa — xabarlar SMS o'rniga Telegram'ga (bepul)
     telegram_chat_id = models.BigIntegerField('Mijoz Telegram chati', null=True, blank=True, db_index=True)
 

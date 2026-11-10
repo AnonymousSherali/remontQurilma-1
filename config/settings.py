@@ -200,6 +200,8 @@ TARIFF_PRICES = {
     'pro_30': int(os.environ.get('TARIFF_PRO_30_PRICE', 200000)),
 }
 PRO_FEE_PERCENT = float(os.environ.get('PRO_FEE_PERCENT', 5))
+# Yangi ochiq buyurtmani dastlab faqat PRO ustalar ola oladigan vaqt (daqiqa)
+FEED_PRO_HEAD_START_MINUTES = int(os.environ.get('FEED_PRO_HEAD_START_MINUTES', 10))
 ACTIVE_ORDERS_LIMIT = int(os.environ.get('ACTIVE_ORDERS_LIMIT', 5))
 PRO_ACTIVE_ORDERS_LIMIT = int(os.environ.get('PRO_ACTIVE_ORDERS_LIMIT', 10))
 
