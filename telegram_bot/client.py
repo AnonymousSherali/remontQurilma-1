@@ -74,3 +74,22 @@ def answer_callback(callback_id, text=''):
 def deep_link(param):
     username = getattr(settings, 'TELEGRAM_BOT_USERNAME', '')
     return f'https://t.me/{username}?start={param}' if username else ''
+
+
+FILES = {}  # test/dev: file_id -> bytes (token sozlanmagan bo'lsa shu yerdan olinadi)
+MAX_DOWNLOAD = 20 * 1024 * 1024  # Telegram Bot API o'zi ham 20 MB dan katta faylni bermaydi
+
+
+def download_file(file_id):
+    """Foydalanuvchi botga yuborgan faylni yuklab oladi. Topilmasa yoki xato bo'lsa None."""
+    if not enabled():
+        return FILES.get(file_id)
+    try:
+        path = api('getFile', {'file_id': file_id})['result']['file_path']
+        url = f'https://api.telegram.org/file/bot{settings.TELEGRAM_BOT_TOKEN}/{path}'
+        with urllib.request.urlopen(url, timeout=20) as resp:
+            data = resp.read(MAX_DOWNLOAD + 1)
+        return data if len(data) <= MAX_DOWNLOAD else None
+    except Exception:
+        logger.exception('Telegram faylini yuklab bo\'lmadi')
+        return None

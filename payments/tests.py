@@ -238,9 +238,10 @@ class PaymeTests(TestCase):
         self.assertEqual(Payment.objects.get().state, -1)
 
     def test_checkout_url(self):
+        from .payables import wrap
         from .payme import checkout_url
         with override_settings(PAYME_MERCHANT_ID='MID', PAYME_TEST=False):
-            url = checkout_url(self.m, 'https://site.uz/x')
+            url = checkout_url(wrap(self.m), 'https://site.uz/x')
         decoded = base64.b64decode(url.rsplit('/', 1)[1]).decode()
         self.assertEqual(decoded, f'm=MID;ac.milestone_id={self.m.pk};a=15000000;c=https://site.uz/x')
         self.assertTrue(url.startswith('https://checkout.paycom.uz/'))

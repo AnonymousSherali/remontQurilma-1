@@ -599,3 +599,32 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .lightbox::backdrop { background: rgb(0 0 0 / .85); }
 .lightbox img { max-width: 95vw; max-height: 90vh; border-radius: 10px; display: block; }
 .lightbox button { position: fixed; top: 1rem; right: 1rem; width: 44px; height: 44px; border-radius: 50%; border: 0; font-size: 1.2rem; cursor: pointer; }
+
+/* ---------- Tariflar ---------- */
+.tariff { display: flex; flex-direction: column; gap: .6rem; }
+.tariff--pro { border-color: var(--brand); box-shadow: var(--shadow); }
+.tariff__title { font-size: 1.2rem; margin: 0; }
+.tariff__price { font-size: 1.8rem; font-weight: 800; }
+.tariff__price span { font-size: .9rem; color: var(--muted); font-weight: 600; }
+.tariff__list { margin: 0; padding-left: 1.1rem; color: var(--ink-2); font-size: .92rem; display: grid; gap: .3rem; flex: 1; }
+.tariff__buy { display: flex; gap: .4rem; flex-wrap: wrap; }
+.tariff__buy .btn { flex: 1; }
+.badge--top { background: color-mix(in srgb, var(--accent) 22%, transparent); color: #b45309; }
+.badge--pro { background: var(--ink); color: var(--surface); }
+
+/* ---------- Ochiq buyurtmalar lentasi ---------- */
+.feed-item { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+.feed-item__side { display: grid; gap: .3rem; justify-items: center; }
+.feed-item__price { color: var(--brand); margin-left: .4rem; white-space: nowrap; }
+@media (max-width: 560px) { .feed-item { grid-template-columns: 1fr; } .feed-item__side { justify-items: stretch; } .feed-item__side .btn { width: 100%; } }
+
+/* ---------- Kafolat ---------- */
+.claim { border: 1px solid var(--line); border-left: 4px solid var(--brand); border-radius: var(--radius-sm, 10px); padding: .75rem 1rem; margin-top: .75rem; }
+.claim--resolved, .claim--compensated { border-left-color: var(--ok, #16a34a); }
+.claim--rejected { border-left-color: var(--muted, #94a3b8); }
+.claim--escalated { border-left-color: var(--danger, #dc2626); }
+.claim__head { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; flex-wrap: wrap; }
+.claim-new { margin-top: .75rem; }
+.claim-new > summary { list-style: none; cursor: pointer; display: inline-flex; }
+.claim-new > summary::-webkit-details-marker { display: none; }
+.warranty-note { display: inline-flex; align-items: center; gap: .35rem; font-weight: 600; }

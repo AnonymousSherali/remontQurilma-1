@@ -29,8 +29,8 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from . import services
-from .models import Milestone, Payment
+from . import payables
+from .models import Payment
 
 ACTION_PREPARE = 0
 ACTION_COMPLETE = 1
@@ -53,12 +53,12 @@ NOTES = {
 }
 
 
-def checkout_url(milestone, return_url):
+def checkout_url(payable, return_url):
     params = {
         'service_id': settings.CLICK_SERVICE_ID,
         'merchant_id': settings.CLICK_MERCHANT_ID,
-        'amount': f'{milestone.amount:.2f}',
-        'transaction_param': str(milestone.pk),
+        'amount': f'{payable.amount:.2f}',
+        'transaction_param': payable.key,
         'return_url': return_url,
     }
     if settings.CLICK_MERCHANT_USER_ID:
@@ -88,7 +88,7 @@ def _reply(data, error, **extra):
 
 
 def _check_common(data, action, prepare_id=''):
-    """Umumiy tekshiruvlar. Xato bo'lsa xato kodi, aks holda (None, milestone)."""
+    """Umumiy tekshiruvlar. Xato bo'lsa xato kodi, aks holda (None, payable)."""
     if not settings.CLICK_SECRET_KEY:
         return ERR_REQUEST, None
     if str(data.get('action')) != str(action):
@@ -97,17 +97,16 @@ def _check_common(data, action, prepare_id=''):
         return ERR_SIGN, None
     if str(data.get('service_id')) != str(settings.CLICK_SERVICE_ID):
         return ERR_REQUEST, None
-    try:
-        milestone = Milestone.objects.select_for_update().get(pk=int(data.get('merchant_trans_id')))
-    except (TypeError, ValueError, Milestone.DoesNotExist):
+    payable = payables.resolve(data.get('merchant_trans_id'), lock=True)
+    if payable is None:
         return ERR_ORDER_NOT_FOUND, None
     try:
         amount = Decimal(data.get('amount'))
     except (InvalidOperation, TypeError):
         return ERR_AMOUNT, None
-    if amount != milestone.amount:
+    if amount != payable.amount:
         return ERR_AMOUNT, None
-    return None, milestone
+    return None, payable
 
 
 @csrf_exempt
@@ -115,17 +114,17 @@ def _check_common(data, action, prepare_id=''):
 @transaction.atomic
 def prepare(request):
     data = request.POST
-    error, milestone = _check_common(data, ACTION_PREPARE)
+    error, payable = _check_common(data, ACTION_PREPARE)
     if error is not None:
         return _reply(data, error)
-    if milestone.state != Milestone.STATE_PENDING:
+    if not payable.is_pending:
         return _reply(data, ERR_ALREADY_PAID)
 
     payment, _created = Payment.objects.get_or_create(
         provider=Payment.PROVIDER_CLICK, provider_id=str(data.get('click_trans_id')),
-        defaults={'milestone': milestone, 'amount': milestone.amount},
+        defaults={'amount': payable.amount, **payable.fk},
     )
-    if payment.milestone_id != milestone.pk:
+    if payables.account_key(payment) != payable.key:
         return _reply(data, ERR_REQUEST)
     return _reply(data, OK, merchant_prepare_id=payment.pk)
 
@@ -136,7 +135,7 @@ def prepare(request):
 def complete(request):
     data = request.POST
     prepare_id = data.get('merchant_prepare_id', '')
-    error, milestone = _check_common(data, ACTION_COMPLETE, prepare_id)
+    error, payable = _check_common(data, ACTION_COMPLETE, prepare_id)
     if error is not None:
         return _reply(data, error)
 
@@ -163,11 +162,11 @@ def complete(request):
         payment.save(update_fields=['state', 'cancelled_at'])
         return _reply(data, ERR_CANCELLED, merchant_confirm_id=payment.pk)
 
-    if milestone.state != Milestone.STATE_PENDING:
+    if not payable.is_pending:
         return _reply(data, ERR_ALREADY_PAID, merchant_confirm_id=payment.pk)
 
     payment.state = Payment.STATE_PERFORMED
     payment.performed_at = timezone.now()
     payment.save(update_fields=['state', 'performed_at'])
-    services.mark_held(milestone)
+    payable.mark_paid()
     return _reply(data, OK, merchant_confirm_id=payment.pk)

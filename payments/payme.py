@@ -27,8 +27,8 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from . import services
-from .models import Milestone, Payment
+from . import payables
+from .models import Payment
 
 TIMEOUT_MS = 12 * 60 * 60 * 1000  # yaratilgan, lekin to'lanmagan tranzaksiya 12 soatdan keyin eskiradi
 
@@ -70,10 +70,10 @@ def _ms(dt):
     return int(dt.timestamp() * 1000) if dt else 0
 
 
-def checkout_url(milestone, return_url):
+def checkout_url(payable, return_url):
     params = (
-        f'm={settings.PAYME_MERCHANT_ID};ac.{settings.PAYME_ACCOUNT_KEY}={milestone.pk};'
-        f'a={int(milestone.amount) * 100};c={return_url}'
+        f'm={settings.PAYME_MERCHANT_ID};ac.{settings.PAYME_ACCOUNT_KEY}={payable.key};'
+        f'a={int(payable.amount) * 100};c={return_url}'
     )
     host = 'https://test.paycom.uz' if settings.PAYME_TEST else 'https://checkout.paycom.uz'
     return f'{host}/{base64.b64encode(params.encode()).decode()}'
@@ -90,17 +90,18 @@ def _authorized(request):
     return login == 'Paycom' and password == settings.PAYME_KEY
 
 
-def _milestone_for(params):
+def _payable_for(params):
     account = params.get('account') or {}
+    payable = payables.resolve(account.get(settings.PAYME_ACCOUNT_KEY))
+    if payable is None or not payable.is_pending:
+        raise PaymeError(ERR_ACCOUNT, settings.PAYME_ACCOUNT_KEY)
     try:
-        milestone = Milestone.objects.select_related('order').get(pk=int(account.get(settings.PAYME_ACCOUNT_KEY)))
-    except (TypeError, ValueError, Milestone.DoesNotExist):
-        raise PaymeError(ERR_ACCOUNT, settings.PAYME_ACCOUNT_KEY)
-    if milestone.state != Milestone.STATE_PENDING:
-        raise PaymeError(ERR_ACCOUNT, settings.PAYME_ACCOUNT_KEY)
-    if int(params.get('amount', -1)) != int(milestone.amount) * 100:
+        amount = int(params.get('amount', -1))
+    except (TypeError, ValueError):
         raise PaymeError(ERR_AMOUNT)
-    return milestone
+    if amount != int(payable.amount) * 100:
+        raise PaymeError(ERR_AMOUNT)
+    return payable
 
 
 def _payment(payme_id):
@@ -118,7 +119,7 @@ def _cancel_expired(payment):
 
 
 def check_perform(params):
-    _milestone_for(params)
+    _payable_for(params)
     return {'allow': True}
 
 
@@ -133,13 +134,13 @@ def create(params):
             raise PaymeError(ERR_CANNOT_PERFORM)
         return {'create_time': existing.provider_time, 'transaction': str(existing.pk), 'state': existing.state}
 
-    milestone = _milestone_for(params)
-    # Bitta bosqich uchun bir vaqtda faqat bitta ochiq tranzaksiya
-    if milestone.payments.filter(provider=Payment.PROVIDER_PAYME, state=Payment.STATE_CREATED).exists():
+    payable = _payable_for(params)
+    # Bitta to'lov uchun bir vaqtda faqat bitta ochiq tranzaksiya
+    if payables.open_payments(payable, Payment.PROVIDER_PAYME).exists():
         raise PaymeError(ERR_ACCOUNT, settings.PAYME_ACCOUNT_KEY)
     payment = Payment.objects.create(
-        milestone=milestone, provider=Payment.PROVIDER_PAYME, provider_id=payme_id,
-        amount=milestone.amount, provider_time=int(params.get('time', _now_ms())),
+        provider=Payment.PROVIDER_PAYME, provider_id=payme_id,
+        amount=payable.amount, provider_time=int(params.get('time', _now_ms())), **payable.fk,
     )
     return {'create_time': payment.provider_time, 'transaction': str(payment.pk), 'state': payment.state}
 
@@ -156,7 +157,7 @@ def perform(params):
     payment.state = Payment.STATE_PERFORMED
     payment.performed_at = timezone.now()
     payment.save(update_fields=['state', 'performed_at'])
-    services.mark_held(payment.milestone)
+    payables.for_payment(payment).mark_paid()
     return {'transaction': str(payment.pk), 'perform_time': _ms(payment.performed_at), 'state': payment.state}
 
 
@@ -165,12 +166,11 @@ def cancel(params):
     if payment.state in (Payment.STATE_CANCELLED, Payment.STATE_CANCELLED_AFTER_PERFORM):
         return {'transaction': str(payment.pk), 'cancel_time': _ms(payment.cancelled_at), 'state': payment.state}
     if payment.state == Payment.STATE_PERFORMED:
-        milestone = payment.milestone
-        if milestone.state == Milestone.STATE_RELEASED:
-            raise PaymeError(ERR_CANNOT_CANCEL)  # pul allaqachon ustaga chiqarilgan
+        payable = payables.for_payment(payment)
+        if payable.cancel_locked:
+            raise PaymeError(ERR_CANNOT_CANCEL)  # pul ustaga chiqarilgan yoki tarif faollashgan
         payment.state = Payment.STATE_CANCELLED_AFTER_PERFORM
-        if milestone.state == Milestone.STATE_HELD:
-            services.refund(milestone)
+        payable.cancel_paid()
     else:
         payment.state = Payment.STATE_CANCELLED
     payment.reason = params.get('reason')
@@ -193,7 +193,7 @@ def statement(params):
     rows = Payment.objects.filter(provider=Payment.PROVIDER_PAYME, provider_time__gte=start, provider_time__lte=end)
     return {'transactions': [{
         'id': p.provider_id, 'time': p.provider_time, 'amount': int(p.amount) * 100,
-        'account': {settings.PAYME_ACCOUNT_KEY: str(p.milestone_id)},
+        'account': {settings.PAYME_ACCOUNT_KEY: payables.account_key(p)},
         'create_time': p.provider_time, 'perform_time': _ms(p.performed_at), 'cancel_time': _ms(p.cancelled_at),
         'transaction': str(p.pk), 'state': p.state, 'reason': p.reason,
     } for p in rows.order_by('provider_time')]}

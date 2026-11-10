@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load i18n humanize %}
+
+{% block title %}{% translate "Tariflar" %} | {{ SITE.name }}{% endblock %}
+{% block body_class %}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+
+{% block content %}
+<div class="container section" style="padding-top:2rem;max-width:980px">
+  <a href="{% url 'masters:dashboard' %}" class="btn btn--ghost btn--sm">← {% translate "Kabinet" %}</a>
+  <h1 style="font-size:2rem;margin-top:1rem">{% translate "Tariflar" %}</h1>
+  <p class="lead">{% translate "Platformadan foydalanish bepul. Tariflar — ko'proq buyurtma olish uchun ixtiyoriy qo'shimcha." %}</p>
+
+  <div class="kpis" style="margin:1.5rem 0">
+    <div class="card kpi"><div class="kpi__label">TOP</div><div class="kpi__value" style="font-size:1.2rem">{% if master.is_promoted %}✓ {{ master.promoted_until|date:"d.m.Y" }} {% translate "gacha" %}{% else %}{% translate "Faol emas" %}{% endif %}</div></div>
+    <div class="card kpi"><div class="kpi__label">PRO</div><div class="kpi__value" style="font-size:1.2rem">{% if master.is_pro %}✓ {{ master.pro_until|date:"d.m.Y" }} {% translate "gacha" %}{% else %}{% translate "Faol emas" %}{% endif %}</div></div>
+    <div class="card kpi"><div class="kpi__label">{% translate "Komissiyangiz" %}</div><div class="kpi__value" style="font-size:1.2rem">{% if master.is_pro %}{{ pro_fee|floatformat:0 }}%{% else %}{{ fee|floatformat:0 }}%{% endif %}</div></div>
+  </div>
+
+  <div class="grid grid--3">
+    {% for plan in plans %}
+    <section class="card tariff{% if plan.kind == 'pro' %} tariff--pro{% endif %}">
+      <span class="chip chip--brand">{% if plan.kind == 'top' %}TOP{% else %}PRO{% endif %}</span>
+      <h2 class="tariff__title">{{ plan.title }}</h2>
+      <div class="tariff__price">{{ plan.price|intcomma }} <span>{% translate "so'm" %}</span></div>
+      <ul class="tariff__list">
+        {% if plan.kind == 'top' %}
+          <li>{% translate "Qidiruvda yo'nalishingiz bo'yicha birinchi qatorlarda" %}</li>
+          <li>{% translate "Profilda va kartochkada «TOP» belgisi" %}</li>
+          <li>{% translate "Bosh sahifadagi ustalar ro'yxatida ustunlik" %}</li>
+        {% else %}
+          <li>{% blocktranslate with a=pro_fee|floatformat:0 b=fee|floatformat:0 %}Komissiya {{ b }}% o'rniga {{ a }}%{% endblocktranslate %}</li>
+          <li>{% translate "Ochiq buyurtmalar sizga birinchi bo'lib keladi" %}</li>
+          <li>{% blocktranslate with a=pro_limit b=limit %}Bir vaqtda {{ a }} tagacha buyurtma ({{ b }} o'rniga){% endblocktranslate %}</li>
+          <li>{% translate "Profilda «PRO» belgisi" %}</li>
+        {% endif %}
+      </ul>
+      <form method="post" action="{% url 'payments:tariff_buy' plan.code %}" class="tariff__buy">{% csrf_token %}
+        {% for code, label in providers %}
+          <button class="btn btn--primary" name="provider" value="{{ code }}">{% if providers|length > 1 %}{{ label }}{% else %}{% translate "Sotib olish" %}{% endif %}</button>
+        {% endfor %}
+      </form>
+    </section>
+    {% endfor %}
+  </div>
+  <p class="muted small" style="margin-top:1rem">{% translate "Faol tarif ustiga sotib olsangiz, muddat oxiridan boshlab uzayadi. TOP ustalar qidiruvda «TOP» belgisi bilan ko'rsatiladi — mijoz bu pullik joylashuv ekanini biladi. Reyting va masofa baribir hisobga olinadi." %}</p>
+
+  {% if history %}
+  <section class="card" style="margin-top:1.5rem">
+    <div class="card__title">{% translate "Xaridlar tarixi" %}</div>
+    <table class="price-table"><tbody>
+      {% for p in history %}<tr><td>{{ p.paid_at|date:"d.m.Y" }} · {{ p.plan|upper }}</td><td>{{ p.amount|floatformat:0|intcomma }} {% translate "so'm" %}</td></tr>{% endfor %}
+    </tbody></table>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

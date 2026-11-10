@@ -1,6 +1,10 @@
+from decimal import Decimal
+
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
+from masters.geo import in_uzbekistan, parse_coords
+from masters.locations import DISTRICT_CHOICES, district_coords
 from masters.models import Category, Master
 
 from .models import Service, ServiceRequest
@@ -14,6 +18,11 @@ class ServiceRequestForm(forms.ModelForm):
     # Yashirin <input type=hidden> ni ko'p botlar o'tkazib yuboradi, shuning uchun
     # oddiy matn maydoni CSS bilan ekrandan tashqariga chiqariladi (.hp).
     website = forms.CharField(required=False, widget=forms.TextInput(attrs={'tabindex': '-1', 'autocomplete': 'off'}))
+    # Joylashuv ixtiyoriy va noto'g'ri bo'lsa jimgina tashlab yuboriladi — arizani buzmasligi kerak
+    latitude = forms.CharField(required=False)
+    longitude = forms.CharField(required=False)
+    district = forms.CharField(required=False)
+
     consent = forms.BooleanField(
         required=True,
         error_messages={'required': _("Shaxsiy ma'lumotlarni qayta ishlashga rozilik bering")},
@@ -21,8 +30,8 @@ class ServiceRequestForm(forms.ModelForm):
 
     class Meta:
         model = ServiceRequest
-        fields = ['name', 'phone', 'email', 'address', 'category', 'master', 'catalog_item', 'quantity',
-                  'problem_description', 'consent']
+        fields = ['name', 'phone', 'email', 'address', 'district', 'latitude', 'longitude', 'category', 'master',
+                  'catalog_item', 'quantity', 'problem_description', 'consent']
         error_messages = {
             'name': {'required': _('Ismingizni kiriting')},
             'phone': {'required': _('Telefon raqamni kiriting')},
@@ -39,6 +48,7 @@ class ServiceRequestForm(forms.ModelForm):
         self.fields['catalog_item'].required = False
         self.fields['quantity'].required = False
         self.fields['quantity'].min_value = 1
+        self.district_choices = DISTRICT_CHOICES
 
     def clean_name(self):
         name = (self.cleaned_data.get('name') or '').strip()
@@ -57,6 +67,10 @@ class ServiceRequestForm(forms.ModelForm):
             raise forms.ValidationError(_('Spam aniqlandi'))
         return ''
 
+    def clean_district(self):
+        slug = self.cleaned_data.get('district') or ''
+        return slug if district_coords(slug)[0] is not None else ''
+
     def clean_quantity(self):
         quantity = self.cleaned_data.get('quantity') or 1
         if not 1 <= quantity <= 999:
@@ -71,6 +85,14 @@ class ServiceRequestForm(forms.ModelForm):
             cleaned['category'] = item.category  # katalogdan tanlangan xizmat yo'nalishni aniqlaydi
         if item and master and item.category_id and not master.categories.filter(pk=item.category_id).exists():
             self.add_error('catalog_item', _('Bu usta tanlangan xizmatni bajarmaydi. Boshqa ustani tanlang.'))
+        # Joylashuv: tanlangan tuman GPS'dan ustun (qidiruvdagi kabi); O'zbekistondan tashqari — tashlanadi
+        lat, lng = parse_coords(cleaned.get('latitude'), cleaned.get('longitude'))
+        if cleaned.get('district'):
+            lat, lng = district_coords(cleaned['district'])
+        if lat is not None and lng is not None and in_uzbekistan(lat, lng):
+            cleaned['latitude'], cleaned['longitude'] = Decimal(str(round(lat, 6))), Decimal(str(round(lng, 6)))
+        else:
+            cleaned['latitude'] = cleaned['longitude'] = None
         category = cleaned.get('category')
         if master and not master.is_available:
             self.add_error('master', _('Bu usta hozir buyurtma qabul qilmayapti. Boshqa ustani tanlang.'))

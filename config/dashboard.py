@@ -80,3 +80,9 @@ def badge_new_requests(request):
 
 def badge_pending_masters(request):
     return str(Master.objects.filter(is_verified=False).count())
+
+
+def badge_escalated_claims(request):
+    """Administrator qarorini kutayotgan kafolat murojaatlari."""
+    from repair_service.models import WarrantyClaim
+    return str(WarrantyClaim.objects.filter(status=WarrantyClaim.STATUS_ESCALATED).count())

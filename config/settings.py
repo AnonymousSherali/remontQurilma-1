@@ -188,6 +188,32 @@ CLICK_SERVICE_ID = os.environ.get('CLICK_SERVICE_ID', '')
 CLICK_MERCHANT_ID = os.environ.get('CLICK_MERCHANT_ID', '')
 CLICK_SECRET_KEY = os.environ.get('CLICK_SECRET_KEY', '')
 CLICK_MERCHANT_USER_ID = os.environ.get('CLICK_MERCHANT_USER_ID', '')
+UZUM_SERVICE_ID = os.environ.get('UZUM_SERVICE_ID', '')
+UZUM_LOGIN = os.environ.get('UZUM_LOGIN', '')
+UZUM_PASSWORD = os.environ.get('UZUM_PASSWORD', '')
+UZUM_ACCOUNT_KEY = os.environ.get('UZUM_ACCOUNT_KEY', 'account')
+
+# --- Ustalar uchun tariflar (payments/tariffs.py). Narxlar namunaviy! ---
+TARIFF_PRICES = {
+    'top_7': int(os.environ.get('TARIFF_TOP_7_PRICE', 50000)),
+    'top_30': int(os.environ.get('TARIFF_TOP_30_PRICE', 150000)),
+    'pro_30': int(os.environ.get('TARIFF_PRO_30_PRICE', 200000)),
+}
+PRO_FEE_PERCENT = float(os.environ.get('PRO_FEE_PERCENT', 5))
+# Yangi ochiq buyurtmani dastlab faqat PRO ustalar ola oladigan vaqt (daqiqa)
+FEED_PRO_HEAD_START_MINUTES = int(os.environ.get('FEED_PRO_HEAD_START_MINUTES', 10))
+ACTIVE_ORDERS_LIMIT = int(os.environ.get('ACTIVE_ORDERS_LIMIT', 5))
+PRO_ACTIVE_ORDERS_LIMIT = int(os.environ.get('PRO_ACTIVE_ORDERS_LIMIT', 10))
+
+# --- Kafolat ---
+# Namunaviy qiymatlar: muddat va kompensatsiya chegarasini biznes egasi belgilaydi.
+WARRANTY_DAYS = int(os.environ.get('WARRANTY_DAYS', 30))
+# Usta shu vaqt ichida javob bermasa, mijoz murojaatni administratorga o'tkaza oladi
+WARRANTY_RESPONSE_HOURS = int(os.environ.get('WARRANTY_RESPONSE_HOURS', 48))
+# "Usta tuzatdi" holatida mijoz shuncha kun javob bermasa — murojaat yopiladi
+WARRANTY_AUTO_CLOSE_DAYS = int(os.environ.get('WARRANTY_AUTO_CLOSE_DAYS', 7))
+# Platforma to'laydigan kompensatsiyaning yuqori chegarasi (so'm)
+GUARANTEE_MAX_AMOUNT = int(os.environ.get('GUARANTEE_MAX_AMOUNT', 1_000_000))
 
 # --- Integratsiyalar (ixtiyoriy) ---
 YANDEX_MAPS_API_KEY = os.environ.get('YANDEX_MAPS_API_KEY', '')
@@ -248,6 +274,9 @@ UNFOLD = {
                     {'title': 'Baholar', 'icon': 'star', 'link': reverse_lazy('admin:masters_review_changelist')},
                     {'title': 'Ish rasmlari', 'icon': 'photo_library',
                      'link': reverse_lazy('admin:repair_service_orderphoto_changelist')},
+                    {'title': 'Kafolat murojaatlari', 'icon': 'verified_user',
+                     'link': reverse_lazy('admin:repair_service_warrantyclaim_changelist'),
+                     'badge': 'config.dashboard.badge_escalated_claims'},
                 ],
             },
             {
@@ -257,6 +286,8 @@ UNFOLD = {
                      'link': reverse_lazy('admin:payments_milestone_changelist')},
                     {'title': 'Narx takliflari', 'icon': 'request_quote',
                      'link': reverse_lazy('admin:payments_quote_changelist')},
+                    {'title': 'Tarif xaridlari', 'icon': 'workspace_premium',
+                     'link': reverse_lazy('admin:payments_purchase_changelist')},
                     {'title': 'Tranzaksiyalar', 'icon': 'receipt_long',
                      'link': reverse_lazy('admin:payments_payment_changelist')},
                     {'title': 'SMS kodlar', 'icon': 'sms', 'link': reverse_lazy('admin:otp_phonecode_changelist')},

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load i18n humanize ui %}
+
+{% block title %}{% translate "Ochiq buyurtmalar" %} | {{ SITE.name }}{% endblock %}
+{% block body_class %}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+
+{% block content %}
+<div class="container section" style="padding-top:2rem;max-width:900px">
+  <a href="{% url 'masters:dashboard' %}" class="btn btn--ghost btn--sm">← {% translate "Kabinet" %}</a>
+  <div class="results-bar">
+    <div>
+      <h1 style="font-size:2rem;margin:0">{% translate "Ochiq buyurtmalar" %}</h1>
+      <p class="muted" style="margin:.25rem 0 0">{% translate "Yo'nalishingiz va hududingizga mos, hali ustasi yo'q buyurtmalar. Birinchi bo'lib olgan usta bajaradi." %}</p>
+    </div>
+    <span class="badge badge--new">{% blocktranslate with a=active l=limit %}Faol: {{ a }} / {{ l }}{% endblocktranslate %}</span>
+  </div>
+
+  {% if not can_work %}
+    <div class="alert alert--warning">{% translate "Buyurtma olish uchun profilingiz tasdiqlangan va «buyurtma qabul qilaman» holatida bo'lishi kerak." %}</div>
+  {% endif %}
+  {% if not master.is_pro and orders %}
+    <div class="alert alert--info"><div>⭐ {% blocktranslate with m=head_start %}PRO ustalar yangi buyurtmani {{ m }} daqiqa oldin oladi.{% endblocktranslate %} <a href="{% url 'payments:tariffs' %}">{% translate "Tariflar" %} →</a></div></div>
+  {% endif %}
+
+  {% for order in orders %}
+  <article class="card feed-item">
+    <div class="feed-item__main">
+      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+        <strong>#{{ order.pk }}</strong>
+        {% if order.category %}<span class="chip chip--brand">{{ order.category.icon }} {{ order.category|tr:"name" }}</span>{% endif %}
+        <span class="muted small">{{ order.created_at|naturaltime }}</span>
+      </div>
+      {% if order.catalog_item %}
+        <div style="margin-top:.5rem;font-weight:700">{{ order.catalog_item|tr:"name" }}{% if order.quantity > 1 %} × {{ order.quantity }}{% endif %}
+          {% if order.catalog_estimate %}<span class="feed-item__price">≈ {{ order.catalog_estimate|floatformat:0|intcomma }} {% translate "so'm" %}</span>{% endif %}</div>
+      {% endif %}
+      {% if order.problem_description %}<p style="margin:.4rem 0 0">{{ order.problem_description|truncatewords:40 }}</p>{% endif %}
+      <div class="master-card__meta" style="margin-top:.5rem">
+        {% if order.area %}<span>📍 {{ order.area }}</span>{% endif %}
+        {% if order.distance_km is not None %}<span>↔ {{ order.distance_km|km }}</span>{% elif not order.area %}<span>📍 {% translate "Joylashuv ko'rsatilmagan" %}</span>{% endif %}
+      </div>
+      {% if order.problem_photos %}
+        <div class="photo-grid" style="margin-top:.6rem;grid-template-columns:repeat(4,72px)">
+          {% for photo in order.problem_photos %}<a class="photo" href="{{ photo.image.url }}" data-lightbox><img src="{{ photo.thumbnail.url }}" alt="" loading="lazy"></a>{% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="feed-item__side">
+      {% if order.claimable %}
+        <form method="post" action="{% url 'masters:feed_claim' order.pk %}">{% csrf_token %}
+          <button class="btn btn--primary btn--lg">✋ {% translate "Olish" %}</button></form>
+      {% else %}
+        <button class="btn btn--lg" disabled>⏳ {{ order.claimable_from|time:"H:i" }}</button>
+        <span class="muted small">{% translate "PRO ustunligi" %}</span>
+      {% endif %}
+    </div>
+  </article>
+  {% empty %}
+    <div class="card empty"><div class="empty__icon">📭</div>
+      <p class="muted">{% translate "Hozircha mos ochiq buyurtma yo'q. Telegram'ni ulasangiz, yangi buyurtma chiqishi bilan xabar olasiz." %}</p></div>
+  {% endfor %}
+  <p class="muted small" style="margin-top:1rem">🔒 {% translate "Mijozning ismi, telefoni va aniq manzili buyurtmani olganingizdan keyin ko'rinadi." %}</p>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 {% load i18n ui %}
 {# Ariza formasi. Parametrlar: form, show_category (bool), button (matn), prefix (id lar uchun) #}
 <div class="request-form-wrap">
-  <form method="post" action="{% url 'repair_service:submit_request' %}" class="form js-request-form" novalidate>
+  <form method="post" action="{% url 'repair_service:submit_request' %}" class="form js-request-form" novalidate data-clear-coords-on-district>
     {% csrf_token %}
     <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
     {% if form.master.value %}<input type="hidden" name="master" value="{{ form.master.value }}">{% endif %}
@@ -58,6 +58,25 @@
         <div class="error-message"></div>
       </div>
     </div>
+
+    {% if not form.master.value %}
+    <div class="form-row">
+      <div class="field">
+        <label for="{{ prefix }}district">{% translate "Tuman" %}</label>
+        <select id="{{ prefix }}district" name="district">
+          <option value="">{% translate "Tumanni tanlang" %}</option>
+          {% for slug, name in form.district_choices %}<option value="{{ slug }}">{{ name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <span class="field__label">{% translate "yoki" %}</span>
+        <button type="button" class="btn btn--soft" data-geolocate>📍 {% translate "Joylashuvimni aniqlash" %}</button>
+      </div>
+    </div>
+    <input type="hidden" name="latitude"><input type="hidden" name="longitude">
+    <div class="geo-status" aria-live="polite"></div>
+    <p class="field__help" style="margin-top:-.5rem">{% translate "Yaqin atrofdagi ustalar buyurtmangizni tezroq ko'rishi uchun. Ustaga aniq manzil faqat buyurtmani olgach ko'rinadi." %}</p>
+    {% endif %}
 
     <div class="field">
       <label for="{{ prefix }}problem">{% translate "Muammoni qisqacha yozing" %}</label>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 19:14+0500\n"
+"POT-Creation-Date: 2026-11-10 16:49+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid ""
+"Buyurtma olish uchun profilingiz tasdiqlangan va «buyurtma qabul qilaman» "
+"holatida bo'lishi kerak"
+msgstr ""
+"Чтобы брать заказы, профиль должен быть подтверждён и в статусе «принимаю "
+"заказы»"
+
+msgid "Bu buyurtmani boshqa usta olib bo'ldi"
+msgstr "Этот заказ уже взял другой мастер"
+
+msgid "Bu buyurtma sizning yo'nalishingiz yoki hududingizga to'g'ri kelmaydi"
+msgstr "Этот заказ не подходит по вашему направлению или району"
+
+#, python-format
+msgid ""
+"Dastlabki daqiqalarda buyurtmani faqat PRO ustalar oladi. Siz %(time)s dan "
+"ola olasiz."
+msgstr ""
+"В первые минуты заказ могут взять только мастера PRO. Вы сможете взять его с"
+" %(time)s."
+
+#, python-format
+msgid "Sizda %(n)s ta faol buyurtma bor — avval ularni yakunlang"
+msgstr "У вас %(n)s активных заказов — сначала завершите их"
+
+msgid "Lentadan olindi"
+msgstr "Взят из ленты"
 
 msgid "Tuman"
 msgstr "Район"
@@ -210,6 +238,9 @@ msgstr "Выполненные"
 msgid "Bekor / nizo"
 msgstr "Отменённые / споры"
 
+msgid "Buyurtma sizniki! Mijoz bilan bog'laning va kelish vaqtini kelishing."
+msgstr "Заказ ваш! Свяжитесь с клиентом и договоритесь о времени приезда."
+
 msgid "Profil saqlandi."
 msgstr "Профиль сохранён."
 
@@ -218,6 +249,12 @@ msgstr "Теперь вы принимаете заказы."
 
 msgid "Siz qidiruvdan vaqtincha yashirildingiz. Yangi buyurtmalar kelmaydi."
 msgstr "Вы временно скрыты из поиска. Новые заказы не поступят."
+
+msgid "Mijozga xabar yuborildi — u natijani tasdiqlaydi."
+msgstr "Клиенту отправлено уведомление — он подтвердит результат."
+
+msgid "Buyurtmadan voz kechdingiz. U boshqa ustalarga taklif qilinadi."
+msgstr "Вы отказались от заказа. Он будет предложен другим мастерам."
 
 msgid ""
 "Ish bajarildi deb belgilandi. Mijoz natijani tasdiqlashi va baholashi kerak."
@@ -280,6 +317,15 @@ msgstr "Выплачено мастеру"
 msgid "Qaytarildi"
 msgstr "Возвращено"
 
+msgid "To'lov kutilmoqda"
+msgstr "Ожидает оплаты"
+
+msgid "To'langan"
+msgstr "Оплачено"
+
+msgid "Bekor qilingan"
+msgstr "Отменено"
+
 msgid "To'liq summa — tasdiqlangandan keyin"
 msgstr "Полная сумма — после подтверждения"
 
@@ -325,10 +371,22 @@ msgstr "Сейчас нельзя выплатить средства этого
 msgid "Faqat ushlab turilgan mablag' qaytariladi"
 msgstr "Вернуть можно только удерживаемые средства"
 
+msgid "TOP — 7 kun"
+msgstr "ТОП — 7 дней"
+
+msgid "TOP — 30 kun"
+msgstr "ТОП — 30 дней"
+
+msgid "PRO — 30 kun"
+msgstr "PRO — 30 дней"
+
 msgid ""
 "To'lov qabul qilindi. Mablag' bosqich bajarilguncha platformada ushlab "
 "turiladi."
 msgstr "Оплата принята. Деньги удерживаются на платформе до выполнения этапа."
+
+msgid "Tarif faollashtirildi."
+msgstr "Тариф активирован."
 
 msgid "Qayta yuborish"
 msgstr "Отправить повторно"
@@ -406,8 +464,8 @@ msgid "Usta ishni yakunladi. Natijani tasdiqlang va baholang: %(url)s"
 msgstr "Мастер завершил работу. Подтвердите результат и оцените: %(url)s"
 
 #, python-format
-msgid "Usta buyurtmani bekor qildi. Boshqa usta topamiz: %(url)s"
-msgstr "Мастер отменил заказ. Мы подберём другого: %(url)s"
+msgid "Usta buyurtmadan voz kechdi. Boshqa usta qidiryapmiz: %(url)s"
+msgstr "Мастер отказался от заказа. Ищем другого мастера: %(url)s"
 
 #, python-format
 msgid "Mijoz #%(id)s buyurtmani tasdiqladi."
@@ -424,6 +482,12 @@ msgstr "Клиент открыл спор по заказу #%(id)s. С вам�
 #, python-format
 msgid "Usta narx taklif qildi: %(amount)s so'm. Ko'rib chiqing: %(url)s"
 msgstr "Мастер предложил цену: %(amount)s сум. Посмотрите: %(url)s"
+
+msgid "✋ Olish"
+msgstr "✋ Взять"
+
+msgid "Ochiq buyurtmalar"
+msgstr "Открытые заказы"
 
 msgid "Shaxsiy ma'lumotlarni qayta ishlashga rozilik bering"
 msgstr "Дайте согласие на обработку персональных данных"
@@ -497,6 +561,24 @@ msgstr "До"
 msgid "Keyin"
 msgstr "После"
 
+msgid "Ustaga yuborildi"
+msgstr "Отправлено мастеру"
+
+msgid "Usta tuzatdi"
+msgstr "Мастер исправил"
+
+msgid "Hal bo'ldi"
+msgstr "Решено"
+
+msgid "Administratorda"
+msgstr "У администратора"
+
+msgid "Rad etildi"
+msgstr "Отклонено"
+
+msgid "Kompensatsiya to'landi"
+msgstr "Компенсация выплачена"
+
 msgid "Qat'iy narx"
 msgstr "Фиксированная цена"
 
@@ -550,6 +632,19 @@ msgstr "Оплата выплачена: %(t)s"
 msgid "Mablag' ustaga chiqarildi. Rahmat!"
 msgstr "Средства выплачены мастеру. Спасибо!"
 
+msgid ""
+"Murojaatingiz ustaga yuborildi. Muammoni rasmga olib qo'shsangiz, tezroq hal"
+" bo'ladi."
+msgstr ""
+"Обращение отправлено мастеру. Добавьте фото проблемы — так она решится "
+"быстрее."
+
+msgid "Rahmat! Murojaat yopildi."
+msgstr "Спасибо! Обращение закрыто."
+
+msgid "Murojaat administratorga o'tkazildi. Siz bilan bog'lanamiz."
+msgstr "Обращение передано администратору. Мы свяжемся с вами."
+
 msgid "Rasm tanlang"
 msgstr "Выберите фото"
 
@@ -600,6 +695,79 @@ msgstr ""
 msgid "Arizangiz uchun rahmat!"
 msgstr "Спасибо за заявку!"
 
+msgid "Muammoni batafsilroq yozing (kamida 10 ta belgi)."
+msgstr "Опишите проблему подробнее (не менее 10 символов)."
+
+msgid "Bu buyurtma uchun kafolat muddati tugagan yoki kafolat berilmagan."
+msgstr ""
+"Гарантийный срок по этому заказу истёк или гарантия не предоставляется."
+
+msgid "Bu buyurtma bo'yicha kafolat murojaati allaqachon ochilgan."
+msgstr "По этому заказу уже открыто гарантийное обращение."
+
+msgid "Kafolat murojaati ochildi"
+msgstr "Открыто гарантийное обращение"
+
+#, python-format
+msgid ""
+"Kafolat murojaati: #%(id)s buyurtma bo'yicha mijoz muammo bildirdi. Bepul "
+"tuzatib bering: %(url)s"
+msgstr ""
+"Гарантийное обращение: клиент сообщил о проблеме по заказу #%(id)s. "
+"Исправьте бесплатно: %(url)s"
+
+msgid "Bu murojaat holatini o'zgartirib bo'lmaydi."
+msgstr "Статус этого обращения изменить нельзя."
+
+msgid "Kafolat: usta muammoni tuzatdi"
+msgstr "Гарантия: мастер устранил проблему"
+
+#, python-format
+msgid ""
+"Usta kafolat bo'yicha muammoni tuzatganini bildirdi. Tekshirib tasdiqlang: "
+"%(url)s"
+msgstr ""
+"Мастер сообщил, что устранил проблему по гарантии. Проверьте и подтвердите: "
+"%(url)s"
+
+msgid "Kafolat: muammo hal bo'ldi"
+msgstr "Гарантия: проблема решена"
+
+#, python-format
+msgid "Mijoz #%(id)s buyurtma bo'yicha kafolat murojaatini yopdi. Rahmat!"
+msgstr "Клиент закрыл гарантийное обращение по заказу #%(id)s. Спасибо!"
+
+msgid ""
+"Avval ustaga tuzatish uchun vaqt bering — javob bo'lmasa, administratorga "
+"o'tkazishingiz mumkin."
+msgstr ""
+"Сначала дайте мастеру время на исправление — если ответа не будет, вы "
+"сможете передать обращение администратору."
+
+msgid "Kafolat: administratorga o'tkazildi"
+msgstr "Гарантия: передано администратору"
+
+#, python-format
+msgid ""
+"#%(id)s buyurtma bo'yicha kafolat murojaati administratorga o'tkazildi."
+msgstr "Гарантийное обращение по заказу #%(id)s передано администратору."
+
+#, python-format
+msgid ""
+"Kafolat murojaatingiz bo'yicha kompensatsiya belgilandi. Operator siz bilan "
+"bog'lanadi: %(url)s"
+msgstr ""
+"По вашему гарантийному обращению назначена компенсация. Оператор свяжется с "
+"вами: %(url)s"
+
+#, python-format
+msgid "Kafolat murojaatingiz ko'rib chiqildi. Javob: %(url)s"
+msgstr "Ваше гарантийное обращение рассмотрено. Ответ: %(url)s"
+
+#, python-format
+msgid "Kafolat murojaatingiz yopildi: %(url)s"
+msgstr "Ваше гарантийное обращение закрыто: %(url)s"
+
 msgid "Buyurtma yaratildi"
 msgstr "Заказ создан"
 
@@ -633,8 +801,8 @@ msgstr "Начал работу"
 msgid "Ish bajarildi"
 msgstr "Работа выполнена"
 
-msgid "Bekor qilish"
-msgstr "Отменить"
+msgid "Voz kechish"
+msgstr "Отказаться"
 
 msgid "Natijani tasdiqlash"
 msgstr "Подтвердить результат"
@@ -664,6 +832,14 @@ msgstr "Сначала оплатите: %(names)s"
 #, python-format
 msgid "Mijoz hali to'lamagan: %(names)s. To'lovdan keyin davom eting."
 msgstr "Клиент ещё не оплатил: %(names)s. Продолжите после оплаты."
+
+msgid ""
+"Mijoz to'lov qilgan — voz kechish uchun administratorga murojaat qiling"
+msgstr "Клиент уже внёс оплату — для отказа обратитесь к администратору"
+
+#, python-format
+msgid "Usta voz kechdi: %(name)s"
+msgstr "Мастер отказался: %(name)s"
 
 #, python-format
 msgid "Avtomatik: mijoz %(h)s soat ichida javob bermadi"
@@ -733,11 +909,39 @@ msgstr "Подключённых заказов нет."
 msgid "Xabarlar o'chirildi. Endi xabarlar SMS orqali keladi."
 msgstr "Уведомления отключены. Теперь они будут приходить по SMS."
 
+#, python-format
+msgid "PRO ustalar ustunligi: %(time)s dan olishingiz mumkin"
+msgstr "Преимущество PRO: вы сможете взять с %(time)s"
+
+msgid "Rasmni yuklab bo'lmadi. Qaytadan yuboring."
+msgstr "Не удалось загрузить фото. Отправьте ещё раз."
+
+#, python-format
+msgid "✅ #%(id)s buyurtmaga qo'shildi: %(n)s ta rasm («%(kind)s»)"
+msgstr "✅ Добавлено к заказу #%(id)s: %(n)s фото («%(kind)s»)"
+
+msgid "Rasm biriktiriladigan faol buyurtma yo'q."
+msgstr "Нет активного заказа, к которому можно прикрепить фото."
+
+msgid "Bu rasm(lar) qaysi buyurtma uchun?"
+msgstr "К какому заказу относятся эти фото?"
+
+msgid "Rasm topilmadi yoki muddati o'tdi — qaytadan yuboring"
+msgstr "Фото не найдено или срок истёк — отправьте ещё раз"
+
+msgid "Avval kabinetda Telegram'ni ulang"
+msgstr "Сначала подключите Telegram в кабинете"
+
+msgid "Buyurtma sizniki!"
+msgstr "Заказ ваш!"
+
 msgid "Bu buyurtma sizga tegishli emas"
 msgstr "Этот заказ не ваш"
 
-msgid "Buyruqlar: /buyurtmalar, /stop"
-msgstr "Команды: /buyurtmalar, /stop"
+msgid ""
+"Buyruqlar: /buyurtmalar, /stop. Rasm yuborsangiz — buyurtmaga biriktiriladi."
+msgstr ""
+"Команды: /buyurtmalar, /stop. Отправьте фото — оно прикрепится к заказу."
 
 msgid "Telegram bot hali sozlanmagan. Administratorga murojaat qiling."
 msgstr "Telegram-бот ещё не настроен. Обратитесь к администратору."
@@ -1155,6 +1359,19 @@ msgstr ""
 "заморожены, администратор выслушает обе стороны и выплатит их мастеру или "
 "вернёт вам."
 
+msgid "Ishga kafolat bormi?"
+msgstr "Есть ли гарантия на работу?"
+
+#, python-format
+msgid ""
+"Ha. Tasdiqlangan ishga %(n)s kun kafolat beriladi: o'sha muammo qaytalansa, "
+"buyurtma sahifasidan murojaat qilasiz va usta bepul tuzatadi. Usta javob "
+"bermasa, administrator aralashadi."
+msgstr ""
+"Да. На подтверждённую работу даётся гарантия %(n)s дней: если та же проблема"
+" повторится, вы оставляете обращение на странице заказа, и мастер исправляет"
+" бесплатно. Если мастер не отвечает, подключается администратор."
+
 msgid "Ustalar qanday tekshiriladi?"
 msgstr "Как проверяются мастера?"
 
@@ -1248,6 +1465,9 @@ msgstr "Отметить «занят»"
 msgid "Buyurtma qabul qilish"
 msgstr "Принимать заказы"
 
+msgid "Tariflar"
+msgstr "Тарифы"
+
 msgid "Profil"
 msgstr "Профиль"
 
@@ -1256,6 +1476,16 @@ msgstr "Публичная страница"
 
 msgid "Chiqish"
 msgstr "Выйти"
+
+#, python-format
+msgid "#%(id)s buyurtma bo'yicha kafolat murojaati."
+msgstr "Гарантийное обращение по заказу #%(id)s."
+
+msgid "Mijoz muammo bildirdi — bepul tuzatib bering."
+msgstr "Клиент сообщил о проблеме — исправьте бесплатно."
+
+msgid "Ochish"
+msgstr "Открыть"
 
 msgid "Profilingiz tekshirilmoqda."
 msgstr "Ваш профиль на проверке."
@@ -1285,9 +1515,6 @@ msgstr "Заказы"
 
 msgid "Holat bo'yicha filtr"
 msgstr "Фильтр по статусу"
-
-msgid "Ochish"
-msgstr "Открыть"
 
 msgid "Bu bo'limda buyurtmalar yo'q."
 msgstr "В этом разделе нет заказов."
@@ -1334,6 +1561,10 @@ msgstr "Проверенный мастер"
 
 msgid "Hali baholanmagan — birinchi mijoz bo'ling"
 msgstr "Оценок пока нет — станьте первым клиентом"
+
+#, python-format
+msgid "Ishga %(n)s kun kafolat"
+msgstr "Гарантия на работу %(n)s дней"
 
 msgid "Tajriba"
 msgstr "Опыт"
@@ -1405,6 +1636,54 @@ msgstr "Отправить заявку мастеру"
 
 msgid "Ustaning ish hududi"
 msgstr "Район работы мастера"
+
+msgid ""
+"Yo'nalishingiz va hududingizga mos, hali ustasi yo'q buyurtmalar. Birinchi "
+"bo'lib olgan usta bajaradi."
+msgstr ""
+"Заказы без мастера, подходящие по вашему направлению и району. Выполняет "
+"тот, кто взял первым."
+
+#, python-format
+msgid "Faol: %(a)s / %(l)s"
+msgstr "Активных: %(a)s / %(l)s"
+
+msgid ""
+"Buyurtma olish uchun profilingiz tasdiqlangan va «buyurtma qabul qilaman» "
+"holatida bo'lishi kerak."
+msgstr ""
+"Чтобы брать заказы, профиль должен быть подтверждён и в статусе «принимаю "
+"заказы»."
+
+#, python-format
+msgid "PRO ustalar yangi buyurtmani %(m)s daqiqa oldin oladi."
+msgstr "Мастера PRO получают новый заказ на %(m)s минут раньше."
+
+msgid "so'm"
+msgstr "сум"
+
+msgid "Joylashuv ko'rsatilmagan"
+msgstr "Местоположение не указано"
+
+msgid "Olish"
+msgstr "Взять"
+
+msgid "PRO ustunligi"
+msgstr "Преимущество PRO"
+
+msgid ""
+"Hozircha mos ochiq buyurtma yo'q. Telegram'ni ulasangiz, yangi buyurtma "
+"chiqishi bilan xabar olasiz."
+msgstr ""
+"Подходящих открытых заказов пока нет. Подключите Telegram — и получите "
+"уведомление, как только появится новый заказ."
+
+msgid ""
+"Mijozning ismi, telefoni va aniq manzili buyurtmani olganingizdan keyin "
+"ko'rinadi."
+msgstr ""
+"Имя, телефон и точный адрес клиента будут видны после того, как вы возьмёте "
+"заказ."
 
 #, python-format
 msgid "%(c)s: yaqin atrofdagi tekshirilgan ustalar, baholar va masofa."
@@ -1610,9 +1889,6 @@ msgstr "Выплачено мастеру"
 msgid "Jami"
 msgstr "Итого"
 
-msgid "so'm"
-msgstr "сум"
-
 msgid "sizga"
 msgstr "вам"
 
@@ -1676,6 +1952,72 @@ msgid ""
 msgstr ""
 "JPG, PNG или WEBP, до 10 МБ, не более %(n)s шт. Данные о местоположении "
 "(GPS) удаляются автоматически."
+
+msgid "Kafolat"
+msgstr "Гарантия"
+
+#, python-format
+msgid "%(d)s gacha"
+msgstr "до %(d)s"
+
+msgid "muddati tugagan"
+msgstr "срок истёк"
+
+#, python-format
+msgid ""
+"Bajarilgan ishga %(n)s kun kafolat. Shu muddatda o'sha muammo qaytalansa, "
+"usta bepul tuzatib beradi."
+msgstr ""
+"Гарантия на выполненную работу — %(n)s дней. Если за это время та же "
+"проблема повторится, мастер исправит бесплатно."
+
+#, python-format
+msgid ""
+"Bu ishga %(n)s kun kafolat berilgan. Kafolat murojaati bepul tuzatiladi."
+msgstr ""
+"На эту работу дана гарантия %(n)s дней. Гарантийное обращение устраняется "
+"бесплатно."
+
+msgid "Kompensatsiya"
+msgstr "Компенсация"
+
+msgid "Muammo hal bo'ldi"
+msgstr "Проблема решена"
+
+msgid "Hal bo'lmadi — administratorga"
+msgstr "Не решено — администратору"
+
+#, python-format
+msgid ""
+"Usta %(h)s soat ichida javob bermasa, murojaatni administratorga "
+"o'tkazishingiz mumkin."
+msgstr ""
+"Если мастер не ответит в течение %(h)s часов, вы сможете передать обращение "
+"администратору."
+
+msgid "Administrator ko'rib chiqmoqda — siz bilan bog'lanamiz."
+msgstr "Администратор рассматривает — мы свяжемся с вами."
+
+msgid "Nima qilindi (ixtiyoriy)"
+msgstr "Что сделано (необязательно)"
+
+msgid "Tuzatdim"
+msgstr "Исправил"
+
+msgid "Muammo qaytalandimi? Kafolat bo'yicha murojaat"
+msgstr "Проблема повторилась? Обращение по гарантии"
+
+msgid "Nima bo'ldi?"
+msgstr "Что случилось?"
+
+msgid "Masalan: almashtirilgan kran yana oqyapti"
+msgstr "Например: заменённый кран снова течёт"
+
+msgid "Murojaat yuborish"
+msgstr "Отправить обращение"
+
+msgid "Murojaat qilish uchun yuqorida telefon raqamingizni tasdiqlang."
+msgstr "Чтобы оставить обращение, подтвердите номер телефона выше."
 
 #, python-format
 msgid "Buyurtma #%(id)s"
@@ -1899,6 +2241,9 @@ msgstr ""
 msgid "Bu raqam bilan buyurtma topilmadi."
 msgstr "По этому номеру заказы не найдены."
 
+msgid "Pullik joylashuv"
+msgstr "Платное размещение"
+
 msgid "Hali baholanmagan"
 msgstr "Ещё нет оценок"
 
@@ -1967,6 +2312,13 @@ msgstr "Не знаю — подскажет оператор"
 msgid "Tuman, ko'cha, uy"
 msgstr "Район, улица, дом"
 
+msgid ""
+"Yaqin atrofdagi ustalar buyurtmangizni tezroq ko'rishi uchun. Ustaga aniq "
+"manzil faqat buyurtmani olgach ko'rinadi."
+msgstr ""
+"Чтобы мастера поблизости быстрее увидели ваш заказ. Точный адрес мастер "
+"увидит только после того, как возьмёт заказ."
+
 msgid "Muammoni qisqacha yozing"
 msgstr "Кратко опишите проблему"
 
@@ -2000,6 +2352,9 @@ msgstr ""
 "ТЕСТОВЫЙ РЕЖИМ: реальные деньги не списываются. В рабочей версии здесь "
 "откроется страница Payme."
 
+msgid "Tarif"
+msgstr "Тариф"
+
 msgid "Karta raqami"
 msgstr "Номер карты"
 
@@ -2009,6 +2364,60 @@ msgid ""
 msgstr ""
 "Деньги удерживаются на платформе до выполнения этапа и только потом "
 "переходят мастеру."
+
+msgid ""
+"Platformadan foydalanish bepul. Tariflar — ko'proq buyurtma olish uchun "
+"ixtiyoriy qo'shimcha."
+msgstr ""
+"Пользоваться платформой бесплатно. Тарифы — необязательное дополнение, чтобы"
+" получать больше заказов."
+
+msgid "gacha"
+msgstr "до"
+
+msgid "Faol emas"
+msgstr "Не активен"
+
+msgid "Komissiyangiz"
+msgstr "Ваша комиссия"
+
+msgid "Qidiruvda yo'nalishingiz bo'yicha birinchi qatorlarda"
+msgstr "В первых строках поиска по вашему направлению"
+
+msgid "Profilda va kartochkada «TOP» belgisi"
+msgstr "Значок «ТОП» в профиле и карточке"
+
+msgid "Bosh sahifadagi ustalar ro'yxatida ustunlik"
+msgstr "Приоритет в списке мастеров на главной странице"
+
+#, python-format
+msgid "Komissiya %(b)s%% o'rniga %(a)s%%"
+msgstr "Комиссия %(a)s%% вместо %(b)s%%"
+
+msgid "Ochiq buyurtmalar sizga birinchi bo'lib keladi"
+msgstr "Открытые заказы приходят вам первым"
+
+#, python-format
+msgid "Bir vaqtda %(a)s tagacha buyurtma (%(b)s o'rniga)"
+msgstr "До %(a)s заказов одновременно (вместо %(b)s)"
+
+msgid "Profilda «PRO» belgisi"
+msgstr "Значок «PRO» в профиле"
+
+msgid "Sotib olish"
+msgstr "Купить"
+
+msgid ""
+"Faol tarif ustiga sotib olsangiz, muddat oxiridan boshlab uzayadi. TOP "
+"ustalar qidiruvda «TOP» belgisi bilan ko'rsatiladi — mijoz bu pullik "
+"joylashuv ekanini biladi. Reyting va masofa baribir hisobga olinadi."
+msgstr ""
+"Если купить поверх активного тарифа, срок продлевается с конца текущего. "
+"Мастера ТОП показываются в поиске со значком «ТОП» — клиент знает, что это "
+"платное размещение. Рейтинг и расстояние всё равно учитываются."
+
+msgid "Xaridlar tarixi"
+msgstr "История покупок"
 
 msgid "Ariza qabul qilindi"
 msgstr "Заявка принята"
@@ -2024,6 +2433,12 @@ msgstr "Статус заказа можно отслеживать по ссы�
 
 msgid "Bosh sahifa"
 msgstr "Главная"
+
+#~ msgid "Bekor qilish"
+#~ msgstr "Отменить"
+
+#~ msgid "Buyruqlar: /buyurtmalar, /stop"
+#~ msgstr "Команды: /buyurtmalar, /stop"
 
 #~ msgid ""
 #~ "Yakuniy narx nosozlikka bog'liq — usta ko'rib chiqib, ishni boshlashdan "

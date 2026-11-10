@@ -19,7 +19,8 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from .models import Milestone, Quote, platform_fee_percent
+from . import tariffs
+from .models import Milestone, Quote
 from .plans import PLAN_CASH, split_amount
 
 
@@ -80,7 +81,7 @@ def approve_quote(order):
     quote.save(update_fields=['status', 'decided_at'])
 
     order.milestones.filter(state=Milestone.STATE_PENDING).delete()
-    fee = platform_fee_percent()
+    fee = tariffs.fee_percent_for(order.master)  # PRO ustalar uchun pasaytirilgan
     for position, (amount, title, release_status) in enumerate(split_amount(quote.amount, quote.plan), start=1):
         Milestone.objects.create(
             order=order, position=position, title=str(title), amount=amount,

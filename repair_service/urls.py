@@ -21,6 +21,9 @@ urlpatterns = [
     path('buyurtma/<uuid:token>/rasm/<int:photo_id>/ochirish/', order_views.order_photo_delete,
          name='order_photo_delete'),
     path('buyurtma/<uuid:token>/portfolio/', order_views.order_portfolio_toggle, name='order_portfolio_toggle'),
+    path('buyurtma/<uuid:token>/kafolat/', order_views.warranty_claim, name='warranty_claim'),
+    path('buyurtma/<uuid:token>/kafolat/<int:claim_id>/<slug:action>/', order_views.warranty_action,
+         name='warranty_action'),
     path('buyurtmalarim/', order_views.my_orders, name='my_orders'),
     path('buyurtmalarim/chiqish/', order_views.my_orders_logout, name='my_orders_logout'),
 ]

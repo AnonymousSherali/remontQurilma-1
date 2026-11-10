@@ -12,7 +12,7 @@ from django.urls import include, path
 
 from masters import views as master_views
 from otp import views as otp_views
-from payments import click, payme
+from payments import click, payme, uzum
 from telegram_bot import views as telegram_views
 
 urlpatterns = [
@@ -22,6 +22,7 @@ urlpatterns = [
     path('payments/payme/', payme.endpoint, name='payme_endpoint'),
     path('payments/click/prepare/', click.prepare, name='click_prepare'),
     path('payments/click/complete/', click.complete, name='click_complete'),
+    path('payments/uzum/<slug:operation>/', uzum.endpoint, name='uzum_endpoint'),
     path('telegram/webhook/', telegram_views.webhook, name='telegram_webhook'),
     path('kod/yuborish/', otp_views.send_view, name='otp_send'),
     path('kod/tasdiqlash/', otp_views.verify_view, name='otp_verify'),

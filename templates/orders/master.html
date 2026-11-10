@@ -65,6 +65,8 @@
       </section>
       {% endif %}
 
+      {% if warranty %}{% include "orders/_warranty.html" with side="master" %}{% endif %}
+
       {% translate "Ishdan oldin va keyin rasmga oling: mijoz natijani ko'radi, tasdiqlangan ishlar portfoliongizga chiqadi, nizoda esa dalil bo'ladi." as photo_hint %}
       {% include "orders/_photos.html" with hint=photo_hint %}
 

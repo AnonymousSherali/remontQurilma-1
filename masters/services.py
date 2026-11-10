@@ -29,7 +29,8 @@ def search_masters(*, category=None, lat=None, lng=None, radius_km=DEFAULT_RADIU
         results = list(qs.distinct())
         for master in results:
             master.distance_km = None
-        results.sort(key=lambda m: m.ranking_score, reverse=True)
+        # TOP (pullik) ustalar birinchi — kartochkada "TOP" belgisi bilan ochiq ko'rsatiladi
+        results.sort(key=lambda m: (not m.is_promoted, -m.ranking_score))
         return results
 
     lat_min, lat_max, lng_min, lng_max = bounding_box(lat, lng, radius_km)
@@ -46,9 +47,9 @@ def search_masters(*, category=None, lat=None, lng=None, radius_km=DEFAULT_RADIU
             results.append(master)
 
     if sort == SORT_RATING:
-        results.sort(key=lambda m: (-m.ranking_score, m.distance_km))
+        results.sort(key=lambda m: (not m.is_promoted, -m.ranking_score, m.distance_km))
     else:
-        results.sort(key=lambda m: (m.distance_km, -m.ranking_score))
+        results.sort(key=lambda m: (not m.is_promoted, m.distance_km, -m.ranking_score))
     return results
 
 
@@ -65,6 +66,7 @@ def master_to_dict(master, request=None):
         'rating': float(master.rating_avg),
         'reviews_count': master.reviews_count,
         'experience_years': master.experience_years,
+        'promoted': master.is_promoted,
         'distance_km': getattr(master, 'distance_km', None),
         'lat': master.public_latitude,
         'lng': master.public_longitude,

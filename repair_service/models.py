@@ -38,6 +38,11 @@ class ServiceRequest(models.Model):
     phone = models.CharField('Telefon', max_length=20)
     email = models.EmailField('Email', blank=True, null=True)
     address = models.CharField('Manzil', max_length=255, blank=True)
+    # Taxminiy joylashuv (GPS yoki tuman markazi) — ochiq buyurtmalar lentasida ustaga masofani
+    # ko'rsatish uchun. Aniq manzil ustaga faqat buyurtmani olgandan keyin ko'rinadi.
+    district = models.CharField('Tuman', max_length=40, blank=True)
+    latitude = models.DecimalField('Kenglik', max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField('Uzunlik', max_digits=9, decimal_places=6, null=True, blank=True)
 
     # Muammo haqida ma'lumot
     category = models.ForeignKey(
@@ -68,6 +73,11 @@ class ServiceRequest(models.Model):
     language = models.CharField('Til', max_length=5, default='uz')
     # Tasdiqlangan buyurtma rasmlari usta portfoliosida ko'rinishi mumkinmi (mijoz o'chira oladi)
     photos_in_portfolio = models.BooleanField('Rasmlar portfolioda', default=True)
+    # Lentaga qayta tushgan vaqt (usta voz kechganda). Bo'sh bo'lsa — yaratilgan vaqt hisoblanadi.
+    open_since = models.DateTimeField('Lentada (qachondan)', null=True, blank=True)
+    # Buyurtmadan voz kechgan ustalar — lentada ularga qayta ko'rsatilmaydi
+    declined_by = models.ManyToManyField('masters.Master', blank=True, related_name='declined_orders',
+                                         verbose_name='Voz kechgan ustalar')
     # Mijoz "Telegram'da kuzatish" ni bosgan bo'lsa — xabarlar SMS o'rniga Telegram'ga (bepul)
     telegram_chat_id = models.BigIntegerField('Mijoz Telegram chati', null=True, blank=True, db_index=True)
 
@@ -199,6 +209,54 @@ class OrderPhoto(models.Model):
 
 
 
+class WarrantyClaim(models.Model):
+    """Kafolat bo'yicha murojaat: tasdiqlangan ish kafolat muddati ichida yana buzilsa.
+
+    Qoidalar — repair_service/warranty.py da.
+    """
+
+    STATUS_OPEN = 'open'            # ustaga yuborildi
+    STATUS_FIXED = 'fixed'          # usta "tuzatdim" dedi — mijoz javobi kutilmoqda
+    STATUS_RESOLVED = 'resolved'    # mijoz tasdiqladi
+    STATUS_ESCALATED = 'escalated'  # administrator ko'rib chiqadi
+    STATUS_REJECTED = 'rejected'    # administrator rad etdi (kafolat holati emas)
+    STATUS_COMPENSATED = 'compensated'  # platforma kompensatsiya to'ladi
+    STATUS_CHOICES = [
+        (STATUS_OPEN, _('Ustaga yuborildi')),
+        (STATUS_FIXED, _('Usta tuzatdi')),
+        (STATUS_RESOLVED, _('Hal bo\'ldi')),
+        (STATUS_ESCALATED, _('Administratorda')),
+        (STATUS_REJECTED, _('Rad etildi')),
+        (STATUS_COMPENSATED, _('Kompensatsiya to\'landi')),
+    ]
+    ACTIVE_STATUSES = (STATUS_OPEN, STATUS_FIXED, STATUS_ESCALATED)
+
+    order = models.ForeignKey(ServiceRequest, on_delete=models.CASCADE, related_name='warranty_claims',
+                              verbose_name='Buyurtma')
+    description = models.TextField('Muammo tavsifi', max_length=2000)
+    status = models.CharField('Holat', max_length=20, choices=STATUS_CHOICES, default=STATUS_OPEN)
+    master_note = models.TextField('Usta izohi', blank=True)
+    resolution = models.TextField('Administrator xulosasi', blank=True,
+                                  help_text='Mijozga ko\'rinadi (rad etish yoki kompensatsiya sababi).')
+    compensation = models.DecimalField("Kompensatsiya (so'm)", max_digits=12, decimal_places=2,
+                                       null=True, blank=True)
+    created_at = models.DateTimeField('Yaratilgan', default=timezone.now)
+    updated_at = models.DateTimeField('Yangilangan', auto_now=True)
+    closed_at = models.DateTimeField('Yopilgan', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Kafolat murojaati'
+        verbose_name_plural = 'Kafolat murojaatlari'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Kafolat #{self.pk} (buyurtma #{self.order_id})'
+
+    @property
+    def is_active(self):
+        return self.status in self.ACTIVE_STATUSES
+
+
 class Service(models.Model):
     """Narxlar katalogidagi xizmat: "Kran almashtirish — 80 000 so'm".
 
@@ -245,6 +303,10 @@ class Service(models.Model):
     unit = models.CharField('Birlik', max_length=10, choices=UNIT_CHOICES, default=UNIT_SERVICE)
     duration_minutes = models.PositiveIntegerField(
         'Taxminiy vaqt (daqiqa)', null=True, blank=True, help_text="Mijozga «~1 soat» ko'rinishida chiqadi",
+    )
+    warranty_days = models.PositiveSmallIntegerField(
+        'Kafolat (kun)', null=True, blank=True,
+        help_text="Bo'sh — umumiy muddat (WARRANTY_DAYS). 0 — bu xizmatga kafolat berilmaydi.",
     )
     is_popular = models.BooleanField('Ommabop', default=False, help_text="Bosh sahifada ko'rsatiladi")
     is_active = models.BooleanField('Faol', default=True)

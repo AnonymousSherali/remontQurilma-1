@@ -5,6 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Avg, Count
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
@@ -76,6 +77,9 @@ class Master(models.Model):
         help_text="Faqat tasdiqlangan ustalar saytda ko'rinadi. Shaxsini tekshirgandan keyin belgilang.",
     )
     is_available = models.BooleanField('Buyurtma qabul qiladi', default=True)
+    # Pullik tariflar (payments/tariffs.py). Muddat o'tgach o'zi o'chadi.
+    promoted_until = models.DateTimeField('TOP muddati', null=True, blank=True)
+    pro_until = models.DateTimeField('PRO muddati', null=True, blank=True)
     telegram_chat_id = models.BigIntegerField('Telegram chat', null=True, blank=True, unique=True,
                                               help_text='Usta botga ulanganda avtomatik yoziladi')
 
@@ -100,6 +104,14 @@ class Master(models.Model):
 
     def get_absolute_url(self):
         return reverse('masters:detail', args=[self.pk])
+
+    @property
+    def is_promoted(self):
+        return bool(self.promoted_until and self.promoted_until > timezone.now())
+
+    @property
+    def is_pro(self):
+        return bool(self.pro_until and self.pro_until > timezone.now())
 
     @property
     def initials(self):

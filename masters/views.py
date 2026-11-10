@@ -14,15 +14,17 @@ from django.utils.translation import gettext as _
 
 from otp import services as otp
 from payments import services as payments
-from repair_service import workflow
+from payments import tariffs
+from repair_service import warranty, workflow
 from repair_service.customer_notify import notify_quote
 from repair_service.forms import ServiceRequestForm
-from repair_service.models import OrderPhoto
+from repair_service.models import OrderPhoto, WarrantyClaim
 from repair_service.order_views import handle_photo_upload, photo_context
 from repair_service.photos import can_delete as can_delete_photo
 from repair_service.photos import portfolio
 from repair_service.models import ServiceRequest
 
+from . import feed
 from .forms import (
     deviation_percent, MasterProfileForm, MasterRegistrationForm, PasswordResetForm, PhoneLoginForm, QuoteForm, ReviewForm,
 )
@@ -217,8 +219,41 @@ def dashboard(request):
                         ('closed', _('Bekor / nizo'))],
         'criteria': master.criteria_breakdown(),
         'balance': balance,
+        'open_count': feed.open_count(master),
+        'warranty_claims': WarrantyClaim.objects.filter(
+            order__master=master, status=WarrantyClaim.STATUS_OPEN).select_related('order'),
         'held': held,
     })
+
+
+@login_required
+def feed_list(request):
+    """Ochiq buyurtmalar: ustasi yo'q, shu ustaning yo'nalishi va hududiga mos."""
+    master = _get_own_master(request)
+    orders = feed.open_orders(master)
+    for order in orders:
+        order.problem_photos = [p for p in order.photos.all() if p.kind == OrderPhoto.KIND_PROBLEM][:4]
+    return render(request, 'masters/feed.html', {
+        'master': master,
+        'orders': orders,
+        'can_work': feed.can_work(master),
+        'active': feed.active_count(master),
+        'limit': tariffs.active_orders_limit(master),
+        'head_start': feed.head_start().seconds // 60,
+    })
+
+
+@login_required
+@require_POST
+def feed_claim(request, pk):
+    master = _get_own_master(request)
+    try:
+        order = feed.claim(master, pk)
+    except feed.FeedError as error:
+        messages.error(request, str(error))
+        return redirect('masters:feed')
+    messages.success(request, _("Buyurtma sizniki! Mijoz bilan bog'laning va kelish vaqtini kelishing."))
+    return redirect(order.get_master_url())
 
 
 @login_required
@@ -287,7 +322,22 @@ def order_detail(request, pk):
         **photo_context(request, order, workflow.MASTER, reverse('masters:order_photo_upload', args=[order.pk]),
                         'masters:order_photo_delete', [order.pk]),
         'customer_link': request.build_absolute_uri(order.get_customer_url()),
+        **warranty.context(order),
     })
+
+
+@login_required
+@require_POST
+def warranty_fixed(request, pk, claim_id):
+    master, order = _own_order(request, pk)
+    claim = get_object_or_404(WarrantyClaim, pk=claim_id, order=order)
+    try:
+        warranty.master_fixed(claim, request.POST.get('note', ''))
+    except warranty.WarrantyError as error:
+        messages.error(request, str(error))
+    else:
+        messages.success(request, _('Mijozga xabar yuborildi — u natijani tasdiqlaydi.'))
+    return redirect(order.get_master_url() + '#kafolat')
 
 
 @login_required
@@ -300,6 +350,9 @@ def request_action(request, pk, action):
         messages.error(request, str(error))
     else:
         order.refresh_from_db()
+        if order.master_id != master.pk:  # usta voz kechdi — buyurtma lentaga qaytdi
+            messages.info(request, _('Buyurtmadan voz kechdingiz. U boshqa ustalarga taklif qilinadi.'))
+            return redirect('masters:dashboard')
         if order.status == ServiceRequest.STATUS_COMPLETED:
             messages.success(request, _('Ish bajarildi deb belgilandi. Mijoz natijani tasdiqlashi va baholashi kerak.'))
         else:
