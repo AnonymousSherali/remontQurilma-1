@@ -10,13 +10,16 @@ va **mezonlar bo'yicha baholash** platformasi. Django 5.2 LTS.
 - Yo'nalish + joylashuv bo'yicha eng yaqin ustalar (brauzer geolokatsiyasi yoki Toshkent tumani)
 - Masofa yoki reyting bo'yicha saralash, radius tanlash, xaritada ko'rish
 - Usta profili: tajriba, hudud, 4 mezon bo'yicha baholar, mijozlar izohlari
-- Aniq ustaga yoki umumiy ariza (operator usta biriktiradi)
+- Aniq ustaga yoki umumiy ariza — ustasiz ariza yaqin atrofdagi ustalarning **ochiq buyurtmalar lentasiga** tushadi
+- Tasdiqlangan ishga **kafolat** (standart 30 kun): muammo qaytalansa, usta bepul tuzatadi
 - Ish tugagach maxsus havola orqali baholash: **ish sifati, o'z vaqtida kelishi, narx adolatliligi, muomala madaniyati**
 
 **Ustalar uchun**
 - Telefon raqam bilan ro'yxatdan o'tish, yo'nalishlar, ish hududi (GPS / tuman / xaritada belgilash), xizmat radiusi
 - Kabinet: kelgan arizalar, holatni o'zgartirish (qabul → bajarildi / bekor), baho havolasini nusxalash yoki Telegram orqali yuborish
 - "Band" rejimi — vaqtincha qidiruvdan yashirinish
+- Ochiq buyurtmalar lentasi (`/kabinet/ochiq/`) — mos buyurtmani birinchi bo'lib olish
+- Tariflar (`/kabinet/tarif/`): TOP joylashuv va PRO obuna
 
 **Administrator uchun** (`/admin/`, django-unfold dizayni)
 - Boshqaruv paneli: yangi arizalar, tasdiq kutayotgan ustalar, 7 kunlik grafik, so'nggi arizalar
@@ -91,17 +94,23 @@ Upwork'dagi *milestone*lar va YouDo'dagi "Сделка без риска" g'oyas
 5. Platforma komissiyasi `PLATFORM_FEE_PERCENT` (standart 10%). Ustaga o'tkazilgan
    pullar admin'da "Ustaning kartasiga o'tkazildi" deb belgilanadi.
 
-To'lov tizimlari: `PAYMENT_PROVIDERS=payme,click` — mijoz har bir bosqichni Payme yoki
-Click bilan to'lashni tanlaydi. `demo` — sinov sahifasi (faqat `DEBUG=True` da).
+To'lov tizimlari: `PAYMENT_PROVIDERS=payme,click,uzum` — mijoz har bir bosqichni Payme, Click
+yoki Uzum Bank bilan to'lashni tanlaydi. `demo` — sinov sahifasi (faqat `DEBUG=True` da).
 
 | Tizim | Manzil (kabinetda ko'rsatiladi) |
 |---|---|
 | Payme Merchant API | `/payments/payme/` (hisob maydoni: `milestone_id`) |
 | Click Shop API | `/payments/click/prepare/` va `/payments/click/complete/` |
+| Uzum Bank Merchant API | `/payments/uzum/check/`, `create/`, `confirm/`, `reverse/`, `status/` (Basic auth) |
 
-**Ikkala integratsiya ham rasmiy hujjat asosida yozilgan va protokol testlari bilan
-qoplangan, lekin haqiqiy sinov muhitida (Payme sandbox, Click test vositasi)
-tekshirilmagan** — ishga tushirishdan oldin o'sha yerdagi barcha testlardan o'tkazing.
+**Payme va Click integratsiyalari protokol testlari bilan qoplangan, lekin haqiqiy sinov
+muhitida (Payme sandbox, Click test vositasi) tekshirilmagan** — ishga tushirishdan oldin
+o'sha yerdagi barcha testlardan o'tkazing.
+
+> ⚠️ **Uzum Bank** integratsiyasi (`payments/uzum.py`) rasmiy hujjatga qaramasdan, protokolning
+> umumiy tuzilishi bo'yicha yozilgan (Uzum hujjati faqat shartnoma tuzgan hamkorlarga beriladi).
+> Maydon nomlari, xato kodlari va to'lov sahifasi havolasi farq qilishi mumkin — Uzum bergan
+> hujjat bilan solishtirib, to'g'rilamaguncha `PAYMENT_PROVIDERS` ga `uzum` ni qo'shmang.
 
 Avtomatik tasdiqlash va chiqarish uchun cron (har soatda):
 
@@ -133,6 +142,53 @@ Xabarnomalar: mijozga — ariza qabul qilinganda (kuzatish havolasi bilan), usta
 qabul qilganda, yetib kelganda, ishni yakunlaganda, narx taklif qilganda; ustaga —
 yangi buyurtma, mijoz tasdiqlaganda yoki nizo ochganda.
 
+## Ochiq buyurtmalar lentasi
+
+Mijoz usta tanlamay ariza qoldirsa (formada tuman yoki geolokatsiya ixtiyoriy), buyurtma
+yo'nalishi va xizmat radiusi mos keladigan tasdiqlangan ustalarga ko'rinadi — saytda
+`/kabinet/ochiq/` va Telegram'da «✋ Olish» tugmasi bilan. Birinchi olgan usta bajaradi.
+
+- Lentada mijozning **ismi, telefoni va aniq manzili ko'rinmaydi** — faqat tuman, masofa,
+  muammo tavsifi va rasmlar. To'liq ma'lumot buyurtma olingach ochiladi.
+- PRO ustalar yangi buyurtmani `FEED_PRO_HEAD_START_MINUTES` (10) daqiqa oldin oladi.
+- Bir vaqtdagi faol buyurtmalar cheklangan: `ACTIVE_ORDERS_LIMIT` (5), PRO — `PRO_ACTIVE_ORDERS_LIMIT` (10).
+- Usta joyga kelguncha **voz kechsa**, buyurtma bekor bo'lmaydi — lentaga qaytadi va boshqa
+  ustalarga taklif qilinadi (voz kechgan ustaga qayta ko'rsatilmaydi). Mijoz to'lov qilgan
+  bo'lsa, voz kechish faqat administrator orqali.
+
+## Tariflar (ustalar uchun)
+
+Platformadan foydalanish bepul; tariflar — ixtiyoriy. To'lov o'sha Payme/Click/Uzum orqali.
+
+| Tarif | Nima beradi | Namunaviy narx |
+|---|---|---|
+| TOP 7 / 30 kun | Qidiruvda yo'nalish bo'yicha birinchi qatorlar, «TOP» belgisi | 50 000 / 150 000 so'm |
+| PRO 30 kun | Komissiya 10% o'rniga 5%, lentada ustunlik, ko'proq faol buyurtma, «PRO» belgisi | 200 000 so'm |
+
+**Narxlar namunaviy** — `.env` da `TARIFF_TOP_7_PRICE`, `TARIFF_TOP_30_PRICE`,
+`TARIFF_PRO_30_PRICE`, `PRO_FEE_PERCENT` orqali o'zgartiring. TOP ustalar «TOP» belgisi bilan
+ko'rsatiladi (pullik joylashuv ekani yashirilmaydi). Admin tarifni qo'lda ham faollashtira oladi.
+
+## Kafolat
+
+Buyurtma tasdiqlangan kundan `WARRANTY_DAYS` (30) kun davomida mijoz buyurtma sahifasidan
+kafolat murojaati ochishi mumkin (SMS bilan tasdiqlangan raqam, rasm qo'shsa bo'ladi):
+
+1. Murojaat ustaga boradi — usta **bepul** tuzatib, «Tuzatdim» deb belgilaydi.
+2. Mijoz «Muammo hal bo'ldi» deydi — murojaat yopiladi (`WARRANTY_AUTO_CLOSE_DAYS` kun javob
+   bermasa, o'zi yopiladi).
+3. Natija yoqmasa yoki usta `WARRANTY_RESPONSE_HOURS` (48) soat javob bermasa — mijoz
+   murojaatni administratorga o'tkazadi. Administrator (`/admin/` → Kafolat murojaatlari) rad
+   etadi yoki kompensatsiya belgilaydi.
+
+Kompensatsiya faqat **platforma orqali to'langan** buyurtmalarga, to'langan summa va
+`GUARANTEE_MAX_AMOUNT` dan oshmaydi; pulni mijozga administrator qo'lda o'tkazadi, tizimda
+qayd qilinadi. Naqd to'langan ishda faqat ustani qayta yuborish mumkin. Katalogdagi har bir
+xizmatga alohida muddat qo'yish mumkin («Kafolat (kun)»; 0 — kafolatsiz).
+
+**Muddat, kompensatsiya chegarasi va ustadan qaytarib olish tartibi — biznes qarori**; bu
+yerdagi qiymatlar namunaviy, ommaviy oferta matnida aniq yozilishi kerak.
+
 ## Telegram bot
 
 Bitta bot ikki vazifani bajaradi (admin'ga yangi ariza xabari ham shu bot orqali):
@@ -143,6 +199,9 @@ Bitta bot ikki vazifani bajaradi (admin'ga yangi ariza xabari ham shu bot orqali
   Yangi buyurtmalar Telegram'ga **tugmalar bilan** keladi: «Qabul qilish» → «Joyga yetib
   keldim» → … — saytga kirmasdan boshqaradi. Barcha qoidalar (navbat, narx, to'lov)
   botda ham amal qiladi; tugma faqat shu buyurtma ustasining chatidan ishlaydi.
+- **Ochiq buyurtmalar** yaqin atrofdagi ustalarga «✋ Olish» tugmasi bilan keladi.
+- **Rasm yuborish**: usta yoki mijoz botga rasm yuborsa, u faol buyurtmaga biriktiriladi
+  (ustada bir nechta faol buyurtma bo'lsa, bot qaysi biri ekanini so'raydi).
 - Buyruqlar: `/buyurtmalar`, `/stop` (uzish — xabarlar yana SMS'ga qaytadi).
 
 Sozlash: @BotFather'da bot yarating, `.env` ga `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`,
@@ -221,6 +280,9 @@ yetarli. Mavjud arizalar saqlanadi — har biriga alohida baho kaliti beriladi.
 | `/ustalar/<id>/` | Usta profili va ariza |
 | `/ustalar/royxatdan-otish/` | Usta ro'yxatdan o'tishi |
 | `/kirish/`, `/kabinet/` | Usta kabineti |
+| `/kabinet/ochiq/` | Ochiq buyurtmalar lentasi |
+| `/kabinet/tarif/` | Tariflar (TOP, PRO) |
+| `/buyurtma/<kalit>/` | Mijozning buyurtma sahifasi (kuzatish, to'lov, kafolat) |
 | `/baho/<kalit>/` | Mijoz bahosi |
 | `/api/ustalar/?lat=41.31&lng=69.28&category=elektrik` | JSON API (mobil ilova uchun) |
 
@@ -245,10 +307,11 @@ static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuer
 python manage.py test
 ```
 
-137 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+176 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
 bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
 (rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
-(muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click protokoli, Telegram bot (ulash, tugmalar, xavfsizlik).
+(muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click va Uzum protokollari, Telegram bot (ulash, tugmalar, rasm, xavfsizlik), tariflar,
+ochiq buyurtmalar lentasi, kafolat.
 
 ## Production
 
