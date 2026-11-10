@@ -36,7 +36,7 @@ def _landing_context():
     public_masters = Master.objects.public()
     top_masters = sorted(
         public_masters.filter(is_available=True).prefetch_related('categories'),
-        key=lambda m: m.ranking_score, reverse=True,
+        key=lambda m: (not m.is_promoted, -m.ranking_score),
     )[:6]
 
     # Raqamlar bazadan olinadi — "50 000 ta mashina ta'mirladik" kabi tekshirib

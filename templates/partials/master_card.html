@@ -4,6 +4,7 @@
     <div class="avatar">{% if master.photo %}<img src="{{ master.photo.url }}" alt="" loading="lazy">{% else %}{{ master.initials }}{% endif %}</div>
     <div>
       <a class="master-card__name" href="{{ master.get_absolute_url }}">{{ master.full_name }} <span class="verified" title="{% translate 'Tekshirilgan usta' %}">✔</span></a>
+      {% if master.is_promoted %}<span class="badge badge--top" title="{% translate 'Pullik joylashuv' %}">TOP</span>{% endif %}{% if master.is_pro %}<span class="badge badge--pro">PRO</span>{% endif %}
       {% if master.reviews_count %}
         <span class="rating">{% stars master.rating_avg %} {{ master.rating_avg|floatformat:1 }} <span class="rating__count">({{ master.reviews_count }})</span></span>
       {% else %}

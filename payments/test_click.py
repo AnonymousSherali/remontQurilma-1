@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from . import services
 from .click import checkout_url
+from .payables import wrap
 from .models import Payment
 from .tests import advance, make_order
 
@@ -77,7 +78,7 @@ class ClickTests(TestCase):
         self.assertEqual(self.complete(424242)['error'], -6)
 
     def test_checkout_url(self):
-        url = checkout_url(self.m, 'https://site.uz/b/')
+        url = checkout_url(wrap(self.m), 'https://site.uz/b/')
         q = parse_qs(urlparse(url).query)
         self.assertTrue(url.startswith('https://my.click.uz/services/pay?'))
         self.assertEqual(q['service_id'], ['111'])

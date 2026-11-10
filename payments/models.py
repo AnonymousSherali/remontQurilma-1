@@ -96,13 +96,49 @@ class Milestone(models.Model):
         return self.amount - self.fee_amount
 
 
+class Purchase(models.Model):
+    """Ustaning tarif xaridi: TOP (qidiruvda yuqorida) yoki PRO (kam komissiya va boshqa afzalliklar).
+
+    To'lov buyurtma bosqichlari bilan bir xil tizimlar orqali (Payme/Click/Uzum) o'tadi;
+    to'langach payments.tariffs.activate() muddatni uzaytiradi.
+    """
+
+    STATUS_PENDING = 'pending'
+    STATUS_PAID = 'paid'
+    STATUS_CANCELLED = 'cancelled'
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("To'lov kutilmoqda")),
+        (STATUS_PAID, _("To'langan")),
+        (STATUS_CANCELLED, _('Bekor qilingan')),
+    ]
+
+    master = models.ForeignKey('masters.Master', on_delete=models.CASCADE, related_name='purchases', verbose_name='Usta')
+    plan = models.CharField('Tarif', max_length=20)
+    kind = models.CharField('Turi', max_length=10)  # top | pro
+    days = models.PositiveSmallIntegerField('Kunlar')
+    amount = models.DecimalField("Summa (so'm)", max_digits=12, decimal_places=0)
+    status = models.CharField('Holat', max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField('Yaratilgan', auto_now_add=True)
+    paid_at = models.DateTimeField("To'langan", null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Tarif xaridi'
+        verbose_name_plural = 'Tarif xaridlari'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.master} · {self.plan} · {self.amount}'
+
+
 class Payment(models.Model):
     """To'lov tizimi orqali o'tgan tranzaksiya (bitta bosqich uchun bir yoki bir necha urinish)."""
 
     PROVIDER_DEMO = 'demo'
     PROVIDER_PAYME = 'payme'
     PROVIDER_CLICK = 'click'
-    PROVIDER_CHOICES = [(PROVIDER_DEMO, 'Demo'), (PROVIDER_PAYME, 'Payme'), (PROVIDER_CLICK, 'Click')]
+    PROVIDER_UZUM = 'uzum'
+    PROVIDER_CHOICES = [(PROVIDER_DEMO, 'Demo'), (PROVIDER_PAYME, 'Payme'), (PROVIDER_CLICK, 'Click'),
+                        (PROVIDER_UZUM, 'Uzum Bank')]
 
     # Payme holat kodlari bilan mos: 1 yaratilgan, 2 bajarilgan, -1/-2 bekor qilingan
     STATE_CREATED = 1
@@ -116,7 +152,11 @@ class Payment(models.Model):
         (STATE_CANCELLED_AFTER_PERFORM, "To'lovdan keyin bekor qilingan"),
     ]
 
-    milestone = models.ForeignKey(Milestone, on_delete=models.PROTECT, related_name='payments', verbose_name='Bosqich')
+    # To'lov yo buyurtma bosqichi, yo tarif xaridi uchun (payments/payables.py)
+    milestone = models.ForeignKey(Milestone, on_delete=models.PROTECT, related_name='payments', verbose_name='Bosqich',
+                                  null=True, blank=True)
+    purchase = models.ForeignKey(Purchase, on_delete=models.PROTECT, related_name='payments',
+                                 verbose_name='Tarif xaridi', null=True, blank=True)
     provider = models.CharField('Tizim', max_length=10, choices=PROVIDER_CHOICES)
     provider_id = models.CharField('Tizimdagi ID', max_length=64, blank=True, db_index=True)
     amount = models.DecimalField("Summa (so'm)", max_digits=12, decimal_places=0)
@@ -134,6 +174,11 @@ class Payment(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['provider', 'provider_id'], condition=~models.Q(provider_id=''),
                                     name='unique_provider_transaction'),
+            models.CheckConstraint(
+                condition=models.Q(milestone__isnull=False, purchase__isnull=True)
+                | models.Q(milestone__isnull=True, purchase__isnull=False),
+                name='payment_exactly_one_target',
+            ),
         ]
 
     def __str__(self):

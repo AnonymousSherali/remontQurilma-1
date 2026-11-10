@@ -56,6 +56,7 @@ class MasterAdmin(ModelAdmin):
         ('Usta', {'fields': ['user', 'full_name', 'phone', 'photo', 'categories', 'experience_years', 'bio']}),
         ('Joylashuv', {'fields': ['address', ('latitude', 'longitude'), 'map_link', 'service_radius_km']}),
         ('Holat', {'fields': ['is_verified', 'is_available']}),
+        ('Tariflar', {'fields': [('promoted_until', 'pro_until')]}),
         ('Reyting', {'fields': ['rating_avg', 'reviews_count', 'created_at', 'updated_at'], 'classes': ['collapse']}),
     ]
 

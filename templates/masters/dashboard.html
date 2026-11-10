@@ -20,6 +20,7 @@
       <form method="post" action="{% url 'masters:toggle_availability' %}">{% csrf_token %}
         <button class="btn">{% if master.is_available %}⏸ {% translate "Band deb belgilash" %}{% else %}▶ {% translate "Buyurtma qabul qilish" %}{% endif %}</button>
       </form>
+      <a class="btn" href="{% url 'payments:tariffs' %}">⭐ {% translate "Tariflar" %}{% if master.is_pro %} · PRO{% endif %}{% if master.is_promoted %} · TOP{% endif %}</a>
       <a class="btn" href="{% url 'masters:profile_edit' %}">✏️ {% translate "Profil" %}</a>
       <a class="btn" href="{{ master.get_absolute_url }}">👁 {% translate "Ommaviy sahifa" %}</a>
       <form method="post" action="{% url 'masters:logout' %}">{% csrf_token %}<button class="btn btn--ghost">{% translate "Chiqish" %}</button></form>

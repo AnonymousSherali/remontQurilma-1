@@ -4,7 +4,8 @@ from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import action, display
 
 from . import services
-from .models import Milestone, Payment, Quote
+from . import tariffs
+from .models import Milestone, Payment, Purchase, Quote
 
 STATE_COLORS = {"To'lanmagan": 'default', 'Ushlab turilibdi': 'warning', 'Ustaga chiqarildi': 'success',
                 'Qaytarildi': 'danger'}
@@ -91,7 +92,8 @@ class QuoteAdmin(ModelAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(ModelAdmin):
-    list_display = ['id', 'provider', 'provider_id', 'milestone', 'amount', 'state', 'created_at', 'performed_at']
+    list_display = ['id', 'provider', 'provider_id', 'milestone', 'purchase', 'amount', 'state', 'created_at',
+                    'performed_at']
     list_filter = ['provider', 'state']
     search_fields = ['provider_id', 'milestone__order__id']
     readonly_fields = [f.name for f in Payment._meta.fields]
@@ -101,3 +103,23 @@ class PaymentAdmin(ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+
+@admin.register(Purchase)
+class PurchaseAdmin(ModelAdmin):
+    """Tarif xaridlari. Naqd/o'tkazma bilan to'langan bo'lsa — "Qo'lda faollashtirish" amali."""
+
+    list_display = ['master', 'plan', 'days', 'amount', 'status', 'created_at', 'paid_at']
+    list_filter = ['status', 'kind', 'plan']
+    search_fields = ['master__full_name', 'master__phone']
+    autocomplete_fields = ['master']
+    readonly_fields = ['status', 'paid_at', 'created_at']
+    actions = ['activate_manually']
+
+    @action(description="Qo'lda faollashtirish (to'lov saytdan tashqarida olingan)", icon='task_alt')
+    def activate_manually(self, request, queryset):
+        count = 0
+        for purchase in queryset.filter(status=Purchase.STATUS_PENDING):
+            tariffs.activate(purchase)
+            count += 1
+        messages.success(request, f'{count} ta tarif faollashtirildi.')
