@@ -15,10 +15,10 @@ from django.utils.translation import gettext as _
 from otp import services as otp
 from payments import services as payments
 from payments import tariffs
-from repair_service import workflow
+from repair_service import warranty, workflow
 from repair_service.customer_notify import notify_quote
 from repair_service.forms import ServiceRequestForm
-from repair_service.models import OrderPhoto
+from repair_service.models import OrderPhoto, WarrantyClaim
 from repair_service.order_views import handle_photo_upload, photo_context
 from repair_service.photos import can_delete as can_delete_photo
 from repair_service.photos import portfolio
@@ -220,6 +220,8 @@ def dashboard(request):
         'criteria': master.criteria_breakdown(),
         'balance': balance,
         'open_count': feed.open_count(master),
+        'warranty_claims': WarrantyClaim.objects.filter(
+            order__master=master, status=WarrantyClaim.STATUS_OPEN).select_related('order'),
         'held': held,
     })
 
@@ -320,7 +322,22 @@ def order_detail(request, pk):
         **photo_context(request, order, workflow.MASTER, reverse('masters:order_photo_upload', args=[order.pk]),
                         'masters:order_photo_delete', [order.pk]),
         'customer_link': request.build_absolute_uri(order.get_customer_url()),
+        **warranty.context(order),
     })
+
+
+@login_required
+@require_POST
+def warranty_fixed(request, pk, claim_id):
+    master, order = _own_order(request, pk)
+    claim = get_object_or_404(WarrantyClaim, pk=claim_id, order=order)
+    try:
+        warranty.master_fixed(claim, request.POST.get('note', ''))
+    except warranty.WarrantyError as error:
+        messages.error(request, str(error))
+    else:
+        messages.success(request, _('Mijozga xabar yuborildi — u natijani tasdiqlaydi.'))
+    return redirect(order.get_master_url() + '#kafolat')
 
 
 @login_required

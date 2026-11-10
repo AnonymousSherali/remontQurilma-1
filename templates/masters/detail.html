@@ -23,6 +23,7 @@
           {% if master.reviews_count %}
             <div class="rating">{% stars master.rating_avg 'lg' %} <span style="font-size:1.25rem">{{ master.rating_avg|floatformat:1 }}</span> <span class="rating__count">{% blocktranslate count n=master.reviews_count %}{{ n }} ta baho{% plural %}{{ n }} ta baho{% endblocktranslate %}</span></div>
           {% else %}<div class="muted">{% translate "Hali baholanmagan — birinchi mijoz bo'ling" %}</div>{% endif %}
+          {% if SITE.warranty_days %}<div class="warranty-note small" style="margin-top:.5rem">🛡 {% blocktranslate with n=SITE.warranty_days %}Ishga {{ n }} kun kafolat{% endblocktranslate %}</div>{% endif %}
           <div class="chips" style="margin-top:.75rem">{% for c in master.categories.all %}<a class="chip chip--brand" href="{{ c.get_absolute_url }}">{{ c.icon }} {{ c|tr:"name" }}</a>{% endfor %}</div>
         </div>
       </div>

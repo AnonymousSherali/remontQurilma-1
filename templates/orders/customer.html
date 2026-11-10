@@ -78,6 +78,8 @@
         <a class="btn btn--primary btn--lg" href="{{ order.get_review_url }}">⭐ {% translate "Ustani baholash" %}</a>
       {% endif %}
 
+      {% if warranty %}{% include "orders/_warranty.html" with side="customer" %}{% endif %}
+
       {% translate "Muammoni rasmga oling — usta nima kerakligini oldindan biladi va kerakli ehtiyot qismni olib keladi." as photo_hint %}
       {% if photos or photo_kinds %}{% include "orders/_photos.html" with hint=photo_hint %}{% endif %}
       {% if can_act and order.master %}

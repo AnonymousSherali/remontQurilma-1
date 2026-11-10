@@ -58,6 +58,12 @@ def _models():
 def allowed_kinds(order, actor):
     """Shu tomon hozir qaysi turdagi rasmni yuklay oladi (bo'sh — yuklay olmaydi)."""
     OrderEvent, OrderPhoto, SR = _models()
+    if order.status == SR.STATUS_CONFIRMED:
+        # Kafolat murojaati ochiq bo'lsa: mijoz muammoni, usta tuzatilgan natijani yuklaydi
+        if not order.warranty_claims.filter(status__in=('open', 'fixed', 'escalated')).exists():
+            return []
+        return [OrderPhoto.KIND_PROBLEM] if actor == OrderEvent.ACTOR_CUSTOMER else (
+            [OrderPhoto.KIND_AFTER] if actor == OrderEvent.ACTOR_MASTER else [])
     if actor == OrderEvent.ACTOR_CUSTOMER and order.status in (
             SR.STATUS_NEW, SR.STATUS_ACCEPTED, SR.STATUS_ARRIVED, SR.STATUS_IN_PROGRESS,
             SR.STATUS_COMPLETED, SR.STATUS_DISPUTED):

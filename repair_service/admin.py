@@ -13,7 +13,8 @@ from django.db import transaction
 
 from . import workflow
 from .customer_notify import notify_master_new_order
-from .models import Brand, OrderEvent, OrderPhoto, Service, ServiceRequest, Testimonial
+from . import warranty
+from .models import Brand, OrderEvent, OrderPhoto, Service, ServiceRequest, Testimonial, WarrantyClaim
 from .phone import format_phone
 
 admin.site.site_header = 'TechService boshqaruv paneli'
@@ -138,7 +139,7 @@ class ServiceAdmin(ModelAdmin):
     list_editable = ['is_popular', 'is_active', 'order']
     fieldsets = [
         (None, {'fields': ['category', 'name', 'description', 'includes']}),
-        ('Narx', {'fields': [('price_from', 'price_type', 'unit'), 'duration_minutes']}),
+        ('Narx', {'fields': [('price_from', 'price_type', 'unit'), 'duration_minutes', 'warranty_days']}),
         ('Ruscha', {'fields': ['name_ru', 'description_ru', 'includes_ru'], 'classes': ['collapse']}),
         ('Ko\'rinish', {'fields': ['is_popular', 'is_active', 'order']}),
     ]
@@ -182,6 +183,62 @@ class OrderPhotoAdmin(ModelAdmin):
     def in_portfolio(self, obj):
         return (obj.order.status == ServiceRequest.STATUS_CONFIRMED and obj.order.photos_in_portfolio
                 and obj.kind != OrderPhoto.KIND_PROBLEM and not obj.is_hidden)
+
+
+@admin.register(WarrantyClaim)
+class WarrantyClaimAdmin(ModelAdmin):
+    """Kafolat murojaatlari. "Administratorda" holatidagilar qaror kutmoqda."""
+
+    list_display = ['id', 'order', 'master', 'status_badge', 'compensation', 'created_at']
+    list_filter = ['status', 'created_at']
+    list_filter_submit = True
+    search_fields = ['order__id', 'order__name', 'order__phone', 'order__master__full_name', 'description']
+    readonly_fields = ['order', 'description', 'master_note', 'paid_info', 'created_at', 'updated_at', 'closed_at']
+    fieldsets = [
+        ('Murojaat', {'fields': ['order', 'description', 'master_note', 'created_at']}),
+        ('Qaror', {
+            'fields': ['status', 'resolution', 'compensation', 'paid_info', 'closed_at'],
+            'description': "Rad etish — sababini yozing. Kompensatsiya — faqat platforma orqali to'langan "
+                           "buyurtmaga; pulni mijozga qo'lda o'tkazasiz, bu yerda qayd qilinadi.",
+        }),
+    ]
+
+    def has_add_permission(self, request):
+        return False
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('order', 'order__master')
+
+    @display(description='Usta')
+    def master(self, obj):
+        return obj.order.master or '—'
+
+    @display(description='Holat', ordering='status', label={
+        'Ustaga yuborildi': 'info', 'Usta tuzatdi': 'warning', "Hal bo'ldi": 'success',
+        'Administratorda': 'danger', 'Rad etildi': 'default', "Kompensatsiya to'landi": 'success'})
+    def status_badge(self, obj):
+        return obj.get_status_display()
+
+    @display(description="Platforma orqali to'langan")
+    def paid_info(self, obj):
+        paid = warranty.paid_online(obj.order)
+        limit = warranty.max_compensation(obj.order)
+        return f"{paid:,.0f} so'm · kompensatsiya chegarasi: {limit:,.0f} so'm".replace(',', ' ')
+
+    def save_model(self, request, obj, form, change):
+        if 'status' not in form.changed_data:
+            # Faqat izoh tahrirlangan
+            obj.save(update_fields=['resolution', 'updated_at'])
+            return
+        final = (WarrantyClaim.STATUS_REJECTED, WarrantyClaim.STATUS_COMPENSATED, WarrantyClaim.STATUS_RESOLVED)
+        if obj.status not in final:
+            messages.error(request, "Administrator faqat yopuvchi qaror qabul qiladi: rad etish, kompensatsiya "
+                                    "yoki «Hal bo'ldi». O'zgarish saqlanmadi.")
+            return
+        try:
+            warranty.admin_decide(obj, obj.status, obj.resolution, obj.compensation)
+        except warranty.WarrantyError as error:
+            messages.error(request, f"Saqlanmadi: {error}")
 
 
 @admin.register(Testimonial)

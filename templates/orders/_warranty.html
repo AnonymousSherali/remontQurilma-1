@@ -1,0 +1,60 @@
+{% load i18n humanize %}
+{# Kafolat bloki. Kontekst: warranty, order, side ("customer" | "master"), can_act #}
+<section class="card" id="kafolat">
+  <div class="card__title">🛡 {% translate "Kafolat" %}
+    {% if warranty.live %}<span class="badge badge--ok">{% blocktranslate with d=warranty.until|date:"d.m.Y" %}{{ d }} gacha{% endblocktranslate %}</span>
+    {% elif warranty.until %}<span class="badge">{% translate "muddati tugagan" %}</span>{% endif %}
+  </div>
+  {% if side == "customer" %}
+    <p class="muted small" style="margin-top:0">{% blocktranslate with n=warranty.days %}Bajarilgan ishga {{ n }} kun kafolat. Shu muddatda o'sha muammo qaytalansa, usta bepul tuzatib beradi.{% endblocktranslate %}</p>
+  {% else %}
+    <p class="muted small" style="margin-top:0">{% blocktranslate with n=warranty.days %}Bu ishga {{ n }} kun kafolat berilgan. Kafolat murojaati bepul tuzatiladi.{% endblocktranslate %}</p>
+  {% endif %}
+
+  {% for claim in warranty.claims %}
+    <div class="claim claim--{{ claim.status }}">
+      <div class="claim__head"><strong>{{ claim.get_status_display }}</strong> <time class="muted small">{{ claim.created_at|date:"d.m.Y H:i" }}</time></div>
+      <p style="margin:.35rem 0">{{ claim.description|linebreaksbr }}</p>
+      {% if claim.master_note %}<p class="small" style="margin:.35rem 0"><strong>{% translate "Usta" %}:</strong> {{ claim.master_note }}</p>{% endif %}
+      {% if claim.resolution %}<p class="small" style="margin:.35rem 0"><strong>{% translate "Administrator" %}:</strong> {{ claim.resolution }}</p>{% endif %}
+      {% if claim.compensation %}<p class="small" style="margin:.35rem 0"><strong>{% translate "Kompensatsiya" %}:</strong> {{ claim.compensation|floatformat:0|intcomma }} {% translate "so'm" %}</p>{% endif %}
+
+      {% if side == "customer" and can_act and claim.is_active and claim.status != 'escalated' %}
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem">
+          <form method="post" action="{% url 'repair_service:warranty_action' order.review_token claim.pk 'resolve' %}">{% csrf_token %}
+            <button class="btn btn--primary btn--sm">✓ {% translate "Muammo hal bo'ldi" %}</button></form>
+          {% if warranty.can_escalate %}
+          <form method="post" action="{% url 'repair_service:warranty_action' order.review_token claim.pk 'escalate' %}">{% csrf_token %}
+            <button class="btn btn--sm btn--danger">{% translate "Hal bo'lmadi — administratorga" %}</button></form>
+          {% endif %}
+        </div>
+        {% if claim.status == 'open' and not warranty.can_escalate %}<p class="muted small" style="margin:.5rem 0 0">{% blocktranslate with h=warranty.response_hours %}Usta {{ h }} soat ichida javob bermasa, murojaatni administratorga o'tkazishingiz mumkin.{% endblocktranslate %}</p>{% endif %}
+      {% elif side == "customer" and claim.status == 'escalated' %}
+        <p class="muted small" style="margin:.5rem 0 0">{% translate "Administrator ko'rib chiqmoqda — siz bilan bog'lanamiz." %}</p>
+      {% endif %}
+
+      {% if side == "master" and claim.status == 'open' %}
+        <form method="post" action="{% url 'masters:warranty_fixed' order.pk claim.pk %}" class="form" style="margin-top:.5rem">{% csrf_token %}
+          <div class="field"><label for="wnote-{{ claim.pk }}">{% translate "Nima qilindi (ixtiyoriy)" %}</label>
+            <input type="text" id="wnote-{{ claim.pk }}" name="note" maxlength="1000"></div>
+          <button class="btn btn--primary btn--sm">✓ {% translate "Tuzatdim" %}</button>
+        </form>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  {% if side == "customer" and warranty.can_claim %}
+    {% if can_act %}
+    <details class="claim-new">
+      <summary class="btn btn--soft btn--sm">{% translate "Muammo qaytalandimi? Kafolat bo'yicha murojaat" %}</summary>
+      <form method="post" action="{% url 'repair_service:warranty_claim' order.review_token %}" class="form" style="margin-top:.75rem">{% csrf_token %}
+        <div class="field"><label for="wdesc">{% translate "Nima bo'ldi?" %}</label>
+          <textarea id="wdesc" name="description" rows="3" maxlength="2000" minlength="10" required placeholder="{% translate 'Masalan: almashtirilgan kran yana oqyapti' %}"></textarea></div>
+        <button class="btn btn--primary">{% translate "Murojaat yuborish" %}</button>
+      </form>
+    </details>
+    {% else %}
+      <p class="muted small" style="margin-bottom:0">{% translate "Murojaat qilish uchun yuqorida telefon raqamingizni tasdiqlang." %}</p>
+    {% endif %}
+  {% endif %}
+</section>

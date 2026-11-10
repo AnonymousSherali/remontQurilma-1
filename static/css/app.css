@@ -617,3 +617,14 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .feed-item__side { display: grid; gap: .3rem; justify-items: center; }
 .feed-item__price { color: var(--brand); margin-left: .4rem; white-space: nowrap; }
 @media (max-width: 560px) { .feed-item { grid-template-columns: 1fr; } .feed-item__side { justify-items: stretch; } .feed-item__side .btn { width: 100%; } }
+
+/* ---------- Kafolat ---------- */
+.claim { border: 1px solid var(--line); border-left: 4px solid var(--brand); border-radius: var(--radius-sm, 10px); padding: .75rem 1rem; margin-top: .75rem; }
+.claim--resolved, .claim--compensated { border-left-color: var(--ok, #16a34a); }
+.claim--rejected { border-left-color: var(--muted, #94a3b8); }
+.claim--escalated { border-left-color: var(--danger, #dc2626); }
+.claim__head { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; flex-wrap: wrap; }
+.claim-new { margin-top: .75rem; }
+.claim-new > summary { list-style: none; cursor: pointer; display: inline-flex; }
+.claim-new > summary::-webkit-details-marker { display: none; }
+.warranty-note { display: inline-flex; align-items: center; gap: .35rem; font-weight: 600; }

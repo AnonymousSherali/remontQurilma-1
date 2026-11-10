@@ -28,6 +28,9 @@
     </div>
   </div>
 
+  {% for claim in warranty_claims %}
+  <div class="alert alert--warning"><div>🛡 <strong>{% blocktranslate with id=claim.order_id %}#{{ id }} buyurtma bo'yicha kafolat murojaati.{% endblocktranslate %}</strong> {% translate "Mijoz muammo bildirdi — bepul tuzatib bering." %} <a href="{{ claim.order.get_master_url }}#kafolat">{% translate "Ochish" %} →</a></div></div>
+  {% endfor %}
   {% if not master.is_verified %}
   <div class="alert alert--warning"><div><strong>{% translate "Profilingiz tekshirilmoqda." %}</strong> {% translate "Tasdiqlangandan keyin mijozlar sizni qidiruvda ko'radi." %} <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></div></div>
   {% endif %}

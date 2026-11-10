@@ -21,8 +21,8 @@ from payments.models import Milestone, Quote
 from payments.providers import checkout_url, choices as payment_choices
 
 from . import photos as photo_rules
-from . import workflow
-from .models import OrderPhoto, ServiceRequest
+from . import warranty, workflow
+from .models import OrderPhoto, ServiceRequest, WarrantyClaim
 
 
 def _order_by_token(token):
@@ -61,6 +61,7 @@ def order_detail(request, token):
                         reverse('repair_service:order_photo_upload', args=[order.review_token]),
                         'repair_service:order_photo_delete', [order.review_token]),
         'show_master_phone': order.master and order.status != ServiceRequest.STATUS_NEW,
+        **warranty.context(order),
     })
 
 
@@ -132,6 +133,38 @@ def milestone_release(request, token, milestone_id):
                         note=_("To'lov chiqarildi: %(t)s") % {'t': milestone.title})
         messages.success(request, _("Mablag' ustaga chiqarildi. Rahmat!"))
     return redirect(order.get_customer_url())
+
+
+@require_POST
+def warranty_claim(request, token):
+    order = _order_by_token(token)
+    if not _can_act(request, order):
+        raise Http404
+    try:
+        warranty.file_claim(order, request.POST.get('description', ''))
+    except warranty.WarrantyError as error:
+        messages.error(request, str(error))
+    else:
+        messages.success(request, _("Murojaatingiz ustaga yuborildi. Muammoni rasmga olib qo'shsangiz, tezroq hal bo'ladi."))
+    return redirect(order.get_customer_url() + '#kafolat')
+
+
+@require_POST
+def warranty_action(request, token, claim_id, action):
+    order = _order_by_token(token)
+    claim = get_object_or_404(WarrantyClaim, pk=claim_id, order=order)
+    if not _can_act(request, order) or action not in ('resolve', 'escalate'):
+        raise Http404
+    try:
+        if action == 'resolve':
+            warranty.customer_resolve(claim)
+            messages.success(request, _('Rahmat! Murojaat yopildi.'))
+        else:
+            warranty.customer_escalate(claim)
+            messages.info(request, _("Murojaat administratorga o'tkazildi. Siz bilan bog'lanamiz."))
+    except warranty.WarrantyError as error:
+        messages.error(request, str(error))
+    return redirect(order.get_customer_url() + '#kafolat')
 
 
 def my_orders(request):

@@ -205,6 +205,16 @@ FEED_PRO_HEAD_START_MINUTES = int(os.environ.get('FEED_PRO_HEAD_START_MINUTES', 
 ACTIVE_ORDERS_LIMIT = int(os.environ.get('ACTIVE_ORDERS_LIMIT', 5))
 PRO_ACTIVE_ORDERS_LIMIT = int(os.environ.get('PRO_ACTIVE_ORDERS_LIMIT', 10))
 
+# --- Kafolat ---
+# Namunaviy qiymatlar: muddat va kompensatsiya chegarasini biznes egasi belgilaydi.
+WARRANTY_DAYS = int(os.environ.get('WARRANTY_DAYS', 30))
+# Usta shu vaqt ichida javob bermasa, mijoz murojaatni administratorga o'tkaza oladi
+WARRANTY_RESPONSE_HOURS = int(os.environ.get('WARRANTY_RESPONSE_HOURS', 48))
+# "Usta tuzatdi" holatida mijoz shuncha kun javob bermasa — murojaat yopiladi
+WARRANTY_AUTO_CLOSE_DAYS = int(os.environ.get('WARRANTY_AUTO_CLOSE_DAYS', 7))
+# Platforma to'laydigan kompensatsiyaning yuqori chegarasi (so'm)
+GUARANTEE_MAX_AMOUNT = int(os.environ.get('GUARANTEE_MAX_AMOUNT', 1_000_000))
+
 # --- Integratsiyalar (ixtiyoriy) ---
 YANDEX_MAPS_API_KEY = os.environ.get('YANDEX_MAPS_API_KEY', '')
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
@@ -264,6 +274,9 @@ UNFOLD = {
                     {'title': 'Baholar', 'icon': 'star', 'link': reverse_lazy('admin:masters_review_changelist')},
                     {'title': 'Ish rasmlari', 'icon': 'photo_library',
                      'link': reverse_lazy('admin:repair_service_orderphoto_changelist')},
+                    {'title': 'Kafolat murojaatlari', 'icon': 'verified_user',
+                     'link': reverse_lazy('admin:repair_service_warrantyclaim_changelist'),
+                     'badge': 'config.dashboard.badge_escalated_claims'},
                 ],
             },
             {

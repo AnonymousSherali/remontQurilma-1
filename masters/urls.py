@@ -24,6 +24,7 @@ urlpatterns = [
     path('kabinet/buyurtma/<int:pk>/rasm/', views.order_photo_upload, name='order_photo_upload'),
     path('kabinet/buyurtma/<int:pk>/rasm/<int:photo_id>/ochirish/', views.order_photo_delete,
          name='order_photo_delete'),
+    path('kabinet/buyurtma/<int:pk>/kafolat/<int:claim_id>/', views.warranty_fixed, name='warranty_fixed'),
     path('kabinet/ariza/<int:pk>/<slug:action>/', views.request_action, name='request_action'),
 
     path('baho/<uuid:token>/', views.review_create, name='review'),

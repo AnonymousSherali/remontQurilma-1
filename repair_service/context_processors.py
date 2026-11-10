@@ -34,6 +34,7 @@ def site(request):
     """
     info = dict(settings.SITE_INFO)
     info['phone_display'] = format_phone(info.get('phone', ''))
+    info['warranty_days'] = settings.WARRANTY_DAYS
     return {
         'SITE': info,
         'YANDEX_MAPS_API_KEY': getattr(settings, 'YANDEX_MAPS_API_KEY', ''),
