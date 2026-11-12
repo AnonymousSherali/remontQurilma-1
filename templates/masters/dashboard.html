@@ -31,6 +31,9 @@
   {% for claim in warranty_claims %}
   <div class="alert alert--warning"><div>🛡 <strong>{% blocktranslate with id=claim.order_id %}#{{ id }} buyurtma bo'yicha kafolat murojaati.{% endblocktranslate %}</strong> {% translate "Mijoz muammo bildirdi — bepul tuzatib bering." %} <a href="{{ claim.order.get_master_url }}#kafolat">{% translate "Ochish" %} →</a></div></div>
   {% endfor %}
+  {% if balance and not master.payout_card %}
+  <div class="alert alert--warning"><div>💳 <strong>{% translate "Karta kiritilmagan." %}</strong> {% translate "Hisobingizdagi pulni olish uchun profilda karta raqamini kiriting." %} <a href="{% url 'masters:profile_edit' %}#karta">{% translate "Kiritish" %} →</a></div></div>
+  {% endif %}
   {% if not master.is_verified %}
   <div class="alert alert--warning"><div><strong>{% translate "Profilingiz tekshirilmoqda." %}</strong> {% translate "Tasdiqlangandan keyin mijozlar sizni qidiruvda ko'radi." %} <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></div></div>
   {% endif %}
@@ -42,6 +45,34 @@
     <div class="card kpi"><div class="kpi__value">{{ balance|floatformat:0|intcomma }}</div><div class="kpi__label">{% translate "Hisobingizda (so'm)" %}{% if held %} · {% blocktranslate with h=held|floatformat:0|intcomma %}{{ h }} kafolatlangan{% endblocktranslate %}{% endif %}</div></div>
     <div class="card kpi"><div class="kpi__value">{% if master.reviews_count %}★ {{ master.rating_avg|floatformat:1 }}{% else %}—{% endif %}</div><div class="kpi__label">{% blocktranslate count n=master.reviews_count %}{{ n }} ta baho{% plural %}{{ n }} ta baho{% endblocktranslate %}</div></div>
   </div>
+
+  {% if calendar.days or calendar.unscheduled %}
+  <section class="card" id="taqvim" style="margin-bottom:1.5rem">
+    <div class="card__title">🗓 {% translate "Taqvim" %}</div>
+    <div class="agenda">
+      {% for day in calendar.days %}
+        <div class="agenda__day">
+          <div class="agenda__date">{{ day.label }}</div>
+          {% for o in day.orders %}
+            <a class="agenda__item {% if o.visit_overdue %}is-overdue{% endif %}" href="{{ o.get_master_url }}">
+              <time>{{ o.visit_local|date:"H:i" }}</time>
+              <span><strong>#{{ o.pk }} · {{ o.name }}</strong>{% if o.category %} · {{ o.category|tr:"name" }}{% endif %}{% if o.address %}<br><span class="muted small">📍 {{ o.address }}</span>{% endif %}</span>
+              <span class="badge badge--{{ o.status }}">{% if o.visit_overdue %}{% translate "vaqti o'tdi" %}{% else %}{{ o.get_status_display }}{% endif %}</span>
+            </a>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      {% if calendar.unscheduled %}
+        <div class="agenda__day">
+          <div class="agenda__date">{% translate "Vaqt belgilanmagan" %}</div>
+          {% for o in calendar.unscheduled %}
+            <a class="agenda__item" href="{{ o.get_master_url }}#vaqt"><time>—</time><span><strong>#{{ o.pk }} · {{ o.name }}</strong></span><span class="btn btn--sm btn--soft">{% translate "Vaqtni belgilash" %}</span></a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
 
   <div class="layout-split layout-split--narrow">
     <section class="card">
@@ -57,6 +88,7 @@
           <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
             <a href="{{ item.get_master_url }}" style="font-weight:800;color:var(--ink)">#{{ item.pk }} · {{ item.name }}</a>
             <span class="badge badge--{{ item.status }}">{{ item.get_status_display }}</span>
+            {% if item.unread %}<a class="badge badge--unread" href="{{ item.get_master_url }}#chat">💬 {{ item.unread }}</a>{% endif %}
             {% if item.category %}<span class="chip">{{ item.category.icon }} {{ item.category|tr:"name" }}</span>{% endif %}
           </div>
           <div style="margin-top:.35rem"><a href="tel:{{ item.phone }}">📞 {{ item.phone|phone }}</a>{% if item.address %} · 📍 {{ item.address }}{% endif %}</div>

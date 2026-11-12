@@ -7,6 +7,7 @@
  *  - AJAX ariza formalari:     <form class="js-request-form">
  *  - Yandex xarita:            <div data-map="points-json-id">, tanlash rejimi: data-map-picker
  *  - nusxa olish:              <button data-copy="#input">
+ *  - yozishma:                 <div data-chat data-url="...">
  */
 (function () {
   'use strict';
@@ -308,6 +309,77 @@
         if (target) { target.value = phoneIn.value; target.readOnly = true; }
         document.dispatchEvent(new CustomEvent('otp:verified', { detail: { phone: data.phone } }));
       }).catch(function () { err.textContent = T.network; });
+    });
+  });
+
+  // ---------------- Yozishma (buyurtma sahifasi) ----------------
+  // JS'siz ham ishlaydi (oddiy POST); JS bilan — sahifani yangilamasdan va yangi xabarlarni so'rab turadi.
+  document.querySelectorAll('[data-chat]').forEach(function (box) {
+    var log = box.querySelector('[data-chat-log]');
+    var form = box.querySelector('[data-chat-form]');
+    var err = box.querySelector('[data-chat-error]');
+    var empty = box.querySelector('[data-chat-empty]');
+    var last = 0;
+    var busy = false;
+    log.querySelectorAll('[data-id]').forEach(function (el) { last = Math.max(last, +el.dataset.id); });
+    log.scrollTop = log.scrollHeight;
+
+    function add(m) {
+      if (m.id <= last) { return; }
+      last = m.id;
+      var item = document.createElement('div');
+      item.className = 'chat__msg' + (m.mine ? ' chat__msg--mine' : '');
+      item.dataset.id = m.id;
+      var text = document.createElement('div');
+      text.className = 'chat__text';
+      text.style.whiteSpace = 'pre-line';
+      text.textContent = m.text;   // textContent — foydalanuvchi matni HTML sifatida bajarilmaydi
+      var meta = document.createElement('div');
+      meta.className = 'chat__meta';
+      meta.textContent = (m.mine ? '' : m.sender + ' · ') + m.time;
+      item.appendChild(text); item.appendChild(meta);
+      log.appendChild(item);
+      if (empty) { empty.hidden = true; }
+    }
+
+    function apply(data) {
+      var near = log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+      (data.messages || []).forEach(add);
+      if (near) { log.scrollTop = log.scrollHeight; }
+    }
+
+    function poll() {
+      if (busy || document.hidden) { return; }
+      fetch(box.dataset.url + '?after=' + last, {
+        credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) { apply(d); } })
+        .catch(function () {});
+    }
+    setInterval(poll, 8000);
+    document.addEventListener('visibilitychange', poll);
+
+    if (!form) { return; }
+    var input = form.querySelector('textarea');
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var value = input.value.trim();
+      if (!value || busy) { return; }
+      busy = true; err.textContent = '';
+      var body = new URLSearchParams({ text: value, after: last });
+      fetch(box.dataset.url, {
+        method: 'POST', body: body, credentials: 'same-origin',
+        headers: { 'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value,
+                   'X-Requested-With': 'XMLHttpRequest' },
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        busy = false;
+        if (d.error) { err.textContent = d.error; return; }
+        input.value = '';
+        apply(d);
+        log.scrollTop = log.scrollHeight;
+      }).catch(function () { busy = false; err.textContent = T.network; });
     });
   });
 

@@ -1,0 +1,143 @@
+{% extends "legal/base_legal.html" %}
+{% load humanize %}
+{% block legal %}
+{% with op=SITE.legal_name|default:"[yuridik shaxs nomi]" %}
+{% if LANG == 'ru' %}
+<p>Настоящий документ — публичная оферта {{ op }} (далее — «Платформа») о порядке использования сервиса {{ SITE.name }}. Оставляя заявку, регистрируясь как мастер или оплачивая заказ, вы принимаете эти условия полностью.</p>
+
+<h2>1. Что делает Платформа</h2>
+<ol>
+  <li>Платформа — информационный посредник: помогает заказчику найти мастера, согласовать цену, оплатить работу и оставить отзыв.</li>
+  <li>Работы выполняет мастер — самостоятельное лицо, а не сотрудник Платформы. Договор на выполнение работ заключается между заказчиком и мастером.</li>
+  <li>Платформа проверяет номер телефона и личность мастера перед публикацией профиля, но не гарантирует результат конкретной работы сверх описанного в разделе 6.</li>
+</ol>
+
+<h2>2. Заявка и заказ</h2>
+<ol>
+  <li>Заявка бесплатна. Заказчик указывает имя, телефон и описание проблемы; адрес, район и удобное время — по желанию.</li>
+  <li>Заявка без выбранного мастера показывается подходящим мастерам поблизости. До принятия заказа мастер видит только район, расстояние и описание — без имени, телефона и точного адреса.</li>
+  <li>Действия с заказом (подтверждение цены, оплата, подтверждение результата, спор) доступны заказчику после подтверждения номера телефона кодом из SMS.</li>
+  <li>Мастер может отказаться от заказа до прибытия на место — заказ предлагается другим мастерам. Заказчик может отменить заказ до начала работ.</li>
+</ol>
+
+<h2>3. Цена</h2>
+<ol>
+  <li>Цены в каталоге — ориентировочные. Окончательную цену предлагает мастер после осмотра; работа не начинается, пока заказчик её не подтвердил.</li>
+  <li>Если предложенная цена отличается от каталога более чем на 20%, мастер обязан указать причину, а заказчик видит разницу.</li>
+</ol>
+
+<h2>4. Оплата и удержание средств</h2>
+<ol>
+  <li>Оплата онлайн производится через платёжные системы, указанные на странице заказа. Данные банковской карты вводятся на стороне платёжной системы; Платформа их не получает и не хранит.</li>
+  <li>Оплаченная сумма удерживается Платформой и переходит мастеру поэтапно — по мере подтверждения заказчиком соответствующего этапа.</li>
+  <li>Если мастер отметил работу выполненной, а заказчик не ответил в течение {{ legal.auto_confirm_hours }} часов, заказ подтверждается автоматически; удержанная сумма этапа перечисляется мастеру через {{ legal.auto_release_hours }} часов, если не открыт спор.</li>
+  <li>При оплате наличными расчёт происходит напрямую между заказчиком и мастером; Платформа в нём не участвует и не может вернуть такие средства.</li>
+</ol>
+
+<h2>5. Комиссия и тарифы для мастеров</h2>
+<ol>
+  <li>С сумм, оплаченных через Платформу, удерживается комиссия {{ legal.fee_percent }}% (для тарифа PRO — {{ legal.pro_fee_percent }}%). С наличных расчётов комиссия не взимается.</li>
+  <li>Заработанные средства перечисляются на карту, указанную мастером в профиле. Мастер самостоятельно отвечает за уплату своих налогов.</li>
+  <li>Платные тарифы (TOP, PRO) необязательны; их стоимость и состав указаны на странице тарифов. Профили на тарифе TOP помечаются как платное размещение.</li>
+</ol>
+
+<h2>6. Споры и гарантия</h2>
+<ol>
+  <li>Если заказчик не согласен с результатом, он открывает спор на странице заказа. Удержанные средства замораживаются; администратор выслушивает обе стороны и принимает решение: перечислить мастеру или вернуть заказчику.</li>
+  <li>На подтверждённую работу действует гарантия {{ legal.warranty_days }} дней (если для услуги не указан иной срок). При повторении той же проблемы мастер устраняет её бесплатно.</li>
+  <li>Если мастер не отвечает в течение {{ legal.warranty_response_hours }} часов или проблема не устранена, обращение рассматривает администратор. Денежная компенсация возможна только по заказам, оплаченным через Платформу, в пределах оплаченной суммы и не более {{ legal.guarantee_max|intcomma }} сум.</li>
+  <li>Гарантия не распространяется на материалы и запчасти заказчика, на повреждения по вине заказчика или третьих лиц и на иные неисправности, не связанные с выполненной работой.</li>
+</ol>
+
+<h2>7. Отзывы, фото и переписка</h2>
+<ol>
+  <li>Отзыв может оставить только заказчик выполненного заказа, один раз. Платформа вправе скрыть отзыв с оскорблениями, персональными данными или не относящийся к заказу.</li>
+  <li>Фото «до/после» могут показываться в портфолио мастера после подтверждения заказа; заказчик может запретить это на странице заказа.</li>
+  <li>Переписку в заказе при споре может просматривать администратор.</li>
+</ol>
+
+<h2>8. Запрещается</h2>
+<ul>
+  <li>указывать ложные сведения, выдавать себя за другое лицо;</li>
+  <li>использовать сервис для работ, запрещённых законом, либо требующих лицензии, которой у мастера нет;</li>
+  <li>накручивать отзывы и создавать фиктивные заказы.</li>
+</ul>
+<p>При нарушении Платформа вправе скрыть профиль или отказать в обслуживании.</p>
+
+<h2>9. Ответственность и изменение условий</h2>
+<ol>
+  <li>Платформа отвечает за свои обязательства: сохранность удержанных средств и рассмотрение споров. За качество работ отвечает мастер.</li>
+  <li>Новая редакция оферты публикуется на этой странице и применяется к заказам, созданным после публикации.</li>
+  <li>Споры разрешаются путём переговоров, а при недостижении согласия — в суде по законодательству Республики Узбекистан.</li>
+</ol>
+{% else %}
+<p>Ushbu hujjat — {{ op }} (bundan keyin — «Platforma») ning {{ SITE.name }} xizmatidan foydalanish tartibi to'g'risidagi ommaviy ofertasi. Ariza qoldirish, usta sifatida ro'yxatdan o'tish yoki buyurtma uchun to'lov qilish bilan siz ushbu shartlarni to'liq qabul qilasiz.</p>
+
+<h2>1. Platforma nima qiladi</h2>
+<ol>
+  <li>Platforma — axborot vositachisi: buyurtmachiga usta topish, narxni kelishish, ish uchun to'lash va baho qoldirishda yordam beradi.</li>
+  <li>Ishni usta bajaradi — u mustaqil shaxs, Platforma xodimi emas. Ishni bajarish shartnomasi buyurtmachi bilan usta o'rtasida tuziladi.</li>
+  <li>Platforma profilni e'lon qilishdan oldin ustaning telefon raqami va shaxsini tekshiradi, lekin muayyan ish natijasiga 6-bo'limda ko'rsatilganidan ortiq kafolat bermaydi.</li>
+</ol>
+
+<h2>2. Ariza va buyurtma</h2>
+<ol>
+  <li>Ariza bepul. Buyurtmachi ismi, telefoni va muammo tavsifini ko'rsatadi; manzil, tuman va qulay vaqt — ixtiyoriy.</li>
+  <li>Usta tanlanmagan ariza yaqin atrofdagi mos ustalarga ko'rsatiladi. Buyurtmani qabul qilguncha usta faqat tuman, masofa va tavsifni ko'radi — ism, telefon va aniq manzilsiz.</li>
+  <li>Buyurtma bo'yicha amallar (narxni tasdiqlash, to'lash, natijani tasdiqlash, nizo ochish) buyurtmachi telefon raqamini SMS kod bilan tasdiqlagandan keyin mumkin.</li>
+  <li>Usta joyga kelguncha buyurtmadan voz kechishi mumkin — buyurtma boshqa ustalarga taklif qilinadi. Buyurtmachi ish boshlanguncha buyurtmani bekor qilishi mumkin.</li>
+</ol>
+
+<h2>3. Narx</h2>
+<ol>
+  <li>Katalogdagi narxlar — taxminiy. Yakuniy narxni usta ko'rib chiqqach taklif qiladi; buyurtmachi tasdiqlamaguncha ish boshlanmaydi.</li>
+  <li>Taklif qilingan narx katalogdan 20% dan ko'p farq qilsa, usta sababini yozishi shart va buyurtmachi farqni ko'radi.</li>
+</ol>
+
+<h2>4. To'lov va mablag'ni ushlab turish</h2>
+<ol>
+  <li>Onlayn to'lov buyurtma sahifasida ko'rsatilgan to'lov tizimlari orqali amalga oshiriladi. Bank kartasi ma'lumotlari to'lov tizimi tomonida kiritiladi; Platforma ularni olmaydi va saqlamaydi.</li>
+  <li>To'langan summa Platformada ushlab turiladi va ustaga bosqichma-bosqich — buyurtmachi tegishli bosqichni tasdiqlagani sari o'tadi.</li>
+  <li>Usta ishni bajarildi deb belgilagach buyurtmachi {{ legal.auto_confirm_hours }} soat ichida javob bermasa, buyurtma avtomatik tasdiqlanadi; nizo ochilmagan bo'lsa, bosqichning ushlab turilgan summasi {{ legal.auto_release_hours }} soatdan keyin ustaga chiqariladi.</li>
+  <li>Naqd to'lovda hisob-kitob buyurtmachi bilan usta o'rtasida bevosita amalga oshiriladi; Platforma unda qatnashmaydi va bunday mablag'ni qaytara olmaydi.</li>
+</ol>
+
+<h2>5. Komissiya va ustalar uchun tariflar</h2>
+<ol>
+  <li>Platforma orqali to'langan summalardan {{ legal.fee_percent }}% komissiya ushlanadi (PRO tarifida — {{ legal.pro_fee_percent }}%). Naqd hisob-kitobdan komissiya olinmaydi.</li>
+  <li>Ishlab topilgan mablag' usta profilida ko'rsatgan kartaga o'tkaziladi. Usta o'z soliqlarini to'lash uchun o'zi javobgar.</li>
+  <li>Pullik tariflar (TOP, PRO) ixtiyoriy; narxi va tarkibi tariflar sahifasida ko'rsatilgan. TOP tarifidagi profillar pullik joylashuv sifatida belgilanadi.</li>
+</ol>
+
+<h2>6. Nizolar va kafolat</h2>
+<ol>
+  <li>Buyurtmachi natijadan norozi bo'lsa, buyurtma sahifasida nizo ochadi. Ushlab turilgan mablag' muzlatiladi; administrator ikkala tomonni eshitib qaror qabul qiladi: ustaga chiqarish yoki buyurtmachiga qaytarish.</li>
+  <li>Tasdiqlangan ishga {{ legal.warranty_days }} kun kafolat beriladi (xizmat uchun boshqa muddat ko'rsatilmagan bo'lsa). O'sha muammo qaytalansa, usta uni bepul bartaraf etadi.</li>
+  <li>Usta {{ legal.warranty_response_hours }} soat ichida javob bermasa yoki muammo bartaraf etilmasa, murojaatni administrator ko'rib chiqadi. Pul kompensatsiyasi faqat Platforma orqali to'langan buyurtmalar bo'yicha, to'langan summa doirasida va {{ legal.guarantee_max|intcomma }} so'mdan oshmagan holda berilishi mumkin.</li>
+  <li>Kafolat buyurtmachining materiallari va ehtiyot qismlariga, buyurtmachi yoki uchinchi shaxslar aybi bilan yetkazilgan shikastlarga hamda bajarilgan ish bilan bog'liq bo'lmagan boshqa nosozliklarga tatbiq etilmaydi.</li>
+</ol>
+
+<h2>7. Baholar, rasmlar va yozishma</h2>
+<ol>
+  <li>Bahoni faqat bajarilgan buyurtma buyurtmachisi, bir marta qoldira oladi. Platforma haqorat, shaxsiy ma'lumot yoki buyurtmaga aloqasi bo'lmagan bahoni yashirishga haqli.</li>
+  <li>«Oldin/keyin» rasmlari buyurtma tasdiqlangach usta portfoliosida ko'rsatilishi mumkin; buyurtmachi buni buyurtma sahifasida taqiqlay oladi.</li>
+  <li>Buyurtma ichidagi yozishmani nizo bo'lganda administrator ko'rishi mumkin.</li>
+</ol>
+
+<h2>8. Taqiqlanadi</h2>
+<ul>
+  <li>yolg'on ma'lumot ko'rsatish, o'zini boshqa shaxs sifatida tanishtirish;</li>
+  <li>xizmatdan qonun bilan taqiqlangan yoki ustada bo'lmagan litsenziyani talab qiladigan ishlar uchun foydalanish;</li>
+  <li>baholarni sun'iy ko'paytirish va soxta buyurtmalar yaratish.</li>
+</ul>
+<p>Qoidalar buzilganda Platforma profilni yashirishga yoki xizmat ko'rsatishni rad etishga haqli.</p>
+
+<h2>9. Javobgarlik va shartlarni o'zgartirish</h2>
+<ol>
+  <li>Platforma o'z majburiyatlari uchun javob beradi: ushlab turilgan mablag'ning saqlanishi va nizolarni ko'rib chiqish. Ish sifati uchun usta javobgar.</li>
+  <li>Ofertaning yangi tahriri shu sahifada e'lon qilinadi va e'lon qilingandan keyin yaratilgan buyurtmalarga tatbiq etiladi.</li>
+  <li>Nizolar muzokara yo'li bilan, kelishuvga erishilmasa — O'zbekiston Respublikasi qonunchiligiga muvofiq sudda hal qilinadi.</li>
+</ol>
+{% endif %}
+{% endwith %}
+{% endblock %}

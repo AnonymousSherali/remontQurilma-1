@@ -100,7 +100,7 @@
       </div>
       <div class="footer-bottom">
         <span>© {% now "Y" %} {{ SITE.name }}. {% translate "Barcha huquqlar himoyalangan." %}</span>
-        <span>{% translate "Shaxsiy ma'lumotlar faqat buyurtma bo'yicha bog'lanish uchun ishlatiladi." %}</span>
+        <span><a href="{% url 'repair_service:offer' %}">{% translate "Ommaviy oferta" %}</a> · <a href="{% url 'repair_service:privacy' %}">{% translate "Maxfiylik siyosati" %}</a></span>
       </div>
     </div>
   </footer>

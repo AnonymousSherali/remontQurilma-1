@@ -63,6 +63,18 @@ class ServiceRequest(models.Model):
     appliance_type = models.CharField('Texnika turi', max_length=100, blank=True)
     brand = models.CharField('Brend', max_length=100, blank=True)
 
+    # Kelish vaqti: mijoz qulay kun/oraliqni aytadi, usta aniq vaqtni belgilaydi (repair_service/schedule.py)
+    SLOT_CHOICES = [
+        ('morning', _('Ertalab 08:00–12:00')),
+        ('day', _('Kunduzi 12:00–16:00')),
+        ('evening', _('Kechqurun 16:00–20:00')),
+        ('late', _('Kech 20:00–22:00')),
+    ]
+    preferred_date = models.DateField('Qulay kun', null=True, blank=True)
+    preferred_slot = models.CharField('Qulay vaqt', max_length=10, choices=SLOT_CHOICES, blank=True)
+    visit_at = models.DateTimeField('Usta keladigan vaqt', null=True, blank=True)
+    visit_reminded = models.BooleanField('Eslatma yuborilgan', default=False)
+
     # Ariza holati
     status = models.CharField('Holat', max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW)
 
@@ -161,6 +173,26 @@ class OrderEvent(models.Model):
 
     def __str__(self):
         return f'#{self.order_id} {self.get_status_display()} ({self.get_actor_display()})'
+
+
+class OrderMessage(models.Model):
+    """Buyurtma ichidagi yozishma (mijoz ↔ usta). Qoidalar — repair_service/chat.py da."""
+
+    order = models.ForeignKey(ServiceRequest, on_delete=models.CASCADE, related_name='messages',
+                              verbose_name='Buyurtma')
+    sender = models.CharField('Kim', max_length=10, choices=OrderEvent.ACTOR_CHOICES)
+    text = models.TextField('Xabar', max_length=1000)
+    created_at = models.DateTimeField('Yuborilgan', default=timezone.now)
+    read_at = models.DateTimeField("O'qilgan", null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Xabar'
+        verbose_name_plural = 'Yozishmalar'
+        ordering = ['created_at', 'id']
+        indexes = [models.Index(fields=['order', 'id'])]
+
+    def __str__(self):
+        return f'#{self.order_id} · {self.get_sender_display()}: {self.text[:40]}'
 
 
 def _photo_path(instance, filename):

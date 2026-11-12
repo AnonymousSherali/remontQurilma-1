@@ -1,0 +1,86 @@
+{% extends 'admin/base.html' %}
+{% load i18n l10n unfold humanize %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block branding %}{% include "unfold/helpers/site_branding.html" %}{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    {% for value, label in periods %}
+      <a href="?days={{ value }}" class="font-medium px-3 py-2 rounded-default border {% if value == days %}bg-primary-600 border-transparent text-white{% else %}border-base-200 dark:border-base-700{% endif %}">{{ label }}</a>
+    {% endfor %}
+    <span class="text-xs text-font-subtle-light" style="margin-left:8px">{{ start|date:"d.m.Y" }} dan beri yaratilgan arizalar bo'yicha</span>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+    {% for kpi in kpis %}
+      {% component "unfold/components/card.html" with footer=kpi.footer %}
+        {% component "unfold/components/text.html" %}{{ kpi.title }}{% endcomponent %}
+        {% component "unfold/components/title.html" with class="text-2xl" %}{{ kpi.value }}{% endcomponent %}
+      {% endcomponent %}
+    {% endfor %}
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    {% component "unfold/components/card.html" with title="Voronka: arizadan tasdiqlashgacha" %}
+      {% for f in funnel %}
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;gap:8px" class="text-sm">
+            <span class="font-semibold">{{ f.label }}</span>
+            <span>{{ f.count }}{% if f.step is not None %} <span class="text-xs text-font-subtle-light">· oldingi bosqichdan {{ f.step }}%</span>{% endif %}</span>
+          </div>
+          <div style="height:10px;border-radius:5px;background:rgba(127,127,127,.15);margin-top:6px">
+            <div class="bg-primary-500" style="height:10px;border-radius:5px;width:{{ f.percent|unlocalize }}%;min-width:2px"></div>
+          </div>
+        </div>
+      {% endfor %}
+      <p class="text-xs text-font-subtle-light">Eng katta yo'qotish qaysi bosqichda ekaniga qarang: «qabul qildi» past bo'lsa — ustalar yetishmaydi, «bajarildi» past bo'lsa — narx yoki vaqt kelishilmayapti.</p>
+    {% endcomponent %}
+
+    {% component "unfold/components/card.html" with title="Arizalar dinamikasi" %}
+      <div style="display:flex;align-items:flex-end;gap:4px;height:200px">
+        {% for d in chart %}
+          <div title="{{ d.label }}: {{ d.count }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;min-width:0">
+            {% if chart|length <= 14 %}<span class="text-xs font-semibold">{{ d.count }}</span>{% endif %}
+            <div class="bg-primary-500 rounded-t w-full" style="height:{% if d.count %}{{ d.percent }}{% else %}1{% endif %}%;min-height:2px;opacity:{% if d.count %}1{% else %}.25{% endif %}"></div>
+            {% if chart|length <= 14 or forloop.first or forloop.last or forloop.counter0|divisibleby:5 %}<span class="text-xs text-font-subtle-light" style="white-space:nowrap">{{ d.label }}</span>{% else %}<span class="text-xs">&nbsp;</span>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endcomponent %}
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    {% component "unfold/components/card.html" with title="Yo'nalishlar bo'yicha" %}
+      <div style="overflow-x:auto"><table class="w-full" style="border-collapse:collapse">
+        <thead><tr class="text-xs text-font-subtle-light" style="text-align:left">
+          <th class="py-3" style="padding-right:12px">Yo'nalish</th><th class="py-3" style="padding-right:12px">Arizalar</th><th class="py-3" style="padding-right:12px">Bajarildi</th><th class="py-3" style="padding-right:12px">Konversiya</th><th class="py-3" style="padding-right:12px">Bekor</th><th class="py-3" style="padding-right:12px">O'rtacha chek</th></tr></thead>
+        <tbody>
+          {% for c in categories %}
+            <tr style="border-top:1px solid rgba(127,127,127,.15)">
+              <td class="py-3 font-semibold">{{ c.name }}</td><td class="py-3" style="padding-right:12px">{{ c.count }}</td><td class="py-3" style="padding-right:12px">{{ c.done }}</td>
+              <td class="py-3" style="padding-right:12px">{% if c.conversion is not None %}{{ c.conversion }}%{% else %}—{% endif %}</td><td class="py-3" style="padding-right:12px">{{ c.cancelled }}</td>
+              <td class="py-3" style="padding-right:12px">{% if c.avg %}{{ c.avg|intcomma }}{% else %}—{% endif %}</td>
+            </tr>
+          {% empty %}<tr><td colspan="6" class="py-3 text-font-subtle-light">Bu davrda ariza yo'q.</td></tr>{% endfor %}
+        </tbody></table></div>
+    {% endcomponent %}
+
+    {% component "unfold/components/card.html" with title="Eng faol ustalar" %}
+      <div style="overflow-x:auto"><table class="w-full" style="border-collapse:collapse">
+        <thead><tr class="text-xs text-font-subtle-light" style="text-align:left">
+          <th class="py-3" style="padding-right:12px">Usta</th><th class="py-3" style="padding-right:12px">Bajarilgan</th><th class="py-3" style="padding-right:12px">Aylanma, so'm</th><th class="py-3" style="padding-right:12px">Reyting</th></tr></thead>
+        <tbody>
+          {% for m in top_masters %}
+            <tr style="border-top:1px solid rgba(127,127,127,.15)">
+              <td class="py-3" style="padding-right:12px"><a class="text-primary-600 font-semibold" href="{% url 'admin:masters_master_change' m.id %}">{{ m.name }}</a></td>
+              <td class="py-3" style="padding-right:12px">{{ m.done }}</td><td class="py-3" style="padding-right:12px">{{ m.gmv|intcomma }}</td>
+              <td class="py-3" style="padding-right:12px">{% if m.rating %}★ {{ m.rating|floatformat:1 }}{% else %}—{% endif %}</td>
+            </tr>
+          {% empty %}<tr><td colspan="4" class="py-3 text-font-subtle-light">Bu davrda bajarilgan ish yo'q.</td></tr>{% endfor %}
+        </tbody></table></div>
+    {% endcomponent %}
+  </div>
+</div>
+{% endblock %}

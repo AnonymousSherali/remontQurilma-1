@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n humanize %}
 
 {% block title %}{% translate "Profilni tahrirlash" %} | {{ SITE.name }}{% endblock %}
 {% block body_class %}{% endblock %}
@@ -17,11 +17,26 @@
       {% csrf_token %}
       {% include "partials/field.html" with field=form.full_name %}
       {% include "masters/_profile_fields.html" %}
+      <fieldset class="form" style="border:0;padding:0;margin:1.5rem 0 0" id="karta">
+        <legend class="card__title">{% translate "Pul olish" %}</legend>
+        <p class="muted small" style="margin-top:-.5rem">{% translate "Onlayn to'langan buyurtmalar uchun pul shu kartaga o'tkaziladi. Karta kiritilmagan bo'lsa, o'tkazma kechikadi." %}</p>
+        <div class="form-row">
+          {% include "partials/field.html" with field=form.payout_card %}
+          {% include "partials/field.html" with field=form.payout_holder %}
+        </div>
+      </fieldset>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
         <button type="submit" class="btn btn--primary btn--lg">{% translate "Saqlash" %}</button>
         <a href="{{ master.get_absolute_url }}" class="btn btn--lg">{% translate "Ommaviy profilni ko'rish" %}</a>
       </div>
     </form>
+    {% if payouts %}
+    <hr style="border:0;border-top:1px solid var(--line);margin:1.5rem 0">
+    <div class="card__title">{% translate "So'nggi o'tkazmalar" %}</div>
+    <ul class="events">
+      {% for p in payouts %}<li><time>{{ p.created_at|date:"d.m.Y" }}</time><span><strong>{{ p.amount|floatformat:0|intcomma }} {% translate "so'm" %}</strong> · {% blocktranslate count n=p.count %}{{ n }} ta to'lov{% plural %}{{ n }} ta to'lov{% endblocktranslate %}{% if p.card %} · •••• {{ p.card|slice:"-4:" }}{% endif %}</span></li>{% endfor %}
+    </ul>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

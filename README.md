@@ -189,6 +189,59 @@ xizmatga alohida muddat qo'yish mumkin («Kafolat (kun)»; 0 — kafolatsiz).
 **Muddat, kompensatsiya chegarasi va ustadan qaytarib olish tartibi — biznes qarori**; bu
 yerdagi qiymatlar namunaviy, ommaviy oferta matnida aniq yozilishi kerak.
 
+## Kelish vaqti va taqvim
+
+Mijoz arizada qulay kun va oraliqni tanlaydi (ixtiyoriy: «Imkon qadar tez» / bugun…+6 kun,
+ertalab / kunduzi / kechqurun / kech). Usta buyurtmani qabul qilgach buyurtma sahifasida
+**aniq kelish vaqtini** belgilaydi — mijoz xabar oladi, kabinetda «Taqvim» bloki paydo bo'ladi
+(kunlar bo'yicha tashriflar, vaqti belgilanmagan buyurtmalar, yaqin vaqtga ikki buyurtma
+tushsa ogohlantirish). Tashrifdan `VISIT_REMINDER_HOURS` (2) soat oldin ikkala tomonga
+eslatma boradi — buni `process_orders` cron buyrug'i yuboradi.
+
+## Yozishma (chat)
+
+Buyurtma sahifasida mijoz va usta yozishadi — telefon qilmasdan savol berish, vaqtni aniqlash.
+
+- Faqat ustasi bor, bekor qilinmagan buyurtmada; tasdiqlangach yana `CHAT_OPEN_DAYS` (30) kun ochiq.
+- Mijoz tomoni SMS kod bilan tasdiqlangan bo'lishi shart (havolaning o'zi yozishmani ochmaydi).
+- Yangi xabar haqida: Telegram ulangan bo'lsa har bir xabar matni bilan, aks holda SMS —
+  `CHAT_SMS_INTERVAL_MINUTES` (30) da ko'pi bilan bitta va matnsiz (SMS pullik).
+- Sahifa 8 soniyada yangi xabarlarni so'raydi (WebSocket yo'q — oddiy hosting yetarli); JS'siz ham ishlaydi.
+- Administrator yozishmani buyurtma sahifasida (`/admin/`) ko'radi — bu chat ostida ochiq yozilgan.
+
+## Ustalarga pul o'tkazish hisoboti
+
+Eskroudan chiqarilgan pul ustaga tegishli, lekin platforma hisobida turadi. `/admin/` →
+**Ustalarga to'lanishi kerak**:
+
+1. Har bir usta bo'yicha yig'indi: mijozlar to'lagan summa, komissiya, o'tkaziladigan summa, karta.
+2. **Excel** tugmasi ro'yxatni `.xlsx` qilib yuklaydi (bankka topshiriqnoma uchun).
+3. Pulni bank yoki to'lov tizimi orqali o'tkazgach, ustalarni belgilab «O'tkazildi» ni bosasiz —
+   har bir usta uchun o'tkazma yozuvi yaratiladi (**O'tkazmalar tarixi**, Excel eksport bilan).
+
+Usta kartasini kabinetda «Profil → Pul olish» da kiritadi; kartasi yo'q ustani belgilab
+bo'lmaydi. **Tizim pulni o'zi o'tkazmaydi** — bu hisob-kitob vositasi. Avtomatik o'tkazma
+uchun to'lov tizimining «payout» xizmati bilan alohida shartnoma kerak.
+
+## Statistika
+
+`/admin/statistika/` — 7 / 30 / 90 kun / 1 yil bo'yicha: voronka (ariza → qabul → bajarildi →
+tasdiqlandi), konversiya, o'rtacha chek, aylanma, platforma daromadi (komissiya + tariflar),
+qabul qilish tezligi, bekor qilish, nizo va kafolat murojaatlari ulushi, yo'nalishlar va eng
+faol ustalar. Ko'rsatkichlar tanlangan davrda **yaratilgan** arizalar bo'yicha hisoblanadi.
+
+## Oferta va maxfiylik siyosati
+
+`/oferta/` va `/maxfiylik/` (ruscha: `/ru/...`). Matndagi raqamlar (komissiya, muddatlar,
+kafolat) sozlamalardan olinadi, shuning uchun tizim bilan doim mos turadi.
+
+> ⚠️ **Bu matnlar — namunaviy loyiha, yurist tekshirmagan.** Sahifalarda «Loyiha»
+> ogohlantirishi chiqadi. Yurist tasdiqlagach `.env` da `LEGAL_DRAFT=False` qiling va
+> `SITE_LEGAL_NAME`, `SITE_LEGAL_INN`, `SITE_LEGAL_ADDRESS` ni to'ldiring. Yurist bilan
+> alohida aniqlang: «Shaxsga doir ma'lumotlar to'g'risida»gi qonun O'zbekiston fuqarolari
+> ma'lumotlarini mamlakat hududidagi serverlarda saqlashni talab qilishi mumkin — hosting
+> tanlashda buni hisobga oling.
+
 ## Telegram bot
 
 Bitta bot ikki vazifani bajaradi (admin'ga yangi ariza xabari ham shu bot orqali):
@@ -282,7 +335,9 @@ yetarli. Mavjud arizalar saqlanadi — har biriga alohida baho kaliti beriladi.
 | `/kirish/`, `/kabinet/` | Usta kabineti |
 | `/kabinet/ochiq/` | Ochiq buyurtmalar lentasi |
 | `/kabinet/tarif/` | Tariflar (TOP, PRO) |
-| `/buyurtma/<kalit>/` | Mijozning buyurtma sahifasi (kuzatish, to'lov, kafolat) |
+| `/buyurtma/<kalit>/` | Mijozning buyurtma sahifasi (kuzatish, to'lov, yozishma, kafolat) |
+| `/oferta/`, `/maxfiylik/` | Ommaviy oferta va maxfiylik siyosati |
+| `/admin/statistika/` | Statistika (faqat administrator) |
 | `/baho/<kalit>/` | Mijoz bahosi |
 | `/api/ustalar/?lat=41.31&lng=69.28&category=elektrik` | JSON API (mobil ilova uchun) |
 
@@ -307,11 +362,12 @@ static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuer
 python manage.py test
 ```
 
-176 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+198 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
 bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
 (rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
 (muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click va Uzum protokollari, Telegram bot (ulash, tugmalar, rasm, xavfsizlik), tariflar,
-ochiq buyurtmalar lentasi, kafolat.
+ochiq buyurtmalar lentasi, kafolat, kelish vaqti, yozishma, o'tkazmalar hisoboti (Excel), statistika,
+yuridik sahifalar.
 
 ## Production
 

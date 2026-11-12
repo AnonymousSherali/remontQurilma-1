@@ -1,0 +1,57 @@
+{% extends 'admin/base.html' %}
+{% load i18n unfold humanize ui %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block branding %}{% include "unfold/helpers/site_branding.html" %}{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+    {% component "unfold/components/card.html" with footer="komissiya chegirilgan" %}
+      {% component "unfold/components/text.html" %}Ustalarga o'tkazilishi kerak{% endcomponent %}
+      {% component "unfold/components/title.html" with class="text-2xl" %}{{ totals.amount|intcomma }} so'm{% endcomponent %}
+    {% endcomponent %}
+    {% component "unfold/components/card.html" with footer="shu bosqichlar bo'yicha" %}
+      {% component "unfold/components/text.html" %}Platforma komissiyasi{% endcomponent %}
+      {% component "unfold/components/title.html" with class="text-2xl" %}{{ totals.fee|intcomma }} so'm{% endcomponent %}
+    {% endcomponent %}
+    {% component "unfold/components/card.html" with footer="chiqarilgan to'lov bosqichlari" %}
+      {% component "unfold/components/text.html" %}Ustalar / bosqichlar{% endcomponent %}
+      {% component "unfold/components/title.html" with class="text-2xl" %}{{ rows|length }} / {{ totals.count }}{% endcomponent %}
+    {% endcomponent %}
+  </div>
+
+  {% component "unfold/components/card.html" with title="To'lanishi kerak" %}
+    <p class="text-sm text-font-subtle-light" style="margin-bottom:12px">1) Ro'yxatni Excel'ga yuklang → 2) bank yoki to'lov tizimi orqali kartalarga o'tkazing → 3) o'tkazilganlarni belgilab, «O'tkazildi» ni bosing. Tizim pulni o'zi o'tkazmaydi — bu faqat hisob.</p>
+    <form method="post">{% csrf_token %}
+      <div style="overflow-x:auto"><table class="w-full" style="border-collapse:collapse">
+        <thead><tr class="text-xs text-font-subtle-light" style="text-align:left">
+          <th class="py-3"><input type="checkbox" aria-label="Hammasini tanlash" onclick="document.querySelectorAll('input[name=master]:not(:disabled)').forEach(c => c.checked = this.checked)"></th>
+          <th class="py-3">Usta</th><th class="py-3">Karta</th><th class="py-3">Bosqichlar</th><th class="py-3">Mijozlar to'lagan</th>
+          <th class="py-3">Komissiya</th><th class="py-3">O'tkaziladi</th><th class="py-3">Eng eskisi</th></tr></thead>
+        <tbody>
+          {% for r in rows %}
+            <tr style="border-top:1px solid rgba(127,127,127,.15)">
+              <td class="py-3"><input type="checkbox" name="master" value="{{ r.master.pk }}" aria-label="{{ r.master.full_name }}" {% if not r.has_card %}disabled{% endif %}></td>
+              <td class="py-3"><a class="text-primary-600 font-semibold" href="{% url 'admin:masters_master_change' r.master.pk %}">{{ r.master.full_name }}</a><br><span class="text-xs text-font-subtle-light">{{ r.master.phone|phone }}</span></td>
+              <td class="py-3">{% if r.has_card %}<span style="font-family:ui-monospace,monospace">{{ r.card }}</span><br><span class="text-xs text-font-subtle-light">{{ r.master.payout_holder }}</span>{% else %}<span style="color:#d97706;font-weight:600">Karta kiritilmagan</span>{% endif %}</td>
+              <td class="py-3">{{ r.count }}<br><span class="text-xs text-font-subtle-light">{% for m in r.milestones|slice:":6" %}#{{ m.order_id }}{% if not forloop.last %}, {% endif %}{% endfor %}{% if r.count > 6 %}…{% endif %}</span></td>
+              <td class="py-3">{{ r.gross|intcomma }}</td><td class="py-3">{{ r.fee|intcomma }}</td>
+              <td class="py-3 font-semibold">{{ r.amount|intcomma }}</td>
+              <td class="py-3 text-xs text-font-subtle-light">{{ r.oldest|date:"d.m.Y" }}</td>
+            </tr>
+          {% empty %}<tr><td colspan="8" class="py-3 text-font-subtle-light">Hamma ustalar bilan hisob-kitob qilingan ✓</td></tr>{% endfor %}
+        </tbody></table></div>
+      {% if rows %}
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px">
+        <input type="text" name="note" maxlength="255" placeholder="Izoh (masalan: to'lov topshiriqnomasi raqami)" class="border border-base-200 rounded-default px-3 py-2 dark:border-base-700 dark:bg-base-900" style="flex:1;min-width:240px">
+        <button type="submit" class="bg-primary-600 text-white font-medium px-4 py-2 rounded-default" onclick="return confirm('Tanlangan ustalarga pul haqiqatan o\'tkazildimi? Bu amalni ortga qaytarib bo\'lmaydi.')">O'tkazildi deb belgilash</button>
+        <a href="?format=xlsx" class="font-medium px-4 py-2 rounded-default border border-base-200 dark:border-base-700">⬇ Excel</a>
+        <a href="{% url 'admin:payments_payout_changelist' %}" class="text-primary-600 font-medium">O'tkazmalar tarixi →</a>
+      </div>
+      <p class="text-xs text-font-subtle-light" style="margin-top:8px">Kartasi kiritilmagan ustani belgilab bo'lmaydi — usta kartani kabinetdagi «Profil» sahifasida kiritadi.</p>
+      {% endif %}
+    </form>
+  {% endcomponent %}
+</div>
+{% endblock %}

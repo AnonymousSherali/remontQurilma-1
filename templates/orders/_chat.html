@@ -1,0 +1,31 @@
+{% load i18n %}
+{# Yozishma. Kontekst: chat {messages, can_send, locked}, chat_url, side ("customer" | "master") #}
+<section class="card" id="chat">
+  <div class="card__title">💬 {% if side == "customer" %}{% translate "Usta bilan yozishma" %}{% else %}{% translate "Mijoz bilan yozishma" %}{% endif %}</div>
+  {% if chat.locked %}
+    <p class="muted small" style="margin:0">{% translate "Yozishmani ko'rish va xabar yozish uchun yuqorida telefon raqamingizni tasdiqlang." %}</p>
+  {% else %}
+  <div class="chat" data-chat data-url="{{ chat_url }}">
+    <div class="chat__log" data-chat-log aria-live="polite" tabindex="0">
+      {% for m in chat.messages %}
+        <div class="chat__msg {% if m.mine %}chat__msg--mine{% endif %}" data-id="{{ m.id }}">
+          <div class="chat__text">{{ m.text|linebreaksbr }}</div>
+          <div class="chat__meta">{% if not m.mine %}{{ m.sender }} · {% endif %}{{ m.time }}</div>
+        </div>
+      {% endfor %}
+      <p class="chat__empty muted small" data-chat-empty {% if chat.messages %}hidden{% endif %}>{% if side == "customer" %}{% translate "Ustaga savol yozing: qachon keladi, nima olib kelishi kerak va h.k." %}{% else %}{% translate "Mijozga yozing: kelish vaqti, kerakli ehtiyot qismlar va h.k." %}{% endif %}</p>
+    </div>
+    {% if chat.can_send %}
+    <form method="post" action="{{ chat_url }}" class="chat__form" data-chat-form>{% csrf_token %}
+      <label class="sr-only" for="chat-text">{% translate "Xabar" %}</label>
+      <textarea id="chat-text" name="text" rows="1" maxlength="1000" required placeholder="{% translate 'Xabar yozing…' %}"></textarea>
+      <button class="btn btn--primary">{% translate "Yuborish" %}</button>
+    </form>
+    <p class="field__error" data-chat-error role="alert" style="margin:.35rem 0 0"></p>
+    {% else %}
+    <p class="muted small" style="margin:.5rem 0 0">{% translate "Yozishma yopilgan — yangi xabar yuborib bo'lmaydi." %}</p>
+    {% endif %}
+  </div>
+  <p class="muted small" style="margin:.6rem 0 0">{% translate "Nizo bo'lsa, administrator yozishmani ko'rishi mumkin. Karta ma'lumotlari va SMS kodlarni hech kimga yozmang." %}</p>
+  {% endif %}
+</section>

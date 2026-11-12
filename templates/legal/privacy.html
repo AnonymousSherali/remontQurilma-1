@@ -1,0 +1,88 @@
+{% extends "legal/base_legal.html" %}
+{% block legal %}
+{% with op=SITE.legal_name|default:"[yuridik shaxs nomi]" %}
+{% if LANG == 'ru' %}
+<p>Эта политика объясняет, какие персональные данные собирает {{ op }} (сервис {{ SITE.name }}), зачем и кому они видны. Обработка ведётся в соответствии с Законом Республики Узбекистан «О персональных данных» (ЗРУ-547).</p>
+
+<h2>1. Какие данные мы собираем</h2>
+<table>
+  <tr><th>Кто</th><th>Данные</th><th>Зачем</th></tr>
+  <tr><td>Заказчик</td><td>Имя, телефон, адрес, район или координаты (по желанию), описание проблемы, фото, удобное время</td><td>Найти мастера и выполнить заказ</td></tr>
+  <tr><td>Мастер</td><td>Имя и фамилия, телефон, фото, направления, опыт, район работы и координаты, номер карты для выплат</td><td>Публикация профиля, поиск по расстоянию, выплаты</td></tr>
+  <tr><td>Обе стороны</td><td>История заказа, переписка в заказе, отзывы, идентификатор чата Telegram (если подключён)</td><td>Исполнение заказа, уведомления, разбор споров</td></tr>
+  <tr><td>Технические</td><td>IP-адрес, cookie сессии и выбранного языка</td><td>Вход в кабинет, защита от спама и подбора кодов</td></tr>
+</table>
+<p>Данные банковских карт заказчиков мы не получаем и не храним — оплата проходит на стороне платёжной системы.</p>
+
+<h2>2. Кому видны данные</h2>
+<ul>
+  <li><strong>Мастеру</strong> — имя, телефон и точный адрес заказчика только после того, как мастер принял заказ. В ленте открытых заказов видны лишь район, расстояние и описание.</li>
+  <li><strong>Всем посетителям</strong> — профиль мастера: имя, фото, направления, район (на карте — с точностью около 1 км), отзывы, фото работ. Телефон мастера заказчик видит после принятия заказа.</li>
+  <li><strong>Администратору</strong> — всё перечисленное, включая переписку, для разбора споров и выплат.</li>
+  <li><strong>Сервисам-обработчикам</strong> — SMS-провайдеру (номер и текст сообщения), платёжным системам (номер заказа и сумма), Telegram (если вы сами подключили бота).</li>
+</ul>
+<p>Мы не продаём данные и не передаём их для рекламы третьим лицам.</p>
+
+<h2>3. Фото</h2>
+<p>Из загруженных фото автоматически удаляются сведения о месте съёмки (GPS). Фото «до/после» могут показываться в портфолио мастера после подтверждения заказа; заказчик может отключить это на странице заказа.</p>
+
+<h2>4. Сроки хранения</h2>
+<p>Данные заказа хранятся, пока это нужно для исполнения заказа, гарантии, разбора споров и бухгалтерского учёта. Коды из SMS действуют несколько минут и не хранятся в открытом виде дольше необходимого.</p>
+
+<h2>5. Ваши права</h2>
+<ul>
+  <li>узнать, какие данные о вас хранятся, и получить их копию;</li>
+  <li>исправить неточные данные (мастер — в кабинете, заказчик — через оператора);</li>
+  <li>отозвать согласие и потребовать удаления данных, если их хранение не требуется по закону или для завершения расчётов и споров.</li>
+</ul>
+<p>Для этого напишите на <a href="mailto:{{ SITE.email }}">{{ SITE.email }}</a> или позвоните по номеру <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a>.</p>
+
+<h2>6. Cookie</h2>
+<p>Используются только необходимые cookie: сессия (вход в кабинет, подтверждённый номер), защита форм и выбранный язык. Рекламных и аналитических cookie третьих лиц нет.</p>
+
+<h2>7. Изменения</h2>
+<p>Новая редакция публикуется на этой странице с датой обновления.</p>
+{% else %}
+<p>Ushbu siyosat {{ op }} ({{ SITE.name }} xizmati) qanday shaxsga doir ma'lumotlarni yig'ishi, nima uchun va ular kimga ko'rinishini tushuntiradi. Ma'lumotlar O'zbekiston Respublikasining «Shaxsga doir ma'lumotlar to'g'risida»gi Qonuniga (O'RQ-547) muvofiq qayta ishlanadi.</p>
+
+<h2>1. Qanday ma'lumotlarni yig'amiz</h2>
+<table>
+  <tr><th>Kim</th><th>Ma'lumotlar</th><th>Nima uchun</th></tr>
+  <tr><td>Buyurtmachi</td><td>Ism, telefon, manzil, tuman yoki koordinatalar (ixtiyoriy), muammo tavsifi, rasmlar, qulay vaqt</td><td>Usta topish va buyurtmani bajarish</td></tr>
+  <tr><td>Usta</td><td>Ism familiya, telefon, rasm, yo'nalishlar, tajriba, ish hududi va koordinatalar, to'lov uchun karta raqami</td><td>Profilni e'lon qilish, masofa bo'yicha qidiruv, pul o'tkazish</td></tr>
+  <tr><td>Ikkala tomon</td><td>Buyurtma tarixi, buyurtma ichidagi yozishma, baholar, Telegram chat identifikatori (ulangan bo'lsa)</td><td>Buyurtmani bajarish, xabarnomalar, nizolarni ko'rib chiqish</td></tr>
+  <tr><td>Texnik</td><td>IP-manzil, sessiya va tanlangan til cookie fayllari</td><td>Kabinetga kirish, spam va kod tanlashdan himoya</td></tr>
+</table>
+<p>Buyurtmachilarning bank kartasi ma'lumotlarini biz olmaymiz va saqlamaymiz — to'lov to'lov tizimi tomonida o'tadi.</p>
+
+<h2>2. Ma'lumotlar kimga ko'rinadi</h2>
+<ul>
+  <li><strong>Ustaga</strong> — buyurtmachining ismi, telefoni va aniq manzili faqat usta buyurtmani qabul qilgandan keyin. Ochiq buyurtmalar lentasida faqat tuman, masofa va tavsif ko'rinadi.</li>
+  <li><strong>Barcha tashrif buyuruvchilarga</strong> — usta profili: ism, rasm, yo'nalishlar, hudud (xaritada taxminan 1 km aniqlikda), baholar, ish rasmlari. Ustaning telefonini buyurtmachi buyurtma qabul qilingach ko'radi.</li>
+  <li><strong>Administratorga</strong> — yuqoridagilarning barchasi, shu jumladan yozishma — nizolarni ko'rib chiqish va pul o'tkazish uchun.</li>
+  <li><strong>Qayta ishlovchi xizmatlarga</strong> — SMS-provayderga (raqam va xabar matni), to'lov tizimlariga (buyurtma raqami va summa), Telegram'ga (botni o'zingiz ulagan bo'lsangiz).</li>
+</ul>
+<p>Biz ma'lumotlarni sotmaymiz va reklama uchun uchinchi shaxslarga bermaymiz.</p>
+
+<h2>3. Rasmlar</h2>
+<p>Yuklangan rasmlardan suratga olingan joy haqidagi ma'lumot (GPS) avtomatik o'chiriladi. «Oldin/keyin» rasmlari buyurtma tasdiqlangach usta portfoliosida ko'rsatilishi mumkin; buyurtmachi buni buyurtma sahifasida o'chirib qo'ya oladi.</p>
+
+<h2>4. Saqlash muddati</h2>
+<p>Buyurtma ma'lumotlari buyurtmani bajarish, kafolat, nizolarni ko'rib chiqish va buxgalteriya hisobi uchun zarur bo'lgan muddat davomida saqlanadi. SMS kodlar bir necha daqiqa amal qiladi.</p>
+
+<h2>5. Sizning huquqlaringiz</h2>
+<ul>
+  <li>siz haqingizda qanday ma'lumot saqlanayotganini bilish va nusxasini olish;</li>
+  <li>noto'g'ri ma'lumotni tuzatish (usta — kabinetda, buyurtmachi — operator orqali);</li>
+  <li>rozilikni qaytarib olish va ma'lumotlarni o'chirishni talab qilish — agar ularni saqlash qonun bo'yicha yoki hisob-kitob va nizolarni yakunlash uchun talab qilinmasa.</li>
+</ul>
+<p>Buning uchun <a href="mailto:{{ SITE.email }}">{{ SITE.email }}</a> manziliga yozing yoki <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a> raqamiga qo'ng'iroq qiling.</p>
+
+<h2>6. Cookie</h2>
+<p>Faqat zarur cookie fayllari ishlatiladi: sessiya (kabinetga kirish, tasdiqlangan raqam), formalar himoyasi va tanlangan til. Uchinchi tomon reklama yoki tahlil cookie'lari yo'q.</p>
+
+<h2>7. O'zgarishlar</h2>
+<p>Yangi tahrir yangilanish sanasi bilan shu sahifada e'lon qilinadi.</p>
+{% endif %}
+{% endwith %}
+{% endblock %}

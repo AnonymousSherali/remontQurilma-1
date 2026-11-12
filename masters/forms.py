@@ -24,6 +24,11 @@ class MasterProfileForm(forms.ModelForm):
     # maydonda tushunarsiz xato bilan rad etardi. Float qabul qilib, o'zimiz yaxlitlaymiz.
     latitude = forms.FloatField(required=False, widget=forms.HiddenInput)
     longitude = forms.FloatField(required=False, widget=forms.HiddenInput)
+    payout_card = forms.CharField(
+        label=_('Karta raqami (Uzcard / Humo)'), required=False, max_length=23,
+        help_text=_("16 xonali raqam. Saytda ko'rinmaydi — faqat pul o'tkazish uchun."),
+        widget=forms.TextInput(attrs={'inputmode': 'numeric', 'autocomplete': 'off', 'placeholder': '8600 0000 0000 0000'}),
+    )
     district = forms.ChoiceField(
         label=_('Tuman'), required=False, choices=[('', _('Tumanni tanlang'))] + DISTRICT_CHOICES,
         help_text=_("Joylashuvni aniqlay olmasangiz, tumanni tanlang."),
@@ -33,7 +38,7 @@ class MasterProfileForm(forms.ModelForm):
         model = Master
         fields = [
             'full_name', 'categories', 'experience_years', 'bio', 'photo',
-            'address', 'latitude', 'longitude', 'service_radius_km',
+            'address', 'latitude', 'longitude', 'service_radius_km', 'payout_card', 'payout_holder',
         ]
         widgets = {
             'categories': forms.CheckboxSelectMultiple,
@@ -47,10 +52,12 @@ class MasterProfileForm(forms.ModelForm):
             'full_name': _('Ism familiya'), 'categories': _("Yo'nalishlar"), 'experience_years': _('Tajriba (yil)'),
             'bio': _("O'zingiz haqingizda"), 'photo': _('Rasm'), 'address': _('Hudud'),
             'service_radius_km': _('Xizmat radiusi (km)'),
+            'payout_holder': _('Karta egasi'),
         }
         help_texts = {
             'address': _("Saytda ko'rinadi. Aniq uy manzilini yozmang — tuman yoki mahalla yetarli."),
             'service_radius_km': _('Qancha uzoqlikdagi buyurtmalarga borasiz'),
+            'payout_holder': _('Kartadagi ism familiya'),
         }
         error_messages = {
             'full_name': {'required': _('Ism familiyangizni kiriting')},
@@ -60,6 +67,12 @@ class MasterProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['categories'].queryset = Category.objects.filter(is_active=True)
+
+    def clean_payout_card(self):
+        card = ''.join(ch for ch in (self.cleaned_data.get('payout_card') or '') if ch.isdigit())
+        if card and len(card) != 16:
+            raise forms.ValidationError(_("Karta raqami 16 ta raqamdan iborat bo'lishi kerak"))
+        return card
 
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')

@@ -8,7 +8,7 @@ Buyurtmachida akkaunt yo'q. Kirish ikki xil:
 """
 
 from django.contrib import messages
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -21,7 +21,7 @@ from payments.models import Milestone, Quote
 from payments.providers import checkout_url, choices as payment_choices
 
 from . import photos as photo_rules
-from . import warranty, workflow
+from . import chat, schedule, warranty, workflow
 from .models import OrderPhoto, ServiceRequest, WarrantyClaim
 
 
@@ -62,6 +62,9 @@ def order_detail(request, token):
                         'repair_service:order_photo_delete', [order.review_token]),
         'show_master_phone': order.master and order.status != ServiceRequest.STATUS_NEW,
         **warranty.context(order),
+        **chat.context(order, chat.CUSTOMER, can_act),
+        'chat_url': reverse('repair_service:order_chat', args=[order.review_token]),
+        'preferred_label': schedule.preferred_label(order),
     })
 
 
@@ -133,6 +136,37 @@ def milestone_release(request, token, milestone_id):
                         note=_("To'lov chiqarildi: %(t)s") % {'t': milestone.title})
         messages.success(request, _("Mablag' ustaga chiqarildi. Rahmat!"))
     return redirect(order.get_customer_url())
+
+
+def chat_endpoint(request, order, viewer, back_url):
+    """Ikkala tomon uchun umumiy: GET — yangi xabarlar (JSON), POST — yuborish."""
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    error = None
+    if request.method == 'POST':
+        try:
+            chat.send(order, viewer, request.POST.get('text', ''))
+        except chat.ChatError as exc:
+            error = str(exc)
+        if not is_ajax:
+            if error:
+                messages.error(request, error)
+            return redirect(back_url + '#chat')
+    try:
+        after = max(int(request.GET.get('after') or request.POST.get('after') or 0), 0)
+    except ValueError:
+        after = 0
+    return JsonResponse({
+        'messages': [chat.serialize(m, viewer) for m in chat.fetch(order, viewer, after)],
+        'can_send': chat.can_send(order),
+        'error': error,
+    }, status=400 if error else 200)
+
+
+def order_chat(request, token):
+    order = _order_by_token(token)
+    if not _can_act(request, order):
+        raise Http404
+    return chat_endpoint(request, order, chat.CUSTOMER, order.get_customer_url())
 
 
 @require_POST

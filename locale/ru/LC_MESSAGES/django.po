@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-10 16:49+0500\n"
+"POT-Creation-Date: 2026-11-12 07:07+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,6 +45,12 @@ msgstr "У вас %(n)s активных заказов — сначала за�
 
 msgid "Lentadan olindi"
 msgstr "Взят из ленты"
+
+msgid "Karta raqami (Uzcard / Humo)"
+msgstr "Номер карты (Uzcard / Humo)"
+
+msgid "16 xonali raqam. Saytda ko'rinmaydi — faqat pul o'tkazish uchun."
+msgstr "16-значный номер. На сайте не показывается — только для выплат."
 
 msgid "Tuman"
 msgstr "Район"
@@ -83,6 +89,9 @@ msgstr "Район работы"
 msgid "Xizmat radiusi (km)"
 msgstr "Радиус выезда (км)"
 
+msgid "Karta egasi"
+msgstr "Владелец карты"
+
 msgid ""
 "Saytda ko'rinadi. Aniq uy manzilini yozmang — tuman yoki mahalla yetarli."
 msgstr ""
@@ -92,11 +101,17 @@ msgstr ""
 msgid "Qancha uzoqlikdagi buyurtmalarga borasiz"
 msgstr "На какое расстояние вы готовы выезжать"
 
+msgid "Kartadagi ism familiya"
+msgstr "Имя и фамилия на карте"
+
 msgid "Ism familiyangizni kiriting"
 msgstr "Введите имя и фамилию"
 
 msgid "Kamida bitta yo'nalishni tanlang"
 msgstr "Выберите хотя бы одно направление"
+
+msgid "Karta raqami 16 ta raqamdan iborat bo'lishi kerak"
+msgstr "Номер карты должен состоять из 16 цифр"
 
 #, python-format
 msgid "Rasm hajmi %(mb)s MB dan oshmasligi kerak"
@@ -250,6 +265,13 @@ msgstr "Теперь вы принимаете заказы."
 msgid "Siz qidiruvdan vaqtincha yashirildingiz. Yangi buyurtmalar kelmaydi."
 msgstr "Вы временно скрыты из поиска. Новые заказы не поступят."
 
+msgid "Kelish vaqti saqlandi — mijozga xabar yuborildi."
+msgstr "Время приезда сохранено — клиенту отправлено уведомление."
+
+#, python-format
+msgid "Diqqat: shu vaqtga yaqin boshqa buyurtmangiz bor (#%(id)s)."
+msgstr "Внимание: на близкое время у вас есть другой заказ (#%(id)s)."
+
 msgid "Mijozga xabar yuborildi — u natijani tasdiqlaydi."
 msgstr "Клиенту отправлено уведомление — он подтвердит результат."
 
@@ -388,6 +410,39 @@ msgstr "Оплата принята. Деньги удерживаются на 
 msgid "Tarif faollashtirildi."
 msgstr "Тариф активирован."
 
+msgid "Xabar matnini yozing."
+msgstr "Введите текст сообщения."
+
+#, python-format
+msgid "Xabar %(n)s belgidan oshmasligi kerak."
+msgstr "Сообщение не должно превышать %(n)s символов."
+
+msgid "Bu buyurtmada yozishma yopilgan."
+msgstr "Переписка по этому заказу закрыта."
+
+msgid "Juda ko'p xabar. Bir daqiqadan keyin urinib ko'ring."
+msgstr "Слишком много сообщений. Попробуйте через минуту."
+
+#, python-format
+msgid ""
+"Usta yozdi: «%(text)s»\n"
+"%(url)s"
+msgstr ""
+"Мастер написал: «%(text)s»\n"
+"%(url)s"
+
+#, python-format
+msgid "Usta sizga xabar yozdi. O'qish: %(url)s"
+msgstr "Мастер написал вам сообщение. Прочитать: %(url)s"
+
+#, python-format
+msgid "#%(id)s — mijoz yozdi: «%(text)s»"
+msgstr "#%(id)s — клиент написал: «%(text)s»"
+
+#, python-format
+msgid "#%(id)s buyurtma bo'yicha mijoz xabar yozdi. O'qish: %(url)s"
+msgstr "Клиент написал сообщение по заказу #%(id)s. Прочитать: %(url)s"
+
 msgid "Qayta yuborish"
 msgstr "Отправить повторно"
 
@@ -507,6 +562,9 @@ msgstr "Имя должно содержать не менее 2 символо�
 msgid "Spam aniqlandi"
 msgstr "Обнаружен спам"
 
+msgid "Kunni bugundan boshlab 30 kun ichida tanlang"
+msgstr "Выберите день в пределах 30 дней, начиная с сегодня"
+
 msgid "Miqdor 1 dan 999 gacha bo'lishi kerak"
 msgstr "Количество должно быть от 1 до 999"
 
@@ -539,6 +597,18 @@ msgstr "Отменён"
 
 msgid "Nizo"
 msgstr "Спор"
+
+msgid "Ertalab 08:00–12:00"
+msgstr "Утром 08:00–12:00"
+
+msgid "Kunduzi 12:00–16:00"
+msgstr "Днём 12:00–16:00"
+
+msgid "Kechqurun 16:00–20:00"
+msgstr "Вечером 16:00–20:00"
+
+msgid "Kech 20:00–22:00"
+msgstr "Поздно 20:00–22:00"
 
 msgid "Buyurtmachi"
 msgstr "Заказчик"
@@ -677,6 +747,49 @@ msgstr "Сейчас нельзя загрузить фото этого тип�
 msgid "Bitta buyurtmaga ko'pi bilan %(n)s ta rasm"
 msgstr "Не более %(n)s фото на заказ"
 
+msgid "Bugun"
+msgstr "Сегодня"
+
+msgid "Ertaga"
+msgstr "Завтра"
+
+msgid "Sana va vaqtni to'g'ri kiriting."
+msgstr "Укажите дату и время правильно."
+
+msgid "Kelish vaqtini hozir o'zgartirib bo'lmaydi."
+msgstr "Сейчас время приезда изменить нельзя."
+
+msgid "O'tib ketgan vaqtni belgilab bo'lmaydi."
+msgstr "Нельзя указать прошедшее время."
+
+#, python-format
+msgid "Kelish vaqti %(n)s kundan uzoq bo'lmasligi kerak."
+msgstr "Время приезда должно быть не позже чем через %(n)s дней."
+
+#, python-format
+msgid "Kelish vaqti o'zgartirildi: %(t)s"
+msgstr "Время приезда изменено: %(t)s"
+
+#, python-format
+msgid "Kelish vaqti: %(t)s"
+msgstr "Время приезда: %(t)s"
+
+#, python-format
+msgid "Usta kelish vaqtini o'zgartirdi: %(t)s. %(url)s"
+msgstr "Мастер изменил время приезда: %(t)s. %(url)s"
+
+#, python-format
+msgid "Usta %(t)s da keladi. %(url)s"
+msgstr "Мастер приедет %(t)s. %(url)s"
+
+#, python-format
+msgid "Eslatma: usta bugun %(t)s da keladi. %(url)s"
+msgstr "Напоминание: мастер приедет сегодня в %(t)s. %(url)s"
+
+#, python-format
+msgid "Eslatma: #%(id)s buyurtma — %(t)s da. %(url)s"
+msgstr "Напоминание: заказ #%(id)s — в %(t)s. %(url)s"
+
 msgid ""
 "Juda ko'p ariza yuborildi. Iltimos, birozdan keyin urinib ko'ring yoki "
 "qo'ng'iroq qiling."
@@ -694,6 +807,12 @@ msgstr ""
 
 msgid "Arizangiz uchun rahmat!"
 msgstr "Спасибо за заявку!"
+
+msgid "Ommaviy oferta"
+msgstr "Публичная оферта"
+
+msgid "Maxfiylik siyosati"
+msgstr "Политика конфиденциальности"
 
 msgid "Muammoni batafsilroq yozing (kamida 10 ta belgi)."
 msgstr "Опишите проблему подробнее (не менее 10 символов)."
@@ -1038,10 +1157,6 @@ msgstr "Контакты"
 
 msgid "Barcha huquqlar himoyalangan."
 msgstr "Все права защищены."
-
-msgid ""
-"Shaxsiy ma'lumotlar faqat buyurtma bo'yicha bog'lanish uchun ishlatiladi."
-msgstr "Персональные данные используются только для связи по заказу."
 
 msgid "Qo'ng'iroq"
 msgstr "Позвонить"
@@ -1415,6 +1530,34 @@ msgstr ""
 msgid "Usta sifatida qo'shilish"
 msgstr "Присоединиться как мастер"
 
+msgid "Loyiha."
+msgstr "Проект."
+
+msgid ""
+"Bu matn yurist tomonidan hali tasdiqlanmagan namunaviy loyiha va yuridik "
+"kuchga ega emas."
+msgstr ""
+"Этот текст — типовой проект, ещё не утверждённый юристом, и не имеет "
+"юридической силы."
+
+msgid "Oxirgi yangilanish"
+msgstr "Последнее обновление"
+
+msgid "Rekvizitlar"
+msgstr "Реквизиты"
+
+msgid "Nomi"
+msgstr "Наименование"
+
+msgid "STIR"
+msgstr "ИНН"
+
+msgid "Manzil"
+msgstr "Адрес"
+
+msgid "Aloqa"
+msgstr "Контакты"
+
 msgid "Ish yo'nalishi"
 msgstr "Направление работы"
 
@@ -1487,6 +1630,15 @@ msgstr "Клиент сообщил о проблеме — исправьте �
 msgid "Ochish"
 msgstr "Открыть"
 
+msgid "Karta kiritilmagan."
+msgstr "Карта не указана."
+
+msgid "Hisobingizdagi pulni olish uchun profilda karta raqamini kiriting."
+msgstr "Чтобы получить деньги со счёта, укажите номер карты в профиле."
+
+msgid "Kiritish"
+msgstr "Указать"
+
 msgid "Profilingiz tekshirilmoqda."
 msgstr "Ваш профиль на проверке."
 
@@ -1509,6 +1661,18 @@ msgid_plural "%(n)s ta baho"
 msgstr[0] "%(n)s оценка"
 msgstr[1] "%(n)s оценки"
 msgstr[2] "%(n)s оценок"
+
+msgid "Taqvim"
+msgstr "Календарь"
+
+msgid "vaqti o'tdi"
+msgstr "время прошло"
+
+msgid "Vaqt belgilanmagan"
+msgstr "Время не назначено"
+
+msgid "Vaqtni belgilash"
+msgstr "Назначить время"
 
 msgid "Buyurtmalar"
 msgstr "Заказы"
@@ -1781,11 +1945,31 @@ msgstr "Отправим SMS-код на зарегистрированный н
 msgid "Parolni saqlash"
 msgstr "Сохранить пароль"
 
+msgid "Pul olish"
+msgstr "Получение денег"
+
+msgid ""
+"Onlayn to'langan buyurtmalar uchun pul shu kartaga o'tkaziladi. Karta "
+"kiritilmagan bo'lsa, o'tkazma kechikadi."
+msgstr ""
+"Деньги за заказы, оплаченные онлайн, переводятся на эту карту. Если карта не"
+" указана, перевод задержится."
+
 msgid "Saqlash"
 msgstr "Сохранить"
 
 msgid "Ommaviy profilni ko'rish"
 msgstr "Открыть публичный профиль"
+
+msgid "So'nggi o'tkazmalar"
+msgstr "Последние переводы"
+
+#, python-format
+msgid "%(n)s ta to'lov"
+msgid_plural "%(n)s ta to'lov"
+msgstr[0] "%(n)s платёж"
+msgstr[1] "%(n)s платежа"
+msgstr[2] "%(n)s платежей"
 
 msgid "Usta sifatida ro'yxatdan o'tish"
 msgstr "Регистрация мастера"
@@ -1808,6 +1992,9 @@ msgstr "Аккаунт"
 
 msgid "Parol kamida 8 ta belgi, faqat raqamlardan iborat bo'lmasin."
 msgstr "Пароль — не менее 8 символов, не только из цифр."
+
+msgid "Ro'yxatdan o'tish bilan siz shartlarni qabul qilasiz"
+msgstr "Регистрируясь, вы принимаете условия"
 
 msgid "Akkauntingiz bormi?"
 msgstr "Уже есть аккаунт?"
@@ -1882,6 +2069,43 @@ msgid ""
 msgstr ""
 "После подтверждения мастер получит оплату. Поэтому сначала подтвердите "
 "номер."
+
+msgid "Usta bilan yozishma"
+msgstr "Переписка с мастером"
+
+msgid "Mijoz bilan yozishma"
+msgstr "Переписка с клиентом"
+
+msgid ""
+"Yozishmani ko'rish va xabar yozish uchun yuqorida telefon raqamingizni "
+"tasdiqlang."
+msgstr ""
+"Чтобы видеть переписку и писать сообщения, подтвердите номер телефона выше."
+
+msgid "Ustaga savol yozing: qachon keladi, nima olib kelishi kerak va h.k."
+msgstr "Напишите мастеру: когда приедет, что нужно привезти и т. д."
+
+msgid "Mijozga yozing: kelish vaqti, kerakli ehtiyot qismlar va h.k."
+msgstr "Напишите клиенту: время приезда, нужные запчасти и т. д."
+
+msgid "Xabar"
+msgstr "Сообщение"
+
+msgid "Xabar yozing…"
+msgstr "Напишите сообщение…"
+
+msgid "Yuborish"
+msgstr "Отправить"
+
+msgid "Yozishma yopilgan — yangi xabar yuborib bo'lmaydi."
+msgstr "Переписка закрыта — новые сообщения отправить нельзя."
+
+msgid ""
+"Nizo bo'lsa, administrator yozishmani ko'rishi mumkin. Karta ma'lumotlari va"
+" SMS kodlarni hech kimga yozmang."
+msgstr ""
+"При споре администратор может просмотреть переписку. Никому не пишите данные"
+" карты и коды из SMS."
 
 msgid "Ustaga chiqarilgan"
 msgstr "Выплачено мастеру"
@@ -2023,6 +2247,10 @@ msgstr "Чтобы оставить обращение, подтвердите �
 msgid "Buyurtma #%(id)s"
 msgstr "Заказ #%(id)s"
 
+#, python-format
+msgid "Usta %(t)s da keladi."
+msgstr "Мастер приедет %(t)s."
+
 msgid ""
 "Nizo ochilgan. Administrator ikkala tomon bilan bog'lanadi; to'lovlar "
 "muzlatilgan."
@@ -2117,8 +2345,11 @@ msgstr "Ориентировочная цена"
 msgid "dan"
 msgstr "от"
 
-msgid "Manzil"
-msgstr "Адрес"
+msgid "Kelish vaqti"
+msgstr "Время приезда"
+
+msgid "Qulay vaqt"
+msgstr "Удобное время"
 
 msgid "Xabarlar Telegram'ga keladi."
 msgstr "Уведомления приходят в Telegram."
@@ -2202,6 +2433,19 @@ msgid ""
 msgstr ""
 "Фотографируйте до и после работы: клиент видит результат, подтверждённые "
 "работы попадают в ваше портфолио, а в споре это доказательство."
+
+msgid "Mijozga qulay"
+msgstr "Удобно клиенту"
+
+msgid "Sana"
+msgstr "Дата"
+
+msgid "Vaqtni o'zgartirish"
+msgstr "Изменить время"
+
+msgid "Mijoz xabar oladi, vaqtdan oldin ikkalangizga eslatma boradi."
+msgstr ""
+"Клиент получит уведомление, перед визитом вам обоим придёт напоминание."
 
 msgid "Mijoz"
 msgstr "Клиент"
@@ -2319,6 +2563,20 @@ msgstr ""
 "Чтобы мастера поблизости быстрее увидели ваш заказ. Точный адрес мастер "
 "увидит только после того, как возьмёт заказ."
 
+msgid "Usta qachon kelsin?"
+msgstr "Когда приехать мастеру?"
+
+msgid "Imkon qadar tez"
+msgstr "Как можно скорее"
+
+msgid "Farqi yo'q"
+msgstr "Без разницы"
+
+msgid ""
+"Aniq vaqtni usta buyurtmani qabul qilgach belgilaydi — sizga xabar keladi."
+msgstr ""
+"Точное время мастер назначит после принятия заказа — вам придёт уведомление."
+
 msgid "Muammoni qisqacha yozing"
 msgstr "Кратко опишите проблему"
 
@@ -2329,6 +2587,12 @@ msgid ""
 "Shaxsiy ma'lumotlarim buyurtma bo'yicha bog'lanish uchun qayta ishlanishiga "
 "roziman"
 msgstr "Согласен на обработку персональных данных для связи по заказу"
+
+msgid "Oferta"
+msgstr "Оферта"
+
+msgid "maxfiylik siyosati"
+msgstr "политика конфиденциальности"
 
 msgid "Ariza yuborish"
 msgstr "Отправить заявку"
@@ -2433,6 +2697,10 @@ msgstr "Статус заказа можно отслеживать по ссы�
 
 msgid "Bosh sahifa"
 msgstr "Главная"
+
+#~ msgid ""
+#~ "Shaxsiy ma'lumotlar faqat buyurtma bo'yicha bog'lanish uchun ishlatiladi."
+#~ msgstr "Персональные данные используются только для связи по заказу."
 
 #~ msgid "Bekor qilish"
 #~ msgstr "Отменить"

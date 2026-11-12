@@ -162,7 +162,14 @@ SITE_INFO = {
     'address': os.environ.get('SITE_ADDRESS', 'Toshkent shahar'),
     'telegram': os.environ.get('SITE_TELEGRAM', ''),  # masalan: techservice_uz
     'hours': os.environ.get('SITE_HOURS', "Har kuni 08:00–22:00"),
+    # Yuridik ma'lumotlar — oferta va maxfiylik siyosati sahifalarida ko'rsatiladi
+    'legal_name': os.environ.get('SITE_LEGAL_NAME', ''),       # masalan: «TechService» MChJ
+    'legal_inn': os.environ.get('SITE_LEGAL_INN', ''),         # STIR
+    'legal_address': os.environ.get('SITE_LEGAL_ADDRESS', ''),
 }
+# Oferta va maxfiylik siyosati matni yurist tomonidan tasdiqlanmaguncha True qoldiring —
+# sahifalarda "loyiha" degan ogohlantirish chiqadi.
+LEGAL_DRAFT = os.environ.get('LEGAL_DRAFT', 'True') == 'True'
 
 # Saytning to'liq manzili — SMS'dagi havolalar uchun (https://techservice.uz)
 SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000')
@@ -215,6 +222,13 @@ WARRANTY_AUTO_CLOSE_DAYS = int(os.environ.get('WARRANTY_AUTO_CLOSE_DAYS', 7))
 # Platforma to'laydigan kompensatsiyaning yuqori chegarasi (so'm)
 GUARANTEE_MAX_AMOUNT = int(os.environ.get('GUARANTEE_MAX_AMOUNT', 1_000_000))
 
+# --- Kelish vaqti va yozishma ---
+VISIT_REMINDER_HOURS = int(os.environ.get('VISIT_REMINDER_HOURS', 2))
+# Buyurtma tasdiqlangach yozishma yana necha kun ochiq turadi
+CHAT_OPEN_DAYS = int(os.environ.get('CHAT_OPEN_DAYS', 30))
+# Telegram ulanmagan tomonga yangi xabar haqida SMS — shu oraliqda bir martadan ko'p emas
+CHAT_SMS_INTERVAL_MINUTES = int(os.environ.get('CHAT_SMS_INTERVAL_MINUTES', 30))
+
 # --- Integratsiyalar (ixtiyoriy) ---
 YANDEX_MAPS_API_KEY = os.environ.get('YANDEX_MAPS_API_KEY', '')
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
@@ -254,6 +268,7 @@ UNFOLD = {
                 'title': 'Asosiy',
                 'items': [
                     {'title': 'Boshqaruv paneli', 'icon': 'dashboard', 'link': reverse_lazy('admin:index')},
+                    {'title': 'Statistika', 'icon': 'monitoring', 'link': reverse_lazy('admin_stats')},
                     {
                         'title': 'Arizalar', 'icon': 'assignment',
                         'link': reverse_lazy('admin:repair_service_servicerequest_changelist'),
@@ -284,6 +299,11 @@ UNFOLD = {
                 'items': [
                     {"title": "To'lov bosqichlari", 'icon': 'account_balance_wallet',
                      'link': reverse_lazy('admin:payments_milestone_changelist')},
+                    {'title': "Ustalarga to'lanishi kerak", 'icon': 'payments',
+                     'link': reverse_lazy('admin:payments_payout_pending'),
+                     'badge': 'config.dashboard.badge_pending_payouts'},
+                    {'title': "O'tkazmalar tarixi", 'icon': 'history',
+                     'link': reverse_lazy('admin:payments_payout_changelist')},
                     {'title': 'Narx takliflari', 'icon': 'request_quote',
                      'link': reverse_lazy('admin:payments_quote_changelist')},
                     {'title': 'Tarif xaridlari', 'icon': 'workspace_premium',
