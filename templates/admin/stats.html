@@ -55,13 +55,13 @@
     {% component "unfold/components/card.html" with title="Yo'nalishlar bo'yicha" %}
       <div style="overflow-x:auto"><table class="w-full" style="border-collapse:collapse">
         <thead><tr class="text-xs text-font-subtle-light" style="text-align:left">
-          <th class="py-3">Yo'nalish</th><th class="py-3">Arizalar</th><th class="py-3">Bajarildi</th><th class="py-3">Konversiya</th><th class="py-3">Bekor</th><th class="py-3">O'rtacha chek</th></tr></thead>
+          <th class="py-3" style="padding-right:12px">Yo'nalish</th><th class="py-3" style="padding-right:12px">Arizalar</th><th class="py-3" style="padding-right:12px">Bajarildi</th><th class="py-3" style="padding-right:12px">Konversiya</th><th class="py-3" style="padding-right:12px">Bekor</th><th class="py-3" style="padding-right:12px">O'rtacha chek</th></tr></thead>
         <tbody>
           {% for c in categories %}
             <tr style="border-top:1px solid rgba(127,127,127,.15)">
-              <td class="py-3 font-semibold">{{ c.name }}</td><td class="py-3">{{ c.count }}</td><td class="py-3">{{ c.done }}</td>
-              <td class="py-3">{% if c.conversion is not None %}{{ c.conversion }}%{% else %}—{% endif %}</td><td class="py-3">{{ c.cancelled }}</td>
-              <td class="py-3">{% if c.avg %}{{ c.avg|intcomma }}{% else %}—{% endif %}</td>
+              <td class="py-3 font-semibold">{{ c.name }}</td><td class="py-3" style="padding-right:12px">{{ c.count }}</td><td class="py-3" style="padding-right:12px">{{ c.done }}</td>
+              <td class="py-3" style="padding-right:12px">{% if c.conversion is not None %}{{ c.conversion }}%{% else %}—{% endif %}</td><td class="py-3" style="padding-right:12px">{{ c.cancelled }}</td>
+              <td class="py-3" style="padding-right:12px">{% if c.avg %}{{ c.avg|intcomma }}{% else %}—{% endif %}</td>
             </tr>
           {% empty %}<tr><td colspan="6" class="py-3 text-font-subtle-light">Bu davrda ariza yo'q.</td></tr>{% endfor %}
         </tbody></table></div>
@@ -70,13 +70,13 @@
     {% component "unfold/components/card.html" with title="Eng faol ustalar" %}
       <div style="overflow-x:auto"><table class="w-full" style="border-collapse:collapse">
         <thead><tr class="text-xs text-font-subtle-light" style="text-align:left">
-          <th class="py-3">Usta</th><th class="py-3">Bajarilgan</th><th class="py-3">Aylanma, so'm</th><th class="py-3">Reyting</th></tr></thead>
+          <th class="py-3" style="padding-right:12px">Usta</th><th class="py-3" style="padding-right:12px">Bajarilgan</th><th class="py-3" style="padding-right:12px">Aylanma, so'm</th><th class="py-3" style="padding-right:12px">Reyting</th></tr></thead>
         <tbody>
           {% for m in top_masters %}
             <tr style="border-top:1px solid rgba(127,127,127,.15)">
-              <td class="py-3"><a class="text-primary-600 font-semibold" href="{% url 'admin:masters_master_change' m.id %}">{{ m.name }}</a></td>
-              <td class="py-3">{{ m.done }}</td><td class="py-3">{{ m.gmv|intcomma }}</td>
-              <td class="py-3">{% if m.rating %}★ {{ m.rating|floatformat:1 }}{% else %}—{% endif %}</td>
+              <td class="py-3" style="padding-right:12px"><a class="text-primary-600 font-semibold" href="{% url 'admin:masters_master_change' m.id %}">{{ m.name }}</a></td>
+              <td class="py-3" style="padding-right:12px">{{ m.done }}</td><td class="py-3" style="padding-right:12px">{{ m.gmv|intcomma }}</td>
+              <td class="py-3" style="padding-right:12px">{% if m.rating %}★ {{ m.rating|floatformat:1 }}{% else %}—{% endif %}</td>
             </tr>
           {% empty %}<tr><td colspan="4" class="py-3 text-font-subtle-light">Bu davrda bajarilgan ish yo'q.</td></tr>{% endfor %}
         </tbody></table></div>
