@@ -1,11 +1,13 @@
 from django.contrib import admin, messages
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from django.urls import path, reverse
 from django.utils import timezone
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import action, display
 
-from . import services
-from . import tariffs
-from .models import Milestone, Payment, Purchase, Quote
+from . import payouts, services, tariffs
+from .models import Milestone, Payment, Payout, Purchase, Quote
 
 STATE_COLORS = {"To'lanmagan": 'default', 'Ushlab turilibdi': 'warning', 'Ustaga chiqarildi': 'success',
                 'Qaytarildi': 'danger'}
@@ -65,9 +67,15 @@ class MilestoneAdmin(ModelAdmin):
 
     @action(description="Ustaning kartasiga o'tkazildi deb belgilash", icon='account_balance')
     def mark_paid_out(self, request, queryset):
-        updated = queryset.filter(state=Milestone.STATE_RELEASED, paid_out_at__isnull=True).update(
-            paid_out_at=timezone.now())
-        messages.success(request, f"{updated} ta to'lov ustaga o'tkazildi deb belgilandi.")
+        masters = set(queryset.filter(state=Milestone.STATE_RELEASED, paid_out_at__isnull=True,
+                                      order__master__isnull=False).values_list('order__master_id', flat=True))
+        if len(masters) != 1 or queryset.exclude(order__master_id__in=masters).exists():
+            messages.error(request, "Bu amal bitta ustaning bosqichlari uchun. Bir nechta usta bilan hisob-kitob — "
+                                    "«Ustalarga o'tkazmalar → To'lanishi kerak» sahifasida.")
+            return
+        created = payouts.mark_paid(masters, request.user)
+        messages.success(request, f"O'tkazma qayd etildi: {created[0].amount:,.0f} so'm "
+                                  f"(ustaning barcha kutayotgan bosqichlari).".replace(',', ' '))
 
 
 class MilestoneInline(TabularInline):
@@ -123,3 +131,86 @@ class PurchaseAdmin(ModelAdmin):
             tariffs.activate(purchase)
             count += 1
         messages.success(request, f'{count} ta tarif faollashtirildi.')
+
+
+XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+
+def _xlsx_response(data, name):
+    response = HttpResponse(data, content_type=XLSX)
+    response['Content-Disposition'] = f'attachment; filename="{name}-{timezone.localdate():%Y-%m-%d}.xlsx"'
+    return response
+
+
+@admin.register(Payout)
+class PayoutAdmin(ModelAdmin):
+    """Ustalarga o'tkazmalar tarixi. Yangi o'tkazma — «To'lanishi kerak» sahifasida."""
+
+    list_display = ['created_at', 'master', 'amount_display', 'fee_display', 'count', 'card_display', 'note',
+                    'created_by']
+    list_filter = ['created_at']
+    list_filter_submit = True
+    search_fields = ['master__full_name', 'master__phone', 'note', 'card']
+    date_hierarchy = 'created_at'
+    readonly_fields = ['master', 'amount', 'gross', 'fee', 'count', 'card', 'holder', 'created_at', 'created_by',
+                       'orders']
+    fields = readonly_fields + ['note']
+    actions = ['export_xlsx']
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False  # moliyaviy yozuv — o'chirilmaydi
+
+    def get_urls(self):
+        return [path('pending/', self.admin_site.admin_view(self.pending_view), name='payments_payout_pending'),
+                *super().get_urls()]
+
+    def changelist_view(self, request, extra_context=None):
+        total = payouts.totals(payouts.pending())['amount']
+        if total:
+            messages.info(request, f"To'lanishi kerak: {total:,.0f} so'm.".replace(',', ' '))
+        return super().changelist_view(request, extra_context)
+
+    def pending_view(self, request):
+        rows = payouts.pending()
+        if request.GET.get('format') == 'xlsx':
+            return _xlsx_response(payouts.pending_xlsx(rows), 'tolanishi-kerak')
+        if request.method == 'POST':
+            ids = [int(v) for v in request.POST.getlist('master') if v.isdigit()]
+            allowed = {r['master'].pk for r in rows if r['has_card']}
+            created = payouts.mark_paid([i for i in ids if i in allowed], request.user, request.POST.get('note', ''))
+            if created:
+                total = sum((p.amount for p in created), 0)
+                messages.success(request, f"{len(created)} ta ustaga o'tkazma qayd etildi: {total:,.0f} so'm."
+                                 .replace(',', ' '))
+            else:
+                messages.warning(request, 'Hech kim tanlanmadi.')
+            return redirect(reverse('admin:payments_payout_pending'))
+        for row in rows:
+            row['card'] = payouts.card_display(row['master'].payout_card)
+        return render(request, 'admin/payouts_pending.html', {
+            **self.admin_site.each_context(request), 'title': "Ustalarga to'lanishi kerak",
+            'rows': rows, 'totals': payouts.totals(rows),
+        })
+
+    @display(description="O'tkazilgan", ordering='amount')
+    def amount_display(self, obj):
+        return f"{obj.amount:,.0f} so'm".replace(',', ' ')
+
+    @display(description='Komissiya', ordering='fee')
+    def fee_display(self, obj):
+        return f'{obj.fee:,.0f}'.replace(',', ' ')
+
+    @display(description='Karta')
+    def card_display(self, obj):
+        return payouts.card_display(obj.card) or '—'
+
+    @display(description='Buyurtmalar')
+    def orders(self, obj):
+        return ', '.join(f'#{m.order_id} ({m.title})' for m in obj.milestones.all()) or '—'
+
+    @action(description="Tanlanganlarni Excel'ga yuklash", icon='download')
+    def export_xlsx(self, request, queryset):
+        return _xlsx_response(payouts.history_xlsx(queryset), 'otkazmalar')

@@ -1,6 +1,9 @@
 from decimal import Decimal
 
+from datetime import timedelta
+
 from django import forms
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from masters.geo import in_uzbekistan, parse_coords
@@ -31,7 +34,7 @@ class ServiceRequestForm(forms.ModelForm):
     class Meta:
         model = ServiceRequest
         fields = ['name', 'phone', 'email', 'address', 'district', 'latitude', 'longitude', 'category', 'master',
-                  'catalog_item', 'quantity', 'problem_description', 'consent']
+                  'catalog_item', 'quantity', 'problem_description', 'preferred_date', 'preferred_slot', 'consent']
         error_messages = {
             'name': {'required': _('Ismingizni kiriting')},
             'phone': {'required': _('Telefon raqamni kiriting')},
@@ -49,6 +52,11 @@ class ServiceRequestForm(forms.ModelForm):
         self.fields['quantity'].required = False
         self.fields['quantity'].min_value = 1
         self.district_choices = DISTRICT_CHOICES
+        from .schedule import date_choices
+        self.date_choices = date_choices()
+        self.slot_choices = ServiceRequest.SLOT_CHOICES
+        self.fields['preferred_date'].required = False
+        self.fields['preferred_slot'].required = False
 
     def clean_name(self):
         name = (self.cleaned_data.get('name') or '').strip()
@@ -70,6 +78,15 @@ class ServiceRequestForm(forms.ModelForm):
     def clean_district(self):
         slug = self.cleaned_data.get('district') or ''
         return slug if district_coords(slug)[0] is not None else ''
+
+    def clean_preferred_date(self):
+        day = self.cleaned_data.get('preferred_date')
+        if day is None:
+            return None
+        today = timezone.localdate()
+        if not today <= day <= today + timedelta(days=30):
+            raise forms.ValidationError(_("Kunni bugundan boshlab 30 kun ichida tanlang"))
+        return day
 
     def clean_quantity(self):
         quantity = self.cleaned_data.get('quantity') or 1

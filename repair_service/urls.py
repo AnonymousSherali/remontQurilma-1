@@ -9,6 +9,8 @@ urlpatterns = [
     path('submit/', views.submit_request, name='submit_request'),
     path('result/', views.result, name='result'),
     path('narxlar/', views.catalog, name='catalog'),
+    path('oferta/', views.offer, name='offer'),
+    path('maxfiylik/', views.privacy, name='privacy'),
 
     # Buyurtmachi: kuzatish va boshqarish
     path('buyurtma/<uuid:token>/', order_views.order_detail, name='order'),
@@ -24,6 +26,7 @@ urlpatterns = [
     path('buyurtma/<uuid:token>/kafolat/', order_views.warranty_claim, name='warranty_claim'),
     path('buyurtma/<uuid:token>/kafolat/<int:claim_id>/<slug:action>/', order_views.warranty_action,
          name='warranty_action'),
+    path('buyurtma/<uuid:token>/xabar/', order_views.order_chat, name='order_chat'),
     path('buyurtmalarim/', order_views.my_orders, name='my_orders'),
     path('buyurtmalarim/chiqish/', order_views.my_orders_logout, name='my_orders_logout'),
 ]

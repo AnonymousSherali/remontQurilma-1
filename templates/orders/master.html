@@ -65,6 +65,8 @@
       </section>
       {% endif %}
 
+      {% if chat %}{% include "orders/_chat.html" with side="master" %}{% endif %}
+
       {% if warranty %}{% include "orders/_warranty.html" with side="master" %}{% endif %}
 
       {% translate "Ishdan oldin va keyin rasmga oling: mijoz natijani ko'radi, tasdiqlangan ishlar portfoliongizga chiqadi, nizoda esa dalil bo'ladi." as photo_hint %}
@@ -79,6 +81,24 @@
     </div>
 
     <aside style="display:grid;gap:1.25rem">
+      {% if can_set_visit or order.visit_at or preferred_label %}
+      <section class="card" id="vaqt">
+        <div class="card__title">🕒 {% translate "Kelish vaqti" %}</div>
+        {% if order.visit_at %}<p style="margin:0 0 .5rem;font-weight:800;font-size:1.1rem">{{ order.visit_at|date:"j-F, H:i" }}</p>{% endif %}
+        {% if preferred_label %}<p class="muted small" style="margin:0 0 .5rem">{% translate "Mijozga qulay" %}: <strong>{{ preferred_label }}</strong></p>{% endif %}
+        {% if can_set_visit %}
+        <form method="post" action="{% url 'masters:visit_set' order.pk %}" class="form">{% csrf_token %}
+          <div class="visit-row">
+            <input type="date" name="date" required aria-label="{% translate 'Sana' %}" min="{{ today|date:'Y-m-d' }}"
+                   value="{% if visit_local %}{{ visit_local|date:'Y-m-d' }}{% elif order.preferred_date and order.preferred_date >= today %}{{ order.preferred_date|date:'Y-m-d' }}{% else %}{{ today|date:'Y-m-d' }}{% endif %}">
+            <input type="time" name="time" required aria-label="{% translate 'Vaqt' %}" step="900" value="{% if visit_local %}{{ visit_local|date:'H:i' }}{% endif %}">
+          </div>
+          <button class="btn btn--primary btn--block">{% if order.visit_at %}{% translate "Vaqtni o'zgartirish" %}{% else %}{% translate "Vaqtni belgilash" %}{% endif %}</button>
+          <p class="muted small" style="margin:0">{% translate "Mijoz xabar oladi, vaqtdan oldin ikkalangizga eslatma boradi." %}</p>
+        </form>
+        {% endif %}
+      </section>
+      {% endif %}
       <section class="card">
         <div class="card__title">{% translate "Mijoz" %}</div>
         <dl class="kv">

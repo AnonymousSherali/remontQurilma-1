@@ -39,6 +39,7 @@
       <div class="master-card__meta" style="margin-top:.5rem">
         {% if order.area %}<span>📍 {{ order.area }}</span>{% endif %}
         {% if order.distance_km is not None %}<span>↔ {{ order.distance_km|km }}</span>{% elif not order.area %}<span>📍 {% translate "Joylashuv ko'rsatilmagan" %}</span>{% endif %}
+        {% if order.preferred_label %}<span>🕒 {{ order.preferred_label }}</span>{% endif %}
       </div>
       {% if order.problem_photos %}
         <div class="photo-grid" style="margin-top:.6rem;grid-template-columns:repeat(4,72px)">

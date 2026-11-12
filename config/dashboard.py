@@ -86,3 +86,9 @@ def badge_escalated_claims(request):
     """Administrator qarorini kutayotgan kafolat murojaatlari."""
     from repair_service.models import WarrantyClaim
     return str(WarrantyClaim.objects.filter(status=WarrantyClaim.STATUS_ESCALATED).count())
+
+
+def badge_pending_payouts(request):
+    """Hisob-kitob kutayotgan ustalar soni."""
+    from payments import payouts
+    return str(len(payouts.pending()))

@@ -78,6 +78,26 @@
     <p class="field__help" style="margin-top:-.5rem">{% translate "Yaqin atrofdagi ustalar buyurtmangizni tezroq ko'rishi uchun. Ustaga aniq manzil faqat buyurtmani olgach ko'rinadi." %}</p>
     {% endif %}
 
+    <div class="form-row">
+      <div class="field">
+        <label for="{{ prefix }}day">{% translate "Usta qachon kelsin?" %}</label>
+        <select id="{{ prefix }}day" name="preferred_date">
+          <option value="">{% translate "Imkon qadar tez" %}</option>
+          {% for value, label in form.date_choices %}<option value="{{ value }}" {% if form.preferred_date.value|stringformat:'s' == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+        {% for e in form.preferred_date.errors %}<div class="field__error">{{ e }}</div>{% endfor %}
+        <div class="error-message"></div>
+      </div>
+      <div class="field">
+        <label for="{{ prefix }}slot">{% translate "Qulay vaqt" %}</label>
+        <select id="{{ prefix }}slot" name="preferred_slot">
+          <option value="">{% translate "Farqi yo'q" %}</option>
+          {% for value, label in form.slot_choices %}<option value="{{ value }}" {% if form.preferred_slot.value == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <p class="field__help" style="margin-top:-.5rem">{% translate "Aniq vaqtni usta buyurtmani qabul qilgach belgilaydi — sizga xabar keladi." %}</p>
+
     <div class="field">
       <label for="{{ prefix }}problem">{% translate "Muammoni qisqacha yozing" %}</label>
       <textarea id="{{ prefix }}problem" name="problem_description" rows="3" maxlength="2000"
@@ -87,7 +107,8 @@
 
     <label class="check">
       <input type="checkbox" name="consent" value="on" required>
-      <span>{% translate "Shaxsiy ma'lumotlarim buyurtma bo'yicha bog'lanish uchun qayta ishlanishiga roziman" %} <span class="req" aria-hidden="true">*</span></span>
+      <span>{% translate "Shaxsiy ma'lumotlarim buyurtma bo'yicha bog'lanish uchun qayta ishlanishiga roziman" %} <span class="req" aria-hidden="true">*</span>
+        <span class="muted small">· <a href="{% url 'repair_service:offer' %}" target="_blank" rel="noopener">{% translate "Oferta" %}</a>, <a href="{% url 'repair_service:privacy' %}" target="_blank" rel="noopener">{% translate "maxfiylik siyosati" %}</a></span></span>
       <span class="error-message"></span>
     </label>
 

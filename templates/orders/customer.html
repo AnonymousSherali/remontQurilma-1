@@ -16,6 +16,7 @@
       </div>
       <a class="btn" href="{% url 'repair_service:my_orders' %}">{% translate "Mening buyurtmalarim" %}</a>
     </div>
+    {% if order.visit_at and order.status == 'accepted' %}<div class="alert alert--info">🕒 {% blocktranslate with t=order.visit_at|date:"j-F, H:i" %}Usta {{ t }} da keladi.{% endblocktranslate %}</div>{% endif %}
     {% if order.status == 'disputed' %}<div class="alert alert--error">{% translate "Nizo ochilgan. Administrator ikkala tomon bilan bog'lanadi; to'lovlar muzlatilgan." %}</div>{% endif %}
     {% if order.status == 'cancelled' %}<div class="alert alert--warning">{% translate "Buyurtma bekor qilingan." %}</div>{% endif %}
     {% include "partials/order_timeline.html" with timeline=timeline live=True %}
@@ -78,6 +79,8 @@
         <a class="btn btn--primary btn--lg" href="{{ order.get_review_url }}">⭐ {% translate "Ustani baholash" %}</a>
       {% endif %}
 
+      {% if chat %}{% include "orders/_chat.html" with side="customer" %}{% endif %}
+
       {% if warranty %}{% include "orders/_warranty.html" with side="customer" %}{% endif %}
 
       {% translate "Muammoni rasmga oling — usta nima kerakligini oldindan biladi va kerakli ehtiyot qismni olib keladi." as photo_hint %}
@@ -118,6 +121,8 @@
             {% if estimate %}<dt>{% translate "Taxminiy narx" %}</dt><dd>{{ estimate|floatformat:0|intcomma }} {% translate "so'm" %}{% if order.catalog_item.price_type == 'from' %} {% translate "dan" %}{% endif %}</dd>{% endif %}{% endif %}
           {% if order.category %}<dt>{% translate "Yo'nalish" %}</dt><dd>{{ order.category.icon }} {{ order.category|tr:"name" }}</dd>{% endif %}
           {% if order.address %}<dt>{% translate "Manzil" %}</dt><dd>{{ order.address }}</dd>{% endif %}
+          {% if order.visit_at %}<dt>{% translate "Kelish vaqti" %}</dt><dd>{{ order.visit_at|date:"j-F, H:i" }}</dd>
+          {% elif preferred_label %}<dt>{% translate "Qulay vaqt" %}</dt><dd>{{ preferred_label }}</dd>{% endif %}
           {% if order.problem_description %}<dt>{% translate "Muammo" %}</dt><dd style="font-weight:400">{{ order.problem_description }}</dd>{% endif %}
         </dl>
       </section>

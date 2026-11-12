@@ -14,7 +14,7 @@ from django.db import transaction
 from . import workflow
 from .customer_notify import notify_master_new_order
 from . import warranty
-from .models import Brand, OrderEvent, OrderPhoto, Service, ServiceRequest, Testimonial, WarrantyClaim
+from .models import Brand, OrderEvent, OrderMessage, OrderPhoto, Service, ServiceRequest, Testimonial, WarrantyClaim
 from .phone import format_phone
 
 admin.site.site_header = 'TechService boshqaruv paneli'
@@ -50,6 +50,18 @@ class OrderPhotoInline(TabularInline):
                            obj.image.url, thumb.url) if thumb else '—'
 
 
+class OrderMessageInline(TabularInline):
+    model = OrderMessage
+    extra = 0
+    can_delete = False
+    fields = ['created_at', 'sender', 'text', 'read_at']
+    readonly_fields = fields
+    verbose_name_plural = 'Yozishma (mijoz ↔ usta)'
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
 class OrderEventInline(TabularInline):
     model = OrderEvent
     extra = 0
@@ -74,12 +86,13 @@ class ServiceRequestAdmin(ModelAdmin):
     date_hierarchy = 'created_at'
     list_per_page = 25
     actions = ['mark_cancelled']
-    inlines = [MilestoneInline, OrderPhotoInline, OrderEventInline]
+    inlines = [MilestoneInline, OrderPhotoInline, OrderMessageInline, OrderEventInline]
 
     fieldsets = [
         ("Mijoz", {'fields': ['name', 'phone', 'email', 'address', 'consent']}),
         ("Buyurtma", {'fields': ['category', 'master', ('catalog_item', 'quantity'), 'problem_description',
                                  'appliance_type', 'brand']}),
+        ("Kelish vaqti", {'fields': [('preferred_date', 'preferred_slot'), 'visit_at']}),
         ("Holat va izohlar", {'fields': ['status', 'admin_notes', 'review_link']}),
         ("Tizim ma'lumotlari", {'fields': ['created_at', 'updated_at'], 'classes': ['collapse']}),
     ]

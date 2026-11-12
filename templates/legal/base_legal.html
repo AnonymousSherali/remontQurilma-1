@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ page_title }} | {{ SITE.name }}{% endblock %}
+{% block body_class %}{% endblock %}
+{% block content %}
+<div class="container section" style="padding-top:2.5rem">
+  <article class="legal card card--raised">
+    {% if legal.draft %}
+      <div class="alert alert--warning" role="note"><div><strong>{% translate "Loyiha." %}</strong> {% translate "Bu matn yurist tomonidan hali tasdiqlanmagan namunaviy loyiha va yuridik kuchga ega emas." %}</div></div>
+    {% endif %}
+    <h1 style="font-size:clamp(1.6rem,3.5vw,2.2rem)">{{ page_title }}</h1>
+    <p class="muted small">{% translate "Oxirgi yangilanish" %}: {{ legal.updated }}</p>
+    {% block legal %}{% endblock %}
+    <h2>{% translate "Rekvizitlar" %}</h2>
+    <table>
+      <tr><th>{% translate "Nomi" %}</th><td>{{ SITE.legal_name|default:"[yuridik shaxs nomi]" }}</td></tr>
+      <tr><th>{% translate "STIR" %}</th><td>{{ SITE.legal_inn|default:"[STIR]" }}</td></tr>
+      <tr><th>{% translate "Manzil" %}</th><td>{{ SITE.legal_address|default:SITE.address }}</td></tr>
+      <tr><th>{% translate "Aloqa" %}</th><td><a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a> · <a href="mailto:{{ SITE.email }}">{{ SITE.email }}</a></td></tr>
+    </table>
+    <p class="small"><a href="{% url 'repair_service:offer' %}">{% translate "Ommaviy oferta" %}</a> · <a href="{% url 'repair_service:privacy' %}">{% translate "Maxfiylik siyosati" %}</a></p>
+  </article>
+</div>
+{% endblock %}

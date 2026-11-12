@@ -179,3 +179,30 @@ def catalog(request):
         'selected': selected,
         'form': ServiceRequestForm(initial=initial),
     })
+
+
+# ---------- Yuridik sahifalar ----------
+
+LEGAL_UPDATED = '12.11.2026'   # matn o'zgarganda yangilang
+
+
+def _legal(request, template, title):
+    return render(request, template, {
+        'page_title': title,
+        'legal': {
+            'draft': settings.LEGAL_DRAFT, 'updated': LEGAL_UPDATED,
+            'fee_percent': f'{settings.PLATFORM_FEE_PERCENT:g}', 'pro_fee_percent': f'{settings.PRO_FEE_PERCENT:g}',
+            'auto_confirm_hours': settings.AUTO_CONFIRM_HOURS, 'auto_release_hours': settings.AUTO_RELEASE_HOURS,
+            'warranty_days': settings.WARRANTY_DAYS, 'warranty_response_hours': settings.WARRANTY_RESPONSE_HOURS,
+            'guarantee_max': settings.GUARANTEE_MAX_AMOUNT,
+        },
+    })
+
+
+def offer(request):
+    """Ommaviy oferta. Raqamlar (komissiya, muddatlar) sozlamalardan olinadi — matn tizim bilan mos turadi."""
+    return _legal(request, 'legal/offer.html', _('Ommaviy oferta'))
+
+
+def privacy(request):
+    return _legal(request, 'legal/privacy.html', _('Maxfiylik siyosati'))

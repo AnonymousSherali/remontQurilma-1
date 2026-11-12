@@ -10,16 +10,17 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from django.db import transaction
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from otp import services as otp
 from payments import services as payments
 from payments import tariffs
-from repair_service import warranty, workflow
+from repair_service import chat, schedule, warranty, workflow
 from repair_service.customer_notify import notify_quote
 from repair_service.forms import ServiceRequestForm
 from repair_service.models import OrderPhoto, WarrantyClaim
-from repair_service.order_views import handle_photo_upload, photo_context
+from repair_service.order_views import chat_endpoint, handle_photo_upload, photo_context
 from repair_service.photos import can_delete as can_delete_photo
 from repair_service.photos import portfolio
 from repair_service.models import ServiceRequest
@@ -184,7 +185,8 @@ def dashboard(request):
         messages.info(request, _("Kabinetdan foydalanish uchun usta sifatida ro'yxatdan o'ting."))
         return redirect('masters:register')
     status = request.GET.get('status', '')
-    requests_qs = master.requests.select_related('category').order_by('-created_at')
+    requests_qs = master.requests.select_related('category').order_by('-created_at').annotate(
+        unread=Count('messages', filter=Q(messages__sender='customer', messages__read_at__isnull=True)))
     active = (ServiceRequest.STATUS_ACCEPTED, ServiceRequest.STATUS_ARRIVED, ServiceRequest.STATUS_IN_PROGRESS)
     counts = master.requests.aggregate(
         new=Count('id', filter=Q(status=ServiceRequest.STATUS_NEW)),
@@ -220,6 +222,7 @@ def dashboard(request):
         'criteria': master.criteria_breakdown(),
         'balance': balance,
         'open_count': feed.open_count(master),
+        'calendar': schedule.calendar(master),
         'warranty_claims': WarrantyClaim.objects.filter(
             order__master=master, status=WarrantyClaim.STATUS_OPEN).select_related('order'),
         'held': held,
@@ -232,6 +235,7 @@ def feed_list(request):
     master = _get_own_master(request)
     orders = feed.open_orders(master)
     for order in orders:
+        order.preferred_label = schedule.preferred_label(order)
         order.problem_photos = [p for p in order.photos.all() if p.kind == OrderPhoto.KIND_PROBLEM][:4]
     return render(request, 'masters/feed.html', {
         'master': master,
@@ -264,7 +268,8 @@ def profile_edit(request):
         form.save()
         messages.success(request, _('Profil saqlandi.'))
         return redirect('masters:dashboard')
-    return render(request, 'masters/profile_edit.html', {'form': form, 'master': master})
+    return render(request, 'masters/profile_edit.html', {
+        'form': form, 'master': master, 'payouts': master.payouts.all()[:5]})
 
 
 @login_required
@@ -323,7 +328,37 @@ def order_detail(request, pk):
                         'masters:order_photo_delete', [order.pk]),
         'customer_link': request.build_absolute_uri(order.get_customer_url()),
         **warranty.context(order),
+        **chat.context(order, chat.MASTER),
+        'chat_url': reverse('masters:order_chat', args=[order.pk]),
+        'preferred_label': schedule.preferred_label(order),
+        'can_set_visit': schedule.can_set(order),
+        'visit_local': timezone.localtime(order.visit_at) if order.visit_at else None,
+        'today': timezone.localdate(),
     })
+
+
+@login_required
+def order_chat(request, pk):
+    master, order = _own_order(request, pk)
+    return chat_endpoint(request, order, chat.MASTER, order.get_master_url())
+
+
+@login_required
+@require_POST
+def visit_set(request, pk):
+    master, order = _own_order(request, pk)
+    try:
+        when = schedule.parse(request.POST.get('date'), request.POST.get('time'))
+        clash = schedule.conflicts(order, when)
+        schedule.set_visit(order, when)
+    except schedule.ScheduleError as error:
+        messages.error(request, str(error))
+    else:
+        messages.success(request, _('Kelish vaqti saqlandi — mijozga xabar yuborildi.'))
+        if clash:
+            messages.warning(request, _("Diqqat: shu vaqtga yaqin boshqa buyurtmangiz bor (#%(id)s).") % {
+                'id': clash[0].pk})
+    return redirect(order.get_master_url())
 
 
 @login_required

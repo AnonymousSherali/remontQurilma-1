@@ -3,6 +3,7 @@
 Django>=5.2,<5.3
 Pillow>=11.0
 django-unfold==0.91.0   # zamonaviy admin dizayni
+openpyxl>=3.1         # ustalarga o'tkazmalar hisobotini Excel'ga yuklash
 
 # Production uchun (ixtiyoriy)
 # gunicorn==23.0.0

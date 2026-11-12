@@ -40,6 +40,7 @@
       {% include "masters/_profile_fields.html" %}
 
       {% include "partials/field.html" with field=form.consent %}
+      <p class="muted small" style="margin-top:-.5rem">{% translate "Ro'yxatdan o'tish bilan siz shartlarni qabul qilasiz" %}: <a href="{% url 'repair_service:offer' %}" target="_blank" rel="noopener">{% translate "Ommaviy oferta" %}</a>, <a href="{% url 'repair_service:privacy' %}" target="_blank" rel="noopener">{% translate "Maxfiylik siyosati" %}</a>.</p>
       <button type="submit" class="btn btn--primary btn--lg btn--block">{% translate "Ro'yxatdan o'tish" %}</button>
       <p class="muted small" style="text-align:center;margin:0">{% translate "Akkauntingiz bormi?" %} <a href="{% url 'masters:login' %}">{% translate "Kirish" %}</a></p>
     </form>

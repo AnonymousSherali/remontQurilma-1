@@ -78,6 +78,9 @@ class Master(models.Model):
     )
     is_available = models.BooleanField('Buyurtma qabul qiladi', default=True)
     # Pullik tariflar (payments/tariffs.py). Muddat o'tgach o'zi o'chadi.
+    # Ishlab topilgan pul shu kartaga o'tkaziladi (faqat usta va administrator ko'radi)
+    payout_card = models.CharField('Karta raqami', max_length=16, blank=True)
+    payout_holder = models.CharField('Karta egasi', max_length=100, blank=True)
     promoted_until = models.DateTimeField('TOP muddati', null=True, blank=True)
     pro_until = models.DateTimeField('PRO muddati', null=True, blank=True)
     telegram_chat_id = models.BigIntegerField('Telegram chat', null=True, blank=True, unique=True,

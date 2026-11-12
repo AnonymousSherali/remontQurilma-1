@@ -10,12 +10,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from config.stats import stats_view
 from masters import views as master_views
 from otp import views as otp_views
 from payments import click, payme, uzum
 from telegram_bot import views as telegram_views
 
 urlpatterns = [
+    path('admin/statistika/', admin.site.admin_view(stats_view), name='admin_stats'),
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),  # tilni almashtirish (set_language)
     path('api/ustalar/', master_views.api_masters, name='api_masters'),

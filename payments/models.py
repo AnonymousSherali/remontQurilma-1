@@ -77,6 +77,8 @@ class Milestone(models.Model):
     refunded_at = models.DateTimeField('Qaytarilgan', null=True, blank=True)
     paid_out_at = models.DateTimeField('Ustaga o\'tkazilgan', null=True, blank=True,
                                        help_text="Admin ustaning kartasiga o'tkazgach belgilaydi")
+    payout = models.ForeignKey('Payout', on_delete=models.SET_NULL, null=True, blank=True,
+                               related_name='milestones', verbose_name="O'tkazma")
 
     class Meta:
         verbose_name = "To'lov bosqichi"
@@ -94,6 +96,35 @@ class Milestone(models.Model):
     @property
     def master_amount(self):
         return self.amount - self.fee_amount
+
+
+class Payout(models.Model):
+    """Ustaga bitta o'tkazma: bir nechta chiqarilgan bosqich summasi (komissiyasiz).
+
+    Pulni administrator bank/to'lov tizimi orqali qo'lda o'tkazadi; bu yozuv — hisobot
+    (payments/payouts.py).
+    """
+
+    master = models.ForeignKey('masters.Master', on_delete=models.PROTECT, related_name='payouts',
+                               verbose_name='Usta')
+    amount = models.DecimalField("Ustaga o'tkazilgan (so'm)", max_digits=12, decimal_places=0)
+    gross = models.DecimalField("Mijozlar to'lagan (so'm)", max_digits=12, decimal_places=0)
+    fee = models.DecimalField("Komissiya (so'm)", max_digits=12, decimal_places=0)
+    count = models.PositiveIntegerField('Bosqichlar soni')
+    card = models.CharField('Karta raqami', max_length=16, blank=True)
+    holder = models.CharField('Karta egasi', max_length=100, blank=True)
+    note = models.CharField('Izoh', max_length=255, blank=True)
+    created_at = models.DateTimeField("O'tkazilgan sana", default=timezone.now)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                                   verbose_name='Kim belgiladi')
+
+    class Meta:
+        verbose_name = "Ustaga o'tkazma"
+        verbose_name_plural = "Ustalarga o'tkazmalar"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.master} · {self.amount} so\'m · {self.created_at:%d.%m.%Y}'
 
 
 class Purchase(models.Model):
