@@ -4,6 +4,9 @@ Django settings for TechService project.
 
 from pathlib import Path
 import os
+from urllib.parse import unquote, urlparse
+
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,6 +37,12 @@ SECRET_KEY = os.environ.get(
 )
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+
+if not DEBUG and SECRET_KEY.startswith('django-insecure-'):
+    # Standart kalit bilan production'da ishga tushirish — sessiya va parollarni tiklash
+    # havolalarini soxtalashtirishga yo'l ochadi.
+    raise ImproperlyConfigured("DJANGO_SECRET_KEY o'rnatilmagan. Yarating: "
+                               "python -c \"import secrets; print(secrets.token_urlsafe(50))\"")
 
 _allowed = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = [h.strip() for h in _allowed.split(',') if h.strip()] or (['*'] if DEBUG else [])
@@ -88,17 +97,46 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- Database ---
+# DATABASE_URL bo'lmasa — SQLite (lokal ishlash). Production: PostgreSQL
+#   DATABASE_URL=postgres://techservice:parol@127.0.0.1:5432/techservice
+def database_from_url(url):
+    parsed = urlparse(url)
+    if parsed.scheme in ('postgres', 'postgresql'):
+        return {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': unquote(parsed.path.lstrip('/')),
+            'USER': unquote(parsed.username or ''),
+            'PASSWORD': unquote(parsed.password or ''),
+            'HOST': parsed.hostname or '',
+            'PORT': str(parsed.port or ''),
+            'CONN_MAX_AGE': int(os.environ.get('DATABASE_CONN_MAX_AGE', 60)),
+            'CONN_HEALTH_CHECKS': True,
+        }
+    if parsed.scheme == 'sqlite':
+        return {'ENGINE': 'django.db.backends.sqlite3', 'NAME': unquote(parsed.path) or BASE_DIR / 'db.sqlite3'}
+    raise ImproperlyConfigured(f"DATABASE_URL: qo'llab-quvvatlanmaydigan sxema «{parsed.scheme}»")
+
+
+_database_url = os.environ.get('DATABASE_URL', '')
 DATABASES = {
-    'default': {
+    'default': database_from_url(_database_url) if _database_url else {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-# --- Kesh (spamdan himoya hisoblagichlari uchun) ---
-# Bir nechta gunicorn worker bo'lsa, Redis yoki ma'lumotlar bazasi keshiga o'tkazing:
-# LocMem har bir jarayonda alohida bo'ladi.
-CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
+# --- Kesh ---
+# Kesh spam/SMS cheklovlari, Eskiz tokeni va Telegram rasm navbati uchun ishlatiladi.
+# LocMem har bir gunicorn worker'da alohida — production'da REDIS_URL yoki
+# DJANGO_CACHE=db (python manage.py createcachetable) ishlating.
+_redis_url = os.environ.get('REDIS_URL', '')
+if _redis_url:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.redis.RedisCache', 'LOCATION': _redis_url,
+                          'KEY_PREFIX': 'techservice'}}
+elif os.environ.get('DJANGO_CACHE') == 'db':
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.db.DatabaseCache', 'LOCATION': 'django_cache'}}
+else:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
 
 # --- Password validation ---
 AUTH_PASSWORD_VALIDATORS = [
@@ -125,7 +163,11 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = Path(os.environ.get('DJANGO_MEDIA_ROOT', BASE_DIR / 'media'))
+STATIC_ROOT = Path(os.environ.get('DJANGO_STATIC_ROOT', STATIC_ROOT))
+# Maxfiy fayllar (ustalarning shaxsini tasdiqlovchi hujjatlari) — MEDIA_ROOT dan TASHQARIDA,
+# veb-server ularni hech qachon to'g'ridan-to'g'ri bermaydi; faqat admin ko'rish sahifasi orqali.
+PRIVATE_MEDIA_ROOT = Path(os.environ.get('DJANGO_PRIVATE_MEDIA_ROOT', BASE_DIR / 'private_media'))
 
 # --- Default primary key ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -147,6 +189,25 @@ if not DEBUG:
     X_FRAME_OPTIONS = 'DENY'
     # Nginx/reverse-proxy orqasida HTTPS ni to'g'ri aniqlash uchun
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    # Health-check ichki tarmoqdan HTTP orqali so'raladi — HTTPS'ga yo'naltirilmaydi
+    SECURE_REDIRECT_EXEMPT = [r'^healthz/$']
+    SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+    SESSION_COOKIE_HTTPONLY = True
+
+# --- Loglar ---
+# gunicorn/systemd jurnaliga (journalctl -u techservice) chiqadi.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {'plain': {'format': '%(asctime)s %(levelname)s %(name)s: %(message)s'}},
+    'handlers': {'console': {'class': 'logging.StreamHandler', 'formatter': 'plain'}},
+    'root': {'handlers': ['console'], 'level': os.environ.get('DJANGO_LOG_LEVEL', 'INFO')},
+    'loggers': {
+        'django': {'handlers': ['console'], 'level': os.environ.get('DJANGO_LOG_LEVEL', 'INFO'), 'propagate': False},
+        # 404 lar shovqin — faqat ogohlantirish va xatolar
+        'django.request': {'handlers': ['console'], 'level': 'ERROR', 'propagate': False},
+    },
+}
 
 # --- Kirish ---
 LOGIN_URL = 'masters:login'

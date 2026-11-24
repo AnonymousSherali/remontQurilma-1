@@ -1,0 +1,27 @@
+# /etc/systemd/system/techservice.service
+#   sudo systemctl daemon-reload && sudo systemctl enable --now techservice
+#   jurnal: journalctl -u techservice -f
+[Unit]
+Description=TechService (gunicorn)
+After=network.target postgresql.service redis-server.service
+Wants=postgresql.service redis-server.service
+
+[Service]
+Type=notify
+User=techservice
+Group=techservice
+WorkingDirectory=/srv/techservice/app
+EnvironmentFile=/srv/techservice/app/.env
+ExecStart=/srv/techservice/venv/bin/gunicorn -c deploy/gunicorn.conf.py config.wsgi
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+# Xavfsizlik: faqat kerakli papkalarga yozish
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/srv/techservice/media /srv/techservice/private_media
+
+[Install]
+WantedBy=multi-user.target

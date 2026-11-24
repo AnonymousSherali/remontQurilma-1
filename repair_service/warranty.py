@@ -99,7 +99,8 @@ def _notify_master(order, text):
 
 
 def _locked(claim):
-    return WarrantyClaim.objects.select_for_update().select_related('order', 'order__master').get(pk=claim.pk)
+    return (WarrantyClaim.objects.select_for_update(of=('self',))  # PostgreSQL: LEFT JOIN qatorini qulflab bo'lmaydi
+            .select_related('order', 'order__master').get(pk=claim.pk))
 
 
 @transaction.atomic
@@ -107,7 +108,7 @@ def file_claim(order, description):
     description = (description or '').strip()
     if len(description) < 10:
         raise WarrantyError(_('Muammoni batafsilroq yozing (kamida 10 ta belgi).'))
-    order = SR.objects.select_for_update().select_related('master', 'catalog_item').get(pk=order.pk)
+    order = SR.objects.select_for_update(of=('self',)).select_related('master', 'catalog_item').get(pk=order.pk)
     if not is_active(order):
         raise WarrantyError(_('Bu buyurtma uchun kafolat muddati tugagan yoki kafolat berilmagan.'))
     if active_claim(order):

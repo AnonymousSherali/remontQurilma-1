@@ -12,11 +12,13 @@ from django.urls import include, path
 
 from config.stats import stats_view
 from masters import views as master_views
+from repair_service.views import healthz
 from otp import views as otp_views
 from payments import click, payme, uzum
 from telegram_bot import views as telegram_views
 
 urlpatterns = [
+    path('healthz/', healthz, name='healthz'),
     path('admin/statistika/', admin.site.admin_view(stats_view), name='admin_stats'),
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),  # tilni almashtirish (set_language)

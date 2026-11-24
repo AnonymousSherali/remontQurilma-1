@@ -31,3 +31,5 @@ build/
 # Environment variables
 .env
 .env.local
+private_media/
+.env

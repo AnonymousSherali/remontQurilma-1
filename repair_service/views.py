@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.core.cache import cache
 from django.db import transaction
@@ -26,6 +28,8 @@ FALLBACK_BRANDS = [
         'Renova', 'Haier', 'AEG',
     ], start=1)
 ]
+
+logger = logging.getLogger(__name__)
 
 
 def _landing_context():
@@ -206,3 +210,27 @@ def offer(request):
 
 def privacy(request):
     return _legal(request, 'legal/privacy.html', _('Maxfiylik siyosati'))
+
+
+def healthz(request):
+    """Monitoring va yuk balansirovkasi uchun: ma'lumotlar bazasi va kesh ishlayaptimi."""
+    from django.core.cache import cache
+    from django.db import connection
+    status = {}
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT 1')
+        status['db'] = 'ok'
+    except Exception:  # noqa: BLE001 — sababini logga, javobga emas
+        logger.exception('healthz: database')
+        status['db'] = 'error'
+    try:
+        cache.set('healthz', '1', 10)
+        status['cache'] = 'ok' if cache.get('healthz') == '1' else 'error'
+    except Exception:  # noqa: BLE001
+        logger.exception('healthz: cache')
+        status['cache'] = 'error'
+    ok = all(v == 'ok' for v in status.values())
+    response = JsonResponse({'status': 'ok' if ok else 'error', **status}, status=200 if ok else 503)
+    response['Cache-Control'] = 'no-store'
+    return response

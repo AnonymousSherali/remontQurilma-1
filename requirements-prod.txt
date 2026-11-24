@@ -1,0 +1,4 @@
+# Production serveri uchun qo'shimcha paketlar: pip install -r requirements.txt -r requirements-prod.txt
+gunicorn>=23.0,<24
+psycopg[binary]>=3.2,<4   # PostgreSQL
+redis>=5.0                # kesh (REDIS_URL)

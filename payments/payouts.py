@@ -50,7 +50,7 @@ def mark_paid(master_ids, user=None, note=''):
     """Tanlangan ustalarning barcha kutayotgan bosqichlarini "o'tkazildi" deb belgilaydi."""
     created = []
     now = timezone.now()
-    locked = (Milestone.objects.select_for_update()
+    locked = (Milestone.objects.select_for_update(of=('self',))
               .filter(state=Milestone.STATE_RELEASED, paid_out_at__isnull=True, order__master_id__in=master_ids)
               .select_related('order', 'order__master'))
     by_master = {}

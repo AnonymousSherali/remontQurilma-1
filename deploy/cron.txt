@@ -1,0 +1,12 @@
+# crontab -u techservice -e  — ichiga quyidagilarni qo'shing
+# Vaqt server vaqt zonasida (timedatectl set-timezone Asia/Tashkent)
+SHELL=/bin/bash
+APP=/srv/techservice/app
+PY=/srv/techservice/venv/bin/python
+
+# Har soatda: avtomatik tasdiqlash, mablag'ni chiqarish, kafolat, tashrif eslatmalari
+5 * * * *   cd $APP && set -a && source .env && set +a && $PY manage.py process_orders >> /srv/techservice/logs/cron.log 2>&1
+# Har kuni: eskirgan sessiyalarni tozalash
+15 3 * * *  cd $APP && set -a && source .env && set +a && $PY manage.py clearsessions
+# Har kuni: zaxira nusxa
+30 3 * * *  $APP/deploy/scripts/backup.sh >> /srv/techservice/logs/backup.log 2>&1
