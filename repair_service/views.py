@@ -80,7 +80,8 @@ def _landing_context():
 
 def index(request):
     """Bosh sahifa"""
-    return render(request, 'index.html', _landing_context())
+    from masters.seo import site_jsonld
+    return render(request, 'index.html', {**_landing_context(), 'jsonld': site_jsonld(request)})
 
 
 def _client_ip(request):
@@ -98,6 +99,17 @@ def _rate_limited(request):
         return True
     cache.set(key, count + 1, timeout=600)
     return False
+
+
+def create_order(form, note=''):
+    """Tekshirilgan formadan buyurtma yaratadi va xabarnomalarni navbatga qo'yadi (ariza va qayta chaqirish)."""
+    service_request = form.save(commit=False)
+    service_request.language = get_language() or settings.LANGUAGE_CODE
+    service_request.save()
+    workflow.record(service_request, ServiceRequest.STATUS_NEW, workflow.CUSTOMER, note=note)
+    transaction.on_commit(lambda: notify_new_request(service_request))
+    transaction.on_commit(lambda: notify_order_created(service_request))
+    return service_request
 
 
 @require_POST
@@ -120,12 +132,7 @@ def submit_request(request):
         context.update({'errors': errors, 'form': form})
         return render(request, 'index.html', context, status=400)
 
-    service_request = form.save(commit=False)
-    service_request.language = get_language() or settings.LANGUAGE_CODE
-    service_request.save()
-    workflow.record(service_request, ServiceRequest.STATUS_NEW, workflow.CUSTOMER)
-    transaction.on_commit(lambda: notify_new_request(service_request))
-    transaction.on_commit(lambda: notify_order_created(service_request))
+    service_request = create_order(form)
 
     if service_request.master:
         message = _("Arizangiz %(master)sga yuborildi. Usta tez orada qo'ng'iroq qiladi.") % {
@@ -187,7 +194,7 @@ def catalog(request):
 
 # ---------- Yuridik sahifalar ----------
 
-LEGAL_UPDATED = '12.11.2026'   # matn o'zgarganda yangilang
+LEGAL_UPDATED = '24.11.2026'   # matn o'zgarganda yangilang
 
 
 def _legal(request, template, title):
@@ -198,7 +205,7 @@ def _legal(request, template, title):
             'fee_percent': f'{settings.PLATFORM_FEE_PERCENT:g}', 'pro_fee_percent': f'{settings.PRO_FEE_PERCENT:g}',
             'auto_confirm_hours': settings.AUTO_CONFIRM_HOURS, 'auto_release_hours': settings.AUTO_RELEASE_HOURS,
             'warranty_days': settings.WARRANTY_DAYS, 'warranty_response_hours': settings.WARRANTY_RESPONSE_HOURS,
-            'guarantee_max': settings.GUARANTEE_MAX_AMOUNT,
+            'guarantee_max': settings.GUARANTEE_MAX_AMOUNT, 'id_keep_days': settings.ID_DOCUMENTS_KEEP_DAYS,
         },
     })
 

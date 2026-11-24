@@ -1,5 +1,8 @@
 from django.conf import settings
+from django.utils.functional import SimpleLazyObject
 from django.utils.translation import gettext as _
+
+from masters.models import Category
 
 from .phone import format_phone
 
@@ -35,6 +38,8 @@ def site(request):
     info = dict(settings.SITE_INFO)
     info['phone_display'] = format_phone(info.get('phone', ''))
     info['warranty_days'] = settings.WARRANTY_DAYS
+    # Footer'dagi yo'nalishlar havolalari (SEO: ichki havolalar). Faqat shablon ishlatganda so'raladi.
+    info['categories'] = SimpleLazyObject(lambda: list(Category.objects.filter(is_active=True)))
     return {
         'SITE': info,
         'YANDEX_MAPS_API_KEY': getattr(settings, 'YANDEX_MAPS_API_KEY', ''),

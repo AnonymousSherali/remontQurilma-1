@@ -8,8 +8,11 @@ from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
+from django.views.decorators.cache import cache_page
 
+from config.seo_urls import SITEMAPS, robots_txt
 from config.stats import stats_view
 from masters import views as master_views
 from repair_service.views import healthz
@@ -19,6 +22,8 @@ from telegram_bot import views as telegram_views
 
 urlpatterns = [
     path('healthz/', healthz, name='healthz'),
+    path('robots.txt', robots_txt, name='robots_txt'),
+    path('sitemap.xml', cache_page(60 * 60)(sitemap), {'sitemaps': SITEMAPS}, name='sitemap'),
     path('admin/statistika/', admin.site.admin_view(stats_view), name='admin_stats'),
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),  # tilni almashtirish (set_language)

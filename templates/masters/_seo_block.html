@@ -1,0 +1,36 @@
+{% load i18n humanize ui %}
+{# SEO sahifasining pastki qismi: narxlar, tumanlar, boshqa yo'nalishlar #}
+<div class="seo-block">
+  {% if seo.prices %}
+  <section class="card">
+    <h2 class="card__title">{% blocktranslate with c=seo.category_name %}{{ c }}: narxlar{% endblocktranslate %}</h2>
+    <ul class="price-list">
+      {% for item in seo.prices %}<li><span>{{ item|tr:"name" }}</span><strong>{% include "partials/price.html" %}</strong></li>{% endfor %}
+    </ul>
+    <a class="btn btn--sm" href="{% url 'repair_service:catalog' %}?category={{ category.slug }}">{% translate "Barcha narxlar" %} →</a>
+  </section>
+  {% endif %}
+
+  <section class="card">
+    <h2 class="card__title">{% blocktranslate with c=seo.category_name %}{{ c }} — tumanlar bo'yicha{% endblocktranslate %}</h2>
+    <div class="chips">
+      {% for name, url, current in seo.district_links %}{% if current %}<span class="chip chip--brand" aria-current="page">{{ name }}</span>{% else %}<a class="chip" href="{{ url }}">{{ name }}</a>{% endif %}{% endfor %}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 class="card__title">{% if seo.place %}{% blocktranslate with d=seo.place %}{{ d }} tumanidagi boshqa ustalar{% endblocktranslate %}{% else %}{% translate "Boshqa yo'nalishlar" %}{% endif %}</h2>
+    <div class="chips">{% for c, url in seo.category_links %}<a class="chip" href="{{ url }}">{{ c.icon }} {{ c|tr:"name" }}</a>{% endfor %}</div>
+  </section>
+
+  <section class="card seo-text">
+    <h2 class="card__title">{% translate "Qanday ishlaydi" %}</h2>
+    <ol>
+      <li>{% translate "Ustani tanlang yoki bepul ariza qoldiring — yaqin atrofdagi ustalar ko'radi." %}</li>
+      <li>{% translate "Usta muammoni ko'rib narx taklif qiladi. Rozi bo'lmaguningizcha ish boshlanmaydi." %}</li>
+      <li>{% translate "Onlayn to'lov platformada ushlab turiladi va ish bajarilgach ustaga o'tadi." %}</li>
+      <li>{% if SITE.warranty_days %}{% blocktranslate with n=SITE.warranty_days %}Ishga {{ n }} kun kafolat: muammo qaytalansa, usta bepul tuzatadi.{% endblocktranslate %}{% else %}{% translate "Ishni tasdiqlab, ustani baholaysiz." %}{% endif %}</li>
+    </ol>
+    <a class="btn btn--primary" href="{% url 'repair_service:index' %}#ariza">{% translate "Ariza qoldirish" %}</a>
+  </section>
+</div>

@@ -9,6 +9,7 @@
   <tr><th>Кто</th><th>Данные</th><th>Зачем</th></tr>
   <tr><td>Заказчик</td><td>Имя, телефон, адрес, район или координаты (по желанию), описание проблемы, фото, удобное время</td><td>Найти мастера и выполнить заказ</td></tr>
   <tr><td>Мастер</td><td>Имя и фамилия, телефон, фото, направления, опыт, район работы и координаты, номер карты для выплат</td><td>Публикация профиля, поиск по расстоянию, выплаты</td></tr>
+  <tr><td>Мастер (проверка личности)</td><td>Фото паспорта или ID-карты и селфи с документом, по желанию — сертификат</td><td>Проверка личности перед публикацией профиля</td></tr>
   <tr><td>Обе стороны</td><td>История заказа, переписка в заказе, отзывы, идентификатор чата Telegram (если подключён)</td><td>Исполнение заказа, уведомления, разбор споров</td></tr>
   <tr><td>Технические</td><td>IP-адрес, cookie сессии и выбранного языка</td><td>Вход в кабинет, защита от спама и подбора кодов</td></tr>
 </table>
@@ -18,6 +19,7 @@
 <ul>
   <li><strong>Мастеру</strong> — имя, телефон и точный адрес заказчика только после того, как мастер принял заказ. В ленте открытых заказов видны лишь район, расстояние и описание.</li>
   <li><strong>Всем посетителям</strong> — профиль мастера: имя, фото, направления, район (на карте — с точностью около 1 км), отзывы, фото работ. Телефон мастера заказчик видит после принятия заказа.</li>
+  <li><strong>Документы мастера</strong> (паспорт, селфи) не публикуются и не показываются заказчикам: они хранятся в закрытом хранилище без публичных ссылок, их видит только администратор с отдельным правом доступа.</li>
   <li><strong>Администратору</strong> — всё перечисленное, включая переписку, для разбора споров и выплат.</li>
   <li><strong>Сервисам-обработчикам</strong> — SMS-провайдеру (номер и текст сообщения), платёжным системам (номер заказа и сумма), Telegram (если вы сами подключили бота).</li>
 </ul>
@@ -27,7 +29,7 @@
 <p>Из загруженных фото автоматически удаляются сведения о месте съёмки (GPS). Фото «до/после» могут показываться в портфолио мастера после подтверждения заказа; заказчик может отключить это на странице заказа.</p>
 
 <h2>4. Сроки хранения</h2>
-<p>Данные заказа хранятся, пока это нужно для исполнения заказа, гарантии, разбора споров и бухгалтерского учёта. Коды из SMS действуют несколько минут и не хранятся в открытом виде дольше необходимого.</p>
+<p>Данные заказа хранятся, пока это нужно для исполнения заказа, гарантии, разбора споров и бухгалтерского учёта. Коды из SMS действуют несколько минут и не хранятся в открытом виде дольше необходимого.{% if legal.id_keep_days %} Файлы документов мастера удаляются через {{ legal.id_keep_days }} дней после проверки (результат проверки сохраняется).{% endif %}</p>
 
 <h2>5. Ваши права</h2>
 <ul>
@@ -50,6 +52,7 @@
   <tr><th>Kim</th><th>Ma'lumotlar</th><th>Nima uchun</th></tr>
   <tr><td>Buyurtmachi</td><td>Ism, telefon, manzil, tuman yoki koordinatalar (ixtiyoriy), muammo tavsifi, rasmlar, qulay vaqt</td><td>Usta topish va buyurtmani bajarish</td></tr>
   <tr><td>Usta</td><td>Ism familiya, telefon, rasm, yo'nalishlar, tajriba, ish hududi va koordinatalar, to'lov uchun karta raqami</td><td>Profilni e'lon qilish, masofa bo'yicha qidiruv, pul o'tkazish</td></tr>
+  <tr><td>Usta (shaxsni tasdiqlash)</td><td>Pasport yoki ID-karta rasmi va hujjat bilan selfi, ixtiyoriy — sertifikat</td><td>Profilni e'lon qilishdan oldin shaxsni tekshirish</td></tr>
   <tr><td>Ikkala tomon</td><td>Buyurtma tarixi, buyurtma ichidagi yozishma, baholar, Telegram chat identifikatori (ulangan bo'lsa)</td><td>Buyurtmani bajarish, xabarnomalar, nizolarni ko'rib chiqish</td></tr>
   <tr><td>Texnik</td><td>IP-manzil, sessiya va tanlangan til cookie fayllari</td><td>Kabinetga kirish, spam va kod tanlashdan himoya</td></tr>
 </table>
@@ -59,6 +62,7 @@
 <ul>
   <li><strong>Ustaga</strong> — buyurtmachining ismi, telefoni va aniq manzili faqat usta buyurtmani qabul qilgandan keyin. Ochiq buyurtmalar lentasida faqat tuman, masofa va tavsif ko'rinadi.</li>
   <li><strong>Barcha tashrif buyuruvchilarga</strong> — usta profili: ism, rasm, yo'nalishlar, hudud (xaritada taxminan 1 km aniqlikda), baholar, ish rasmlari. Ustaning telefonini buyurtmachi buyurtma qabul qilingach ko'radi.</li>
+  <li><strong>Ustaning hujjatlari</strong> (pasport, selfi) e'lon qilinmaydi va buyurtmachilarga ko'rsatilmaydi: ular ochiq havolasi yo'q yopiq joyda saqlanadi, ularni faqat alohida ruxsati bor administrator ko'radi.</li>
   <li><strong>Administratorga</strong> — yuqoridagilarning barchasi, shu jumladan yozishma — nizolarni ko'rib chiqish va pul o'tkazish uchun.</li>
   <li><strong>Qayta ishlovchi xizmatlarga</strong> — SMS-provayderga (raqam va xabar matni), to'lov tizimlariga (buyurtma raqami va summa), Telegram'ga (botni o'zingiz ulagan bo'lsangiz).</li>
 </ul>
@@ -68,7 +72,7 @@
 <p>Yuklangan rasmlardan suratga olingan joy haqidagi ma'lumot (GPS) avtomatik o'chiriladi. «Oldin/keyin» rasmlari buyurtma tasdiqlangach usta portfoliosida ko'rsatilishi mumkin; buyurtmachi buni buyurtma sahifasida o'chirib qo'ya oladi.</p>
 
 <h2>4. Saqlash muddati</h2>
-<p>Buyurtma ma'lumotlari buyurtmani bajarish, kafolat, nizolarni ko'rib chiqish va buxgalteriya hisobi uchun zarur bo'lgan muddat davomida saqlanadi. SMS kodlar bir necha daqiqa amal qiladi.</p>
+<p>Buyurtma ma'lumotlari buyurtmani bajarish, kafolat, nizolarni ko'rib chiqish va buxgalteriya hisobi uchun zarur bo'lgan muddat davomida saqlanadi. SMS kodlar bir necha daqiqa amal qiladi.{% if legal.id_keep_days %} Ustaning hujjat fayllari tekshiruvdan {{ legal.id_keep_days }} kun o'tgach o'chiriladi (tekshiruv natijasi saqlanadi).{% endif %}</p>
 
 <h2>5. Sizning huquqlaringiz</h2>
 <ul>

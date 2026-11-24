@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',  # narxlarni ajratuvchi bilan chiqarish uchun
+    'django.contrib.sitemaps',  # /sitemap.xml
     'repair_service',
     'masters',
     'otp',
@@ -289,6 +290,15 @@ VISIT_REMINDER_HOURS = int(os.environ.get('VISIT_REMINDER_HOURS', 2))
 CHAT_OPEN_DAYS = int(os.environ.get('CHAT_OPEN_DAYS', 30))
 # Telegram ulanmagan tomonga yangi xabar haqida SMS — shu oraliqda bir martadan ko'p emas
 CHAT_SMS_INTERVAL_MINUTES = int(os.environ.get('CHAT_SMS_INTERVAL_MINUTES', 30))
+
+# --- Ustalar hujjatlari ---
+# Tasdiqlangandan shuncha kun o'tgach pasport/selfi fayllari o'chiriladi (0 — saqlanadi).
+# Muddatni yurist bilan belgilang: kamroq saqlash — kamroq xavf.
+ID_DOCUMENTS_KEEP_DAYS = int(os.environ.get('ID_DOCUMENTS_KEEP_DAYS', 0))
+
+# --- SEO ---
+# Sinov serverida True qiling — robots.txt butun saytni qidiruvdan yopadi
+SEO_DISALLOW_ALL = os.environ.get('SEO_DISALLOW_ALL', 'False') == 'True'
 
 # --- Integratsiyalar (ixtiyoriy) ---
 YANDEX_MAPS_API_KEY = os.environ.get('YANDEX_MAPS_API_KEY', '')

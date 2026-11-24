@@ -658,3 +658,18 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .legal ol, .legal ul { padding-left: 1.25rem; display: grid; gap: .4rem; }
 .legal table { width: 100%; border-collapse: collapse; margin: .75rem 0; }
 .legal td, .legal th { border: 1px solid var(--line); padding: .5rem .7rem; text-align: left; vertical-align: top; }
+
+/* ---------- Shaxs tasdiqlangan ---------- */
+.id-badge { display: inline-flex; gap: .35rem; align-items: center; font-weight: 700; color: var(--brand-600); margin-bottom: .35rem; }
+.badge--id { background: var(--brand-50); color: var(--brand-600); }
+
+/* ---------- SEO sahifalari ---------- */
+.crumbs { color: var(--muted); margin-bottom: .5rem; display: flex; flex-wrap: wrap; gap: .35rem; }
+.crumbs a { color: var(--muted); }
+.seo-block { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin: 2.5rem 0 1rem; }
+.seo-block .card__title { font-size: 1.1rem; margin-top: 0; }
+.price-list { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: .5rem; }
+.price-list li { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px dashed var(--line); padding-bottom: .4rem; }
+.seo-text ol { padding-left: 1.2rem; display: grid; gap: .35rem; margin-top: 0; }
+.footer-cats { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; margin-top: 2rem; font-size: .9rem; }
+.footer-cats a { color: var(--muted); }

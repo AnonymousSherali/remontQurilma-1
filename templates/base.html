@@ -8,16 +8,26 @@
   <title>{% block title %}{{ SITE.name }} — {% translate "uyingiz uchun ishonchli ustalar" %}{% endblock %}</title>
   <meta name="description" content="{% block description %}{% translate "Santexnik, elektrik, kir yuvish mashinasi va maishiy texnika ustalari. Eng yaqin tekshirilgan ustani toping, baholarini ko'ring va ariza qoldiring." %}{% endblock %}">
   <meta name="theme-color" content="#059669">
+  {% if noindex %}<meta name="robots" content="noindex, follow">{% endif %}
+  {% block canonical %}<link rel="canonical" href="{% if canonical %}{{ canonical }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endif %}">{% endblock %}
   <meta property="og:title" content="{% block og_title %}{{ SITE.name }} — {% translate "ishonchli ustalar" %}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{% translate "Eng yaqin tekshirilgan ustani toping, baholarini ko'ring va bepul ariza qoldiring. Pul ish bajarilgach ustaga o'tadi." %}{% endblock %}">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ SITE.name }}">
+  <meta property="og:locale" content="{% if LANG == 'ru' %}ru_RU{% else %}uz_UZ{% endif %}">
+  <meta property="og:url" content="{% if canonical %}{{ canonical }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endif %}">
+  <meta property="og:image" content="{% if og_image %}{{ og_image }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og.png' %}{% endif %}">
+  <meta name="twitter:card" content="summary_large_image">
   {# Qidiruv tizimlari uchun: sahifaning boshqa tildagi versiyasi #}
   {% get_available_languages as LANGS %}
   {% for code, name in LANGS %}<link rel="alternate" hreflang="{{ code }}" href="{{ request.scheme }}://{{ request.get_host }}{% url_in_language code %}">{% endfor %}
+  <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}{% url_in_language 'uz' %}">
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% if jsonld %}{% jsonld jsonld %}{% endif %}
   {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}has-mobile-cta{% endblock %}">
@@ -98,6 +108,11 @@
           </ul>
         </div>
       </div>
+      {% if SITE.categories %}
+      <nav class="footer-cats" aria-label="{% translate 'Xizmatlar' %}">
+        {% for c in SITE.categories %}<a href="{{ c.get_absolute_url }}">{{ c|tr:"name" }}</a>{% endfor %}
+      </nav>
+      {% endif %}
       <div class="footer-bottom">
         <span>© {% now "Y" %} {{ SITE.name }}. {% translate "Barcha huquqlar himoyalangan." %}</span>
         <span><a href="{% url 'repair_service:offer' %}">{% translate "Ommaviy oferta" %}</a> · <a href="{% url 'repair_service:privacy' %}">{% translate "Maxfiylik siyosati" %}</a></span>

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load i18n ui %}
+
+{% block title %}{% translate "Ustani qayta chaqirish" %} | {{ SITE.name }}{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+
+{% block content %}
+<div class="container auth-wrap">
+  <div class="card card--raised auth-card auth-card--wide">
+    <a href="{{ order.get_customer_url }}" class="btn btn--ghost btn--sm">← {% blocktranslate with id=order.pk %}Buyurtma #{{ id }}{% endblocktranslate %}</a>
+    <h1 style="font-size:1.9rem;margin-top:1rem">🔁 {% translate "Ustani qayta chaqirish" %}</h1>
+    <div style="display:flex;gap:.75rem;align-items:center;margin:.5rem 0 1rem">
+      <div class="avatar">{% if master.photo %}<img src="{{ master.photo.url }}" alt="">{% else %}{{ master.initials }}{% endif %}</div>
+      <div><strong>{{ master.full_name }}</strong>{% if category %}<div class="muted small">{{ category.icon }} {{ category|tr:"name" }}</div>{% endif %}
+        {% if master.reviews_count %}<div class="rating small">{% stars master.rating_avg %} {{ master.rating_avg|floatformat:1 }}</div>{% endif %}</div>
+    </div>
+    {% if form.errors %}<div class="alert alert--error" role="alert"><ul>{% for field, errs in form.errors.items %}{% for e in errs %}<li>{{ e }}</li>{% endfor %}{% endfor %}</ul></div>{% endif %}
+    <form method="post" class="form" novalidate>{% csrf_token %}
+      <dl class="kv" style="margin:0">
+        <dt>{% translate "Ism" %}</dt><dd>{{ order.name }}</dd>
+        <dt>{% translate "Telefon" %}</dt><dd>{{ order.phone|phone }}</dd>
+      </dl>
+      <div class="field">
+        <label for="r-address">{% translate "Manzil" %}</label>
+        <input type="text" id="r-address" name="address" maxlength="255" value="{{ form.address.value|default_if_none:'' }}">
+      </div>
+      <div class="field">
+        <label for="r-problem">{% translate "Bu safar nima qilish kerak?" %}</label>
+        <textarea id="r-problem" name="problem_description" rows="3" maxlength="2000" placeholder="{% translate 'Masalan: boshqa xonadagi rozetkani ham almashtirish' %}">{{ form.problem_description.value|default_if_none:'' }}</textarea>
+        {% if order.problem_description %}<p class="field__help">{% translate "Oldingi buyurtma" %}: {{ order.problem_description|truncatewords:20 }}</p>{% endif %}
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label for="r-day">{% translate "Usta qachon kelsin?" %}</label>
+          <select id="r-day" name="preferred_date">
+            <option value="">{% translate "Imkon qadar tez" %}</option>
+            {% for value, label in form.date_choices %}<option value="{{ value }}" {% if form.preferred_date.value|stringformat:'s' == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="r-slot">{% translate "Qulay vaqt" %}</label>
+          <select id="r-slot" name="preferred_slot">
+            <option value="">{% translate "Farqi yo'q" %}</option>
+            {% for value, label in form.slot_choices %}<option value="{{ value }}" {% if form.preferred_slot.value == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+      <label class="check">
+        <input type="checkbox" name="consent" value="on" required>
+        <span>{% translate "Shaxsiy ma'lumotlarim buyurtma bo'yicha bog'lanish uchun qayta ishlanishiga roziman" %} <span class="req" aria-hidden="true">*</span>
+          <span class="muted small">· <a href="{% url 'repair_service:offer' %}" target="_blank" rel="noopener">{% translate "Oferta" %}</a>, <a href="{% url 'repair_service:privacy' %}" target="_blank" rel="noopener">{% translate "maxfiylik siyosati" %}</a></span></span>
+      </label>
+      <button class="btn btn--primary btn--lg btn--block">{% translate "Ustaga yuborish" %}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

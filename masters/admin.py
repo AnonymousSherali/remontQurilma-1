@@ -1,11 +1,16 @@
 from django.contrib import admin, messages
+from django.core.exceptions import PermissionDenied
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404
+from django.urls import path, reverse
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import action, display
 
 from repair_service.phone import format_phone
 
-from .models import Category, Master, Review
+from . import documents
+from .models import Category, Master, MasterDocument, Review
 
 
 @admin.register(Category)
@@ -36,26 +41,55 @@ class ReviewInline(TabularInline):
         return False  # baho faqat mijoz tomonidan, ariza orqali
 
 
+class MasterDocumentInline(TabularInline):
+    model = MasterDocument
+    extra = 0
+    can_delete = False
+    fields = ['preview', 'kind', 'created_at']
+    readonly_fields = fields
+    verbose_name_plural = 'Shaxsni tasdiqlovchi hujjatlar (maxfiy)'
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.has_perm('masters.view_masterdocument')
+
+    @display(description='Rasm')
+    def preview(self, obj):
+        if not obj.pk:
+            return '—'
+        url = reverse('admin:masters_master_document', args=[obj.pk])
+        return format_html('<a href="{0}" target="_blank" rel="noopener"><img src="{0}" alt="" '
+                           'style="height:120px;border-radius:6px"></a>', url)
+
+
 @admin.register(Master)
 class MasterAdmin(ModelAdmin):
     list_display = [
         'avatar_name', 'phone_display', 'categories_list', 'rating', 'reviews_count',
-        'verified_badge', 'is_available', 'created_at',
+        'verified_badge', 'id_badge', 'is_available', 'created_at',
     ]
-    list_filter = ['is_verified', 'is_available', 'categories', 'created_at']
+    list_filter = ['is_verified', 'id_status', 'is_available', 'categories', 'created_at']
     list_filter_submit = True
     search_fields = ['full_name', 'phone', 'address']
-    readonly_fields = ['rating_avg', 'reviews_count', 'created_at', 'updated_at', 'map_link']
+    readonly_fields = ['rating_avg', 'reviews_count', 'created_at', 'updated_at', 'map_link', 'id_checked_at']
     autocomplete_fields = ['user']
     filter_horizontal = ['categories']
-    inlines = [ReviewInline]
-    actions = ['verify', 'unverify', 'recalculate']
+    inlines = [MasterDocumentInline, ReviewInline]
+    actions = ['approve_documents', 'verify', 'unverify', 'recalculate']
     list_per_page = 25
 
     fieldsets = [
         ('Usta', {'fields': ['user', 'full_name', 'phone', 'photo', 'categories', 'experience_years', 'bio']}),
         ('Joylashuv', {'fields': ['address', ('latitude', 'longitude'), 'map_link', 'service_radius_km']}),
         ('Holat', {'fields': ['is_verified', 'is_available']}),
+        ('Shaxsni tasdiqlash', {
+            'fields': ['id_status', 'id_note', 'id_checked_at'],
+            'description': "Hujjatlarni pastdagi «Shaxsni tasdiqlovchi hujjatlar» bo'limida ko'ring. "
+                           "«Tasdiqlangan» — profil ham faollashadi; «Rad etilgan» — izohga sababni yozing, "
+                           "usta xabar oladi va qayta yuklaydi.",
+        }),
         ('Tariflar', {'fields': [('promoted_until', 'pro_until')]}),
         ("Pul o'tkazish", {'fields': [('payout_card', 'payout_holder')]}),
         ('Reyting', {'fields': ['rating_avg', 'reviews_count', 'created_at', 'updated_at'], 'classes': ['collapse']}),
@@ -89,6 +123,55 @@ class MasterAdmin(ModelAdmin):
     def verified_badge(self, obj):
         return 'Tasdiqlangan' if obj.is_verified else 'Kutilmoqda'
 
+    @display(description='Hujjatlar', ordering='id_status', label={
+        'Yuklanmagan': 'default', 'Tekshirilmoqda': 'warning', 'Tasdiqlangan': 'success', 'Rad etilgan': 'danger'})
+    def id_badge(self, obj):
+        return obj.get_id_status_display()
+
+    def get_urls(self):
+        return [path('hujjat/<int:pk>/', self.admin_site.admin_view(self.document_file), name='masters_master_document'),
+                *super().get_urls()]
+
+    def document_file(self, request, pk):
+        """Maxfiy hujjat rasmini faqat huquqi bor administratorga beradi (ochiq URL yo'q)."""
+        if not request.user.has_perm('masters.view_masterdocument'):
+            raise PermissionDenied
+        doc = get_object_or_404(MasterDocument, pk=pk)
+        response = FileResponse(doc.file.open('rb'), content_type='image/jpeg')
+        response['Cache-Control'] = 'private, no-store'
+        response['X-Content-Type-Options'] = 'nosniff'
+        response['Content-Disposition'] = 'inline'
+        return response
+
+    def save_model(self, request, obj, form, change):
+        new_status = obj.id_status
+        if change and 'id_status' in form.changed_data:
+            obj.id_status = form.initial.get('id_status', obj.id_status)   # holatni documents.* o'zi qo'yadi
+        super().save_model(request, obj, form, change)
+        if not (change and 'id_status' in form.changed_data):
+            return
+        if new_status == Master.ID_APPROVED:
+            documents.approve(obj)
+            messages.success(request, 'Hujjatlar tasdiqlandi, profil faollashdi, ustaga xabar yuborildi.')
+        elif new_status == Master.ID_REJECTED:
+            try:
+                documents.reject(obj, obj.id_note)
+                messages.warning(request, 'Hujjatlar rad etildi, ustaga sababi yuborildi.')
+            except documents.DocumentError as error:
+                messages.error(request, f'Holat o\'zgarmadi: {error}')
+        else:
+            obj.id_status = new_status
+            obj.save(update_fields=['id_status'])
+
+    @action(description='Hujjatlarni tasdiqlash (va profilni faollashtirish)', icon='badge')
+    def approve_documents(self, request, queryset):
+        count = 0
+        for master in queryset.filter(id_status=Master.ID_PENDING):
+            documents.approve(master)
+            count += 1
+        messages.success(request, f"{count} ta ustaning hujjatlari tasdiqlandi. Faqat «Tekshirilmoqda» holatidagilar "
+                                  "hisobga olinadi.")
+
     @display(description='Xaritada')
     def map_link(self, obj):
         if obj.latitude is None:
@@ -100,8 +183,12 @@ class MasterAdmin(ModelAdmin):
 
     @action(description='Tanlanganlarni tasdiqlash', icon='verified')
     def verify(self, request, queryset):
+        without_docs = queryset.exclude(id_status=Master.ID_APPROVED).count()
         updated = queryset.update(is_verified=True)
         messages.success(request, f'{updated} ta usta tasdiqlandi va saytda ko\'rinadi.')
+        if without_docs:
+            messages.warning(request, f'{without_docs} tasining hujjatlari tekshirilmagan — saytda «Hujjatlari '
+                                      'tekshirilgan» belgisi chiqmaydi.')
 
     @action(description='Tasdiqni bekor qilish (saytdan yashirish)', icon='block')
     def unverify(self, request, queryset):

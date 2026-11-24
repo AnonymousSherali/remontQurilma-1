@@ -110,6 +110,14 @@
               {% if order.master.reviews_count %}<div class="rating">{% stars order.master.rating_avg %} {{ order.master.rating_avg|floatformat:1 }}</div>{% endif %}</div>
           </div>
           {% if show_master_phone and can_act %}<a class="btn btn--block" style="margin-top:1rem" href="tel:{{ order.master.phone }}">📞 {{ order.master.phone|phone }}</a>{% endif %}
+          {% if order.status == 'confirmed' and can_act %}
+            {% if not reorder.1 %}
+              <a class="btn btn--primary btn--block" style="margin-top:.75rem" href="{% url 'repair_service:reorder' order.review_token %}">🔁 {% translate "Shu ustani qayta chaqirish" %}</a>
+              <p class="muted small" style="margin:.4rem 0 0">{% translate "Manzilingiz va ma'lumotlaringiz qayta yozilmaydi — faqat muammoni yozasiz." %}</p>
+            {% elif reorder.1 == 'busy' %}
+              <p class="muted small" style="margin:.75rem 0 0">{% translate "Usta hozir buyurtma qabul qilmayapti." %} <a href="{% url 'masters:list' %}{% if order.category %}?category={{ order.category.slug }}{% endif %}">{% translate "Boshqa usta topish" %} →</a></p>
+            {% endif %}
+          {% endif %}
         {% else %}
           <p class="muted" style="margin:0">{% translate "Operator sizga mos va yaqin ustani biriktirmoqda." %}</p>
         {% endif %}

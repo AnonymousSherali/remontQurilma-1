@@ -1,7 +1,7 @@
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-from .models import Master, Review
+from .models import Master, MasterDocument, Review
 
 
 @receiver(post_save, sender=Review)
@@ -12,3 +12,10 @@ def update_master_rating(sender, instance, **kwargs):
     except Master.DoesNotExist:  # usta o'zi o'chirilayotgan bo'lsa
         return
     master.recalculate_rating()
+
+
+@receiver(post_delete, sender=MasterDocument)
+def delete_document_file(sender, instance, **kwargs):
+    """Hujjat yozuvi o'chsa (usta o'chirilganda kaskad bilan ham) — faylini ham o'chiramiz."""
+    if instance.file:
+        instance.file.delete(save=False)

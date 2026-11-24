@@ -27,6 +27,7 @@ urlpatterns = [
     path('buyurtma/<uuid:token>/kafolat/<int:claim_id>/<slug:action>/', order_views.warranty_action,
          name='warranty_action'),
     path('buyurtma/<uuid:token>/xabar/', order_views.order_chat, name='order_chat'),
+    path('buyurtma/<uuid:token>/qayta/', order_views.reorder, name='reorder'),
     path('buyurtmalarim/', order_views.my_orders, name='my_orders'),
     path('buyurtmalarim/chiqish/', order_views.my_orders_logout, name='my_orders_logout'),
 ]

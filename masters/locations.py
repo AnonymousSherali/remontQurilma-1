@@ -32,6 +32,22 @@ def district_coords(slug):
     return item[1], item[2]
 
 
-def district_name(slug):
+# Ruscha nomlar (SEO sahifalari va /ru/ uchun)
+DISTRICT_NAMES_RU = {
+    'bektemir': 'Бектемир', 'chilonzor': 'Чиланзар', 'mirobod': 'Мирабад', 'mirzo-ulugbek': 'Мирзо-Улугбек',
+    'olmazor': 'Алмазар', 'sergeli': 'Сергели', 'shayxontohur': 'Шайхантахур', 'uchtepa': 'Учтепа',
+    'yakkasaroy': 'Яккасарай', 'yangihayot': 'Янгихаёт', 'yashnobod': 'Яшнабад', 'yunusobod': 'Юнусабад',
+}
+
+
+def district_name(slug, lang=None):
+    """Tuman nomi joriy tilda (lang berilmasa — faol til)."""
     item = _BY_SLUG.get(slug or '')
-    return item[0] if item else ''
+    if not item:
+        return ''
+    if lang is None:
+        from django.utils.translation import get_language
+        lang = get_language() or 'uz'
+    if lang.startswith('ru'):
+        return DISTRICT_NAMES_RU.get(slug, item[0])
+    return item[0]

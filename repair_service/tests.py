@@ -56,7 +56,7 @@ class IndexPageTests(TestCase):
         self.assertContains(response, 'Kran almashtirish')
         self.assertContains(response, 'Toshiba')
         self.assertContains(response, 'Bekzod Karimov')
-        self.assertContains(response, '?category=santexnik')
+        self.assertContains(response, 'href="/ustalar/santexnik/"')
 
     def test_faol_bolmagan_va_tasdiqlanmaganlar_korinmaydi(self):
         Brand.objects.create(name='YashirinBrend', is_active=False)

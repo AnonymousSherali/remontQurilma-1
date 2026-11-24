@@ -18,6 +18,7 @@ urlpatterns = [
     path('kabinet/ochiq/', views.feed_list, name='feed'),
     path('kabinet/ochiq/<int:pk>/olish/', views.feed_claim, name='feed_claim'),
     path('kabinet/profil/', views.profile_edit, name='profile_edit'),
+    path('kabinet/hujjatlar/', views.documents_page, name='documents'),
     path('kabinet/holat/', views.toggle_availability, name='toggle_availability'),
     path('kabinet/buyurtma/<int:pk>/', views.order_detail, name='order'),
     path('kabinet/buyurtma/<int:pk>/narx/', views.quote_propose, name='quote_propose'),
@@ -30,4 +31,8 @@ urlpatterns = [
     path('kabinet/ariza/<int:pk>/<slug:action>/', views.request_action, name='request_action'),
 
     path('baho/<uuid:token>/', views.review_create, name='review'),
+
+    # SEO sahifalari — oxirida: «ustalar/royxatdan-otish/» kabi aniq manzillar ustun turadi
+    path('ustalar/<slug:category>/', views.category_landing, name='category'),
+    path('ustalar/<slug:category>/<slug:district>/', views.category_landing, name='category_district'),
 ]

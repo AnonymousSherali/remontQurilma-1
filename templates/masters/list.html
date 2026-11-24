@@ -1,15 +1,25 @@
 {% extends "base.html" %}
-{% load i18n ui %}
+{% load i18n humanize ui %}
 
-{% block title %}{% if category %}{{ category|tr:"name" }} — {% endif %}{% translate "Ustalar" %}{% if location_label %} ({{ location_label }}){% endif %} | {{ SITE.name }}{% endblock %}
-{% block description %}{% if category %}{% blocktranslate with c=category|tr:"name" %}{{ c }}: yaqin atrofdagi tekshirilgan ustalar, baholar va masofa.{% endblocktranslate %}{% else %}{% translate "Yaqin atrofdagi tekshirilgan ustalar: santexnik, elektrik, maishiy texnika." %}{% endif %}{% endblock %}
+{% block title %}{% if seo %}{{ seo.title }}{% else %}{% if category %}{{ category|tr:"name" }} — {% endif %}{% translate "Ustalar" %}{% if location_label %} ({{ location_label }}){% endif %}{% endif %} | {{ SITE.name }}{% endblock %}
+{% block description %}{% if seo %}{{ seo.description }}{% elif category %}{% blocktranslate with c=category|tr:"name" %}{{ c }}: yaqin atrofdagi tekshirilgan ustalar, baholar va masofa.{% endblocktranslate %}{% else %}{% translate "Yaqin atrofdagi tekshirilgan ustalar: santexnik, elektrik, maishiy texnika." %}{% endif %}{% endblock %}
+{% block og_title %}{% if seo %}{{ seo.h1 }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block og_description %}{% if seo %}{{ seo.description }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block head %}{% if seo %}{% jsonld seo.jsonld %}{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container page-head">
-  <h1 style="font-size:clamp(1.6rem,3.5vw,2.4rem)">{% if category %}{{ category.icon }} {{ category|tr:"name" }}{% else %}{% translate "Ustalar" %}{% endif %}</h1>
+  {% if seo %}
+  <nav class="crumbs small" aria-label="{% translate 'Joylashuv' %}">{% for name, url in seo.crumbs %}{% if not forloop.last %}<a href="{{ url }}">{{ name }}</a> <span aria-hidden="true">›</span> {% else %}<span aria-current="page">{{ name }}</span>{% endif %}{% endfor %}</nav>
+  {% endif %}
+  <h1 style="font-size:clamp(1.6rem,3.5vw,2.4rem)">{% if seo %}{{ category.icon }} {{ seo.h1 }}{% elif category %}{{ category.icon }} {{ category|tr:"name" }}{% else %}{% translate "Ustalar" %}{% endif %}</h1>
+  {% if seo %}
+  <p class="muted">{% blocktranslate count n=total %}{{ n }} ta tekshirilgan usta{% plural %}{{ n }} ta tekshirilgan usta{% endblocktranslate %}{% if seo.avg %} · ★ {{ seo.avg }} ({% blocktranslate count n=seo.reviews %}{{ n }} ta baho{% plural %}{{ n }} ta baho{% endblocktranslate %}){% endif %}{% if seo.min_price %} · {% blocktranslate with p=seo.min_price|floatformat:0|intcomma %}narxlar {{ p }} so'mdan{% endblocktranslate %}{% endif %}</p>
+  {% else %}
   <p class="muted">{% if location_label %}{% blocktranslate with place=location_label r=radius %}{{ place }} atrofida {{ r }} km radiusda{% endblocktranslate %}{% else %}{% translate "Joylashuvni yoqsangiz, eng yaqin ustalarni birinchi ko'rsatamiz" %}{% endif %}</p>
+  {% endif %}
 
-  <form class="card filters" method="get" action="" role="search">
+  <form class="card filters" method="get" action="{% url 'masters:list' %}" role="search">
     <div class="field">
       <label for="f-category">{% translate "Yo'nalish" %}</label>
       <select id="f-category" name="category">
@@ -92,5 +102,6 @@
     </aside>
     {% endif %}
   </div>
+  {% if seo %}{% include "masters/_seo_block.html" %}{% endif %}
 </div>
 {% endblock %}
