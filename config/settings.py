@@ -110,7 +110,7 @@ def database_from_url(url):
             'PASSWORD': unquote(parsed.password or ''),
             'HOST': parsed.hostname or '',
             'PORT': str(parsed.port or ''),
-            'CONN_MAX_AGE': int(os.environ.get('DATABASE_CONN_MAX_AGE', 60)),
+            'CONN_MAX_AGE': int(os.environ.get('DATABASE_CONN_MAX_AGE') or 60),
             'CONN_HEALTH_CHECKS': True,
         }
     if parsed.scheme == 'sqlite':
@@ -164,11 +164,11 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = Path(os.environ.get('DJANGO_MEDIA_ROOT', BASE_DIR / 'media'))
-STATIC_ROOT = Path(os.environ.get('DJANGO_STATIC_ROOT', STATIC_ROOT))
+MEDIA_ROOT = Path(os.environ.get('DJANGO_MEDIA_ROOT') or BASE_DIR / 'media')  # bo'sh qiymat — standart
+STATIC_ROOT = Path(os.environ.get('DJANGO_STATIC_ROOT') or STATIC_ROOT)
 # Maxfiy fayllar (ustalarning shaxsini tasdiqlovchi hujjatlari) — MEDIA_ROOT dan TASHQARIDA,
 # veb-server ularni hech qachon to'g'ridan-to'g'ri bermaydi; faqat admin ko'rish sahifasi orqali.
-PRIVATE_MEDIA_ROOT = Path(os.environ.get('DJANGO_PRIVATE_MEDIA_ROOT', BASE_DIR / 'private_media'))
+PRIVATE_MEDIA_ROOT = Path(os.environ.get('DJANGO_PRIVATE_MEDIA_ROOT') or BASE_DIR / 'private_media')
 
 # --- Default primary key ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -294,7 +294,7 @@ CHAT_SMS_INTERVAL_MINUTES = int(os.environ.get('CHAT_SMS_INTERVAL_MINUTES', 30))
 # --- Ustalar hujjatlari ---
 # Tasdiqlangandan shuncha kun o'tgach pasport/selfi fayllari o'chiriladi (0 — saqlanadi).
 # Muddatni yurist bilan belgilang: kamroq saqlash — kamroq xavf.
-ID_DOCUMENTS_KEEP_DAYS = int(os.environ.get('ID_DOCUMENTS_KEEP_DAYS', 0))
+ID_DOCUMENTS_KEEP_DAYS = int(os.environ.get('ID_DOCUMENTS_KEEP_DAYS') or 0)
 
 # --- SEO ---
 # Sinov serverida True qiling — robots.txt butun saytni qidiruvdan yopadi
