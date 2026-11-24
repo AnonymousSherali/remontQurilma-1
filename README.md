@@ -237,10 +237,53 @@ kafolat) sozlamalardan olinadi, shuning uchun tizim bilan doim mos turadi.
 
 > ⚠️ **Bu matnlar — namunaviy loyiha, yurist tekshirmagan.** Sahifalarda «Loyiha»
 > ogohlantirishi chiqadi. Yurist tasdiqlagach `.env` da `LEGAL_DRAFT=False` qiling va
-> `SITE_LEGAL_NAME`, `SITE_LEGAL_INN`, `SITE_LEGAL_ADDRESS` ni to'ldiring. Yurist bilan
-> alohida aniqlang: «Shaxsga doir ma'lumotlar to'g'risida»gi qonun O'zbekiston fuqarolari
-> ma'lumotlarini mamlakat hududidagi serverlarda saqlashni talab qilishi mumkin — hosting
-> tanlashda buni hisobga oling.
+> `SITE_LEGAL_NAME`, `SITE_LEGAL_INN`, `SITE_LEGAL_ADDRESS` ni to'ldiring.
+> Ma'lumotlarni qayerda saqlash — «Production» bo'limidagi eslatmaga qarang.
+
+## Shaxsni tasdiqlash (ustalar)
+
+Usta kabinetda «🪪 Hujjatlar» (`/kabinet/hujjatlar/`) sahifasida pasport/ID-karta va hujjat bilan
+selfi yuklaydi (sertifikat — ixtiyoriy). Administrator `/admin/` → Ustalar → usta sahifasida
+rasmlarni ko'radi va holatni «Tasdiqlangan» yoki «Rad etilgan» (sababi bilan) qiladi —
+usta SMS/Telegram xabar oladi. Tasdiqlanganda profil ham faollashadi va saytda
+«🪪 Hujjatlari tekshirilgan» belgisi chiqadi. Ro'yxatda «Hujjatlarni tasdiqlash» ommaviy amali bor.
+
+- Fayllar `PRIVATE_MEDIA_ROOT` da — `MEDIA_ROOT` dan tashqarida, nginx ularni bermaydi, ochiq
+  havolasi yo'q. Ko'rish faqat admin sahifasi orqali va faqat **«Can view usta hujjati»**
+  huquqi bor xodimga (superuser'dan tashqari bu huquqni alohida bering).
+- Rasmdan EXIF (GPS) o'chiriladi, fayl nomi tasodifiy.
+- `ID_DOCUMENTS_KEEP_DAYS=N` — tasdiqlangandan N kun o'tgach fayllar o'chiriladi (holat saqlanadi).
+  Standart 0 — saqlanadi; muddatni yurist bilan belgilang.
+
+> ⚠️ Hujjat bilan selfi (yuz tasviri) qonunchilikda **biometrik ma'lumot** hisoblanishi mumkin —
+> u holda uni faqat O'zbekiston hududidagi serverda saqlash talab qilinadi (pastdagi
+> «Production» eslatmasi). Yurist bilan aniqlang; kerak bo'lsa selfini so'ramang yoki
+> `PRIVATE_MEDIA_ROOT` ni mahalliy serverga qo'ying.
+
+## Ustani qayta chaqirish
+
+Tasdiqlangan buyurtma sahifasida va «Mening buyurtmalarim» ro'yxatida «🔁 Shu ustani qayta
+chaqirish» tugmasi chiqadi (SMS kod bilan tasdiqlangan raqamga). Ism, telefon, manzil va
+joylashuv avvalgi buyurtmadan olinadi — mijoz faqat muammoni va qulay vaqtni yozadi; buyurtma
+to'g'ridan-to'g'ri o'sha ustaga boradi. Usta band yoki saytda bo'lmasa — shu yo'nalishdagi
+boshqa ustalar ro'yxatiga yo'naltiriladi.
+
+## SEO
+
+- **Yo'nalish va tuman sahifalari:** `/ustalar/santexnik/`, `/ustalar/santexnik/chilonzor/`
+  (ruscha `/ru/...`) — sarlavha, tavsif, ustalar soni, o'rtacha baho, katalog narxlari,
+  qo'shni tumanlar va boshqa yo'nalishlarga havolalar. Ustasi yo'q sahifa `noindex`.
+- **`/sitemap.xml`** — statik sahifalar, ustasi bor yo'nalish/tuman sahifalari va usta
+  profillari, ikki tilda (`hreflang`, `x-default`). Google Search Console va Yandex Webmaster'ga
+  shu manzilni qo'shing.
+- **`/robots.txt`** — kabinet, buyurtma, to'lov va API sahifalari yopiq; shaxsiy koordinatali
+  qidiruv (`?lat=`) indekslanmaydi. Sinov serverida `SEO_DISALLOW_ALL=True` — butun sayt yopiladi.
+- `canonical`: filtrli qidiruv (`/ustalar/?category=santexnik&district=chilonzor`) toza manzilga ishora qiladi.
+- **JSON-LD:** Organization va WebSite (bosh sahifa), BreadcrumbList va ItemList (yo'nalish
+  sahifalari), usta profili (`HomeAndConstructionBusiness`, baho bilan; telefon va aniq manzilsiz).
+- **Open Graph / Twitter:** Telegram va boshqa ilovalarda havola rasm bilan ochiladi
+  (`static/img/og.png`; sayt nomini o'zgartirsangiz, rasmni ham almashtiring; usta profilida — usta rasmi).
+- Footer'da barcha yo'nalishlarga ichki havolalar.
 
 ## Telegram bot
 
@@ -338,6 +381,10 @@ yetarli. Mavjud arizalar saqlanadi — har biriga alohida baho kaliti beriladi.
 | `/buyurtma/<kalit>/` | Mijozning buyurtma sahifasi (kuzatish, to'lov, yozishma, kafolat) |
 | `/oferta/`, `/maxfiylik/` | Ommaviy oferta va maxfiylik siyosati |
 | `/admin/statistika/` | Statistika (faqat administrator) |
+| `/ustalar/<yo'nalish>/`, `/ustalar/<yo'nalish>/<tuman>/` | SEO sahifalari |
+| `/kabinet/hujjatlar/` | Usta: shaxsni tasdiqlash |
+| `/buyurtma/<kalit>/qayta/` | Mijoz: ustani qayta chaqirish |
+| `/sitemap.xml`, `/robots.txt`, `/healthz/` | Qidiruv tizimlari va monitoring uchun |
 | `/baho/<kalit>/` | Mijoz bahosi |
 | `/api/ustalar/?lat=41.31&lng=69.28&category=elektrik` | JSON API (mobil ilova uchun) |
 
@@ -354,6 +401,9 @@ masters/             ustalar, kategoriyalar, baholar, qidiruv
 templates/           base.html, bosh sahifa, masters/*, admin/index.html
 static/css/app.css   dizayn tizimi (framework'siz, tungi rejim bilan)
 static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuery'siz)
+deploy/              serverga o'rnatish: gunicorn, systemd, nginx, cron, deploy.sh, backup.sh
+docs/                integratsiyalarni haqiqiy muhitda sinash tartibi
+.github/workflows/   testlar har push'da SQLite va PostgreSQL+Redis'da
 ```
 
 ## Testlar
@@ -362,40 +412,39 @@ static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuer
 python manage.py test
 ```
 
-198 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+222 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
 bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
 (rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
 (muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click va Uzum protokollari, Telegram bot (ulash, tugmalar, rasm, xavfsizlik), tariflar,
 ochiq buyurtmalar lentasi, kafolat, kelish vaqti, yozishma, o'tkazmalar hisoboti (Excel), statistika,
-yuridik sahifalar.
+yuridik sahifalar, production tekshiruvlari, `check_integrations`, ustalar hujjatlari (maxfiylik, huquqlar),
+qayta chaqirish, SEO (sitemap, robots, canonical, JSON-LD).
+
+Production'dagidek PostgreSQL va Redis bilan:
+
+```bash
+DATABASE_URL=postgres://user:parol@127.0.0.1:5432/techservice REDIS_URL=redis://127.0.0.1:6379/1 \
+    python manage.py test --parallel 1
+```
 
 ## Production
 
-`.env` da:
-```env
-DJANGO_DEBUG=False
-DJANGO_SECRET_KEY=<python -c "from django.core.management.utils import get_random_secret_key as g; print(g())">
-DJANGO_ALLOWED_HOSTS=techservice.uz,www.techservice.uz
-DJANGO_CSRF_TRUSTED_ORIGINS=https://techservice.uz
-```
+To'liq qo'llanma: **[deploy/README.md](deploy/README.md)** — Ubuntu VPS, PostgreSQL, Redis,
+gunicorn (systemd), nginx + HTTPS (certbot), cron, kunlik zaxira va tiklash, yangilash skripti.
 
-`DEBUG=False` bo'lganda HTTPS'ga yo'naltirish, HSTS, Secure cookie'lar avtomatik
-yoqiladi. Tekshirish: `python manage.py check --deploy`.
+Qisqacha:
 
-```bash
-python manage.py collectstatic
-gunicorn config.wsgi:application --bind 127.0.0.1:8000 --workers 3
-```
-
-Nginx `/static/` → `staticfiles/`, `/media/` → `media/` ni o'zi berishi va
-`X-Real-IP` sarlavhasini qo'yishi kerak (spam cheklovi shu IP bo'yicha ishlaydi).
-
-**Muhim:**
+- `requirements-prod.txt` — gunicorn, psycopg, redis.
+- `.env`: `DJANGO_DEBUG=False`, `DJANGO_SECRET_KEY` (standart kalit bilan sayt ishga tushmaydi),
+  `DATABASE_URL`, `REDIS_URL`, `SITE_URL=https://...`, `DJANGO_MEDIA_ROOT`, `DJANGO_PRIVATE_MEDIA_ROOT`.
+- `python manage.py check --deploy` — Django xavfsizlik tekshiruvlari + loyiha tekshiruvlari
+  (`techservice.W001…W008`: kesh, baza, SMS, SITE_URL, to'lov tizimlari, demo to'lov, oferta,
+  maxfiy papka). Hammasi tuzatilgach «no issues».
+- `python manage.py check_integrations [--live]` — Payme/Click/Uzum kalitlari, Eskiz, Telegram
+  webhook va sayt manzilini tekshiradi; haqiqiy sinov tartibi — [docs/INTEGRATSIYALAR.md](docs/INTEGRATSIYALAR.md).
+- `/healthz/` — tashqi monitoring uchun (baza va kesh).
 - **HTTPS majburiy** — brauzerlar geolokatsiyani faqat HTTPS (yoki localhost) da beradi.
-- Bir nechta gunicorn worker bo'lsa, `CACHES` ni Redis'ga o'tkazing (spam hisoblagichi umumiy bo'lishi uchun).
-- SQLite o'rniga PostgreSQL tavsiya etiladi.
 - Shaxsga doir ma'lumotlar: 2026-yil 27-martdan kuchga kirgan o'zgartirishlarga
   ko'ra O'zbekistonda saqlash majburiyati asosan biometrik va genetik ma'lumotlarga
   qoldirilgan; boshqalarini chet elda saqlash shartlar bilan ruxsat etilgan.
   Hosting tanlashdan oldin amaldagi tahririni lex.uz da va yurist bilan tekshiring.
-- `process_orders` ni cron'ga qo'shing (yuqoriga qarang).

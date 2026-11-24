@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 07:07+0500\n"
+"POT-Creation-Date: 2026-11-24 20:00+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Hujjatlar allaqachon yuborilgan."
+msgstr "Документы уже отправлены."
+
+#, python-format
+msgid "Yuklang: %(list)s"
+msgstr "Загрузите: %(list)s"
+
+#, python-format
+msgid ""
+"Hujjatlaringiz tasdiqlandi — profilingiz saytda ko'rinadi. Kabinet: %(url)s"
+msgstr ""
+"Ваши документы подтверждены — профиль виден на сайте. Кабинет: %(url)s"
+
+#, python-format
+msgid "Hujjatlaringiz qabul qilinmadi: %(reason)s. Qayta yuklang: %(url)s"
+msgstr "Документы не приняты: %(reason)s. Загрузите заново: %(url)s"
 
 msgid ""
 "Buyurtma olish uchun profilingiz tasdiqlangan va «buyurtma qabul qilaman» "
@@ -210,6 +227,67 @@ msgstr "Новый пароль"
 msgid "Bu raqam bilan ro'yxatdan o'tilmagan"
 msgstr "Этот номер не зарегистрирован"
 
+msgid "Yuklanmagan"
+msgstr "Не загружены"
+
+msgid "Tekshirilmoqda"
+msgstr "На проверке"
+
+msgid "Tasdiqlangan"
+msgstr "Подтверждён"
+
+msgid "Rad etilgan"
+msgstr "Отклонено"
+
+msgid "Pasport yoki ID-karta (rasmli sahifa)"
+msgstr "Паспорт или ID-карта (страница с фото)"
+
+msgid "Hujjat bilan selfi"
+msgstr "Селфи с документом"
+
+msgid "Malaka sertifikati yoki diplom"
+msgstr "Сертификат о квалификации или диплом"
+
+#, python-format
+msgid "%(category)s — %(district)s tumani"
+msgstr "%(category)s — район %(district)s"
+
+#, python-format
+msgid "%(category)s %(district)s tumanida: %(n)s ta usta, baholar va narxlar"
+msgstr "%(category)s в районе %(district)s: мастеров — %(n)s, отзывы и цены"
+
+#, python-format
+msgid "%(category)s — Toshkent"
+msgstr "%(category)s — Ташкент"
+
+#, python-format
+msgid "%(category)s Toshkentda: %(n)s ta tekshirilgan usta, narxlar"
+msgstr "%(category)s в Ташкенте: проверенных мастеров — %(n)s, цены"
+
+#, python-format
+msgid "%(n)s ta tekshirilgan usta"
+msgid_plural "%(n)s ta tekshirilgan usta"
+msgstr[0] "%(n)s проверенный мастер"
+msgstr[1] "%(n)s проверенных мастера"
+msgstr[2] "%(n)s проверенных мастеров"
+
+#, python-format
+msgid "o'rtacha baho %(avg)s (%(reviews)s ta baho)"
+msgstr "средняя оценка %(avg)s (отзывов: %(reviews)s)"
+
+#, python-format
+msgid "narxlar %(price)s so'mdan"
+msgstr "цены от %(price)s сум"
+
+msgid "Ariza bepul, pul ish bajarilgach ustaga o'tadi."
+msgstr "Заявка бесплатна, деньги переходят мастеру после выполнения работы."
+
+msgid "Bosh sahifa"
+msgstr "Главная"
+
+msgid "Ustalar"
+msgstr "Мастера"
+
 #, python-format
 msgid "%(n)s yulduz"
 msgid_plural "%(n)s yulduz"
@@ -258,6 +336,10 @@ msgstr "Заказ ваш! Свяжитесь с клиентом и догов�
 
 msgid "Profil saqlandi."
 msgstr "Профиль сохранён."
+
+msgid "Hujjatlar yuborildi. Administrator 1 ish kuni ichida tekshiradi."
+msgstr ""
+"Документы отправлены. Администратор проверит их в течение 1 рабочего дня."
 
 msgid "Endi siz buyurtma qabul qilasiz."
 msgstr "Теперь вы принимаете заказы."
@@ -323,9 +405,6 @@ msgstr "Ожидает ответа клиента"
 
 msgid "Kelishilgan"
 msgstr "Согласовано"
-
-msgid "Rad etilgan"
-msgstr "Отклонено"
 
 msgid "To'lanmagan"
 msgstr "Не оплачено"
@@ -715,6 +794,24 @@ msgstr "Спасибо! Обращение закрыто."
 msgid "Murojaat administratorga o'tkazildi. Siz bilan bog'lanamiz."
 msgstr "Обращение передано администратору. Мы свяжемся с вами."
 
+#, python-format
+msgid "%(name)s hozir buyurtma qabul qilmayapti. Boshqa ustani tanlang."
+msgstr "%(name)s сейчас не принимает заказы. Выберите другого мастера."
+
+msgid "Bu usta hozir saytda ishlamayapti. Boshqa ustani tanlang."
+msgstr "Этот мастер сейчас не работает на сайте. Выберите другого мастера."
+
+msgid "Juda ko'p ariza yuborildi. Iltimos, birozdan keyin urinib ko'ring."
+msgstr "Слишком много заявок. Пожалуйста, попробуйте позже."
+
+#, python-format
+msgid "Qayta chaqiruv: #%(id)s"
+msgstr "Повторный вызов: #%(id)s"
+
+#, python-format
+msgid "Buyurtma %(name)sga yuborildi. Usta tez orada bog'lanadi."
+msgstr "Заказ отправлен мастеру %(name)s. Мастер скоро свяжется с вами."
+
 msgid "Rasm tanlang"
 msgstr "Выберите фото"
 
@@ -1085,6 +1182,13 @@ msgstr ""
 msgid "ishonchli ustalar"
 msgstr "надёжные мастера"
 
+msgid ""
+"Eng yaqin tekshirilgan ustani toping, baholarini ko'ring va bepul ariza "
+"qoldiring. Pul ish bajarilgach ustaga o'tadi."
+msgstr ""
+"Найдите ближайшего проверенного мастера, посмотрите отзывы и оставьте "
+"бесплатную заявку. Деньги переходят мастеру после выполнения работы."
+
 msgid "Asosiy mazmunga o'tish"
 msgstr "Перейти к основному содержимому"
 
@@ -1093,9 +1197,6 @@ msgstr "Меню"
 
 msgid "Asosiy menyu"
 msgstr "Главное меню"
-
-msgid "Ustalar"
-msgstr "Мастера"
 
 msgid "Narxlar"
 msgstr "Цены"
@@ -1154,6 +1255,9 @@ msgstr "Вход в кабинет"
 
 msgid "Bog'lanish"
 msgstr "Контакты"
+
+msgid "Xizmatlar"
+msgstr "Услуги"
 
 msgid "Barcha huquqlar himoyalangan."
 msgstr "Все права защищены."
@@ -1587,11 +1691,54 @@ msgid "Xarita yuklansa, joyingizni bosib ham belgilashingiz mumkin."
 msgstr "Если карта загрузилась, место можно отметить кликом."
 
 #, python-format
+msgid "%(c)s: narxlar"
+msgstr "%(c)s: цены"
+
+msgid "Barcha narxlar"
+msgstr "Все цены"
+
+#, python-format
+msgid "%(c)s — tumanlar bo'yicha"
+msgstr "%(c)s — по районам"
+
+#, python-format
+msgid "%(d)s tumanidagi boshqa ustalar"
+msgstr "Другие мастера в районе %(d)s"
+
+msgid "Boshqa yo'nalishlar"
+msgstr "Другие направления"
+
+msgid ""
+"Ustani tanlang yoki bepul ariza qoldiring — yaqin atrofdagi ustalar ko'radi."
+msgstr ""
+"Выберите мастера или оставьте бесплатную заявку — её увидят мастера "
+"поблизости."
+
+msgid ""
+"Usta muammoni ko'rib narx taklif qiladi. Rozi bo'lmaguningizcha ish "
+"boshlanmaydi."
+msgstr ""
+"Мастер осмотрит проблему и предложит цену. Работа не начнётся без вашего "
+"согласия."
+
+msgid ""
+"Onlayn to'lov platformada ushlab turiladi va ish bajarilgach ustaga o'tadi."
+msgstr ""
+"Онлайн-оплата удерживается платформой и переходит мастеру после выполнения "
+"работы."
+
+#, python-format
+msgid "Ishga %(n)s kun kafolat: muammo qaytalansa, usta bepul tuzatadi."
+msgstr ""
+"Гарантия на работу %(n)s дней: если проблема повторится, мастер исправит "
+"бесплатно."
+
+msgid "Ishni tasdiqlab, ustani baholaysiz."
+msgstr "Вы подтверждаете работу и оцениваете мастера."
+
+#, python-format
 msgid "Salom, %(name)s"
 msgstr "Здравствуйте, %(name)s"
-
-msgid "Tasdiqlangan"
-msgstr "Подтверждён"
 
 msgid "Tekshiruvda"
 msgstr "На проверке"
@@ -1614,6 +1761,9 @@ msgstr "Тарифы"
 msgid "Profil"
 msgstr "Профиль"
 
+msgid "Hujjatlar"
+msgstr "Документы"
+
 msgid "Ommaviy sahifa"
 msgstr "Публичная страница"
 
@@ -1629,6 +1779,20 @@ msgstr "Клиент сообщил о проблеме — исправьте �
 
 msgid "Ochish"
 msgstr "Открыть"
+
+msgid "Hujjatlaringiz qabul qilinmadi."
+msgstr "Документы не приняты."
+
+msgid "Shaxsingizni tasdiqlang."
+msgstr "Подтвердите свою личность."
+
+msgid ""
+"Pasport va selfi yuklang — tekshirilgan ustalarga mijozlar ko'proq ishonadi."
+msgstr ""
+"Загрузите паспорт и селфи — проверенным мастерам клиенты доверяют больше."
+
+msgid "Yuklash"
+msgstr "Загрузить"
 
 msgid "Karta kiritilmagan."
 msgstr "Карта не указана."
@@ -1723,6 +1887,12 @@ msgstr "Профиль ещё не подтверждён — клиенты е�
 msgid "Tekshirilgan usta"
 msgstr "Проверенный мастер"
 
+msgid "Administrator usta hujjatlarini tekshirgan"
+msgstr "Администратор проверил документы мастера"
+
+msgid "Hujjatlari tekshirilgan"
+msgstr "Документы проверены"
+
 msgid "Hali baholanmagan — birinchi mijoz bo'ling"
 msgstr "Оценок пока нет — станьте первым клиентом"
 
@@ -1801,6 +1971,62 @@ msgstr "Отправить заявку мастеру"
 msgid "Ustaning ish hududi"
 msgstr "Район работы мастера"
 
+msgid "Shaxsni tasdiqlash"
+msgstr "Проверка личности"
+
+msgid ""
+"Mijozlar uyiga begona odamni kiritadi — shuning uchun har bir ustaning "
+"shaxsini tekshiramiz. Tasdiqlangan ustalar profilida «Hujjatlari "
+"tekshirilgan» belgisi chiqadi va ularga ko'proq ishonishadi."
+msgstr ""
+"Клиенты впускают в дом незнакомого человека — поэтому мы проверяем личность "
+"каждого мастера. В профиле проверенных мастеров появляется значок «Документы"
+" проверены», и им доверяют больше."
+
+msgid "Hujjatlaringiz tasdiqlangan"
+msgstr "Ваши документы подтверждены"
+
+msgid ""
+"administrator 1 ish kuni ichida ko'rib chiqadi. Natija haqida xabar olasiz."
+msgstr ""
+"администратор проверит их в течение 1 рабочего дня. Вы получите уведомление "
+"о результате."
+
+msgid "Hujjatlar qabul qilinmadi"
+msgstr "Документы не приняты"
+
+msgid "Qayta yuklang."
+msgstr "Загрузите заново."
+
+msgid "ixtiyoriy"
+msgstr "необязательно"
+
+msgid ""
+"Rasm, F.I.Sh. va hujjat raqami aniq o'qiladigan bo'lsin. Yaltiramasin, "
+"burchaklari kesilmasin."
+msgstr ""
+"Фото, ФИО и номер документа должны чётко читаться. Без бликов, углы не "
+"обрезаны."
+
+msgid ""
+"Hujjatni yuzingiz yonida ushlab rasmga tushing — yuz va hujjat aniq "
+"ko'rinsin."
+msgstr ""
+"Сфотографируйтесь, держа документ рядом с лицом, — лицо и документ должны "
+"быть хорошо видны."
+
+msgid ""
+"Hujjatlar saytda e'lon qilinmaydi va mijozlarga ko'rsatilmaydi. Ular yopiq "
+"joyda saqlanadi va faqat tekshiruvchi administrator ko'radi. Rasmdagi "
+"joylashuv ma'lumotlari (GPS) avtomatik o'chiriladi."
+msgstr ""
+"Документы не публикуются на сайте и не показываются клиентам. Они хранятся в"
+" закрытом хранилище, их видит только проверяющий администратор. Данные о "
+"местоположении (GPS) в фото удаляются автоматически."
+
+msgid "Tekshiruvga yuborish"
+msgstr "Отправить на проверку"
+
 msgid ""
 "Yo'nalishingiz va hududingizga mos, hali ustasi yo'q buyurtmalar. Birinchi "
 "bo'lib olgan usta bajaradi."
@@ -1856,6 +2082,10 @@ msgstr "%(c)s: проверенные мастера рядом, отзывы и
 msgid ""
 "Yaqin atrofdagi tekshirilgan ustalar: santexnik, elektrik, maishiy texnika."
 msgstr "Проверенные мастера рядом: сантехники, электрики, бытовая техника."
+
+#, python-format
+msgid "narxlar %(p)s so'mdan"
+msgstr "цены от %(p)s сум"
 
 #, python-format
 msgid "%(place)s atrofida %(r)s km radiusda"
@@ -2166,9 +2396,6 @@ msgstr "Фото пока нет."
 msgid "Izoh (ixtiyoriy)"
 msgstr "Подпись (необязательно)"
 
-msgid "Yuklash"
-msgstr "Загрузить"
-
 #, python-format
 msgid ""
 "JPG, PNG yoki WEBP, 10 MB gacha, ko'pi bilan %(n)s ta. Joylashuv "
@@ -2336,6 +2563,19 @@ msgstr "Разрешить"
 msgid "Tarix"
 msgstr "История"
 
+msgid "Shu ustani qayta chaqirish"
+msgstr "Вызвать этого мастера снова"
+
+msgid ""
+"Manzilingiz va ma'lumotlaringiz qayta yozilmaydi — faqat muammoni yozasiz."
+msgstr "Адрес и данные вводить заново не нужно — опишите только задачу."
+
+msgid "Usta hozir buyurtma qabul qilmayapti."
+msgstr "Мастер сейчас не принимает заказы."
+
+msgid "Boshqa usta topish"
+msgstr "Найти другого мастера"
+
 msgid "Operator sizga mos va yaqin ustani biriktirmoqda."
 msgstr "Оператор подбирает подходящего мастера рядом с вами."
 
@@ -2482,8 +2722,46 @@ msgstr ""
 "Введите номер, с которого оставляли заявку, — войдёте по SMS-коду. Пароль не"
 " нужен."
 
+msgid "Qayta chaqirish"
+msgstr "Вызвать снова"
+
 msgid "Bu raqam bilan buyurtma topilmadi."
 msgstr "По этому номеру заказы не найдены."
+
+msgid "Ustani qayta chaqirish"
+msgstr "Повторный вызов мастера"
+
+msgid "Bu safar nima qilish kerak?"
+msgstr "Что нужно сделать в этот раз?"
+
+msgid "Masalan: boshqa xonadagi rozetkani ham almashtirish"
+msgstr "Например: заменить розетку ещё в одной комнате"
+
+msgid "Oldingi buyurtma"
+msgstr "Предыдущий заказ"
+
+msgid "Usta qachon kelsin?"
+msgstr "Когда приехать мастеру?"
+
+msgid "Imkon qadar tez"
+msgstr "Как можно скорее"
+
+msgid "Farqi yo'q"
+msgstr "Без разницы"
+
+msgid ""
+"Shaxsiy ma'lumotlarim buyurtma bo'yicha bog'lanish uchun qayta ishlanishiga "
+"roziman"
+msgstr "Согласен на обработку персональных данных для связи по заказу"
+
+msgid "Oferta"
+msgstr "Оферта"
+
+msgid "maxfiylik siyosati"
+msgstr "политика конфиденциальности"
+
+msgid "Ustaga yuborish"
+msgstr "Отправить мастеру"
 
 msgid "Pullik joylashuv"
 msgstr "Платное размещение"
@@ -2563,15 +2841,6 @@ msgstr ""
 "Чтобы мастера поблизости быстрее увидели ваш заказ. Точный адрес мастер "
 "увидит только после того, как возьмёт заказ."
 
-msgid "Usta qachon kelsin?"
-msgstr "Когда приехать мастеру?"
-
-msgid "Imkon qadar tez"
-msgstr "Как можно скорее"
-
-msgid "Farqi yo'q"
-msgstr "Без разницы"
-
 msgid ""
 "Aniq vaqtni usta buyurtmani qabul qilgach belgilaydi — sizga xabar keladi."
 msgstr ""
@@ -2582,17 +2851,6 @@ msgstr "Кратко опишите проблему"
 
 msgid "Masalan: oshxonada kran oqyapti / kir mashina suvni chiqarmayapti"
 msgstr "Например: течёт кран на кухне / стиральная машина не сливает воду"
-
-msgid ""
-"Shaxsiy ma'lumotlarim buyurtma bo'yicha bog'lanish uchun qayta ishlanishiga "
-"roziman"
-msgstr "Согласен на обработку персональных данных для связи по заказу"
-
-msgid "Oferta"
-msgstr "Оферта"
-
-msgid "maxfiylik siyosati"
-msgstr "политика конфиденциальности"
 
 msgid "Ariza yuborish"
 msgstr "Отправить заявку"
@@ -2694,9 +2952,6 @@ msgstr "Не удалось отправить заявку"
 
 msgid "Buyurtma holatini SMS'dagi havola orqali kuzatishingiz mumkin."
 msgstr "Статус заказа можно отслеживать по ссылке из SMS."
-
-msgid "Bosh sahifa"
-msgstr "Главная"
 
 #~ msgid ""
 #~ "Shaxsiy ma'lumotlar faqat buyurtma bo'yicha bog'lanish uchun ishlatiladi."

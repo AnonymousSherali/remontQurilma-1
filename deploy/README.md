@@ -134,6 +134,7 @@ sudo -u techservice /srv/techservice/app/deploy/scripts/deploy.sh
 
 ## Ma'lumotlar joylashuvi
 
-«Shaxsga doir ma'lumotlar to'g'risida»gi qonun O'zbekiston fuqarolari ma'lumotlarini
-mamlakat hududidagi serverlarda saqlashni talab qilishi mumkin — VPS'ni tanlashdan oldin
-yurist bilan aniqlang (mahalliy provayderlar: UZINFOCOM, Billur.com va boshqalar).
+2026-yil 27-martdan kuchga kirgan o'zgartirishlarga ko'ra O'zbekistonda saqlash majburiyati
+asosan **biometrik va genetik** ma'lumotlarga qoldirilgan. Ustalarning hujjat bilan selfisi
+(yuz tasviri) biometrik ma'lumot hisoblanishi mumkin — u holda `PRIVATE_MEDIA_ROOT` mahalliy
+serverda bo'lishi kerak. Hosting tanlashdan oldin amaldagi tahririni lex.uz da va yurist bilan tekshiring.
