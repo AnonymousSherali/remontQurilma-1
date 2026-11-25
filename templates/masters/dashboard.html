@@ -181,7 +181,10 @@
       </div>
       {% if referrals %}<p class="small" style="margin:.5rem 0 0">{% for r in referrals %}{{ r.full_name }}{% if r.referral_rewarded %} ✓{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</p>{% endif %}
       <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
-      <p class="small muted" style="margin:0">💡 {% translate "Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga o'tkazadi." %}</p>
+      <div class="card__title" style="font-size:1rem">💳 {% translate "To'lovlar" %}</div>
+      <p class="small" style="margin:0">{% blocktranslate with d=next_payout|date:"j-F, l" %}Keyingi to'lov: <strong>{{ d }}</strong>{% endblocktranslate %}</p>
+      {% if payout_in_progress %}<p class="small" style="margin:.25rem 0 0">⏳ {% blocktranslate with a=payout_in_progress|floatformat:0|intcomma %}O'tkazilmoqda: {{ a }} so'm{% endblocktranslate %}</p>{% endif %}
+      <p class="small muted" style="margin:.25rem 0 0">{% if master.payout_card %}{% blocktranslate with c=master.payout_card|slice:"-4:" %}Karta •••• {{ c }}{% endblocktranslate %} · {% endif %}{% blocktranslate with m=payout_min|floatformat:0|intcomma %}{{ m }} so'mdan kam summa keyingi haftaga o'tadi.{% endblocktranslate %} <a href="{% url 'masters:profile_edit' %}#karta">{% translate "Karta" %}</a></p>
     </aside>
   </div>
 </div>

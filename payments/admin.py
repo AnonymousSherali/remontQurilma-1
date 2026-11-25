@@ -148,16 +148,34 @@ def _xlsx_response(data, name):
 class PayoutAdmin(ModelAdmin):
     """Ustalarga o'tkazmalar tarixi. Yangi o'tkazma — «To'lanishi kerak» sahifasida."""
 
-    list_display = ['created_at', 'master', 'amount_display', 'fee_display', 'count', 'card_display', 'note',
-                    'created_by']
-    list_filter = ['created_at']
+    list_display = ['created_at', 'master', 'amount_display', 'status_badge', 'paid_at', 'fee_display', 'count',
+                    'card_display', 'note', 'created_by']
+    list_filter = ['status', 'created_at']
     list_filter_submit = True
     search_fields = ['master__full_name', 'master__phone', 'note', 'card']
     date_hierarchy = 'created_at'
-    readonly_fields = ['master', 'amount', 'gross', 'fee', 'count', 'card', 'holder', 'created_at', 'created_by',
-                       'orders']
+    readonly_fields = ['master', 'amount', 'gross', 'fee', 'count', 'card', 'holder', 'status', 'provider',
+                       'provider_ref', 'created_at', 'paid_at', 'created_by', 'orders']
     fields = readonly_fields + ['note']
-    actions = ['export_xlsx']
+    actions = ['confirm_paid', 'cancel_prepared', 'export_xlsx']
+
+    @display(description='Holat', ordering='status', label={
+        "Tayyorlangan — o'tkazilishi kerak": 'warning', "O'tkazildi": 'success', "O'tkazilmadi": 'danger'})
+    def status_badge(self, obj):
+        return obj.get_status_display()
+
+    @action(description="O'tkazildi deb belgilash (ustaga xabar boradi)", icon='task_alt')
+    def confirm_paid(self, request, queryset):
+        count = 0
+        for payout in queryset.exclude(status=Payout.STATUS_PAID):
+            payouts.confirm(payout, request.user)
+            count += 1
+        messages.success(request, f"{count} ta o'tkazma tasdiqlandi, ustalarga xabar yuborildi.")
+
+    @action(description="Tayyorlanganni bekor qilish (keyingi haftaga)", icon='undo')
+    def cancel_prepared(self, request, queryset):
+        count = sum(1 for payout in queryset if payouts.cancel_prepared(payout))
+        messages.info(request, f"{count} ta tayyorlangan o'tkazma bekor qilindi — summa yana «to'lanishi kerak».")
 
     def has_add_permission(self, request):
         return False
@@ -179,6 +197,11 @@ class PayoutAdmin(ModelAdmin):
         rows = payouts.pending()
         if request.GET.get('format') == 'xlsx':
             return _xlsx_response(payouts.pending_xlsx(rows), 'tolanishi-kerak')
+        if request.method == 'POST' and request.POST.get('prepare'):
+            created = payouts.prepare_weekly(force=True)
+            messages.success(request, f"Tayyorlandi: {len(created)} ta o'tkazma. Ularni bank orqali o'tkazib, "
+                                      "«O'tkazmalar tarixi» da «O'tkazildi» deb belgilang.")
+            return redirect(reverse('admin:payments_payout_changelist') + '?status__exact=prepared')
         if request.method == 'POST':
             ids = [int(v) for v in request.POST.getlist('master') if v.isdigit()]
             allowed = {r['master'].pk for r in rows if r['has_card']}
@@ -194,7 +217,8 @@ class PayoutAdmin(ModelAdmin):
             row['card'] = payouts.card_display(row['master'].payout_card)
         return render(request, 'admin/payouts_pending.html', {
             **self.admin_site.each_context(request), 'title': "Ustalarga to'lanishi kerak",
-            'rows': rows, 'totals': payouts.totals(rows),
+            'rows': rows, 'totals': payouts.totals(rows), 'next_payout': payouts.next_payout_date(),
+            'prepared': Payout.objects.filter(status=Payout.STATUS_PREPARED).count(),
         })
 
     @display(description="O'tkazilgan", ordering='amount')

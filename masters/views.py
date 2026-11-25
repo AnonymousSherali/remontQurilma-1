@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -15,7 +16,7 @@ from django.utils.translation import gettext as _
 
 from otp import services as otp
 from payments import services as payments
-from payments import promos, tariffs
+from payments import payouts, promos, tariffs
 from repair_service import chat, schedule, warranty, workflow
 from repair_service.customer_notify import notify_quote
 from repair_service.forms import ServiceRequestForm
@@ -268,6 +269,9 @@ def dashboard(request):
         'referral_link': request.build_absolute_uri(
             reverse('masters:register') + '?ref=' + promos.master_referral_code(master)),
         'referrals': master.referrals.all(),
+        'next_payout': payouts.next_payout_date(),
+        'payout_in_progress': sum((p.amount for p in master.payouts.filter(status='prepared')), 0),
+        'payout_min': settings.PAYOUT_MIN_AMOUNT,
         'warranty_claims': WarrantyClaim.objects.filter(
             order__master=master, status=WarrantyClaim.STATUS_OPEN).select_related('order'),
         'held': held,

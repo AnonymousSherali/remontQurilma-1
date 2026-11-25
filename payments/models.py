@@ -211,7 +211,14 @@ class Payout(models.Model):
     card = models.CharField('Karta raqami', max_length=16, blank=True)
     holder = models.CharField('Karta egasi', max_length=100, blank=True)
     note = models.CharField('Izoh', max_length=255, blank=True)
-    created_at = models.DateTimeField("O'tkazilgan sana", default=timezone.now)
+    STATUS_PREPARED, STATUS_PAID, STATUS_FAILED = 'prepared', 'paid', 'failed'
+    STATUS_CHOICES = [(STATUS_PREPARED, "Tayyorlangan — o'tkazilishi kerak"), (STATUS_PAID, "O'tkazildi"),
+                      (STATUS_FAILED, "O'tkazilmadi")]
+    status = models.CharField('Holat', max_length=10, choices=STATUS_CHOICES, default=STATUS_PAID)
+    provider = models.CharField("Qanday o'tkazildi", max_length=20, default='manual')
+    provider_ref = models.CharField("To'lov tizimidagi raqam", max_length=64, blank=True)
+    paid_at = models.DateTimeField("O'tkazilgan", null=True, blank=True)
+    created_at = models.DateTimeField("Yaratilgan", default=timezone.now)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
                                    verbose_name='Kim belgiladi')
 

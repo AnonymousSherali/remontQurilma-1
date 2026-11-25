@@ -294,6 +294,12 @@ CHAT_OPEN_DAYS = int(os.environ.get('CHAT_OPEN_DAYS', 30))
 # Telegram ulanmagan tomonga yangi xabar haqida SMS — shu oraliqda bir martadan ko'p emas
 CHAT_SMS_INTERVAL_MINUTES = int(os.environ.get('CHAT_SMS_INTERVAL_MINUTES', 30))
 
+# --- Ustalarga haftalik to'lov (payments/payouts.py) ---
+PAYOUT_WEEKDAY = int(os.environ.get('PAYOUT_WEEKDAY') or 0)            # 0 — dushanba … 6 — yakshanba
+PAYOUT_MIN_AMOUNT = int(os.environ.get('PAYOUT_MIN_AMOUNT') or 50000)   # kichik summa keyingi haftaga o'tadi
+PAYOUT_DELAY_HOURS = int(os.environ.get('PAYOUT_DELAY_HOURS') or 24)    # chiqarilgandan keyin kutish
+PAYOUT_PROVIDER = os.environ.get('PAYOUT_PROVIDER') or 'manual'         # payments/payout_providers.py
+
 # --- Promo-kodlar va referal (payments/promos.py). Qiymatlar namunaviy! ---
 # Chegirma platforma hisobidan (usta to'liq oladi) — narxning shu foizidan oshmaydi
 PROMO_MAX_SHARE_PERCENT = int(os.environ.get('PROMO_MAX_SHARE_PERCENT') or 50)

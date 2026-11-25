@@ -34,6 +34,8 @@ class Command(BaseCommand):
         purge()
         from repair_service.marketing import process as send_campaigns
         campaign_messages = send_campaigns()
+        from payments.payouts import prepare_weekly
+        prepare_weekly()
         self.stdout.write(f'Avtomatik tasdiqlandi: {len(confirmed)}; chiqarilgan bosqichlar: {len(released)}; '
                           f'yopilgan kafolat murojaatlari: {len(closed)}; tashrif eslatmalari: {len(reminded)}; '
                           f"o'chirilgan hujjat fayllari: {purged}; ishonchlilik yangilandi: {rated}; "
