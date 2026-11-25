@@ -291,6 +291,10 @@ CHAT_OPEN_DAYS = int(os.environ.get('CHAT_OPEN_DAYS', 30))
 # Telegram ulanmagan tomonga yangi xabar haqida SMS — shu oraliqda bir martadan ko'p emas
 CHAT_SMS_INTERVAL_MINUTES = int(os.environ.get('CHAT_SMS_INTERVAL_MINUTES', 30))
 
+# --- Ustalar ishonchliligi (masters/reliability.py) ---
+RELIABILITY_WINDOW_DAYS = int(os.environ.get('RELIABILITY_WINDOW_DAYS') or 90)
+RELIABILITY_MIN_ORDERS = int(os.environ.get('RELIABILITY_MIN_ORDERS') or 3)
+
 # --- Ustalar hujjatlari ---
 # Tasdiqlangandan shuncha kun o'tgach pasport/selfi fayllari o'chiriladi (0 — saqlanadi).
 # Muddatni yurist bilan belgilang: kamroq saqlash — kamroq xavf.

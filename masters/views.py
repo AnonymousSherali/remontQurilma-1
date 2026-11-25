@@ -25,7 +25,7 @@ from repair_service.photos import can_delete as can_delete_photo
 from repair_service.photos import portfolio
 from repair_service.models import ServiceRequest
 
-from . import documents, feed, seo
+from . import documents, feed, reliability, seo
 from .forms import (
     deviation_percent, MasterProfileForm, MasterRegistrationForm, PasswordResetForm, PhoneLoginForm, QuoteForm, ReviewForm,
 )
@@ -258,6 +258,7 @@ def dashboard(request):
         'balance': balance,
         'open_count': feed.open_count(master),
         'calendar': schedule.calendar(master),
+        'reliability_tips': reliability.tips(master),
         'warranty_claims': WarrantyClaim.objects.filter(
             order__master=master, status=WarrantyClaim.STATUS_OPEN).select_related('order'),
         'held': held,

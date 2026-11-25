@@ -68,12 +68,13 @@ class MasterDocumentInline(TabularInline):
 class MasterAdmin(ModelAdmin):
     list_display = [
         'avatar_name', 'phone_display', 'categories_list', 'rating', 'reviews_count',
-        'verified_badge', 'id_badge', 'is_available', 'created_at',
+        'verified_badge', 'id_badge', 'reliability_display', 'is_available', 'created_at',
     ]
     list_filter = ['is_verified', 'id_status', 'is_available', 'categories', 'created_at']
     list_filter_submit = True
     search_fields = ['full_name', 'phone', 'address']
-    readonly_fields = ['rating_avg', 'reviews_count', 'created_at', 'updated_at', 'map_link', 'id_checked_at']
+    readonly_fields = ['rating_avg', 'reviews_count', 'created_at', 'updated_at', 'map_link', 'id_checked_at',
+                       'reliability', 'reliability_data']
     autocomplete_fields = ['user']
     filter_horizontal = ['categories']
     inlines = [MasterDocumentInline, ReviewInline]
@@ -91,6 +92,7 @@ class MasterAdmin(ModelAdmin):
                            "usta xabar oladi va qayta yuklaydi.",
         }),
         ('Tariflar', {'fields': [('promoted_until', 'pro_until')]}),
+        ('Ishonchlilik', {'fields': ['reliability', 'reliability_data'], 'classes': ['collapse']}),
         ("Pul o'tkazish", {'fields': [('payout_card', 'payout_holder')]}),
         ('Reyting', {'fields': ['rating_avg', 'reviews_count', 'created_at', 'updated_at'], 'classes': ['collapse']}),
     ]
@@ -122,6 +124,15 @@ class MasterAdmin(ModelAdmin):
     )
     def verified_badge(self, obj):
         return 'Tasdiqlangan' if obj.is_verified else 'Kutilmoqda'
+
+    @display(description='Ishonchlilik', ordering='reliability')
+    def reliability_display(self, obj):
+        if obj.reliability is None:
+            return '—'
+        d = obj.reliability_data or {}
+        return format_html('<span title="Voz kechish {}% · nizo {}% · o\'z vaqtida {}">{} / 100</span>',
+                           d.get('decline_rate', 0), d.get('dispute_rate', 0),
+                           f"{d['on_time_rate']}%" if d.get('on_time_rate') is not None else '—', obj.reliability)
 
     @display(description='Hujjatlar', ordering='id_status', label={
         'Yuklanmagan': 'default', 'Tekshirilmoqda': 'warning', 'Tasdiqlangan': 'success', 'Rad etilgan': 'danger'})

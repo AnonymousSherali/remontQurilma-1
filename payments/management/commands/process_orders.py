@@ -7,11 +7,13 @@
 3) Usta tuzatgan, mijoz javob bermagan kafolat murojaatlari WARRANTY_AUTO_CLOSE_DAYS kundan keyin yopiladi.
 4) Usta kelishiga VISIT_REMINDER_HOURS soat qolganda ikkala tomonga eslatma yuboriladi.
 5) ID_DOCUMENTS_KEEP_DAYS > 0 bo'lsa, eski tasdiqlangan hujjat fayllari o'chiriladi.
+6) Ustalarning ishonchlilik bali qayta hisoblanadi.
 """
 
 from django.core.management.base import BaseCommand
 
 from masters.documents import purge_old
+from masters.reliability import update_all
 from payments.services import auto_release
 from repair_service.schedule import send_reminders
 from repair_service.warranty import auto_close
@@ -27,6 +29,7 @@ class Command(BaseCommand):
         closed = auto_close()
         reminded = send_reminders()
         purged = purge_old()
+        rated = update_all()
         self.stdout.write(f'Avtomatik tasdiqlandi: {len(confirmed)}; chiqarilgan bosqichlar: {len(released)}; '
                           f'yopilgan kafolat murojaatlari: {len(closed)}; tashrif eslatmalari: {len(reminded)}; '
-                          f"o'chirilgan hujjat fayllari: {purged}")
+                          f"o'chirilgan hujjat fayllari: {purged}; ishonchlilik yangilandi: {rated}")

@@ -50,6 +50,27 @@
     <div class="card kpi"><div class="kpi__value">{% if master.reviews_count %}★ {{ master.rating_avg|floatformat:1 }}{% else %}—{% endif %}</div><div class="kpi__label">{% blocktranslate count n=master.reviews_count %}{{ n }} ta baho{% plural %}{{ n }} ta baho{% endblocktranslate %}</div></div>
   </div>
 
+  <section class="card reliability" style="margin-bottom:1.5rem">
+    <div class="reliability__head">
+      <div>
+        <div class="card__title" style="margin:0">🛡 {% translate "Ishonchlilik" %}</div>
+        <p class="muted small" style="margin:.25rem 0 0">{% blocktranslate with d=master.reliability_data.window_days|default:90 %}So'nggi {{ d }} kun bo'yicha. Ball qidiruvdagi o'rningizga ta'sir qiladi.{% endblocktranslate %}</p>
+      </div>
+      <div class="reliability__score {% if master.reliability is None %}is-new{% elif master.reliability >= 85 %}is-good{% elif master.reliability >= 60 %}is-mid{% else %}is-low{% endif %}">{% if master.reliability is None %}{% translate "Yangi" %}{% else %}{{ master.reliability }}<small>/100</small>{% endif %}</div>
+    </div>
+    {% with d=master.reliability_data %}
+    <dl class="reliability__grid">
+      <div><dt>{% translate "Qabul qilingan" %}</dt><dd>{{ d.accepted|default:0 }}</dd></div>
+      <div><dt>{% translate "Voz kechilgan" %}</dt><dd>{{ d.declined|default:0 }}</dd></div>
+      <div><dt>{% translate "O'z vaqtida kelish" %}</dt><dd>{% if d.on_time_rate is not None %}{{ d.on_time_rate }}%{% else %}—{% endif %}</dd></div>
+      <div><dt>{% translate "Javob berish" %}</dt><dd>{% if d.response_minutes is not None %}~{{ d.response_minutes }} {% translate "daq" %}{% else %}—{% endif %}</dd></div>
+      <div><dt>{% translate "Nizolar" %}</dt><dd>{{ d.disputes|default:0 }}</dd></div>
+    </dl>
+    {% endwith %}
+    {% if master.reliability is None %}<p class="muted small" style="margin:0">{% translate "Bir nechta buyurtmadan keyin ball paydo bo'ladi. Yangi ustalar qidiruvda jazolanmaydi." %}</p>{% endif %}
+    {% if reliability_tips %}<ul class="small" style="margin:.5rem 0 0;padding-left:1.1rem">{% for t in reliability_tips %}<li>{{ t }}</li>{% endfor %}</ul>{% endif %}
+  </section>
+
   {% if calendar.days or calendar.unscheduled %}
   <section class="card" id="taqvim" style="margin-bottom:1.5rem">
     <div class="card__title">🗓 {% translate "Taqvim" %}</div>

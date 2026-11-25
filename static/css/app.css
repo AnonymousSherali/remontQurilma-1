@@ -673,3 +673,15 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .seo-text ol { padding-left: 1.2rem; display: grid; gap: .35rem; margin-top: 0; }
 .footer-cats { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; margin-top: 2rem; font-size: .9rem; }
 .footer-cats a { color: var(--muted); }
+
+/* ---------- Ishonchlilik ---------- */
+.reliability__head { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }
+.reliability__score { font-size: 2rem; font-weight: 800; line-height: 1; padding: .4rem .7rem; border-radius: var(--radius-sm); background: var(--surface-2); white-space: nowrap; }
+.reliability__score small { font-size: .9rem; color: var(--muted); font-weight: 600; }
+.reliability__score.is-good { color: var(--brand-600); background: var(--brand-50); }
+.reliability__score.is-mid { color: var(--warning); }
+.reliability__score.is-low { color: var(--danger); background: var(--danger-50); }
+.reliability__score.is-new { font-size: 1rem; }
+.reliability__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: .5rem 1rem; margin: 1rem 0 .5rem; }
+.reliability__grid dt { color: var(--muted); font-size: .8rem; }
+.reliability__grid dd { margin: 0; font-weight: 800; }

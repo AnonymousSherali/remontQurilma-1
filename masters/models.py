@@ -96,6 +96,9 @@ class Master(models.Model):
     id_note = models.CharField('Hujjat bo\'yicha izoh', max_length=255, blank=True,
                                help_text="Rad etilganda — sababi (ustaga ko'rinadi).")
     id_checked_at = models.DateTimeField('Hujjat tekshirilgan', null=True, blank=True)
+    # Ishonchlilik (masters/reliability.py): 0–100, kam buyurtmada bo'sh. Qidiruvda hisobga olinadi.
+    reliability = models.PositiveSmallIntegerField('Ishonchlilik', null=True, blank=True)
+    reliability_data = models.JSONField("Ishonchlilik ko'rsatkichlari", default=dict, blank=True)
     promoted_until = models.DateTimeField('TOP muddati', null=True, blank=True)
     pro_until = models.DateTimeField('PRO muddati', null=True, blank=True)
     telegram_chat_id = models.BigIntegerField('Telegram chat', null=True, blank=True, unique=True,
@@ -155,6 +158,15 @@ class Master(models.Model):
         n = self.reviews_count
         avg = float(self.rating_avg)
         return (RATING_PRIOR_WEIGHT * RATING_PRIOR_MEAN + n * avg) / (RATING_PRIOR_WEIGHT + n)
+
+    @property
+    def reliability_factor(self):
+        """Qidiruv tartibi uchun ko'paytuvchi: 0.7 (ishonchsiz) … 1.0. Yangi usta — 1.0 (jazolanmaydi)."""
+        return 1.0 if self.reliability is None else 0.7 + 0.3 * self.reliability / 100
+
+    @property
+    def search_score(self):
+        return self.ranking_score * self.reliability_factor
 
     def recalculate_rating(self):
         stats = self.reviews.filter(is_published=True).aggregate(

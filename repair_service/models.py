@@ -163,6 +163,9 @@ class OrderEvent(models.Model):
     order = models.ForeignKey(ServiceRequest, on_delete=models.CASCADE, related_name='events', verbose_name='Buyurtma')
     status = models.CharField('Holat', max_length=20, choices=ServiceRequest.STATUS_CHOICES)
     actor = models.CharField('Kim', max_length=10, choices=ACTOR_CHOICES)
+    # Usta amallarida — qaysi usta (buyurtma keyin boshqa ustaga o'tishi mumkin). Ishonchlilik reytingi uchun.
+    master = models.ForeignKey('masters.Master', on_delete=models.SET_NULL, null=True, blank=True,
+                               related_name='events', verbose_name='Usta')
     note = models.CharField('Izoh', max_length=500, blank=True)
     created_at = models.DateTimeField('Vaqt', default=timezone.now)
 
@@ -170,6 +173,11 @@ class OrderEvent(models.Model):
         verbose_name = 'Buyurtma tarixi'
         verbose_name_plural = 'Buyurtma tarixi'
         ordering = ['created_at', 'pk']
+
+    def save(self, *args, **kwargs):
+        if self.actor == self.ACTOR_MASTER and self.master_id is None:
+            self.master_id = self.order.master_id
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'#{self.order_id} {self.get_status_display()} ({self.get_actor_display()})'
