@@ -1,0 +1,13 @@
+{% load ui %}
+<div style="display:grid;gap:2px">
+  {% for t in threads %}
+    <a href="{% url 'admin_support_thread' t.pk %}" class="flex justify-between gap-4 py-3" style="border-bottom:1px solid rgba(127,127,127,.15)">
+      <span class="text-sm">
+        <span class="font-semibold">#{{ t.pk }} · {% if t.master %}👷 {{ t.master.full_name }}{% else %}{{ t.name|default:"Mehmon" }}{% endif %}</span>
+        {% if t.phone %}<span class="text-xs text-font-subtle-light"> · {{ t.phone|phone }}</span>{% endif %}{% if t.is_closed %}<span class="text-xs text-font-subtle-light"> · yopilgan</span>{% endif %}<br>
+        <span class="text-font-subtle-light">{% if t.last %}{% if t.last.from_staff %}Operator: {% endif %}{{ t.last.text|truncatechars:110 }}{% endif %}</span>
+      </span>
+      <span class="text-xs text-font-subtle-light" style="white-space:nowrap">{{ t.last_message_at|date:"d.m H:i" }}</span>
+    </a>
+  {% empty %}<p class="text-sm text-font-subtle-light">{{ empty }}</p>{% endfor %}
+</div>

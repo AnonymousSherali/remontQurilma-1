@@ -414,6 +414,47 @@ Uchinchi tomon xizmatisiz, o'z bazamizda (`repair_service/analytics.py`):
 - `/admin/statistika/`: «Saytdan arizagacha» voronkasi, manbalar bo'yicha tashriflar → ariza →
   bajarilgan → aylanma, eng ko'p ariza keltirgan kirish sahifalari.
 
+## Ish vaqti va dam olish kunlari
+
+Usta kabinetda «🕘 Ish vaqti» (`/kabinet/jadval/`) sahifasida ish kunlari, soatlari va dam olish/ta'til
+kunlarini kiritadi.
+
+- Dam olish kunida usta qidiruvda ko'rinmaydi, lentadan buyurtma olmaydi va yangi buyurtma xabari kelmaydi
+  (mavjud buyurtmalari o'zgarmaydi).
+- Ish vaqtidan tashqarida kartochka va profilda «🌙 Hozir ishlamaydi — ertaga 08:00 dan»; profilda jadval
+  («Du–Ju 08:00–20:00»).
+- Kelish vaqtini jadvaldan tashqariga qo'ysa — ogohlantirish (taqiq emas).
+- Jadval kiritilmagan usta har doim ishlaydi deb hisoblanadi.
+
+## «Yordam» — operator bilan yozishma
+
+Har bir sahifada «💬 Yordam» vidjeti: tashrifchi (akkauntsiz) yoki usta operatorga yozadi; ixtiyoriy ism
+va telefon. Operator `/admin/yordam/` da javob beradi (javob kutayotganlar yuqorida, mijozning buyurtmalari
+bilan). Yangi suhbat haqida administrator chatiga Telegram keladi. Javob — vidjetda; ustaga Telegram yoki
+bildirishnoma; telefon qoldirilgan bo'lsa — SMS havola (suhbatni istalgan qurilmada ochadi).
+
+## Ustalar uchun o'quv bo'limi
+
+`/kabinet/oqish/` — platforma qoidalari bo'yicha darslar: 6 ta boshlang'ich dars (bosqichlar, narx va eskrou,
+kelish vaqti va muloqot, rasmlar, nizo/kafolat/ishonchlilik bali, pul olish va tariflar) migratsiya bilan
+qo'shiladi. Admin → «O'quv darslari» da tahrirlanadi va yangisi qo'shiladi (YouTube video bilan).
+Matndagi raqamlar sozlamalardan olinadi (`{komissiya}`, `{kafolat_kun}`, `{tolov_kuni}` …) — siz
+komissiyani o'zgartirsangiz, darslar ham o'zgaradi. Usta kabinetida «Boshlang'ich kurs: 2/6» eslatmasi.
+
+## A/B testlar
+
+Admin → «A/B testlar»: kalit, variantlar (`a,b`), «Faol». Shablonda:
+
+```django
+{% load ui %}{% ab 'ariza_tugmasi' as v %}
+{% if v == 'b' %}Usta chaqirish — bepul{% else %}Ariza yuborish{% endif %}
+```
+
+Har tashrifchi doim bitta variantni ko'radi. Natija (admin'da): har variant bo'yicha tashrifchilar, forma
+boshlaganlar, ariza yuborganlar, nazorat variantiga nisbatan farq va p-qiymat. Har variantda kamida 100
+tashrifchi va p < 0.05 bo'lsa — «ahamiyatli». G'olibni «G'olib» maydoniga yozsangiz, hamma shu variantni
+ko'radi. Tayyor namuna: ariza formasi tugmasi (`ariza_tugmasi`) — testni yaratib, faollashtirish kifoya.
+
 ## Telegram bot
 
 Bitta bot ikki vazifani bajaradi (admin'ga yangi ariza xabari ham shu bot orqali):
@@ -512,6 +553,8 @@ yetarli. Mavjud arizalar saqlanadi — har biriga alohida baho kaliti beriladi.
 | `/admin/statistika/` | Statistika (faqat administrator) |
 | `/admin/nizolar/` | Nizolar: dalillar va qaror (faqat administrator) |
 | `/obuna/bekor/<kalit>/` | Aksiya xabarlaridan voz kechish |
+| `/kabinet/jadval/`, `/kabinet/oqish/` | Usta: ish vaqti, o'quv bo'limi |
+| `/admin/yordam/` | Operator: «Yordam» suhbatlari |
 | `/manifest.webmanifest`, `/sw.js`, `/offline/` | Telefonda ilova (PWA) |
 | `/ustalar/<yo'nalish>/`, `/ustalar/<yo'nalish>/<tuman>/` | SEO sahifalari |
 | `/kabinet/hujjatlar/` | Usta: shaxsni tasdiqlash |
@@ -535,7 +578,8 @@ static/css/app.css   dizayn tizimi (framework'siz, tungi rejim bilan)
 static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuery'siz)
 deploy/              serverga o'rnatish: gunicorn, systemd, nginx, cron, deploy.sh, backup.sh
 docs/                integratsiyalarni haqiqiy muhitda sinash tartibi
-.github/workflows/   testlar har push'da SQLite va PostgreSQL+Redis'da
+e2e/                 brauzerda to'liq ssenariy (Playwright)
+.github/workflows/   testlar har push'da SQLite va PostgreSQL+Redis'da, brauzer ssenariysi
 ```
 
 ## Testlar
@@ -544,7 +588,7 @@ docs/                integratsiyalarni haqiqiy muhitda sinash tartibi
 python manage.py test
 ```
 
-286 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+308 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
 bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
 (rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
 (muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click va Uzum protokollari, Telegram bot (ulash, tugmalar, rasm, xavfsizlik), tariflar,
@@ -553,7 +597,13 @@ yuridik sahifalar, production tekshiruvlari, `check_integrations`, ustalar hujja
 qayta chaqirish, SEO (sitemap, robots, canonical, JSON-LD), viloyatlar, PWA va Web Push (RFC 8291 test-namunasi),
 nizolar sahifasi, ishonchlilik bali, promo-kodlar va referal (Payme chegirmali summani talab qilishi bilan),
 tahlil (manba, DNT, botlar), marketing (rozilik, tinch soatlar, partiyalar), pul qaytarish (Payme bekor qilishi,
-Click API imzosi), haftalik to'lov jadvali.
+Click API imzosi), haftalik to'lov jadvali, ish vaqti, «Yordam» chati, o'quv bo'limi, A/B testlar.
+
+**Brauzerda to'liq ssenariy** (11 qadam: ariza → to'lov → baho → ustaga to'lov → kafolat → qayta chaqirish):
+
+```bash
+bash e2e/run.sh        # alohida sinov bazasi; talab: npm i -g playwright@1.63.0 && npx playwright install chromium
+```
 
 Production'dagidek PostgreSQL va Redis bilan:
 

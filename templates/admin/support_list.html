@@ -1,0 +1,14 @@
+{% extends 'admin/base.html' %}
+{% load i18n unfold ui %}
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block branding %}{% include "unfold/helpers/site_branding.html" %}{% endblock %}
+{% block content %}
+<div class="flex flex-col gap-8">
+  {% component "unfold/components/card.html" with title="Javob kutmoqda" %}
+    {% include "admin/_support_rows.html" with threads=waiting empty="Hamma savollarga javob berilgan ✓" %}
+  {% endcomponent %}
+  {% component "unfold/components/card.html" with title="So'nggi suhbatlar" %}
+    {% include "admin/_support_rows.html" with threads=recent empty="Suhbat yo'q." %}
+  {% endcomponent %}
+</div>
+{% endblock %}

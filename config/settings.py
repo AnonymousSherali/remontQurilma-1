@@ -378,6 +378,10 @@ UNFOLD = {
                     {'title': 'Boshqaruv paneli', 'icon': 'dashboard', 'link': reverse_lazy('admin:index')},
                     {'title': 'Statistika', 'icon': 'monitoring', 'link': reverse_lazy('admin_stats')},
                     {
+                        'title': 'Yordam', 'icon': 'support_agent', 'link': reverse_lazy('admin_support'),
+                        'badge': 'config.dashboard.badge_support',
+                    },
+                    {
                         'title': 'Nizolar', 'icon': 'gavel', 'link': reverse_lazy('admin_disputes'),
                         'badge': 'config.dashboard.badge_disputes',
                     },
@@ -399,6 +403,7 @@ UNFOLD = {
                     {'title': 'Kategoriyalar', 'icon': 'category',
                      'link': reverse_lazy('admin:masters_category_changelist')},
                     {'title': 'Baholar', 'icon': 'star', 'link': reverse_lazy('admin:masters_review_changelist')},
+                    {"title": "O'quv darslari", 'icon': 'school', 'link': reverse_lazy('admin:masters_lesson_changelist')},
                     {'title': 'Ish rasmlari', 'icon': 'photo_library',
                      'link': reverse_lazy('admin:repair_service_orderphoto_changelist')},
                     {'title': 'Kafolat murojaatlari', 'icon': 'verified_user',
@@ -421,6 +426,8 @@ UNFOLD = {
                      'link': reverse_lazy('admin:payments_payout_changelist')},
                     {'title': 'Narx takliflari', 'icon': 'request_quote',
                      'link': reverse_lazy('admin:payments_quote_changelist')},
+                    {'title': 'A/B testlar', 'icon': 'science',
+                     'link': reverse_lazy('admin:repair_service_experiment_changelist')},
                     {'title': 'Xabarnomalar', 'icon': 'campaign',
                      'link': reverse_lazy('admin:repair_service_campaign_changelist')},
                     {'title': 'Promo-kodlar', 'icon': 'redeem',

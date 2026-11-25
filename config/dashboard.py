@@ -101,3 +101,8 @@ def badge_disputes(request):
 def badge_refunds(request):
     from payments.refunds import pending_count
     return str(pending_count())
+
+
+def badge_support(request):
+    from repair_service.support import unanswered
+    return str(len(unanswered()))

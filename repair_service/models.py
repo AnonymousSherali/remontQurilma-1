@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -305,6 +306,75 @@ class CampaignDelivery(models.Model):
 
     class Meta:
         unique_together = [('campaign', 'recipient')]
+
+
+class SupportThread(models.Model):
+    """Saytdagi «Yordam» vidjeti orqali operator bilan yozishma (repair_service/support.py)."""
+
+    token = models.UUIDField('Kalit', default=uuid.uuid4, unique=True, editable=False)
+    name = models.CharField('Ism', max_length=100, blank=True)
+    phone = models.CharField('Telefon', max_length=20, blank=True)
+    master = models.ForeignKey('masters.Master', on_delete=models.SET_NULL, null=True, blank=True,
+                               related_name='support_threads', verbose_name='Usta')
+    page = models.CharField('Qaysi sahifadan', max_length=200, blank=True)
+    is_closed = models.BooleanField('Yopilgan', default=False)
+    created_at = models.DateTimeField('Boshlangan', auto_now_add=True)
+    last_message_at = models.DateTimeField('Oxirgi xabar', default=timezone.now, db_index=True)
+
+    class Meta:
+        verbose_name = 'Yordam suhbati'
+        verbose_name_plural = 'Yordam suhbatlari'
+        ordering = ['-last_message_at']
+
+    def __str__(self):
+        return f'#{self.pk} {self.name or self.phone or "mehmon"}'
+
+
+class SupportMessage(models.Model):
+    thread = models.ForeignKey(SupportThread, on_delete=models.CASCADE, related_name='messages')
+    from_staff = models.BooleanField('Operatordan', default=False)
+    staff = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    text = models.TextField('Xabar', max_length=1000)
+    created_at = models.DateTimeField(default=timezone.now)
+    read_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['created_at', 'id']
+
+
+class Experiment(models.Model):
+    """A/B test (repair_service/experiments.py). Shablonda: {% ab 'kalit' as v %}."""
+
+    key = models.SlugField('Kalit', unique=True, help_text="Shablondagi {% ab '…' %} bilan bir xil")
+    name = models.CharField('Nomi', max_length=120)
+    description = models.TextField('Nimani tekshiramiz', blank=True)
+    variants = models.CharField('Variantlar', max_length=60, default='a,b',
+                                help_text="Vergul bilan; birinchisi — hozirgi (nazorat) varianti")
+    is_active = models.BooleanField('Faol', default=False)
+    started_at = models.DateTimeField('Boshlangan', null=True, blank=True)
+    winner = models.CharField("G'olib (qo'llangan)", max_length=20, blank=True,
+                              help_text="To'ldirilsa — test to'xtaydi va hamma shu variantni ko'radi")
+
+    class Meta:
+        verbose_name = 'A/B test'
+        verbose_name_plural = 'A/B testlar'
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def variant_list(self):
+        return [v.strip() for v in self.variants.split(',') if v.strip()] or ['a']
+
+
+class ExperimentExposure(models.Model):
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name='exposures')
+    visitor = models.CharField(max_length=32)
+    variant = models.CharField(max_length=20)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = [('experiment', 'visitor')]
 
 
 class AnalyticsEvent(models.Model):

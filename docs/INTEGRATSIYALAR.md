@@ -78,7 +78,17 @@ sahifasi havolasi. Shundan keyingina `PAYMENT_PROVIDERS` ga `uzum` qo'shing.
 4. Sinov: usta kabinetida «Telegram'ni ulash» → botda /start → yangi buyurtma xabari tugmalar bilan
    keladi; botga rasm yuboring → buyurtmaga biriktiriladi.
 
-## 6. To'liq ssenariy (ishga tushirishdan oldin, haqiqiy telefonlarda)
+## 6. To'liq ssenariy
+
+**Avtomatik (har o'zgarishda):** `bash e2e/run.sh` — alohida sinov bazasida, demo to'lov va konsol SMS bilan,
+haqiqiy brauzerda 11 qadam: ariza → usta lentadan oladi → kelish vaqti va narx → mijoz SMS kod bilan kiradi,
+rozi bo'ladi va to'laydi → bosqichlar → yozishma → tasdiqlash va baho → admin ustaga to'lovni belgilaydi →
+kafolat → «Yordam» vidjeti → qayta chaqirish. GitHub Actions'da ham ishlaydi (`e2e` job).
+Talab: `npm i -g playwright@1.63.0 && npx playwright install chromium`.
+
+Bu test **sizning kodingiz** to'g'ri ishlashini tekshiradi; to'lov tizimi va SMS shlyuzining o'z tomonini
+emas. Shuning uchun ishga tushirishdan oldin pastdagi ssenariylarni **haqiqiy telefonlarda, Payme sandbox
+va Eskiz bilan** bir marta qo'lda o'tkazing:
 
 | # | Ssenariy | Kutilgan natija |
 |---|---|---|

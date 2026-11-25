@@ -26,7 +26,7 @@ from repair_service.photos import can_delete as can_delete_photo
 from repair_service.photos import portfolio
 from repair_service.models import ServiceRequest
 
-from . import documents, feed, reliability, seo
+from . import documents, feed, learning, reliability, seo
 from .forms import (
     deviation_percent, MasterProfileForm, MasterRegistrationForm, PasswordResetForm, PhoneLoginForm, QuoteForm, ReviewForm,
 )
@@ -265,6 +265,7 @@ def dashboard(request):
         'balance': balance,
         'open_count': feed.open_count(master),
         'calendar': schedule.calendar(master),
+        'learning': learning.progress(master),
         'reliability_tips': reliability.tips(master),
         'referral_link': request.build_absolute_uri(
             reverse('masters:register') + '?ref=' + promos.master_referral_code(master)),
@@ -319,6 +320,77 @@ def profile_edit(request):
         return redirect('masters:dashboard')
     return render(request, 'masters/profile_edit.html', {
         'form': form, 'master': master, 'payouts': master.payouts.all()[:5]})
+
+
+@login_required
+def lessons(request):
+    from . import learning
+    from .models import Lesson
+    master = _get_own_master(request)
+    items = list(Lesson.objects.filter(is_published=True))
+    prog = learning.progress(master)
+    for lesson in items:
+        lesson.display_title = learning.title(lesson)
+        lesson.done = lesson.pk in prog['done_ids']
+    return render(request, 'masters/lessons.html', {'master': master, 'lessons': items, 'progress': prog})
+
+
+@login_required
+def lesson_detail(request, slug):
+    from . import learning
+    from .models import Lesson, LessonProgress
+    master = _get_own_master(request)
+    lesson = get_object_or_404(Lesson, slug=slug, is_published=True)
+    items = list(Lesson.objects.filter(is_published=True))
+    position = items.index(lesson)
+    next_lesson = items[position + 1] if position + 1 < len(items) else None
+    if request.method == 'POST':
+        LessonProgress.objects.get_or_create(master=master, lesson=lesson)
+        if next_lesson:
+            return redirect('masters:lesson', slug=next_lesson.slug)
+        messages.success(request, _("Kurs tugadi — rahmat! Endi siz platforma qoidalarini bilasiz."))
+        return redirect('masters:lessons')
+    return render(request, 'masters/lesson.html', {
+        'master': master, 'lesson': lesson, 'title': learning.title(lesson), 'text': learning.render_text(lesson),
+        'video': learning.youtube_embed(lesson.video_url), 'next_lesson': next_lesson,
+        'done': master.lessons_done.filter(lesson=lesson).exists(), 'position': position + 1, 'total': len(items),
+    })
+
+
+@login_required
+def work_schedule(request):
+    """Ish kunlari, soatlari va dam olish kunlari."""
+    from .forms import DayOffForm, WorkScheduleForm
+    from .models import DayOff
+    master = _get_own_master(request)
+    form = WorkScheduleForm(initial={'work_days': master.work_days, 'work_from': master.work_from,
+                                     'work_to': master.work_to})
+    off_form = DayOffForm()
+    if request.method == 'POST':
+        if request.POST.get('delete'):
+            DayOff.objects.filter(master=master, pk=request.POST['delete']).delete()
+            messages.info(request, _("Dam olish kuni o'chirildi."))
+            return redirect('masters:work_schedule')
+        if request.POST.get('form') == 'off':
+            off_form = DayOffForm(request.POST)
+            if off_form.is_valid():
+                DayOff.objects.create(master=master, **off_form.cleaned_data)
+                messages.success(request, _("Dam olish kunlari saqlandi — bu kunlarda qidiruvda ko'rinmaysiz."))
+                return redirect('masters:work_schedule')
+        else:
+            form = WorkScheduleForm(request.POST)
+            if form.is_valid():
+                days = sorted(form.cleaned_data['work_days'])
+                master.work_days = [] if len(days) == 7 else days
+                master.work_from, master.work_to = form.cleaned_data['work_from'], form.cleaned_data['work_to']
+                master.save(update_fields=['work_days', 'work_from', 'work_to'])
+                messages.success(request, _('Ish jadvali saqlandi.'))
+                return redirect('masters:work_schedule')
+    from django.utils import timezone as tz
+    return render(request, 'masters/work_schedule.html', {
+        'master': master, 'form': form, 'off_form': off_form,
+        'days_off': master.days_off.filter(end__gte=tz.localdate()),
+    })
 
 
 @login_required
@@ -421,6 +493,8 @@ def visit_set(request, pk):
         when = schedule.parse(request.POST.get('date'), request.POST.get('time'))
         clash = schedule.conflicts(order, when)
         schedule.set_visit(order, when)
+        from .schedule import visit_warning
+        outside = visit_warning(master, when)
     except schedule.ScheduleError as error:
         messages.error(request, str(error))
     else:
@@ -428,6 +502,8 @@ def visit_set(request, pk):
         if clash:
             messages.warning(request, _("Diqqat: shu vaqtga yaqin boshqa buyurtmangiz bor (#%(id)s).") % {
                 'id': clash[0].pk})
+        if outside:
+            messages.warning(request, outside)
     return redirect(order.get_master_url())
 
 

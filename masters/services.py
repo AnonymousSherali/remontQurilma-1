@@ -19,7 +19,10 @@ def search_masters(*, category=None, lat=None, lng=None, radius_km=DEFAULT_RADIU
     20 km narida yashovchi mijozga "men 5 km gacha boraman" degan ustani
     taklif qilish mantiqsiz.
     """
-    qs = Master.objects.public().filter(is_available=True).prefetch_related('categories')
+    from .schedule import off_today_ids
+    # Dam olishdagi ustalar qidiruvda ko'rinmaydi
+    qs = Master.objects.public().filter(is_available=True).exclude(pk__in=off_today_ids()).prefetch_related(
+        'categories')
     if category is not None:
         qs = qs.filter(categories=category)
     if query:

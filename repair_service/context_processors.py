@@ -48,6 +48,14 @@ def site(request):
         'SITE': info,
         'YANDEX_MAPS_API_KEY': getattr(settings, 'YANDEX_MAPS_API_KEY', ''),
         'MASTER_REFERRAL_TOP_DAYS': settings.MASTER_REFERRAL_TOP_DAYS,
+        'support': SimpleLazyObject(lambda: _support(request)),
         'WEBPUSH_PUBLIC_KEY': settings.WEBPUSH_PUBLIC_KEY if settings.WEBPUSH_PRIVATE_KEY else '',
         'js_i18n': _js_i18n(),
     }
+
+
+def _support(request):
+    """Vidjet uchun: mavjud suhbat xabarlari (cookie bo'lsa)."""
+    from . import support
+    thread = support.thread_for(request)
+    return {'thread': thread, 'messages': [support.serialize(m) for m in thread.messages.all()] if thread else []}

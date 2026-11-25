@@ -42,7 +42,8 @@ def available_from(order, master):
 
 
 def can_work(master):
-    return master.is_verified and master.is_available and master.user.is_active
+    from .schedule import is_day_off
+    return master.is_verified and master.is_available and master.user.is_active and not is_day_off(master)
 
 
 def _base_queryset(master):
@@ -110,8 +111,9 @@ def claim(master, order_id):
 def nearby_masters(order, limit=30):
     """Yangi ochiq buyurtma haqida xabar beriladigan ustalar (Telegram ulanganlar)."""
     from .models import Master
+    from .schedule import off_today_ids
     qs = Master.objects.public().filter(is_available=True, telegram_chat_id__isnull=False).exclude(
-        pk__in=order.declined_by.values('pk'))
+        pk__in=order.declined_by.values('pk')).exclude(pk__in=off_today_ids())
     if order.category_id:
         qs = qs.filter(categories=order.category_id)
     result = []

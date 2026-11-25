@@ -37,6 +37,7 @@
       <div class="grid grid--3" style="margin-top:1.5rem;gap:.75rem">
         <div><div class="muted small">{% translate "Tajriba" %}</div><strong>{% if master.experience_years %}{% blocktranslate count y=master.experience_years %}{{ y }} yil{% plural %}{{ y }} yil{% endblocktranslate %}{% else %}—{% endif %}</strong></div>
         <div><div class="muted small">{% translate "Hudud" %}</div><strong>{{ master.address|default:"Toshkent" }}</strong></div>
+        {% with sched=master|work_summary %}{% if sched %}<div><div class="muted small">{% translate "Ish vaqti" %}</div><strong>{{ sched }}</strong>{% with ws=master|work_status %}{% if ws %}<div class="work-status small">🌙 {{ ws }}</div>{% endif %}{% endwith %}</div>{% endif %}{% endwith %}
         <div><div class="muted small">{% translate "Xizmat radiusi" %}</div><strong>{% blocktranslate with r=master.service_radius_km %}{{ r }} km gacha boradi{% endblocktranslate %}</strong></div>
       </div>
       {% if master.bio %}<hr style="border:0;border-top:1px solid var(--line);margin:1.5rem 0"><h3>{% translate "Usta haqida" %}</h3><p style="white-space:pre-line">{{ master.bio }}</p>{% endif %}

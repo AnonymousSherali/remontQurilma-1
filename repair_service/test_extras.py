@@ -335,3 +335,10 @@ class StatsAndLegalTests(TestCase):
         self.assertContains(self.client.get('/'), reverse('repair_service:privacy'))
         with override_settings(LEGAL_DRAFT=False):
             self.assertNotContains(self.client.get(reverse('repair_service:offer')), 'Loyiha.')
+
+
+class E2ESeedSafetyTests(TestCase):
+    def test_haqiqiy_bazada_ishlamaydi(self):
+        from django.core.management.base import CommandError
+        with self.assertRaises(CommandError):
+            call_command('e2e_seed')        # test bazasi nomida «e2e» yo'q

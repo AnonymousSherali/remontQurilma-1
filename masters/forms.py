@@ -287,3 +287,41 @@ class PasswordResetForm(forms.Form):
         self.user.set_password(self.cleaned_data['password1'])
         self.user.save(update_fields=['password'])
         return self.user
+
+
+class WorkScheduleForm(forms.Form):
+    work_days = forms.TypedMultipleChoiceField(
+        label=_('Ish kunlari'), required=False, coerce=int, widget=forms.CheckboxSelectMultiple,
+        choices=[(0, _('Du')), (1, _('Se')), (2, _('Ch')), (3, _('Pa')), (4, _('Ju')), (5, _('Sh')), (6, _('Ya'))])
+    work_from = forms.TimeField(label=_('Boshlanishi'), required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
+    work_to = forms.TimeField(label=_('Tugashi'), required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
+
+    def clean(self):
+        cleaned = super().clean()
+        start, end = cleaned.get('work_from'), cleaned.get('work_to')
+        if bool(start) != bool(end):
+            raise forms.ValidationError(_("Boshlanish va tugash vaqtini birga kiriting (yoki ikkalasini bo'sh qoldiring)."))
+        if start and end and start >= end:
+            raise forms.ValidationError(_("Ish tugash vaqti boshlanishidan keyin bo'lishi kerak."))
+        return cleaned
+
+
+class DayOffForm(forms.Form):
+    start = forms.DateField(label=_('Qachondan'), widget=forms.DateInput(attrs={'type': 'date'}))
+    end = forms.DateField(label=_('Qachongacha'), widget=forms.DateInput(attrs={'type': 'date'}))
+    note = forms.CharField(label=_('Izoh (ixtiyoriy)'), required=False, max_length=100)
+
+    def clean(self):
+        from datetime import timedelta
+
+        from django.utils import timezone
+        cleaned = super().clean()
+        start, end = cleaned.get('start'), cleaned.get('end')
+        if start and end:
+            if end < start:
+                raise forms.ValidationError(_("Tugash sanasi boshlanishidan oldin bo'lmasligi kerak."))
+            if start < timezone.localdate():
+                raise forms.ValidationError(_("O'tgan sanani belgilab bo'lmaydi."))
+            if (end - start) > timedelta(days=90):
+                raise forms.ValidationError(_("Bir martada ko'pi bilan 90 kun."))
+        return cleaned

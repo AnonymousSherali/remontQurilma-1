@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "O'quv bo'limi" %} | {{ SITE.name }}{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+{% block content %}
+<div class="container section" style="padding-top:2rem;max-width:820px">
+  <a href="{% url 'masters:dashboard' %}" class="btn btn--ghost btn--sm">← {% translate "Kabinet" %}</a>
+  <h1 style="font-size:2rem;margin-top:1rem">📚 {% translate "O'quv bo'limi" %}</h1>
+  <p class="muted">{% translate "Platforma qoidalari, narx, to'lov, nizo va kafolat haqida qisqa darslar." %}</p>
+  <div class="lesson-progress" role="progressbar" aria-valuenow="{{ progress.percent }}" aria-valuemin="0" aria-valuemax="100"><span style="width:{{ progress.percent }}%"></span></div>
+  <p class="small muted">{% blocktranslate with d=progress.done t=progress.total %}Boshlang'ich kurs: {{ d }} / {{ t }}{% endblocktranslate %}</p>
+  <div class="card" style="padding:0">
+    {% for l in lessons %}
+      <a class="lesson-row" href="{% url 'masters:lesson' l.slug %}">
+        <span class="lesson-row__num {% if l.done %}is-done{% endif %}">{% if l.done %}✓{% else %}{{ forloop.counter }}{% endif %}</span>
+        <span><strong>{{ l.display_title }}</strong>{% if l.video_url %} <span class="muted small">▶ video</span>{% endif %}<br><span class="muted small">{% if LANG == 'ru' and l.summary_ru %}{{ l.summary_ru }}{% else %}{{ l.summary }}{% endif %}</span></span>
+        <span aria-hidden="true">→</span>
+      </a>
+    {% empty %}<p class="muted" style="padding:1rem">{% translate "Hozircha dars yo'q." %}</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

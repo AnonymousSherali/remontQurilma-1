@@ -352,7 +352,8 @@
     }
 
     function poll() {
-      if (busy || document.hidden) { return; }
+      // Yashirin (yopiq vidjet) yoki hali boshlanmagan suhbat so'ralmaydi — trafik tejaladi
+      if (busy || document.hidden || box.offsetParent === null || box.dataset.idle) { return; }
       fetch(box.dataset.url + '?after=' + last, {
         credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' },
       }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) { apply(d); } })
@@ -371,7 +372,9 @@
       var value = input.value.trim();
       if (!value || busy) { return; }
       busy = true; err.textContent = '';
-      var body = new URLSearchParams({ text: value, after: last });
+      var body = new URLSearchParams(new FormData(form));
+      body.delete('csrfmiddlewaretoken');
+      body.set('after', last);
       fetch(box.dataset.url, {
         method: 'POST', body: body, credentials: 'same-origin',
         headers: { 'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value,
@@ -380,6 +383,8 @@
         busy = false;
         if (d.error) { err.textContent = d.error; return; }
         input.value = '';
+        delete box.dataset.idle;
+        form.querySelectorAll('[data-once]').forEach(function (el) { el.hidden = true; });
         apply(d);
         log.scrollTop = log.scrollHeight;
       }).catch(function () { busy = false; err.textContent = T.network; });
@@ -464,6 +469,22 @@
             }).then(function (r) { if (r && r.ok) { show(true); } else { toast(T.genericError, 'error'); } });
         }).catch(function () { toast(T.genericError, 'error'); });
       });
+    });
+  });
+
+  // ---------------- Yordam vidjeti ----------------
+  document.querySelectorAll('[data-support-toggle]').forEach(function (btn) {
+    var panel = document.getElementById(btn.getAttribute('aria-controls'));
+    btn.addEventListener('click', function () {
+      var open = panel.hidden;
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) {
+        var log = panel.querySelector('[data-chat-log]');
+        if (log) { log.scrollTop = log.scrollHeight; }
+        var ta = panel.querySelector('textarea'); if (ta) { ta.focus(); }
+        document.dispatchEvent(new Event('visibilitychange'));   // darhol yangilash
+      }
     });
   });
 

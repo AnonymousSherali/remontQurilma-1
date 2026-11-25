@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-25 11:36+0500\n"
+"POT-Creation-Date: 2026-11-25 12:30+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -224,6 +224,62 @@ msgstr "Новый пароль"
 msgid "Bu raqam bilan ro'yxatdan o'tilmagan"
 msgstr "Этот номер не зарегистрирован"
 
+msgid "Ish kunlari"
+msgstr "Рабочие дни"
+
+msgid "Du"
+msgstr "Пн"
+
+msgid "Se"
+msgstr "Вт"
+
+msgid "Ch"
+msgstr "Ср"
+
+msgid "Pa"
+msgstr "Чт"
+
+msgid "Ju"
+msgstr "Пт"
+
+msgid "Sh"
+msgstr "Сб"
+
+msgid "Ya"
+msgstr "Вс"
+
+msgid "Boshlanishi"
+msgstr "Начало"
+
+msgid "Tugashi"
+msgstr "Конец"
+
+msgid ""
+"Boshlanish va tugash vaqtini birga kiriting (yoki ikkalasini bo'sh "
+"qoldiring)."
+msgstr "Укажите время начала и окончания вместе (или оставьте оба пустыми)."
+
+msgid "Ish tugash vaqti boshlanishidan keyin bo'lishi kerak."
+msgstr "Время окончания должно быть позже начала."
+
+msgid "Qachondan"
+msgstr "С"
+
+msgid "Qachongacha"
+msgstr "По"
+
+msgid "Izoh (ixtiyoriy)"
+msgstr "Подпись (необязательно)"
+
+msgid "Tugash sanasi boshlanishidan oldin bo'lmasligi kerak."
+msgstr "Дата окончания не может быть раньше начала."
+
+msgid "O'tgan sanani belgilab bo'lmaydi."
+msgstr "Нельзя указать прошедшую дату."
+
+msgid "Bir martada ko'pi bilan 90 kun."
+msgstr "Не более 90 дней за раз."
+
 msgid "Toshkent shahri"
 msgstr "Город Ташкент"
 
@@ -274,6 +330,29 @@ msgid ""
 msgstr ""
 "Заранее точно согласуйте цену и объём работ, фотографируйте до и после "
 "работы."
+
+msgid "Har kuni"
+msgstr "Ежедневно"
+
+msgid "Dam olishda"
+msgstr "В отпуске"
+
+msgid "Hozir ishlamaydi"
+msgstr "Сейчас не работает"
+
+#, python-format
+msgid "ertaga %(t)s"
+msgstr "завтра %(t)s"
+
+#, python-format
+msgid "Hozir ishlamaydi — %(when)s dan"
+msgstr "Сейчас не работает — с %(when)s"
+
+msgid "Bu kun dam olish kuningiz sifatida belgilangan."
+msgstr "Этот день отмечен как ваш выходной."
+
+msgid "Bu vaqt ish jadvalingizdan tashqarida."
+msgstr "Это время вне вашего графика работы."
 
 #, python-format
 msgid "%(name)s shahri"
@@ -375,6 +454,18 @@ msgstr "Заказ ваш! Свяжитесь с клиентом и догов�
 
 msgid "Profil saqlandi."
 msgstr "Профиль сохранён."
+
+msgid "Kurs tugadi — rahmat! Endi siz platforma qoidalarini bilasiz."
+msgstr "Курс пройден — спасибо! Теперь вы знаете правила платформы."
+
+msgid "Dam olish kuni o'chirildi."
+msgstr "Выходной удалён."
+
+msgid "Dam olish kunlari saqlandi — bu kunlarda qidiruvda ko'rinmaysiz."
+msgstr "Выходные сохранены — в эти дни вас не будет в поиске."
+
+msgid "Ish jadvali saqlandi."
+msgstr "График работы сохранён."
 
 msgid "Hujjatlar yuborildi. Administrator 1 ish kuni ichida tekshiradi."
 msgstr ""
@@ -1084,6 +1175,24 @@ msgstr "Напоминание: мастер приедет сегодня в %(
 msgid "Eslatma: #%(id)s buyurtma — %(t)s da. %(url)s"
 msgstr "Напоминание: заказ #%(id)s — в %(t)s. %(url)s"
 
+msgid "Operator"
+msgstr "Оператор"
+
+msgid "Mijoz"
+msgstr "Клиент"
+
+#, python-format
+msgid ""
+"Operator javob berdi: «%(text)s»\n"
+"%(url)s"
+msgstr ""
+"Оператор ответил: «%(text)s»\n"
+"%(url)s"
+
+#, python-format
+msgid "Operator javob berdi. O'qish: %(url)s"
+msgstr "Оператор ответил. Прочитать: %(url)s"
+
 msgid ""
 "Juda ko'p ariza yuborildi. Iltimos, birozdan keyin urinib ko'ring yoki "
 "qo'ng'iroq qiling."
@@ -1461,6 +1570,12 @@ msgstr "Все права защищены."
 
 msgid "Qo'ng'iroq"
 msgstr "Позвонить"
+
+msgid "Yordam"
+msgstr "Помощь"
+
+msgid "Operator bilan yozishma"
+msgstr "Чат с оператором"
 
 msgid ""
 "Santexnik, elektrik va maishiy texnika ta'mirlash narxlari: aniq summa, "
@@ -1961,6 +2076,12 @@ msgstr "Тарифы"
 msgid "Profil"
 msgstr "Профиль"
 
+msgid "O'quv"
+msgstr "Обучение"
+
+msgid "Ish vaqti"
+msgstr "Время работы"
+
 msgid "Hujjatlar"
 msgstr "Документы"
 
@@ -1979,6 +2100,19 @@ msgstr "Клиент сообщил о проблеме — исправьте �
 
 msgid "Ochish"
 msgstr "Открыть"
+
+msgid "Boshlang'ich kurs"
+msgstr "Вводный курс"
+
+msgid ""
+"Platforma qoidalari bo'yicha qisqa darslar — 10 daqiqa. Xatolardan va "
+"nizolardan saqlaydi."
+msgstr ""
+"Короткие уроки о правилах платформы — 10 минут. Помогают избежать ошибок и "
+"споров."
+
+msgid "Davom etish"
+msgstr "Продолжить"
 
 msgid "Hujjatlaringiz qabul qilinmadi."
 msgstr "Документы не приняты."
@@ -2364,6 +2498,36 @@ msgstr ""
 "Имя, телефон и точный адрес клиента будут видны после того, как вы возьмёте "
 "заказ."
 
+msgid "Barcha darslar"
+msgstr "Все уроки"
+
+#, python-format
+msgid "Dars %(p)s / %(t)s"
+msgstr "Урок %(p)s / %(t)s"
+
+msgid "o'qilgan"
+msgstr "прочитано"
+
+msgid "Tushunarli — keyingi dars"
+msgstr "Понятно — следующий урок"
+
+msgid "Kursni tugatish"
+msgstr "Завершить курс"
+
+msgid "O'quv bo'limi"
+msgstr "Обучение"
+
+msgid ""
+"Platforma qoidalari, narx, to'lov, nizo va kafolat haqida qisqa darslar."
+msgstr "Короткие уроки о правилах, цене, оплате, спорах и гарантии."
+
+#, python-format
+msgid "Boshlang'ich kurs: %(d)s / %(t)s"
+msgstr "Вводный курс: %(d)s / %(t)s"
+
+msgid "Hozircha dars yo'q."
+msgstr "Уроков пока нет."
+
 #, python-format
 msgid "%(c)s: yaqin atrofdagi tekshirilgan ustalar, baholar va masofa."
 msgstr "%(c)s: проверенные мастера рядом, отзывы и расстояние."
@@ -2589,6 +2753,33 @@ msgstr ""
 "После подтверждения мастер получит оплату. Поэтому сначала подтвердите "
 "номер."
 
+msgid ""
+"Mijozlar profilingizda ish vaqtingizni ko'radi. Ish vaqtidan tashqarida "
+"kartochkangizda «Hozir ishlamaydi» chiqadi; dam olish kunlarida qidiruvda "
+"ko'rinmaysiz va yangi buyurtma xabari kelmaydi."
+msgstr ""
+"Клиенты видят ваш график в профиле. Вне рабочего времени в карточке "
+"отображается «Сейчас не работает»; в выходные вас нет в поиске и не приходят"
+" новые заказы."
+
+msgid "Hozir"
+msgstr "Сейчас"
+
+msgid "ish vaqti"
+msgstr "рабочее время"
+
+msgid "Soatlarni bo'sh qoldirsangiz — kun bo'yi ishlaysiz deb hisoblanadi."
+msgstr "Если не указать часы — считается, что вы работаете весь день."
+
+msgid "Dam olish kunlari"
+msgstr "Выходные"
+
+msgid "O'chirish"
+msgstr "Удалить"
+
+msgid "Qo'shish"
+msgstr "Добавить"
+
 msgid "Usta bilan yozishma"
 msgstr "Переписка с мастером"
 
@@ -2682,14 +2873,8 @@ msgstr "Фото"
 msgid "Rasmni o'chirasizmi?"
 msgstr "Удалить фото?"
 
-msgid "O'chirish"
-msgstr "Удалить"
-
 msgid "Hozircha rasm yo'q."
 msgstr "Фото пока нет."
-
-msgid "Izoh (ixtiyoriy)"
-msgstr "Подпись (необязательно)"
 
 #, python-format
 msgid ""
@@ -3056,9 +3241,6 @@ msgid "Mijoz xabar oladi, vaqtdan oldin ikkalangizga eslatma boradi."
 msgstr ""
 "Клиент получит уведомление, перед визитом вам обоим придёт напоминание."
 
-msgid "Mijoz"
-msgstr "Клиент"
-
 msgid "Ism"
 msgstr "Имя"
 
@@ -3259,6 +3441,9 @@ msgstr ""
 "Согласен получать сообщения об акциях и скидках (отписаться можно в любой "
 "момент)"
 
+msgid "Usta chaqirish — bepul"
+msgstr "Вызвать мастера — бесплатно"
+
 msgid "Ariza yuborish"
 msgstr "Отправить заявку"
 
@@ -3359,6 +3544,15 @@ msgstr "Не удалось отправить заявку"
 
 msgid "Buyurtma holatini SMS'dagi havola orqali kuzatishingiz mumkin."
 msgstr "Статус заказа можно отслеживать по ссылке из SMS."
+
+msgid "Savolingizni yozing — operator ish vaqtida tez javob beradi."
+msgstr "Напишите вопрос — оператор быстро ответит в рабочее время."
+
+msgid "Telefon (ixtiyoriy)"
+msgstr "Телефон (необязательно)"
+
+msgid "Telefon qoldirsangiz, javob haqida SMS keladi."
+msgstr "Оставьте телефон — придёт SMS об ответе."
 
 #~ msgid ""
 #~ "Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga "

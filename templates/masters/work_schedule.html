@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load i18n ui %}
+{% block title %}{% translate "Ish vaqti" %} | {{ SITE.name }}{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+{% block content %}
+<div class="container auth-wrap">
+  <div class="card card--raised auth-card auth-card--wide">
+    <a href="{% url 'masters:dashboard' %}" class="btn btn--ghost btn--sm">← {% translate "Kabinet" %}</a>
+    <h1 style="font-size:1.9rem;margin-top:1rem">🕘 {% translate "Ish vaqti" %}</h1>
+    <p class="muted">{% translate "Mijozlar profilingizda ish vaqtingizni ko'radi. Ish vaqtidan tashqarida kartochkangizda «Hozir ishlamaydi» chiqadi; dam olish kunlarida qidiruvda ko'rinmaysiz va yangi buyurtma xabari kelmaydi." %}</p>
+    {% with ws=master|work_status %}<p><strong>{% translate "Hozir" %}:</strong> {% if ws %}🌙 {{ ws }}{% else %}✅ {% translate "ish vaqti" %}{% endif %}{% with sm=master|work_summary %}{% if sm %} · {{ sm }}{% endif %}{% endwith %}</p>{% endwith %}
+
+    <form method="post" class="form">{% csrf_token %}
+      {% if form.non_field_errors %}<div class="alert alert--error" role="alert">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend class="card__title">{% translate "Ish kunlari" %}</legend>
+        <div class="weekday-picks">
+          {% for value, label in form.work_days.field.choices %}
+            <label><input type="checkbox" name="work_days" value="{{ value }}" {% if not form.initial.work_days or value in form.initial.work_days %}checked{% endif %}><span>{{ label }}</span></label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      <div class="form-row">
+        {% include "partials/field.html" with field=form.work_from %}
+        {% include "partials/field.html" with field=form.work_to %}
+      </div>
+      <p class="muted small" style="margin:0">{% translate "Soatlarni bo'sh qoldirsangiz — kun bo'yi ishlaysiz deb hisoblanadi." %}</p>
+      <button class="btn btn--primary">{% translate "Saqlash" %}</button>
+    </form>
+
+    <hr style="border:0;border-top:1px solid var(--line);margin:1.5rem 0">
+    <div class="card__title">🏖 {% translate "Dam olish kunlari" %}</div>
+    {% if days_off %}
+      <ul class="events" style="margin-bottom:1rem">
+        {% for d in days_off %}<li><time>{{ d.start|date:"d.m" }}–{{ d.end|date:"d.m" }}</time><span>{{ d.note|default:"—" }}
+          <form method="post" style="display:inline">{% csrf_token %}<button class="btn btn--sm btn--ghost" name="delete" value="{{ d.pk }}">{% translate "O'chirish" %}</button></form></span></li>{% endfor %}
+      </ul>
+    {% endif %}
+    <form method="post" class="form">{% csrf_token %}<input type="hidden" name="form" value="off">
+      {% if off_form.non_field_errors %}<div class="alert alert--error" role="alert">{{ off_form.non_field_errors|join:" " }}</div>{% endif %}
+      <div class="form-row">
+        {% include "partials/field.html" with field=off_form.start %}
+        {% include "partials/field.html" with field=off_form.end %}
+      </div>
+      {% include "partials/field.html" with field=off_form.note %}
+      <button class="btn">{% translate "Qo'shish" %}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -80,6 +80,11 @@ class Master(models.Model):
         help_text="Faqat tasdiqlangan ustalar saytda ko'rinadi. Shaxsini tekshirgandan keyin belgilang.",
     )
     is_available = models.BooleanField('Buyurtma qabul qiladi', default=True)
+    # Ish jadvali (masters/schedule.py): hafta kunlari (0 — dushanba) va soatlar
+    work_days = models.JSONField('Ish kunlari', default=list, blank=True,
+                                 help_text="0 — dushanba … 6 — yakshanba. Bo'sh — har kuni.")
+    work_from = models.TimeField('Ish boshlanishi', null=True, blank=True)
+    work_to = models.TimeField('Ish tugashi', null=True, blank=True)
     # Pullik tariflar (payments/tariffs.py). Muddat o'tgach o'zi o'chadi.
     # Ishlab topilgan pul shu kartaga o'tkaziladi (faqat usta va administrator ko'radi)
     payout_card = models.CharField('Karta raqami', max_length=16, blank=True)
@@ -197,6 +202,58 @@ class Master(models.Model):
             (label, round(stats[key], 1) if stats[key] is not None else None)
             for key, label in Review.CRITERIA
         ]
+
+
+class DayOff(models.Model):
+    """Ustaning dam olish / ta'til kunlari — shu kunlarda qidiruvda ko'rinmaydi va yangi buyurtma olmaydi."""
+
+    master = models.ForeignKey(Master, on_delete=models.CASCADE, related_name='days_off', verbose_name='Usta')
+    start = models.DateField('Boshlanishi')
+    end = models.DateField('Tugashi')
+    note = models.CharField('Izoh', max_length=100, blank=True)
+
+    class Meta:
+        verbose_name = 'Dam olish kuni'
+        verbose_name_plural = 'Dam olish kunlari'
+        ordering = ['start']
+
+    def __str__(self):
+        return f'{self.master} · {self.start:%d.%m}–{self.end:%d.%m}'
+
+
+class Lesson(models.Model):
+    """Ustalar uchun o'quv materiali (masters/learning.py). Matnda {komissiya} kabi o'rinbosarlar bo'lishi mumkin."""
+
+    slug = models.SlugField('URL nomi', unique=True)
+    title = models.CharField('Sarlavha', max_length=150)
+    title_ru = models.CharField('Sarlavha (ruscha)', max_length=150, blank=True)
+    summary = models.CharField('Qisqacha', max_length=255, blank=True)
+    summary_ru = models.CharField('Qisqacha (ruscha)', max_length=255, blank=True)
+    body = models.TextField('Matn', help_text="Bo'sh qator — yangi xatboshi. O'rinbosarlar: {komissiya}, "
+                                              "{pro_komissiya}, {kafolat_kun}, {tasdiq_soat}, {chiqarish_soat}, "
+                                              "{tolov_kuni}, {min_tolov}")
+    body_ru = models.TextField('Matn (ruscha)', blank=True)
+    video_url = models.URLField('Video (YouTube)', blank=True)
+    is_required = models.BooleanField("Boshlang'ich kursga kiradi", default=True)
+    is_published = models.BooleanField('Nashr qilingan', default=True)
+    order = models.PositiveSmallIntegerField('Tartib', default=0)
+
+    class Meta:
+        verbose_name = 'Dars'
+        verbose_name_plural = "O'quv darslari"
+        ordering = ['order', 'pk']
+
+    def __str__(self):
+        return self.title
+
+
+class LessonProgress(models.Model):
+    master = models.ForeignKey(Master, on_delete=models.CASCADE, related_name='lessons_done')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='completions')
+    completed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [('master', 'lesson')]
 
 
 class PrivateStorage(FileSystemStorage):

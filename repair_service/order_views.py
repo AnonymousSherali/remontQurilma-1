@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
@@ -437,3 +438,43 @@ def order_portfolio_toggle(request, token):
     messages.info(request, _("Ish rasmlari usta portfoliosida ko'rsatiladi.") if order.photos_in_portfolio
                   else _("Ish rasmlari usta portfoliosida ko'rsatilmaydi."))
     return redirect(order.get_customer_url() + '#rasmlar')
+
+
+# ---------- Yordam (operator bilan yozishma) ----------
+
+def support_endpoint(request):
+    """GET — xabarlar (JSON), POST — yuborish. Suhbat kaliti cookie'da."""
+    from . import support
+    thread = support.thread_for(request)
+    error = None
+    if request.method == 'POST':
+        try:
+            thread, _message = support.post_visitor(request, thread, request.POST.get('text'),
+                                                   request.POST.get('name', ''), request.POST.get('phone', ''))
+        except support.SupportError as exc:
+            error = str(exc)
+    try:
+        after = max(int(request.GET.get('after') or request.POST.get('after') or 0), 0)
+    except ValueError:
+        after = 0
+    messages_list = list(thread.messages.filter(pk__gt=after)) if thread else []
+    if thread:
+        thread.messages.filter(from_staff=True, read_at__isnull=True).update(read_at=timezone.now())
+    response = JsonResponse({'messages': [support.serialize(m) for m in messages_list], 'error': error},
+                            status=400 if error else 200)
+    if thread and request.COOKIES.get(support.COOKIE) != str(thread.token):
+        response.set_cookie(support.COOKIE, str(thread.token), max_age=support.COOKIE_AGE, httponly=True,
+                            samesite='Lax', secure=request.is_secure())
+    return response
+
+
+def support_thread_page(request, token):
+    """SMS'dagi havola: suhbatni ochadi va shu brauzerga bog'laydi."""
+    from . import support
+    from .models import SupportThread
+    thread = get_object_or_404(SupportThread, token=token)
+    response = render(request, 'support/thread.html', {
+        'support_thread': thread, 'support_messages': [support.serialize(m) for m in thread.messages.all()]})
+    response.set_cookie(support.COOKIE, str(thread.token), max_age=support.COOKIE_AGE, httponly=True,
+                        samesite='Lax', secure=request.is_secure())
+    return response

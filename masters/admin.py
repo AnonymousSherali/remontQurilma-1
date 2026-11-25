@@ -10,7 +10,7 @@ from unfold.decorators import action, display
 from repair_service.phone import format_phone
 
 from . import documents
-from .models import Category, Master, MasterDocument, Review
+from .models import Category, DayOff, Lesson, Master, MasterDocument, Review
 
 
 @admin.register(Category)
@@ -64,6 +64,13 @@ class MasterDocumentInline(TabularInline):
                            'style="height:120px;border-radius:6px"></a>', url)
 
 
+class DayOffInline(TabularInline):
+    model = DayOff
+    extra = 0
+    fields = ['start', 'end', 'note']
+    verbose_name_plural = 'Dam olish kunlari'
+
+
 @admin.register(Master)
 class MasterAdmin(ModelAdmin):
     list_display = [
@@ -77,7 +84,7 @@ class MasterAdmin(ModelAdmin):
                        'reliability', 'reliability_data']
     autocomplete_fields = ['user']
     filter_horizontal = ['categories']
-    inlines = [MasterDocumentInline, ReviewInline]
+    inlines = [MasterDocumentInline, DayOffInline, ReviewInline]
     actions = ['approve_documents', 'verify', 'unverify', 'recalculate']
     list_per_page = 25
 
@@ -85,6 +92,7 @@ class MasterAdmin(ModelAdmin):
         ('Usta', {'fields': ['user', 'full_name', 'phone', 'photo', 'categories', 'experience_years', 'bio']}),
         ('Joylashuv', {'fields': ['address', ('latitude', 'longitude'), 'map_link', 'service_radius_km']}),
         ('Holat', {'fields': ['is_verified', 'is_available']}),
+        ('Ish jadvali', {'fields': ['work_days', ('work_from', 'work_to')], 'classes': ['collapse']}),
         ('Shaxsni tasdiqlash', {
             'fields': ['id_status', 'id_note', 'id_checked_at'],
             'description': "Hujjatlarni pastdagi «Shaxsni tasdiqlovchi hujjatlar» bo'limida ko'ring. "
@@ -232,3 +240,18 @@ class ReviewAdmin(ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         obj.master.recalculate_rating()  # list_editable orqali yashirilsa ham reyting yangilanadi
+
+
+@admin.register(Lesson)
+class LessonAdmin(ModelAdmin):
+    list_display = ['title', 'order', 'is_required', 'is_published', 'completed']
+    list_editable = ['order', 'is_required', 'is_published']
+    prepopulated_fields = {'slug': ['title']}
+    fieldsets = [
+        (None, {'fields': ['title', 'slug', 'summary', 'body', 'video_url', ('order', 'is_required', 'is_published')]}),
+        ('Ruscha', {'fields': ['title_ru', 'summary_ru', 'body_ru'], 'classes': ['collapse']}),
+    ]
+
+    @display(description="O'qiganlar")
+    def completed(self, obj):
+        return obj.completions.count()

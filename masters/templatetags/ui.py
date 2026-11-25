@@ -134,3 +134,26 @@ def get_item(mapping, key):
         return mapping.get(key)
     except AttributeError:
         return None
+
+
+@register.filter
+def work_status(master):
+    """«Dam olishda» / «Hozir ishlamaydi — ertaga 08:00 dan» yoki bo'sh."""
+    from masters.schedule import status_label
+    return status_label(master)
+
+
+@register.filter
+def work_summary(master):
+    from masters.schedule import summary
+    return summary(master)
+
+
+@register.simple_tag(takes_context=True)
+def ab(context, key):
+    """A/B test varianti: {% ab 'kalit' as v %} — repair_service/experiments.py."""
+    request = context.get('request')
+    if request is None:
+        return 'a'
+    from repair_service.experiments import variant_for
+    return variant_for(request, key)
