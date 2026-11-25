@@ -221,6 +221,41 @@ class DayOff(models.Model):
         return f'{self.master} · {self.start:%d.%m}–{self.end:%d.%m}'
 
 
+class Lesson(models.Model):
+    """Ustalar uchun o'quv materiali (masters/learning.py). Matnda {komissiya} kabi o'rinbosarlar bo'lishi mumkin."""
+
+    slug = models.SlugField('URL nomi', unique=True)
+    title = models.CharField('Sarlavha', max_length=150)
+    title_ru = models.CharField('Sarlavha (ruscha)', max_length=150, blank=True)
+    summary = models.CharField('Qisqacha', max_length=255, blank=True)
+    summary_ru = models.CharField('Qisqacha (ruscha)', max_length=255, blank=True)
+    body = models.TextField('Matn', help_text="Bo'sh qator — yangi xatboshi. O'rinbosarlar: {komissiya}, "
+                                              "{pro_komissiya}, {kafolat_kun}, {tasdiq_soat}, {chiqarish_soat}, "
+                                              "{tolov_kuni}, {min_tolov}")
+    body_ru = models.TextField('Matn (ruscha)', blank=True)
+    video_url = models.URLField('Video (YouTube)', blank=True)
+    is_required = models.BooleanField("Boshlang'ich kursga kiradi", default=True)
+    is_published = models.BooleanField('Nashr qilingan', default=True)
+    order = models.PositiveSmallIntegerField('Tartib', default=0)
+
+    class Meta:
+        verbose_name = 'Dars'
+        verbose_name_plural = "O'quv darslari"
+        ordering = ['order', 'pk']
+
+    def __str__(self):
+        return self.title
+
+
+class LessonProgress(models.Model):
+    master = models.ForeignKey(Master, on_delete=models.CASCADE, related_name='lessons_done')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='completions')
+    completed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [('master', 'lesson')]
+
+
 class PrivateStorage(FileSystemStorage):
     """MEDIA_ROOT dan tashqaridagi maxfiy papka. Ochiq URL yo'q — fayl faqat admin ko'rish sahifasi orqali."""
 

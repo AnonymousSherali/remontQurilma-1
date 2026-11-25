@@ -23,6 +23,7 @@
       <a class="btn {% if open_count %}btn--primary{% endif %}" href="{% url 'masters:feed' %}">📥 {% translate "Ochiq buyurtmalar" %}{% if open_count %} · {{ open_count }}{% endif %}</a>
       <a class="btn" href="{% url 'payments:tariffs' %}">⭐ {% translate "Tariflar" %}{% if master.is_pro %} · PRO{% endif %}{% if master.is_promoted %} · TOP{% endif %}</a>
       <a class="btn" href="{% url 'masters:profile_edit' %}">✏️ {% translate "Profil" %}</a>
+      <a class="btn" href="{% url 'masters:lessons' %}">📚 {% translate "O'quv" %}{% if not learning.complete %} · {{ learning.done }}/{{ learning.total }}{% endif %}</a>
       <a class="btn" href="{% url 'masters:work_schedule' %}">🕘 {% translate "Ish vaqti" %}</a>
       <a class="btn" href="{% url 'masters:documents' %}">🪪 {% translate "Hujjatlar" %}{% if master.id_status == 'approved' %} ✓{% elif master.id_status == 'pending' %} ⏳{% endif %}</a>
       <a class="btn" href="{{ master.get_absolute_url }}">👁 {% translate "Ommaviy sahifa" %}</a>
@@ -33,6 +34,9 @@
   {% for claim in warranty_claims %}
   <div class="alert alert--warning"><div>🛡 <strong>{% blocktranslate with id=claim.order_id %}#{{ id }} buyurtma bo'yicha kafolat murojaati.{% endblocktranslate %}</strong> {% translate "Mijoz muammo bildirdi — bepul tuzatib bering." %} <a href="{{ claim.order.get_master_url }}#kafolat">{% translate "Ochish" %} →</a></div></div>
   {% endfor %}
+  {% if not learning.complete %}
+  <div class="alert alert--info"><div>📚 <strong>{% translate "Boshlang'ich kurs" %}: {{ learning.done }}/{{ learning.total }}.</strong> {% translate "Platforma qoidalari bo'yicha qisqa darslar — 10 daqiqa. Xatolardan va nizolardan saqlaydi." %} <a href="{% url 'masters:lessons' %}">{% translate "Davom etish" %} →</a></div></div>
+  {% endif %}
   {% if master.id_status == 'none' or master.id_status == 'rejected' %}
   <div class="alert alert--warning"><div>🪪 <strong>{% if master.id_status == 'rejected' %}{% translate "Hujjatlaringiz qabul qilinmadi." %}{% else %}{% translate "Shaxsingizni tasdiqlang." %}{% endif %}</strong> {% if master.id_status == 'rejected' %}{{ master.id_note }}. {% endif %}{% translate "Pasport va selfi yuklang — tekshirilgan ustalarga mijozlar ko'proq ishonadi." %} <a href="{% url 'masters:documents' %}">{% translate "Yuklash" %} →</a></div></div>
   {% endif %}

@@ -10,7 +10,7 @@ from unfold.decorators import action, display
 from repair_service.phone import format_phone
 
 from . import documents
-from .models import Category, DayOff, Master, MasterDocument, Review
+from .models import Category, DayOff, Lesson, Master, MasterDocument, Review
 
 
 @admin.register(Category)
@@ -240,3 +240,18 @@ class ReviewAdmin(ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         obj.master.recalculate_rating()  # list_editable orqali yashirilsa ham reyting yangilanadi
+
+
+@admin.register(Lesson)
+class LessonAdmin(ModelAdmin):
+    list_display = ['title', 'order', 'is_required', 'is_published', 'completed']
+    list_editable = ['order', 'is_required', 'is_published']
+    prepopulated_fields = {'slug': ['title']}
+    fieldsets = [
+        (None, {'fields': ['title', 'slug', 'summary', 'body', 'video_url', ('order', 'is_required', 'is_published')]}),
+        ('Ruscha', {'fields': ['title_ru', 'summary_ru', 'body_ru'], 'classes': ['collapse']}),
+    ]
+
+    @display(description="O'qiganlar")
+    def completed(self, obj):
+        return obj.completions.count()

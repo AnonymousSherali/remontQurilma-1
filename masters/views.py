@@ -26,7 +26,7 @@ from repair_service.photos import can_delete as can_delete_photo
 from repair_service.photos import portfolio
 from repair_service.models import ServiceRequest
 
-from . import documents, feed, reliability, seo
+from . import documents, feed, learning, reliability, seo
 from .forms import (
     deviation_percent, MasterProfileForm, MasterRegistrationForm, PasswordResetForm, PhoneLoginForm, QuoteForm, ReviewForm,
 )
@@ -265,6 +265,7 @@ def dashboard(request):
         'balance': balance,
         'open_count': feed.open_count(master),
         'calendar': schedule.calendar(master),
+        'learning': learning.progress(master),
         'reliability_tips': reliability.tips(master),
         'referral_link': request.build_absolute_uri(
             reverse('masters:register') + '?ref=' + promos.master_referral_code(master)),
@@ -319,6 +320,41 @@ def profile_edit(request):
         return redirect('masters:dashboard')
     return render(request, 'masters/profile_edit.html', {
         'form': form, 'master': master, 'payouts': master.payouts.all()[:5]})
+
+
+@login_required
+def lessons(request):
+    from . import learning
+    from .models import Lesson
+    master = _get_own_master(request)
+    items = list(Lesson.objects.filter(is_published=True))
+    prog = learning.progress(master)
+    for lesson in items:
+        lesson.display_title = learning.title(lesson)
+        lesson.done = lesson.pk in prog['done_ids']
+    return render(request, 'masters/lessons.html', {'master': master, 'lessons': items, 'progress': prog})
+
+
+@login_required
+def lesson_detail(request, slug):
+    from . import learning
+    from .models import Lesson, LessonProgress
+    master = _get_own_master(request)
+    lesson = get_object_or_404(Lesson, slug=slug, is_published=True)
+    items = list(Lesson.objects.filter(is_published=True))
+    position = items.index(lesson)
+    next_lesson = items[position + 1] if position + 1 < len(items) else None
+    if request.method == 'POST':
+        LessonProgress.objects.get_or_create(master=master, lesson=lesson)
+        if next_lesson:
+            return redirect('masters:lesson', slug=next_lesson.slug)
+        messages.success(request, _("Kurs tugadi — rahmat! Endi siz platforma qoidalarini bilasiz."))
+        return redirect('masters:lessons')
+    return render(request, 'masters/lesson.html', {
+        'master': master, 'lesson': lesson, 'title': learning.title(lesson), 'text': learning.render_text(lesson),
+        'video': learning.youtube_embed(lesson.video_url), 'next_lesson': next_lesson,
+        'done': master.lessons_done.filter(lesson=lesson).exists(), 'position': position + 1, 'total': len(items),
+    })
 
 
 @login_required

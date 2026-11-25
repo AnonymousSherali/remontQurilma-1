@@ -711,3 +711,15 @@ input[type="file"] { font: inherit; font-size: .9rem; }
   .has-mobile-cta .support { bottom: 84px; }
   .support__btn span { display: none; }
 }
+
+/* ---------- O'quv bo'limi ---------- */
+.lesson-progress { height: 10px; border-radius: 5px; background: var(--surface-2); overflow: hidden; margin: 1rem 0 .4rem; }
+.lesson-progress span { display: block; height: 100%; background: var(--brand); }
+.lesson-row { display: grid; grid-template-columns: 2.2rem 1fr auto; gap: .8rem; align-items: center; padding: .9rem 1rem; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+.lesson-row:last-child { border-bottom: 0; }
+.lesson-row:hover { background: var(--surface-2); }
+.lesson-row__num { width: 2.2rem; height: 2.2rem; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font-weight: 800; }
+.lesson-row__num.is-done { background: var(--brand-100); color: var(--brand-600); }
+.lesson-video { position: relative; padding-top: 56.25%; border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
+.lesson-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.lesson-text p { line-height: 1.7; }
