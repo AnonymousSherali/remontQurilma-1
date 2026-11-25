@@ -123,6 +123,10 @@
         <span class="muted small">· <a href="{% url 'repair_service:offer' %}" target="_blank" rel="noopener">{% translate "Oferta" %}</a>, <a href="{% url 'repair_service:privacy' %}" target="_blank" rel="noopener">{% translate "maxfiylik siyosati" %}</a></span></span>
       <span class="error-message"></span>
     </label>
+    <label class="check">
+      <input type="checkbox" name="marketing" value="on">
+      <span class="small">{% translate "Aksiya va chegirmalar haqida xabar olishga roziman (istalgan vaqtda bekor qilish mumkin)" %}</span>
+    </label>
 
     <p class="results field__error" role="alert"></p>
     <button type="submit" class="btn btn--primary btn--lg btn--block">{% if button %}{{ button }}{% else %}{% translate "Ariza yuborish" %}{% endif %}</button>

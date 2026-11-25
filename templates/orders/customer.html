@@ -184,6 +184,16 @@
         {% endif %}
       </section>
       {% endif %}
+      {% if can_act %}
+      <section class="card" id="aksiyalar">
+        <div class="card__title">📣 {% translate "Aksiyalar" %}</div>
+        <p class="muted small" style="margin-top:0">{% if marketing_on %}{% translate "Aksiya va chegirmalar haqida xabar olasiz." %}{% else %}{% translate "Chegirmalar va aksiyalar haqida kamdan-kam xabar yuboramiz." %}{% endif %}</p>
+        <form method="post" action="{% url 'repair_service:marketing_toggle' order.review_token %}">{% csrf_token %}
+          {% if marketing_on %}<button class="btn btn--sm btn--ghost">{% translate "Obunani bekor qilish" %}</button>
+          {% else %}<button class="btn btn--sm" name="on" value="1">{% translate "Xabar olishga roziman" %}</button>{% endif %}
+        </form>
+      </section>
+      {% endif %}
       {% if can_act and WEBPUSH_PUBLIC_KEY %}
       <section class="card">
         <div class="card__title">🔔 {% translate "Bildirishnomalar" %}</div>

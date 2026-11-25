@@ -32,6 +32,9 @@ class Command(BaseCommand):
         rated = update_all()
         from repair_service.analytics import purge
         purge()
+        from repair_service.marketing import process as send_campaigns
+        campaign_messages = send_campaigns()
         self.stdout.write(f'Avtomatik tasdiqlandi: {len(confirmed)}; chiqarilgan bosqichlar: {len(released)}; '
                           f'yopilgan kafolat murojaatlari: {len(closed)}; tashrif eslatmalari: {len(reminded)}; '
-                          f"o'chirilgan hujjat fayllari: {purged}; ishonchlilik yangilandi: {rated}")
+                          f"o'chirilgan hujjat fayllari: {purged}; ishonchlilik yangilandi: {rated}; "
+                          f"kampaniya xabarlari: {campaign_messages}")

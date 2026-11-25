@@ -140,6 +140,9 @@ def submit_request(request):
     service_request = create_order(form)
     from .analytics import stamp_order
     stamp_order(request, service_request)
+    if form.cleaned_data.get('marketing'):
+        from .marketing import subscribe
+        subscribe(service_request.phone, service_request.language, 'ariza')
 
     if service_request.master:
         message = _("Arizangiz %(master)sga yuborildi. Usta tez orada qo'ng'iroq qiladi.") % {

@@ -26,6 +26,8 @@ class ServiceRequestForm(forms.ModelForm):
     longitude = forms.CharField(required=False)
     district = forms.CharField(required=False)
     promo_code = forms.CharField(required=False, max_length=32)
+    # Aksiyalar haqida xabar — alohida, ixtiyoriy rozilik (oldindan belgilanmaydi)
+    marketing = forms.BooleanField(required=False)
 
     consent = forms.BooleanField(
         required=True,

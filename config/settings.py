@@ -317,6 +317,11 @@ WEBPUSH_PUBLIC_KEY = os.environ.get('WEBPUSH_PUBLIC_KEY', '')
 WEBPUSH_PRIVATE_KEY = os.environ.get('WEBPUSH_PRIVATE_KEY', '')
 WEBPUSH_SUBJECT = os.environ.get('WEBPUSH_SUBJECT', '')   # mailto:... (bo'sh — SITE_EMAIL)
 
+# --- Marketing xabarnomalari (repair_service/marketing.py) ---
+# Faqat shu soatlar oralig'ida (mahalliy vaqt) va har cron'da shuncha xabar
+CAMPAIGN_HOURS = tuple(int(x) for x in (os.environ.get('CAMPAIGN_HOURS') or '9-21').split('-'))
+CAMPAIGN_BATCH = int(os.environ.get('CAMPAIGN_BATCH') or 500)
+
 # --- Tahlil (repair_service/analytics.py) ---
 ANALYTICS_RETENTION_DAYS = int(os.environ.get('ANALYTICS_RETENTION_DAYS') or 180)
 
@@ -405,6 +410,8 @@ UNFOLD = {
                      'link': reverse_lazy('admin:payments_payout_changelist')},
                     {'title': 'Narx takliflari', 'icon': 'request_quote',
                      'link': reverse_lazy('admin:payments_quote_changelist')},
+                    {'title': 'Xabarnomalar', 'icon': 'campaign',
+                     'link': reverse_lazy('admin:repair_service_campaign_changelist')},
                     {'title': 'Promo-kodlar', 'icon': 'redeem',
                      'link': reverse_lazy('admin:payments_promocode_changelist')},
                     {'title': 'Tarif xaridlari', 'icon': 'workspace_premium',

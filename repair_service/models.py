@@ -228,6 +228,85 @@ class PushSubscription(models.Model):
         return f'{self.master or self.phone} · {self.endpoint[:40]}'
 
 
+class MarketingConsent(models.Model):
+    """Mijozning aksiya va yangiliklar olishga roziligi (ixtiyoriy, alohida belgilanadi)."""
+
+    phone = models.CharField('Telefon', max_length=20, unique=True)
+    token = models.UUIDField('Obunani bekor qilish kaliti', default=uuid.uuid4, unique=True, editable=False)
+    language = models.CharField('Til', max_length=5, default='uz')
+    source = models.CharField('Qayerda berilgan', max_length=30, blank=True)
+    consented_at = models.DateTimeField('Rozilik berilgan', default=timezone.now)
+    unsubscribed_at = models.DateTimeField('Bekor qilingan', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Marketing roziligi'
+        verbose_name_plural = 'Marketing roziliklari'
+
+    def __str__(self):
+        return self.phone
+
+    @property
+    def is_active(self):
+        return self.unsubscribed_at is None
+
+
+class Campaign(models.Model):
+    """Ommaviy xabarnoma (aksiya, yangilik). Yuborish — cron (process_orders), partiyalab."""
+
+    AUDIENCE_CUSTOMERS, AUDIENCE_INACTIVE, AUDIENCE_CATEGORY, AUDIENCE_MASTERS = (
+        'customers', 'inactive', 'category', 'masters')
+    AUDIENCE_CHOICES = [
+        (AUDIENCE_CUSTOMERS, 'Rozilik bergan barcha mijozlar'),
+        (AUDIENCE_INACTIVE, "Rozilik bergan, uzoq vaqt buyurtma qilmagan mijozlar"),
+        (AUDIENCE_CATEGORY, "Rozilik bergan, tanlangan yo'nalishda buyurtma qilgan mijozlar"),
+        (AUDIENCE_MASTERS, 'Tasdiqlangan ustalar (xizmat xabari)'),
+    ]
+    STATUS_DRAFT, STATUS_SCHEDULED, STATUS_SENDING, STATUS_DONE, STATUS_CANCELLED = (
+        'draft', 'scheduled', 'sending', 'done', 'cancelled')
+    STATUS_CHOICES = [(STATUS_DRAFT, 'Qoralama'), (STATUS_SCHEDULED, 'Rejalashtirilgan'),
+                      (STATUS_SENDING, 'Yuborilmoqda'), (STATUS_DONE, 'Yuborildi'), (STATUS_CANCELLED, 'Bekor qilindi')]
+
+    title = models.CharField('Nomi (ichki)', max_length=120)
+    text_uz = models.TextField("Matn (o'zbekcha)", max_length=500)
+    text_ru = models.TextField('Matn (ruscha)', max_length=500, blank=True, help_text="Bo'sh bo'lsa — o'zbekcha")
+    link = models.CharField('Havola', max_length=200, blank=True, help_text="Masalan: /narxlar/ yoki to'liq URL")
+    promo = models.ForeignKey('payments.PromoCode', on_delete=models.SET_NULL, null=True, blank=True,
+                              verbose_name='Promo-kod', help_text="Matn oxiriga kod qo'shiladi")
+    audience = models.CharField('Kimga', max_length=12, choices=AUDIENCE_CHOICES, default=AUDIENCE_CUSTOMERS)
+    category = models.ForeignKey('masters.Category', on_delete=models.SET_NULL, null=True, blank=True,
+                                 verbose_name="Yo'nalish", help_text="«Tanlangan yo'nalish» auditoriyasi uchun")
+    inactive_days = models.PositiveSmallIntegerField('Necha kundan beri buyurtma yo\'q', default=60)
+    use_push = models.BooleanField('Brauzer bildirishnomasi', default=True)
+    use_telegram = models.BooleanField('Telegram', default=True)
+    use_sms = models.BooleanField('SMS (pullik)', default=False)
+    status = models.CharField('Holat', max_length=10, choices=STATUS_CHOICES, default=STATUS_DRAFT)
+    scheduled_at = models.DateTimeField('Yuborish vaqti', null=True, blank=True)
+    sent = models.PositiveIntegerField('Yuborildi', default=0)
+    failed = models.PositiveIntegerField('Yetkazilmadi', default=0)
+    skipped = models.PositiveIntegerField("Kanal yo'q", default=0)
+    created_at = models.DateTimeField('Yaratilgan', auto_now_add=True)
+    finished_at = models.DateTimeField('Tugagan', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Xabarnoma (kampaniya)'
+        verbose_name_plural = 'Xabarnomalar (kampaniyalar)'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+
+class CampaignDelivery(models.Model):
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='deliveries')
+    recipient = models.CharField('Qabul qiluvchi', max_length=30)   # telefon yoki «m<usta id>»
+    channel = models.CharField('Kanal', max_length=10, blank=True)
+    ok = models.BooleanField('Yetkazildi', default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [('campaign', 'recipient')]
+
+
 class AnalyticsEvent(models.Model):
     """Yengil tahlil hodisasi (shaxsiy ma'lumotsiz): tashrif, forma boshlandi, ariza."""
 

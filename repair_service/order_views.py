@@ -22,6 +22,7 @@ from payments.providers import checkout_url, choices as payment_choices
 
 from . import photos as photo_rules
 from . import chat, schedule, warranty, workflow
+from .marketing import is_subscribed as marketing_subscribed
 from .models import OrderPhoto, ServiceRequest, WarrantyClaim
 
 
@@ -62,6 +63,7 @@ def order_detail(request, token):
                         'repair_service:order_photo_delete', [order.review_token]),
         'show_master_phone': order.master and order.status != ServiceRequest.STATUS_NEW,
         **promo_context(request, order, can_act),
+        'marketing_on': can_act and marketing_subscribed(order.phone),
         'reorder': reorder_target(order) if order.status == ServiceRequest.STATUS_CONFIRMED else (None, 'status'),
         **warranty.context(order),
         **chat.context(order, chat.CUSTOMER, can_act),
@@ -159,6 +161,34 @@ def promo_context(request, order, can_act):
         'promo_can_change': can_act and promos.can_apply(order),
         'referral': referral,
     }
+
+
+@require_POST
+def marketing_toggle(request, token):
+    from . import marketing
+    order = _order_by_token(token)
+    if not _can_act(request, order):
+        raise Http404
+    if request.POST.get('on'):
+        marketing.subscribe(order.phone, order.language, 'buyurtma')
+        messages.success(request, _('Aksiyalar haqida xabar olasiz. Istalgan vaqtda bekor qilish mumkin.'))
+    else:
+        marketing.unsubscribe(phone=order.phone)
+        messages.info(request, _("Aksiya xabarlari o'chirildi."))
+    return redirect(order.get_customer_url() + '#aksiyalar')
+
+
+def unsubscribe_page(request, token):
+    """Xabardagi havola: ochilganda emas, tugma bosilganda bekor qilinadi (havola ko'rinishini oldindan
+    yuklaydigan messenjerlar tasodifan obunani o'chirib yubormasligi uchun)."""
+    from . import marketing
+    from .models import MarketingConsent
+    consent = get_object_or_404(MarketingConsent, token=token)
+    done = False
+    if request.method == 'POST':
+        marketing.unsubscribe(token=token)
+        done = True
+    return render(request, 'orders/unsubscribe.html', {'consent': consent, 'done': done or not consent.is_active})
 
 
 @require_POST
