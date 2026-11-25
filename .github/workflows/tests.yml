@@ -44,3 +44,29 @@ jobs:
         run: python manage.py compilemessages -l ru
       - name: Testlar
         run: python manage.py test --parallel 1
+
+  e2e:
+    # To'liq ssenariy haqiqiy brauzerda (e2e/scenario.js): ariza → to'lov → baho → to'lov ustaga → kafolat …
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Paketlar
+        run: |
+          pip install -r requirements.txt
+          npm install -g playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Brauzer ssenariysi
+        run: bash e2e/run.sh
+      - name: Xato skrinshotlari
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-artifacts
+          path: e2e/artifacts/

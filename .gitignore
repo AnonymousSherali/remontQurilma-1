@@ -33,3 +33,4 @@ build/
 .env.local
 private_media/
 .env
+e2e/artifacts/
