@@ -120,6 +120,9 @@ def apply(order, actor, action, note=''):
 
     from .customer_notify import notify_status_change
     transaction.on_commit(lambda: notify_status_change(order, actor))
+    if target == SR.STATUS_DISPUTED:
+        from .disputes import notify_admin_opened
+        transaction.on_commit(lambda: notify_admin_opened(order, note))
     return order
 
 

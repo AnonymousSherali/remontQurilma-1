@@ -65,6 +65,10 @@ class CustomerOrderTests(TestCase):
         self.assertEqual(order.status, 'arrived')
         self.client.post(reverse('repair_service:order_action', args=[order.review_token, 'dispute']))
         order.refresh_from_db()
+        self.assertEqual(order.status, 'arrived')          # sababsiz nizo ochilmaydi
+        self.client.post(reverse('repair_service:order_action', args=[order.review_token, 'dispute']),
+                         {'note': 'Usta ishni chala qoldirdi'})
+        order.refresh_from_db()
         self.assertEqual(order.status, 'disputed')
 
     def test_timeline(self):

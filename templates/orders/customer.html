@@ -64,13 +64,24 @@
       <section class="card">
         <div class="card__title">{% translate "Amallar" %}</div>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-          {% for action, label in actions %}
+          {% for action, label in actions %}{% if action != 'dispute' %}
             <form method="post" action="{% url 'repair_service:order_action' order.review_token action %}"
                   {% if action != 'confirm' %}onsubmit="return confirm('{{ label|escapejs }}?')"{% endif %}>{% csrf_token %}
-              <button class="btn {% if action == 'confirm' %}btn--primary btn--lg{% elif action == 'dispute' %}btn--danger{% endif %}">{{ label }}</button>
+              <button class="btn {% if action == 'confirm' %}btn--primary btn--lg{% endif %}">{{ label }}</button>
             </form>
-          {% endfor %}
+          {% endif %}{% endfor %}
         </div>
+        {% for action, label in actions %}{% if action == 'dispute' %}
+        <details class="claim-new">
+          <summary class="btn btn--danger btn--sm">{{ label }}</summary>
+          <form method="post" action="{% url 'repair_service:order_action' order.review_token 'dispute' %}" class="form" style="margin-top:.75rem">{% csrf_token %}
+            <div class="field"><label for="dispute-note">{% translate "Nima muammo? Administrator ikkala tomonni eshitib, qaror qabul qiladi." %}</label>
+              <textarea id="dispute-note" name="note" rows="3" maxlength="500" minlength="10" required placeholder="{% translate 'Masalan: kran yana oqyapti, usta qayta kelmayapti' %}"></textarea></div>
+            <p class="muted small" style="margin:0">{% translate "Nizo ochilgach to'lovlar muzlatiladi. Rasmlarni pastdagi «Rasmlar» bo'limiga qo'shing." %}</p>
+            <button class="btn btn--danger">{% translate "Nizo ochish" %}</button>
+          </form>
+        </details>
+        {% endif %}{% endfor %}
         {% if order.status == 'completed' %}<p class="muted small" style="margin:.75rem 0 0">{% translate "Tasdiqlashda ustani baholaysiz. Javob bermasangiz, 72 soatdan keyin buyurtma avtomatik tasdiqlanadi." %}</p>{% endif %}
       </section>
       {% endif %}

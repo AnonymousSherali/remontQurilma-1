@@ -76,6 +76,9 @@ def order_action(request, token, action):
         messages.error(request, _('Avval telefon raqamingizni SMS kod bilan tasdiqlang.'))
         return redirect(order.get_customer_url())
 
+    if action == 'dispute' and len(request.POST.get('note', '').strip()) < 10:
+        messages.error(request, _('Muammoni qisqacha yozing (kamida 10 ta belgi) — administrator shunga qarab qaror qiladi.'))
+        return redirect(order.get_customer_url())
     if action == 'confirm':
         # Tasdiqlash baho bilan birga — baho sahifasi o'zi tasdiqlaydi
         if order.status == ServiceRequest.STATUS_COMPLETED and order.can_be_reviewed:

@@ -125,3 +125,12 @@ def absval(value):
         return abs(value)
     except TypeError:
         return value
+
+
+@register.filter
+def get_item(mapping, key):
+    """Lug'atdan kalit bo'yicha qiymat (shablonlarda)."""
+    try:
+        return mapping.get(key)
+    except AttributeError:
+        return None

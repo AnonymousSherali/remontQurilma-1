@@ -1,0 +1,33 @@
+{% extends 'admin/base.html' %}
+{% load i18n unfold humanize ui %}
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block branding %}{% include "unfold/helpers/site_branding.html" %}{% endblock %}
+{% block content %}
+<div class="flex flex-col gap-8">
+  {% component "unfold/components/card.html" with title="Ochiq nizolar" %}
+    <p class="text-sm text-font-subtle-light" style="margin-bottom:12px">Nizo ochilganda ushlab turilgan to'lovlar muzlaydi. Ikkala tomon bilan bog'laning, dalillarni ko'ring va qaror qabul qiling. Eng eski nizo — yuqorida.</p>
+    <div style="overflow-x:auto"><table class="w-full" style="border-collapse:collapse">
+      <thead><tr class="text-xs text-font-subtle-light" style="text-align:left">
+        <th class="py-3" style="padding-right:12px">#</th><th class="py-3" style="padding-right:12px">Mijoz</th><th class="py-3" style="padding-right:12px">Usta</th>
+        <th class="py-3" style="padding-right:12px">Sabab</th><th class="py-3" style="padding-right:12px">Muzlatilgan</th><th class="py-3" style="padding-right:12px">Ochilgan</th><th></th></tr></thead>
+      <tbody>
+        {% for o in orders %}
+        <tr style="border-top:1px solid rgba(127,127,127,.15)">
+          <td class="py-3" style="padding-right:12px"><a class="text-primary-600 font-semibold" href="{% url 'admin_dispute' o.pk %}">{{ o.pk }}</a></td>
+          <td class="py-3" style="padding-right:12px">{{ o.name }}<br><span class="text-xs text-font-subtle-light">{{ o.phone|phone }}</span></td>
+          <td class="py-3" style="padding-right:12px">{{ o.master|default:"—" }}{% if o.master %}<br><span class="text-xs text-font-subtle-light">{{ o.master.phone|phone }}</span>{% endif %}</td>
+          <td class="py-3" style="padding-right:12px;max-width:340px">{{ o.dispute_reason|default:"—"|truncatechars:120 }}</td>
+          <td class="py-3 font-semibold" style="padding-right:12px">{{ o.held_total|floatformat:0|intcomma }} so'm</td>
+          <td class="py-3 text-xs" style="padding-right:12px">{{ o.dispute_opened_at|date:"d.m.Y H:i" }}<br><span style="color:{% if o.dispute_days >= 3 %}#dc2626{% else %}#64748b{% endif %};font-weight:600">{{ o.dispute_days }} kun</span></td>
+          <td class="py-3"><a class="bg-primary-600 text-white font-medium px-3 py-2 rounded-default" href="{% url 'admin_dispute' o.pk %}">Ko'rib chiqish</a></td>
+        </tr>
+        {% empty %}<tr><td colspan="7" class="py-3 text-font-subtle-light">Ochiq nizo yo'q ✓</td></tr>{% endfor %}
+      </tbody></table></div>
+  {% endcomponent %}
+  {% if recent %}
+  {% component "unfold/components/card.html" with title="Yaqinda hal qilinganlar" %}
+    <ul class="text-sm" style="display:grid;gap:6px">{% for o in recent %}<li><a class="text-primary-600" href="{% url 'admin_dispute' o.pk %}">#{{ o.pk }}</a> · {{ o.name }} · {{ o.get_status_display }} · {{ o.updated_at|date:"d.m.Y" }}</li>{% endfor %}</ul>
+  {% endcomponent %}
+  {% endif %}
+</div>
+{% endblock %}
