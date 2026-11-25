@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import translation
 
@@ -27,6 +27,7 @@ class ExperimentTests(TestCase):
         self.assertEqual(variants, [experiments.assign('ariza_tugmasi', f'{i:016x}') for i in range(2000)])
         self.assertTrue(900 < variants.count('b') < 1100)
 
+    @override_settings(REQUEST_RATE_LIMIT=100)   # 12 ta tashrifchi bitta IP'dan — spam chegarasi xalaqit bermasin
     def test_sahifada_va_natijalar(self):
         exp = Experiment.objects.create(key='ariza_tugmasi', name='Tugma', is_active=True)
         seen = {'a': 0, 'b': 0}
