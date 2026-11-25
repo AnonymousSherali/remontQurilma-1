@@ -80,6 +80,11 @@ class Master(models.Model):
         help_text="Faqat tasdiqlangan ustalar saytda ko'rinadi. Shaxsini tekshirgandan keyin belgilang.",
     )
     is_available = models.BooleanField('Buyurtma qabul qiladi', default=True)
+    # Ish jadvali (masters/schedule.py): hafta kunlari (0 — dushanba) va soatlar
+    work_days = models.JSONField('Ish kunlari', default=list, blank=True,
+                                 help_text="0 — dushanba … 6 — yakshanba. Bo'sh — har kuni.")
+    work_from = models.TimeField('Ish boshlanishi', null=True, blank=True)
+    work_to = models.TimeField('Ish tugashi', null=True, blank=True)
     # Pullik tariflar (payments/tariffs.py). Muddat o'tgach o'zi o'chadi.
     # Ishlab topilgan pul shu kartaga o'tkaziladi (faqat usta va administrator ko'radi)
     payout_card = models.CharField('Karta raqami', max_length=16, blank=True)
@@ -197,6 +202,23 @@ class Master(models.Model):
             (label, round(stats[key], 1) if stats[key] is not None else None)
             for key, label in Review.CRITERIA
         ]
+
+
+class DayOff(models.Model):
+    """Ustaning dam olish / ta'til kunlari — shu kunlarda qidiruvda ko'rinmaydi va yangi buyurtma olmaydi."""
+
+    master = models.ForeignKey(Master, on_delete=models.CASCADE, related_name='days_off', verbose_name='Usta')
+    start = models.DateField('Boshlanishi')
+    end = models.DateField('Tugashi')
+    note = models.CharField('Izoh', max_length=100, blank=True)
+
+    class Meta:
+        verbose_name = 'Dam olish kuni'
+        verbose_name_plural = 'Dam olish kunlari'
+        ordering = ['start']
+
+    def __str__(self):
+        return f'{self.master} · {self.start:%d.%m}–{self.end:%d.%m}'
 
 
 class PrivateStorage(FileSystemStorage):

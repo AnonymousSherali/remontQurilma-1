@@ -19,6 +19,7 @@ urlpatterns = [
     path('kabinet/ochiq/<int:pk>/olish/', views.feed_claim, name='feed_claim'),
     path('kabinet/profil/', views.profile_edit, name='profile_edit'),
     path('kabinet/hujjatlar/', views.documents_page, name='documents'),
+    path('kabinet/jadval/', views.work_schedule, name='work_schedule'),
     path('kabinet/holat/', views.toggle_availability, name='toggle_availability'),
     path('kabinet/buyurtma/<int:pk>/', views.order_detail, name='order'),
     path('kabinet/buyurtma/<int:pk>/narx/', views.quote_propose, name='quote_propose'),

@@ -322,6 +322,42 @@ def profile_edit(request):
 
 
 @login_required
+def work_schedule(request):
+    """Ish kunlari, soatlari va dam olish kunlari."""
+    from .forms import DayOffForm, WorkScheduleForm
+    from .models import DayOff
+    master = _get_own_master(request)
+    form = WorkScheduleForm(initial={'work_days': master.work_days, 'work_from': master.work_from,
+                                     'work_to': master.work_to})
+    off_form = DayOffForm()
+    if request.method == 'POST':
+        if request.POST.get('delete'):
+            DayOff.objects.filter(master=master, pk=request.POST['delete']).delete()
+            messages.info(request, _("Dam olish kuni o'chirildi."))
+            return redirect('masters:work_schedule')
+        if request.POST.get('form') == 'off':
+            off_form = DayOffForm(request.POST)
+            if off_form.is_valid():
+                DayOff.objects.create(master=master, **off_form.cleaned_data)
+                messages.success(request, _("Dam olish kunlari saqlandi — bu kunlarda qidiruvda ko'rinmaysiz."))
+                return redirect('masters:work_schedule')
+        else:
+            form = WorkScheduleForm(request.POST)
+            if form.is_valid():
+                days = sorted(form.cleaned_data['work_days'])
+                master.work_days = [] if len(days) == 7 else days
+                master.work_from, master.work_to = form.cleaned_data['work_from'], form.cleaned_data['work_to']
+                master.save(update_fields=['work_days', 'work_from', 'work_to'])
+                messages.success(request, _('Ish jadvali saqlandi.'))
+                return redirect('masters:work_schedule')
+    from django.utils import timezone as tz
+    return render(request, 'masters/work_schedule.html', {
+        'master': master, 'form': form, 'off_form': off_form,
+        'days_off': master.days_off.filter(end__gte=tz.localdate()),
+    })
+
+
+@login_required
 def documents_page(request):
     """Shaxsni tasdiqlash: pasport/ID va selfi yuklash."""
     master = _get_own_master(request)
@@ -421,6 +457,8 @@ def visit_set(request, pk):
         when = schedule.parse(request.POST.get('date'), request.POST.get('time'))
         clash = schedule.conflicts(order, when)
         schedule.set_visit(order, when)
+        from .schedule import visit_warning
+        outside = visit_warning(master, when)
     except schedule.ScheduleError as error:
         messages.error(request, str(error))
     else:
@@ -428,6 +466,8 @@ def visit_set(request, pk):
         if clash:
             messages.warning(request, _("Diqqat: shu vaqtga yaqin boshqa buyurtmangiz bor (#%(id)s).") % {
                 'id': clash[0].pk})
+        if outside:
+            messages.warning(request, outside)
     return redirect(order.get_master_url())
 
 

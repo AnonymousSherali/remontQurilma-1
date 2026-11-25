@@ -134,3 +134,16 @@ def get_item(mapping, key):
         return mapping.get(key)
     except AttributeError:
         return None
+
+
+@register.filter
+def work_status(master):
+    """«Dam olishda» / «Hozir ishlamaydi — ertaga 08:00 dan» yoki bo'sh."""
+    from masters.schedule import status_label
+    return status_label(master)
+
+
+@register.filter
+def work_summary(master):
+    from masters.schedule import summary
+    return summary(master)

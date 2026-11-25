@@ -691,3 +691,9 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .promo-field > summary { cursor: pointer; color: var(--brand-600); font-weight: 600; }
 .promo-form { display: flex; gap: .5rem; }
 .promo-form input { flex: 1; min-width: 0; }
+
+/* ---------- Ish vaqti ---------- */
+.work-status { color: var(--warning); font-weight: 600; }
+.weekday-picks { display: flex; gap: .35rem; flex-wrap: wrap; }
+.weekday-picks label { display: inline-flex; align-items: center; gap: .3rem; padding: .35rem .6rem; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; }
+.weekday-picks input:checked + span { font-weight: 800; color: var(--brand-600); }
