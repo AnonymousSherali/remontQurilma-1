@@ -132,6 +132,16 @@
   </div>
   {% endblock %}
 
+  {% block support_widget %}
+  <div class="support">
+    <button type="button" class="support__btn" data-support-toggle aria-controls="support-panel" aria-expanded="false">💬 <span>{% translate "Yordam" %}</span></button>
+    <div class="support__panel card card--raised" id="support-panel" hidden role="dialog" aria-label="{% translate 'Operator bilan yozishma' %}">
+      <div class="support__head"><strong>{% translate "Operator bilan yozishma" %}</strong><span class="muted small">{{ SITE.hours }}</span></div>
+      {% include "support/_chat.html" with messages=support.messages has_thread=support.thread %}
+    </div>
+  </div>
+  {% endblock %}
+
   <div class="toast-stack" aria-live="polite"></div>
 
   {{ js_i18n|json_script:"js-i18n" }}

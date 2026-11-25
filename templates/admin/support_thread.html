@@ -1,0 +1,37 @@
+{% extends 'admin/base.html' %}
+{% load i18n unfold ui %}
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block branding %}{% include "unfold/helpers/site_branding.html" %}{% endblock %}
+{% block content %}
+<div class="flex flex-col gap-6" style="max-width:880px">
+  <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center" class="text-sm">
+    <a href="{% url 'admin_support' %}" class="text-primary-600 font-medium">← Yordam</a>
+    <span><strong>{% if thread.master %}Usta: <a class="text-primary-600" href="{% url 'admin:masters_master_change' thread.master.pk %}">{{ thread.master.full_name }}</a>{% else %}{{ thread.name|default:"Mehmon" }}{% endif %}</strong>
+      {% if thread.phone %} · <a class="text-primary-600" href="tel:{{ thread.phone }}">{{ thread.phone|phone }}</a>{% endif %}</span>
+    {% if thread.page %}<span class="text-xs text-font-subtle-light">sahifa: {{ thread.page|truncatechars:60 }}</span>{% endif %}
+  </div>
+  {% if orders %}
+  {% component "unfold/components/card.html" with title="Buyurtmalari" %}
+    <ul class="text-sm" style="display:grid;gap:4px">{% for o in orders %}<li><a class="text-primary-600" href="{% url 'admin:repair_service_servicerequest_change' o.pk %}">#{{ o.pk }}</a> · {{ o.get_status_display }} · {{ o.created_at|date:"d.m.Y" }}</li>{% endfor %}</ul>
+  {% endcomponent %}
+  {% endif %}
+  {% component "unfold/components/card.html" with title="Yozishma" %}
+    <div style="display:grid;gap:10px;max-height:480px;overflow-y:auto">
+      {% for m in messages_list %}
+        <div style="justify-self:{% if m.from_staff %}end{% else %}start{% endif %};max-width:80%;padding:8px 12px;border-radius:12px;background:{% if m.from_staff %}rgba(16,185,129,.15){% else %}rgba(127,127,127,.12){% endif %}">
+          <div class="text-sm" style="white-space:pre-line">{{ m.text }}</div>
+          <div class="text-xs text-font-subtle-light">{% if m.from_staff %}{{ m.staff|default:"Operator" }}{% else %}Mijoz{% endif %} · {{ m.created_at|date:"d.m H:i" }}</div>
+        </div>
+      {% endfor %}
+    </div>
+    <form method="post" style="display:grid;gap:10px;margin-top:14px">{% csrf_token %}
+      <textarea name="text" rows="3" maxlength="1000" required class="border border-base-200 rounded-default px-3 py-2 w-full dark:border-base-700 dark:bg-base-900" placeholder="Javob…"></textarea>
+      <div style="display:flex;gap:10px">
+        <button class="bg-primary-600 text-white font-medium px-4 py-2 rounded-default">Javob yuborish</button>
+      </div>
+    </form>
+    <form method="post" style="margin-top:8px">{% csrf_token %}<button name="close" value="1" class="text-sm font-medium px-3 py-2 rounded-default border border-base-200 dark:border-base-700">Suhbatni yopish</button></form>
+    <p class="text-xs text-font-subtle-light" style="margin-top:8px">Javob saytdagi vidjetda ko'rinadi; ustaga — Telegram/bildirishnoma, telefon qoldirilgan bo'lsa — SMS havola.</p>
+  {% endcomponent %}
+</div>
+{% endblock %}

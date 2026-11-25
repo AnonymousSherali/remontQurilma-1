@@ -14,6 +14,7 @@ from django.views.decorators.cache import cache_page
 
 from config.seo_urls import SITEMAPS, robots_txt
 from config.disputes_admin import dispute_detail, dispute_list
+from config.support_admin import support_list, support_thread
 from config.stats import stats_view
 from masters import views as master_views
 from repair_service import analytics, pwa
@@ -32,6 +33,8 @@ urlpatterns = [
     path('push/obuna/', pwa.push_subscribe, name='push_subscribe'),
     path('push/bekor/', pwa.push_unsubscribe, name='push_unsubscribe'),
     path('sitemap.xml', cache_page(60 * 60)(sitemap), {'sitemaps': SITEMAPS}, name='sitemap'),
+    path('admin/yordam/', admin.site.admin_view(support_list), name='admin_support'),
+    path('admin/yordam/<int:pk>/', admin.site.admin_view(support_thread), name='admin_support_thread'),
     path('admin/nizolar/', admin.site.admin_view(dispute_list), name='admin_disputes'),
     path('admin/nizolar/<int:pk>/', admin.site.admin_view(dispute_detail), name='admin_dispute'),
     path('admin/statistika/', admin.site.admin_view(stats_view), name='admin_stats'),

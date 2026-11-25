@@ -31,6 +31,8 @@ urlpatterns = [
     path('obuna/bekor/<uuid:token>/', order_views.unsubscribe_page, name='unsubscribe'),
     path('buyurtma/<uuid:token>/promo/', order_views.promo_apply, name='promo_apply'),
     path('buyurtma/<uuid:token>/qayta/', order_views.reorder, name='reorder'),
+    path('yordam/', order_views.support_endpoint, name='support'),
+    path('yordam/<uuid:token>/', order_views.support_thread_page, name='support_thread'),
     path('buyurtmalarim/', order_views.my_orders, name='my_orders'),
     path('buyurtmalarim/chiqish/', order_views.my_orders_logout, name='my_orders_logout'),
 ]

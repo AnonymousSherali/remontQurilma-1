@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -305,6 +306,40 @@ class CampaignDelivery(models.Model):
 
     class Meta:
         unique_together = [('campaign', 'recipient')]
+
+
+class SupportThread(models.Model):
+    """Saytdagi «Yordam» vidjeti orqali operator bilan yozishma (repair_service/support.py)."""
+
+    token = models.UUIDField('Kalit', default=uuid.uuid4, unique=True, editable=False)
+    name = models.CharField('Ism', max_length=100, blank=True)
+    phone = models.CharField('Telefon', max_length=20, blank=True)
+    master = models.ForeignKey('masters.Master', on_delete=models.SET_NULL, null=True, blank=True,
+                               related_name='support_threads', verbose_name='Usta')
+    page = models.CharField('Qaysi sahifadan', max_length=200, blank=True)
+    is_closed = models.BooleanField('Yopilgan', default=False)
+    created_at = models.DateTimeField('Boshlangan', auto_now_add=True)
+    last_message_at = models.DateTimeField('Oxirgi xabar', default=timezone.now, db_index=True)
+
+    class Meta:
+        verbose_name = 'Yordam suhbati'
+        verbose_name_plural = 'Yordam suhbatlari'
+        ordering = ['-last_message_at']
+
+    def __str__(self):
+        return f'#{self.pk} {self.name or self.phone or "mehmon"}'
+
+
+class SupportMessage(models.Model):
+    thread = models.ForeignKey(SupportThread, on_delete=models.CASCADE, related_name='messages')
+    from_staff = models.BooleanField('Operatordan', default=False)
+    staff = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    text = models.TextField('Xabar', max_length=1000)
+    created_at = models.DateTimeField(default=timezone.now)
+    read_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['created_at', 'id']
 
 
 class AnalyticsEvent(models.Model):

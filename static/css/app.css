@@ -697,3 +697,17 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .weekday-picks { display: flex; gap: .35rem; flex-wrap: wrap; }
 .weekday-picks label { display: inline-flex; align-items: center; gap: .3rem; padding: .35rem .6rem; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; }
 .weekday-picks input:checked + span { font-weight: 800; color: var(--brand-600); }
+
+/* ---------- Yordam vidjeti ---------- */
+.support { position: fixed; right: 16px; bottom: 16px; z-index: 60; display: flex; flex-direction: column; align-items: flex-end; gap: .6rem; }
+.support__btn { border: 0; border-radius: 999px; padding: .75rem 1.1rem; background: var(--brand); color: #fff; font-weight: 800; box-shadow: var(--shadow-lg); cursor: pointer; font: inherit; font-weight: 800; }
+.support__panel { width: min(360px, calc(100vw - 32px)); padding: 1rem; order: -1; }
+.support__head { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; margin-bottom: .6rem; }
+.support__log { max-height: 300px; }
+.support__contact { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; margin-top: .6rem; }
+.support__contact input { min-width: 0; }
+.support__form .chat__form { margin-top: .4rem; }
+@media (max-width: 720px) {
+  .has-mobile-cta .support { bottom: 84px; }
+  .support__btn span { display: none; }
+}

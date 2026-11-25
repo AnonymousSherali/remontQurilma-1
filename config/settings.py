@@ -378,6 +378,10 @@ UNFOLD = {
                     {'title': 'Boshqaruv paneli', 'icon': 'dashboard', 'link': reverse_lazy('admin:index')},
                     {'title': 'Statistika', 'icon': 'monitoring', 'link': reverse_lazy('admin_stats')},
                     {
+                        'title': 'Yordam', 'icon': 'support_agent', 'link': reverse_lazy('admin_support'),
+                        'badge': 'config.dashboard.badge_support',
+                    },
+                    {
                         'title': 'Nizolar', 'icon': 'gavel', 'link': reverse_lazy('admin_disputes'),
                         'badge': 'config.dashboard.badge_disputes',
                     },

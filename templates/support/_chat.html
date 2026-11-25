@@ -1,0 +1,28 @@
+{% load i18n %}
+{# Yordam suhbati (vidjet va alohida sahifa uchun). Kontekst: messages, has_thread #}
+<div class="chat" data-chat data-url="{% url 'repair_service:support' %}" {% if not has_thread %}data-idle="1"{% endif %}>
+  <div class="chat__log support__log" data-chat-log aria-live="polite" tabindex="0">
+    {% for m in messages %}
+      <div class="chat__msg {% if m.mine %}chat__msg--mine{% endif %}" data-id="{{ m.id }}">
+        <div class="chat__text">{{ m.text|linebreaksbr }}</div>
+        <div class="chat__meta">{% if not m.mine %}{{ m.sender }} · {% endif %}{{ m.time }}</div>
+      </div>
+    {% endfor %}
+    <p class="chat__empty muted small" data-chat-empty {% if messages %}hidden{% endif %}>{% translate "Savolingizni yozing — operator ish vaqtida tez javob beradi." %}</p>
+  </div>
+  <form method="post" action="{% url 'repair_service:support' %}" class="support__form" data-chat-form>{% csrf_token %}
+    {% if not has_thread %}
+    <div class="support__contact" data-once>
+      <input type="text" name="name" maxlength="100" autocomplete="name" placeholder="{% translate 'Ismingiz' %}" aria-label="{% translate 'Ismingiz' %}">
+      <input type="tel" name="phone" data-phone autocomplete="tel" placeholder="{% translate 'Telefon (ixtiyoriy)' %}" aria-label="{% translate 'Telefon (ixtiyoriy)' %}">
+    </div>
+    {% endif %}
+    <div class="chat__form">
+      <label class="sr-only" for="support-text-{{ prefix|default:'w' }}">{% translate "Xabar" %}</label>
+      <textarea id="support-text-{{ prefix|default:'w' }}" name="text" rows="1" maxlength="1000" required placeholder="{% translate 'Xabar yozing…' %}"></textarea>
+      <button class="btn btn--primary">{% translate "Yuborish" %}</button>
+    </div>
+  </form>
+  <p class="field__error" data-chat-error role="alert" style="margin:.35rem 0 0"></p>
+  {% if not has_thread %}<p class="muted small" style="margin:.35rem 0 0">{% translate "Telefon qoldirsangiz, javob haqida SMS keladi." %}</p>{% endif %}
+</div>
