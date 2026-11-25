@@ -105,6 +105,35 @@ class Milestone(models.Model):
         return self.amount - self.discount
 
 
+class Refund(models.Model):
+    """Mijozga pul qaytarish (nizo qarori yoki admin amali). payments/refunds.py."""
+
+    STATUS_PENDING, STATUS_DONE, STATUS_FAILED = 'pending', 'done', 'failed'
+    STATUS_CHOICES = [(STATUS_PENDING, 'Qaytarilishi kerak'), (STATUS_DONE, 'Qaytarildi'),
+                      (STATUS_FAILED, 'Avtomatik qaytarilmadi — qo\'lda')]
+    METHOD_AUTO, METHOD_PROVIDER, METHOD_MANUAL = 'auto', 'provider', 'manual'
+    METHOD_CHOICES = [(METHOD_AUTO, "API orqali avtomatik"), (METHOD_PROVIDER, "To'lov tizimi kabinetidan bekor qilindi"),
+                      (METHOD_MANUAL, "Qo'lda belgilandi")]
+
+    milestone = models.ForeignKey(Milestone, on_delete=models.PROTECT, related_name='refunds', verbose_name='Bosqich')
+    payment = models.ForeignKey('Payment', on_delete=models.PROTECT, null=True, blank=True, related_name='refunds',
+                                verbose_name="Asl to'lov")
+    amount = models.DecimalField("Summa (so'm)", max_digits=12, decimal_places=0)
+    status = models.CharField('Holat', max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    method = models.CharField('Qanday', max_length=10, choices=METHOD_CHOICES, blank=True)
+    note = models.CharField('Izoh', max_length=500, blank=True)
+    created_at = models.DateTimeField('Yaratilgan', auto_now_add=True)
+    done_at = models.DateTimeField('Qaytarilgan', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Pul qaytarish'
+        verbose_name_plural = 'Pul qaytarishlar'
+        ordering = ['status', '-created_at']
+
+    def __str__(self):
+        return f'#{self.milestone.order_id} · {self.amount}'
+
+
 class PromoCode(models.Model):
     """Promo-kod: aksiya (admin yaratadi), mijozning referal kodi yoki referal mukofoti."""
 
@@ -258,6 +287,8 @@ class Payment(models.Model):
                                  verbose_name='Tarif xaridi', null=True, blank=True)
     provider = models.CharField('Tizim', max_length=10, choices=PROVIDER_CHOICES)
     provider_id = models.CharField('Tizimdagi ID', max_length=64, blank=True, db_index=True)
+    provider_doc_id = models.CharField("Tizimdagi hujjat raqami", max_length=64, blank=True,
+                                       help_text="Click: click_paydoc_id (kabinetda qidirish uchun)")
     amount = models.DecimalField("Summa (so'm)", max_digits=12, decimal_places=0)
     state = models.SmallIntegerField('Holat', choices=STATE_CHOICES, default=STATE_CREATED)
     reason = models.SmallIntegerField('Bekor qilish sababi', null=True, blank=True)

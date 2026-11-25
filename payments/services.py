@@ -144,14 +144,17 @@ def release(milestone):
 
 
 @transaction.atomic
-def refund(milestone):
-    """Admin nizoni mijoz foydasiga hal qilganda. Pulni to'lov tizimi kabinetidan qaytarish kerak."""
+def refund(milestone, by_provider=False):
+    """Mablag'ni mijozga qaytarish. by_provider — to'lov tizimi o'zi bekor qilgan (pul allaqachon qaytgan)."""
     milestone = Milestone.objects.select_for_update().get(pk=milestone.pk)
     if milestone.state != Milestone.STATE_HELD:
         raise PaymentError(_('Faqat ushlab turilgan mablag\' qaytariladi'))
     milestone.state = Milestone.STATE_REFUNDED
     milestone.refunded_at = timezone.now()
     milestone.save(update_fields=['state', 'refunded_at'])
+    if not by_provider:
+        from .refunds import request_refund
+        transaction.on_commit(lambda: request_refund(milestone))
     return milestone
 
 

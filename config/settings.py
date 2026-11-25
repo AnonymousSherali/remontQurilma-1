@@ -258,6 +258,8 @@ CLICK_SERVICE_ID = os.environ.get('CLICK_SERVICE_ID', '')
 CLICK_MERCHANT_ID = os.environ.get('CLICK_MERCHANT_ID', '')
 CLICK_SECRET_KEY = os.environ.get('CLICK_SECRET_KEY', '')
 CLICK_MERCHANT_USER_ID = os.environ.get('CLICK_MERCHANT_USER_ID', '')
+# Click Merchant API orqali avtomatik pul qaytarish (payment/reversal). Avval Click bilan sinab ko'ring!
+CLICK_AUTO_REFUND = os.environ.get('CLICK_AUTO_REFUND', 'False') == 'True'
 UZUM_SERVICE_ID = os.environ.get('UZUM_SERVICE_ID', '')
 UZUM_LOGIN = os.environ.get('UZUM_LOGIN', '')
 UZUM_PASSWORD = os.environ.get('UZUM_PASSWORD', '')
@@ -401,6 +403,9 @@ UNFOLD = {
             {
                 'title': "To'lovlar",
                 'items': [
+                    {'title': 'Pul qaytarishlar', 'icon': 'currency_exchange',
+                     'link': reverse_lazy('admin:payments_refund_changelist'),
+                     'badge': 'config.dashboard.badge_refunds'},
                     {"title": "To'lov bosqichlari", 'icon': 'account_balance_wallet',
                      'link': reverse_lazy('admin:payments_milestone_changelist')},
                     {'title': "Ustalarga to'lanishi kerak", 'icon': 'payments',

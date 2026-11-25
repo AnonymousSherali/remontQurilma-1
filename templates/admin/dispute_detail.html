@@ -70,7 +70,7 @@
         <button type="submit" name="decision" value="resolve" class="bg-primary-600 text-white font-medium px-4 py-2 rounded-default" onclick="return confirm('Qaror yakuniy. Davom etamizmi?')">Qarorni qo'llash{% if not held %} (buyurtmani tasdiqlash){% endif %}</button>
         <button type="submit" name="decision" value="withdraw" class="font-medium px-4 py-2 rounded-default border border-base-200 dark:border-base-700">Kelishildi — ish davom etadi («{{ status_labels|get_item:back_status|default:back_status }}» ga qaytarish)</button>
       </div>
-      <p class="text-xs text-font-subtle-light">Qaytarilgan pulni to'lov tizimi kabinetidan (Payme/Click) mijozga qaytarishni unutmang — tizim faqat qayd etadi.</p>
+      <p class="text-xs text-font-subtle-light">Mijozga qaytariladigan qismlar «Pul qaytarishlar» navbatiga tushadi: Click orqali — avtomatik (CLICK_AUTO_REFUND), Payme — kabinetda bekor qilinsa o'zi yopiladi.</p>
     </form>
   {% endcomponent %}
   {% endif %}

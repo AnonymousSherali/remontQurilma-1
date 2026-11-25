@@ -172,6 +172,9 @@ def reverse(body):
     if not payment.cancelled_at:
         payment.cancelled_at = timezone.now()
     payment.save(update_fields=['state', 'cancelled_at'])
+    if payment.state == Payment.STATE_CANCELLED_AFTER_PERFORM:
+        from .refunds import on_provider_cancelled
+        on_provider_cancelled(payment)
     return {'transId': payment.provider_id, 'status': 'REVERSED', 'reverseTime': _ms(payment.cancelled_at),
             'data': _data(payable), 'amount': int(payment.amount) * 100}
 

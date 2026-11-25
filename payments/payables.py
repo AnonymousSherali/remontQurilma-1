@@ -32,7 +32,7 @@ class MilestonePayable:
 
     def cancel_paid(self):
         if self.obj.state == Milestone.STATE_HELD:
-            services.refund(self.obj)
+            services.refund(self.obj, by_provider=True)
 
     def return_path(self):
         return self.obj.order.get_customer_url()

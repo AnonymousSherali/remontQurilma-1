@@ -96,3 +96,8 @@ def badge_pending_payouts(request):
 
 def badge_disputes(request):
     return str(ServiceRequest.objects.filter(status=ServiceRequest.STATUS_DISPUTED).count())
+
+
+def badge_refunds(request):
+    from payments.refunds import pending_count
+    return str(pending_count())

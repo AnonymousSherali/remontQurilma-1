@@ -67,7 +67,9 @@ def resolve(order, released_ids, note):
             released += milestone.amount
         else:
             milestone.state, milestone.refunded_at = Milestone.STATE_REFUNDED, now
-            refunded += milestone.amount
+            refunded += milestone.amount_due   # mijoz haqiqatan to'lagan summa
+            from payments.refunds import request_refund
+            transaction.on_commit(lambda m=milestone: request_refund(m, note=f'Nizo #{order.pk}'))
         milestone.save(update_fields=['state', 'released_at', 'refunded_at'])
     any_released = released or order.milestones.filter(state=Milestone.STATE_RELEASED).exists()
     order.status = SR.STATUS_CONFIRMED if any_released or not refunded else SR.STATUS_CANCELLED

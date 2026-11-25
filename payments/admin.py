@@ -3,11 +3,12 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import path, reverse
 from django.utils import timezone
+from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import action, display
 
-from . import payouts, services, tariffs
-from .models import Milestone, Payment, Payout, PromoCode, PromoRedemption, Purchase, Quote
+from . import payouts, refunds, services, tariffs
+from .models import Milestone, Payment, Payout, PromoCode, PromoRedemption, Purchase, Quote, Refund
 
 STATE_COLORS = {"To'lanmagan": 'default', 'Ushlab turilibdi': 'warning', 'Ustaga chiqarildi': 'success',
                 'Qaytarildi': 'danger'}
@@ -63,7 +64,8 @@ class MilestoneAdmin(ModelAdmin):
         for m in queryset.filter(state=Milestone.STATE_HELD):
             services.refund(m)
             count += 1
-        messages.warning(request, f"{count} ta bosqich 'qaytarildi' deb belgilandi. Pulni Payme kabinetidan qaytaring.")
+        messages.warning(request, f"{count} ta bosqich mijozga qaytarishga yuborildi — «Pul qaytarishlar» "
+                                  "navbatini ko'ring.")
 
     @action(description="Ustaning kartasiga o'tkazildi deb belgilash", icon='account_balance')
     def mark_paid_out(self, request, queryset):
@@ -267,3 +269,72 @@ class PromoCodeAdmin(ModelAdmin):
     def total_discount(self, obj):
         total = sum((r.discount for r in obj.redemptions.all()), 0)
         return f'{total:,.0f}'.replace(',', ' ')
+
+
+@admin.register(Refund)
+class RefundAdmin(ModelAdmin):
+    """Mijozga pul qaytarish navbati. Payme/Uzum kabinetidan bekor qilinganda o'zi yopiladi."""
+
+    list_display = ['order_link', 'amount_display', 'provider', 'transaction', 'status_badge', 'method', 'created_at',
+                    'done_at']
+    list_filter = ['status', 'method', 'payment__provider']
+    search_fields = ['milestone__order__id', 'milestone__order__phone', 'payment__provider_id']
+    readonly_fields = ['milestone', 'payment', 'amount', 'status', 'method', 'created_at', 'done_at', 'how_to']
+    fields = ['milestone', 'payment', 'amount', 'status', 'method', 'how_to', 'note', 'created_at', 'done_at']
+    actions = ['mark_done', 'retry_click']
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('milestone__order', 'payment')
+
+    @display(description='Buyurtma')
+    def order_link(self, obj):
+        order = obj.milestone.order
+        return format_html('<a href="{}">#{}</a> · {}', reverse('admin:repair_service_servicerequest_change',
+                                                                  args=[order.pk]), order.pk, order.phone)
+
+    @display(description="Summa", ordering='amount')
+    def amount_display(self, obj):
+        return f"{obj.amount:,.0f} so'm".replace(',', ' ')
+
+    @display(description='Tizim')
+    def provider(self, obj):
+        return obj.payment.get_provider_display() if obj.payment else '—'
+
+    @display(description='Tranzaksiya')
+    def transaction(self, obj):
+        return obj.payment.provider_id if obj.payment else '—'
+
+    @display(description='Holat', ordering='status', label={
+        'Qaytarilishi kerak': 'warning', 'Qaytarildi': 'success', "Avtomatik qaytarilmadi — qo'lda": 'danger'})
+    def status_badge(self, obj):
+        return obj.get_status_display()
+
+    @display(description='Qanday qaytariladi')
+    def how_to(self, obj):
+        return refunds.instructions(obj)
+
+    @action(description="Qaytarildi deb belgilash (kabinetdan qo'lda qaytarilgan)", icon='task_alt')
+    def mark_done(self, request, queryset):
+        count = 0
+        for refund in queryset.exclude(status=Refund.STATUS_DONE):
+            refunds.mark_manual(refund, f'{request.user}')
+            count += 1
+        messages.success(request, f'{count} ta qaytarish yopildi, mijozlarga xabar yuborildi.')
+
+    @action(description='Click orqali qaytarish (API)', icon='undo')
+    def retry_click(self, request, queryset):
+        from django.conf import settings
+        if not settings.CLICK_SECRET_KEY:
+            messages.error(request, "Click sozlanmagan.")
+            return
+        done = 0
+        for refund in queryset.exclude(status=Refund.STATUS_DONE).filter(payment__provider=Payment.PROVIDER_CLICK):
+            if refunds.click_reversal(refund).status == Refund.STATUS_DONE:
+                done += 1
+        messages.info(request, f"Click orqali qaytarildi: {done}. Qolganlari uchun izohga qarang.")

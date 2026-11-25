@@ -33,8 +33,8 @@ def dispute_detail(request, pk):
                 messages.success(request, f"Nizo hal qilindi: ustaga {result['released']:,.0f} so'm, mijozga "
                                           f"{result['refunded']:,.0f} so'm.".replace(',', ' '))
                 if result['refunded']:
-                    messages.warning(request, "Mijozga qaytariladigan pulni to'lov tizimi kabinetidan (Payme/Click) "
-                                              "qaytaring — tizim faqat qayd etdi.")
+                    messages.warning(request, "Qaytarish «Pul qaytarishlar» navbatiga qo'shildi: Click (yoqilgan "
+                                              "bo'lsa) — avtomatik; Payme — kabinetda bekor qiling, yozuv o'zi yopiladi.")
         except disputes.DisputeError as error:
             messages.error(request, str(error))
             return redirect(request.path)
