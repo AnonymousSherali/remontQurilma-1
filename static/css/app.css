@@ -646,7 +646,8 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 /* ---------- Kelish vaqti va taqvim ---------- */
 .visit-row { display: grid; grid-template-columns: 1.3fr 1fr; gap: .5rem; }
 .agenda { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-.agenda__date { font-weight: 800; margin-bottom: .4rem; text-transform: capitalize; }
+.agenda__date { font-weight: 800; margin-bottom: .4rem; }
+.agenda__date::first-letter { text-transform: uppercase; }
 .agenda__item { display: grid; grid-template-columns: 52px 1fr auto; gap: .6rem; align-items: center; padding: .55rem .7rem; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--ink); text-decoration: none; margin-bottom: .4rem; }
 .agenda__item:hover { border-color: var(--brand); }
 .agenda__item time { font-weight: 800; font-family: ui-monospace, Menlo, monospace; }

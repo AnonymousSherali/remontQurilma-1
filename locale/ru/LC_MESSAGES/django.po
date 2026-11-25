@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-24 20:00+0500\n"
+"POT-Creation-Date: 2026-11-25 11:07+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,14 +69,11 @@ msgstr "Номер карты (Uzcard / Humo)"
 msgid "16 xonali raqam. Saytda ko'rinmaydi — faqat pul o'tkazish uchun."
 msgstr "16-значный номер. На сайте не показывается — только для выплат."
 
-msgid "Tuman"
-msgstr "Район"
+msgid "Tuman yoki shahar"
+msgstr "Район или город"
 
-msgid "Tumanni tanlang"
-msgstr "Выберите район"
-
-msgid "Joylashuvni aniqlay olmasangiz, tumanni tanlang."
-msgstr "Если не удаётся определить местоположение, выберите район."
+msgid "Joylashuvni aniqlay olmasangiz, tuman yoki shaharni tanlang."
+msgstr "Если не удаётся определить местоположение, выберите район или город."
 
 msgid ""
 "Masalan: 8 yillik tajriba, Bosch va Samsung servis markazida ishlaganman..."
@@ -227,6 +224,12 @@ msgstr "Новый пароль"
 msgid "Bu raqam bilan ro'yxatdan o'tilmagan"
 msgstr "Этот номер не зарегистрирован"
 
+msgid "Toshkent"
+msgstr "Ташкент"
+
+msgid "Viloyatlar"
+msgstr "Регионы"
+
 msgid "Yuklanmagan"
 msgstr "Не загружены"
 
@@ -248,21 +251,60 @@ msgstr "Селфи с документом"
 msgid "Malaka sertifikati yoki diplom"
 msgstr "Сертификат о квалификации или диплом"
 
-#, python-format
-msgid "%(category)s — %(district)s tumani"
-msgstr "%(category)s — район %(district)s"
+msgid ""
+"Buyurtmani faqat albatta bora olsangiz qabul qiling — voz kechish ballni "
+"ko'p tushiradi."
+msgstr ""
+"Принимайте заказ, только если точно сможете приехать, — отказ сильно снижает"
+" балл."
+
+msgid ""
+"Kelish vaqtini real belgilang; kechiksangiz, mijozga yozib vaqtni "
+"o'zgartiring."
+msgstr ""
+"Назначайте реальное время приезда; если опаздываете, напишите клиенту и "
+"измените время."
+
+msgid ""
+"Yangi buyurtmaga tezroq javob bering — Telegram yoki bildirishnomalarni "
+"yoqing."
+msgstr ""
+"Отвечайте на новые заказы быстрее — включите Telegram или уведомления."
+
+msgid ""
+"Narx va ish hajmini oldindan aniq kelishing, ishdan oldin va keyin rasmga "
+"oling."
+msgstr ""
+"Заранее точно согласуйте цену и объём работ, фотографируйте до и после "
+"работы."
 
 #, python-format
-msgid "%(category)s %(district)s tumanida: %(n)s ta usta, baholar va narxlar"
-msgstr "%(category)s в районе %(district)s: мастеров — %(n)s, отзывы и цены"
+msgid "%(name)s shahri"
+msgstr "город %(name)s"
 
 #, python-format
-msgid "%(category)s — Toshkent"
-msgstr "%(category)s — Ташкент"
+msgid "%(name)s tumani"
+msgstr "район %(name)s"
 
 #, python-format
-msgid "%(category)s Toshkentda: %(n)s ta tekshirilgan usta, narxlar"
-msgstr "%(category)s в Ташкенте: проверенных мастеров — %(n)s, цены"
+msgid "%(name)s shahrida"
+msgstr "в городе %(name)s"
+
+#, python-format
+msgid "%(name)s tumanida"
+msgstr "в районе %(name)s"
+
+#, python-format
+msgid "%(category)s %(place)s: %(n)s ta usta, baholar va narxlar"
+msgstr "%(category)s %(place)s: мастеров — %(n)s, отзывы и цены"
+
+#, python-format
+msgid "%(category)s: tekshirilgan ustalar"
+msgstr "%(category)s: проверенные мастера"
+
+#, python-format
+msgid "%(category)s: %(n)s ta tekshirilgan usta, baholar va narxlar"
+msgstr "%(category)s: проверенных мастеров — %(n)s, отзывы и цены"
 
 #, python-format
 msgid "%(n)s ta tekshirilgan usta"
@@ -418,6 +460,21 @@ msgstr "Выплачено мастеру"
 msgid "Qaytarildi"
 msgstr "Возвращено"
 
+msgid "Foiz"
+msgstr "Процент"
+
+msgid "Qat'iy summa"
+msgstr "Фиксированная сумма"
+
+msgid "Aksiya"
+msgstr "Акция"
+
+msgid "Referal (do'stga)"
+msgstr "Реферальный (для друга)"
+
+msgid "Referal mukofoti"
+msgstr "Реферальная награда"
+
 msgid "To'lov kutilmoqda"
 msgstr "Ожидает оплаты"
 
@@ -456,6 +513,47 @@ msgstr "3 равные части: при начале / после выполн
 
 msgid "Naqd yoki to'g'ridan-to'g'ri ustaga (platforma kafolatisiz)"
 msgstr "Наличными или напрямую мастеру (без гарантии платформы)"
+
+msgid "Promo-kodni kiriting."
+msgstr "Введите промокод."
+
+msgid "Promo-kod topilmadi yoki muddati tugagan."
+msgstr "Промокод не найден или срок его действия истёк."
+
+msgid "O'z taklif kodingizni ishlata olmaysiz — uni do'stlaringizga bering."
+msgstr ""
+"Нельзя использовать собственный код приглашения — отправьте его друзьям."
+
+msgid "Bu kod boshqa raqam uchun berilgan."
+msgstr "Этот код выдан для другого номера."
+
+msgid "Bu promo-kodning limiti tugagan."
+msgstr "Лимит этого промокода исчерпан."
+
+msgid "Bu promo-kodni allaqachon ishlatgansiz."
+msgstr "Вы уже использовали этот промокод."
+
+msgid "Bu promo-kod faqat birinchi buyurtma uchun."
+msgstr "Этот промокод действует только на первый заказ."
+
+msgid "Promo-kodni faqat birinchi to'lovgacha qo'shish mumkin."
+msgstr "Промокод можно добавить только до первой оплаты."
+
+#, python-format
+msgid ""
+"Do'stingiz siz bergan kod bilan buyurtma qildi. Rahmat! Keyingi "
+"buyurtmangizga %(p)s%% chegirma: %(code)s (%(days)s kun amal qiladi)."
+msgstr ""
+"Ваш друг сделал заказ по вашему коду. Спасибо! Скидка %(p)s%% на следующий "
+"заказ: %(code)s (действует %(days)s дней)."
+
+#, python-format
+msgid ""
+"Siz taklif qilgan usta %(name)s birinchi buyurtmasini bajardi. Sizga "
+"%(days)s kun bepul TOP!"
+msgstr ""
+"Приглашённый вами мастер %(name)s выполнил первый заказ. Вам %(days)s дней "
+"ТОП бесплатно!"
 
 msgid "Narxni hozir o'zgartirib bo'lmaydi"
 msgstr "Сейчас цену изменить нельзя"
@@ -574,6 +672,23 @@ msgstr "Открыть профиль →"
 msgid "Siz"
 msgstr "Вы"
 
+msgid "🔔 Bildirishnomalar yoqilgan"
+msgstr "🔔 Уведомления включены"
+
+msgid "🔔 Bildirishnomalarni yoqish"
+msgstr "🔔 Включить уведомления"
+
+msgid ""
+"Brauzerda bildirishnomalar taqiqlangan. Sayt sozlamalaridan ruxsat bering."
+msgstr "Уведомления запрещены в браузере. Разрешите их в настройках сайта."
+
+msgid ""
+"iPhone'da bildirishnoma uchun avval saytni «Ulashish → Bosh ekranga "
+"qo'shish» orqali o'rnating."
+msgstr ""
+"На iPhone для уведомлений сначала установите сайт: «Поделиться → На экран "
+"«Домой»»."
+
 msgid "Buyurtmani ochish"
 msgstr "Открыть заказ"
 
@@ -622,6 +737,43 @@ msgstr "✋ Взять"
 
 msgid "Ochiq buyurtmalar"
 msgstr "Открытые заказы"
+
+#, python-format
+msgid "Nizo hal qilindi: ustaga %(r)s so'm, mijozga %(f)s so'm. %(note)s"
+msgstr "Спор решён: мастеру %(r)s сум, клиенту %(f)s сум. %(note)s"
+
+#, python-format
+msgid "Nizo yopildi, ish davom etadi. %(note)s"
+msgstr "Спор закрыт, работа продолжается. %(note)s"
+
+#, python-format
+msgid "Nizo yopildi, ish davom etadi. Administrator: %(note)s %(url)s"
+msgstr "Спор закрыт, работа продолжается. Администратор: %(note)s %(url)s"
+
+#, python-format
+msgid ""
+"Nizo hal qilindi: %(amount)s so'm sizga qaytariladi. Administrator: %(note)s"
+" %(url)s"
+msgstr ""
+"Спор решён: вам будет возвращено %(amount)s сум. Администратор: %(note)s "
+"%(url)s"
+
+#, python-format
+msgid "Nizo hal qilindi. Administrator: %(note)s %(url)s"
+msgstr "Спор решён. Администратор: %(note)s %(url)s"
+
+#, python-format
+msgid ""
+"#%(id)s bo'yicha nizo yopildi, ishni davom ettiring. Administrator: %(note)s"
+msgstr ""
+"Спор по заказу #%(id)s закрыт, продолжайте работу. Администратор: %(note)s"
+
+#, python-format
+msgid ""
+"#%(id)s bo'yicha nizo hal qilindi: sizga %(amount)s so'm. Administrator: "
+"%(note)s"
+msgstr ""
+"Спор по заказу #%(id)s решён: вам %(amount)s сум. Администратор: %(note)s"
 
 msgid "Shaxsiy ma'lumotlarni qayta ishlashga rozilik bering"
 msgstr "Дайте согласие на обработку персональных данных"
@@ -755,6 +907,13 @@ msgstr "час"
 msgid "Avval telefon raqamingizni SMS kod bilan tasdiqlang."
 msgstr "Сначала подтвердите номер телефона кодом из SMS."
 
+msgid ""
+"Muammoni qisqacha yozing (kamida 10 ta belgi) — administrator shunga qarab "
+"qaror qiladi."
+msgstr ""
+"Кратко опишите проблему (не менее 10 символов) — администратор примет "
+"решение на её основе."
+
 msgid "Buyurtma holati yangilandi."
 msgstr "Статус заказа обновлён."
 
@@ -780,6 +939,20 @@ msgstr "Оплата выплачена: %(t)s"
 
 msgid "Mablag' ustaga chiqarildi. Rahmat!"
 msgstr "Средства выплачены мастеру. Спасибо!"
+
+msgid "Promo-kod olib tashlandi."
+msgstr "Промокод удалён."
+
+#, python-format
+msgid "Promo-kod qo'llandi: %(d)s so'm chegirma."
+msgstr "Промокод применён: скидка %(d)s сум."
+
+msgid ""
+"Promo-kod saqlandi. Chegirma usta narx taklif qilgach, onlayn to'lovda "
+"hisoblanadi."
+msgstr ""
+"Промокод сохранён. Скидка будет рассчитана при онлайн-оплате, после того как"
+" мастер предложит цену."
 
 msgid ""
 "Murojaatingiz ustaga yuborildi. Muammoni rasmga olib qo'shsangiz, tezroq hal"
@@ -1698,12 +1871,12 @@ msgid "Barcha narxlar"
 msgstr "Все цены"
 
 #, python-format
-msgid "%(c)s — tumanlar bo'yicha"
-msgstr "%(c)s — по районам"
+msgid "%(c)s — Toshkent tumanlari"
+msgstr "%(c)s — районы Ташкента"
 
 #, python-format
-msgid "%(d)s tumanidagi boshqa ustalar"
-msgstr "Другие мастера в районе %(d)s"
+msgid "%(d)s: boshqa ustalar"
+msgstr "%(d)s: другие мастера"
 
 msgid "Boshqa yo'nalishlar"
 msgstr "Другие направления"
@@ -1826,6 +1999,39 @@ msgstr[0] "%(n)s оценка"
 msgstr[1] "%(n)s оценки"
 msgstr[2] "%(n)s оценок"
 
+msgid "Ishonchlilik"
+msgstr "Надёжность"
+
+#, python-format
+msgid ""
+"So'nggi %(d)s kun bo'yicha. Ball qidiruvdagi o'rningizga ta'sir qiladi."
+msgstr "За последние %(d)s дней. Балл влияет на ваше место в поиске."
+
+msgid "Qabul qilingan"
+msgstr "Принято"
+
+msgid "Voz kechilgan"
+msgstr "Отказов"
+
+msgid "O'z vaqtida kelish"
+msgstr "Приезд вовремя"
+
+msgid "Javob berish"
+msgstr "Ответ"
+
+msgid "daq"
+msgstr "мин"
+
+msgid "Nizolar"
+msgstr "Споры"
+
+msgid ""
+"Bir nechta buyurtmadan keyin ball paydo bo'ladi. Yangi ustalar qidiruvda "
+"jazolanmaydi."
+msgstr ""
+"Балл появится после нескольких заказов. Новые мастера в поиске не "
+"понижаются."
+
 msgid "Taqvim"
 msgstr "Календарь"
 
@@ -1871,6 +2077,39 @@ msgstr ""
 msgid "Telegram'ni ulash"
 msgstr "Подключить Telegram"
 
+msgid "Telefonda ilova"
+msgstr "Приложение на телефоне"
+
+msgid ""
+"Saytni telefon ekraniga o'rnating va yangi buyurtma haqida darhol "
+"bildirishnoma oling."
+msgstr ""
+"Установите сайт на экран телефона и сразу получайте уведомления о новых "
+"заказах."
+
+msgid "Ilovani o'rnatish"
+msgstr "Установить приложение"
+
+msgid "Bildirishnomalarni yoqish"
+msgstr "Включить уведомления"
+
+msgid "Usta do'stingizni taklif qiling"
+msgstr "Пригласите знакомого мастера"
+
+#, python-format
+msgid ""
+"Taklif qilgan ustangiz tekshiruvdan o'tib, birinchi buyurtmasini bajarsa — "
+"sizga %(d)s kun bepul TOP."
+msgstr ""
+"Если приглашённый мастер пройдёт проверку и выполнит первый заказ — вам "
+"%(d)s дней ТОП бесплатно."
+
+msgid "Havola"
+msgstr "Ссылка"
+
+msgid "Nusxa"
+msgstr "Копировать"
+
 msgid ""
 "Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga "
 "o'tkazadi."
@@ -1886,6 +2125,14 @@ msgstr "Профиль ещё не подтверждён — клиенты е�
 
 msgid "Tekshirilgan usta"
 msgstr "Проверенный мастер"
+
+#, python-format
+msgid "Odatda ~%(m)s daqiqada javob beradi"
+msgstr "Обычно отвечает за ~%(m)s мин"
+
+#, python-format
+msgid "O'z vaqtida keladi: %(p)s%%"
+msgstr "Приезжает вовремя: %(p)s%%"
 
 msgid "Administrator usta hujjatlarini tekshirgan"
 msgstr "Администратор проверил документы мастера"
@@ -2343,6 +2590,12 @@ msgstr "Выплачено мастеру"
 msgid "Jami"
 msgstr "Итого"
 
+msgid "Chegirma"
+msgstr "Скидка"
+
+msgid "platforma hisobidan, sizga to'liq"
+msgstr "за счёт платформы, вам — полностью"
+
 msgid "sizga"
 msgstr "вам"
 
@@ -2530,6 +2783,22 @@ msgstr ""
 msgid "Amallar"
 msgstr "Действия"
 
+msgid "Nima muammo? Administrator ikkala tomonni eshitib, qaror qabul qiladi."
+msgstr "В чём проблема? Администратор выслушает обе стороны и примет решение."
+
+msgid "Masalan: kran yana oqyapti, usta qayta kelmayapti"
+msgstr "Например: кран снова течёт, мастер не приезжает повторно"
+
+msgid ""
+"Nizo ochilgach to'lovlar muzlatiladi. Rasmlarni pastdagi «Rasmlar» bo'limiga"
+" qo'shing."
+msgstr ""
+"После открытия спора оплаты замораживаются. Добавьте фото в раздел «Фото» "
+"ниже."
+
+msgid "Nizo ochish"
+msgstr "Открыть спор"
+
 msgid ""
 "Tasdiqlashda ustani baholaysiz. Javob bermasangiz, 72 soatdan keyin buyurtma"
 " avtomatik tasdiqlanadi."
@@ -2539,6 +2808,28 @@ msgstr ""
 
 msgid "Ustani baholash"
 msgstr "Оценить мастера"
+
+msgid "Do'stingizga ustani tavsiya qiling"
+msgstr "Порекомендуйте мастера другу"
+
+#, python-format
+msgid ""
+"Do'stingiz birinchi buyurtmasida %(p)s%% chegirma oladi (ko'pi bilan %(m)s "
+"so'm). Uning buyurtmasi bajarilsa — sizga ham keyingi buyurtmaga chegirma "
+"kodi keladi."
+msgstr ""
+"Друг получит скидку %(p)s%% на первый заказ (не более %(m)s сум). Когда его "
+"заказ будет выполнен, вы тоже получите код скидки на следующий заказ."
+
+msgid "Kod"
+msgstr "Код"
+
+#, python-format
+msgid "%(n)s kishi ishlatdi"
+msgid_plural "%(n)s kishi ishlatdi"
+msgstr[0] "Использовал %(n)s человек"
+msgstr[1] "Использовали %(n)s человека"
+msgstr[2] "Использовали %(n)s человек"
 
 msgid ""
 "Muammoni rasmga oling — usta nima kerakligini oldindan biladi va kerakli "
@@ -2603,6 +2894,33 @@ msgstr "Изменения статуса будут приходить в Teleg
 msgid "Botni ochish"
 msgstr "Открыть бота"
 
+msgid "Promo-kod"
+msgstr "Промокод"
+
+#, python-format
+msgid "chegirma %(d)s so'm"
+msgstr "скидка %(d)s сум"
+
+msgid "chegirma narx kelishilgach onlayn to'lovda hisoblanadi"
+msgstr "скидка рассчитается при онлайн-оплате после согласования цены"
+
+msgid "Olib tashlash"
+msgstr "Удалить"
+
+msgid "Kodni kiriting"
+msgstr "Введите код"
+
+msgid "Qo'llash"
+msgstr "Применить"
+
+msgid "Bildirishnomalar"
+msgstr "Уведомления"
+
+msgid "Usta qabul qilganda, kelganda va yozganda shu brauzerga xabar keladi."
+msgstr ""
+"Когда мастер примет заказ, приедет или напишет — придёт уведомление в этот "
+"браузер."
+
 msgid "Bu sahifa havolasini boshqalarga bermang."
 msgstr "Не передавайте ссылку на эту страницу другим."
 
@@ -2660,12 +2978,6 @@ msgid ""
 msgstr ""
 "Клиент получит SMS. При необходимости отправьте ссылку сами — по ней он "
 "подтвердит результат и оценит вас."
-
-msgid "Havola"
-msgstr "Ссылка"
-
-msgid "Nusxa"
-msgstr "Копировать"
 
 msgid ""
 "Ishdan oldin va keyin rasmga oling: mijoz natijani ko'radi, tasdiqlangan "
@@ -2852,6 +3164,15 @@ msgstr "Кратко опишите проблему"
 msgid "Masalan: oshxonada kran oqyapti / kir mashina suvni chiqarmayapti"
 msgstr "Например: течёт кран на кухне / стиральная машина не сливает воду"
 
+msgid "Promo-kod bormi?"
+msgstr "Есть промокод?"
+
+msgid "Masalan: DABC123"
+msgstr "Например: DABC123"
+
+msgid "Chegirma onlayn to'lovda qo'llanadi; usta narxni to'liq oladi."
+msgstr "Скидка действует при онлайн-оплате; мастер получает цену полностью."
+
 msgid "Ariza yuborish"
 msgstr "Отправить заявку"
 
@@ -2952,6 +3273,20 @@ msgstr "Не удалось отправить заявку"
 
 msgid "Buyurtma holatini SMS'dagi havola orqali kuzatishingiz mumkin."
 msgstr "Статус заказа можно отслеживать по ссылке из SMS."
+
+#~ msgid "Tuman"
+#~ msgstr "Район"
+
+#~ msgid "Tumanni tanlang"
+#~ msgstr "Выберите район"
+
+#, python-format
+#~ msgid "%(category)s — %(district)s tumani"
+#~ msgstr "%(category)s — район %(district)s"
+
+#, python-format
+#~ msgid "%(category)s — Toshkent"
+#~ msgstr "%(category)s — Ташкент"
 
 #~ msgid ""
 #~ "Shaxsiy ma'lumotlar faqat buyurtma bo'yicha bog'lanish uchun ishlatiladi."

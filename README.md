@@ -285,6 +285,79 @@ boshqa ustalar ro'yxatiga yo'naltiriladi.
   (`static/img/og.png`; sayt nomini o'zgartirsangiz, rasmni ham almashtiring; usta profilida — usta rasmi).
 - Footer'da barcha yo'nalishlarga ichki havolalar.
 
+## Viloyatlar
+
+Toshkentning 12 tumani va 12 ta viloyat markazi (Samarqand, Buxoro, Andijon, Farg'ona, Namangan,
+Qarshi, Navoiy, Jizzax, Guliston, Termiz, Urganch, Nukus) — qidiruv, ariza formasi, usta
+ro'yxatdan o'tishi va SEO sahifalarida (`/ustalar/santexnik/samarqand/`). Tanlov ro'yxatlari
+«Toshkent» va «Viloyatlar» guruhlariga bo'lingan. Yangi shahar qo'shish: `masters/locations.py` →
+`REGIONAL_CITIES` ga bitta qator (slug, o'zbekcha, ruscha nomi, kenglik, uzunlik).
+
+## Nizolar (administrator)
+
+`/admin/nizolar/` — ochiq nizolar (eng eskisi yuqorida, muzlatilgan summa, necha kun). Nizo sahifasida
+hamma dalil bitta joyda: mijoz va usta (qo'ng'iroq havolasi bilan), mijoz yozgan sabab, narx va
+to'lov bosqichlari, yozishma, rasmlar, buyurtma tarixi. Qaror:
+
+- **har bir ushlab turilgan bosqich** bo'yicha: ustaga chiqarish yoki mijozga qaytarish (qisman ham
+  mumkin). Biror qism ustaga — buyurtma «Tasdiqlandi», hammasi mijozga — «Bekor qilindi»;
+- **«Kelishildi — ish davom etadi»** — buyurtma nizodan oldingi holatiga qaytadi, pul muzlatilgan holicha.
+
+Ikkala tomon qaror izohini SMS/Telegram'da oladi. Mijoz nizoni faqat sababini yozib ochadi;
+administrator chatiga Telegram xabari keladi. Qaror uchun «arizani o'zgartirish» huquqi kerak.
+Qaytarilgan pulni to'lov tizimi kabinetidan qaytarish kerak — tizim faqat qayd etadi.
+
+## Ustalar ishonchliligi
+
+Har bir ustaga so'nggi 90 kun bo'yicha 0–100 ball (`masters/reliability.py`):
+voz kechish (−35 gacha), nizolar (−35), kechikish yoki kelmaslik (−20; belgilangan vaqtdan
+30 daqiqa kech), javob tezligi (−10; to'g'ridan-to'g'ri buyurtmani qabul qilishgacha, mediana).
+Kam buyurtmali (`RELIABILITY_MIN_ORDERS`, 3) yangi usta jazolanmaydi.
+
+- Qidiruvda reyting `0.7 + 0.3 × ball/100` ga ko'paytiriladi; masofa bo'yicha saralashda ham
+  ishonchsiz usta pastroqqa tushadi; ochiq buyurtma xabarlari ham shu tartibda.
+- Usta kabinetida ball, ko'rsatkichlar va uni oshirish bo'yicha maslahatlar.
+- Profilda: «⚡ Odatda ~15 daqiqada javob beradi», «🕒 O'z vaqtida keladi: 96%».
+- `process_orders` (cron) har soatda yangilaydi; voz kechganda darhol.
+
+## Promo-kodlar va referal
+
+**Promo-kod** (admin → To'lovlar → Promo-kodlar): foiz yoki qat'iy summa, eng ko'p chegirma, eng kam
+buyurtma, muddat, umumiy va bitta raqamga limit, «faqat birinchi buyurtma».
+
+- Chegirma **platforma hisobidan**: mijoz kamroq to'laydi, usta kelishilgan narxni to'liq oladi
+  (komissiya kelishilgan narxdan). Faqat onlayn to'lovda, narxning `PROMO_MAX_SHARE_PERCENT` (50%)
+  foizigacha; to'lanmagan bosqichlarga ulushiga qarab taqsimlanadi. Payme/Click/Uzum chegirmali
+  summani talab qiladi.
+- Kod ariza formasida («🎁 Promo-kod bormi?»), buyurtma sahifasida (birinchi to'lovgacha) yoki
+  havola orqali kiritiladi: `https://sayt.uz/?promo=KOD`.
+- Statistika: «Platforma daromadi» chegirmalarni ayirib hisoblanadi.
+
+**Mijoz referali.** Tasdiqlangan buyurtma sahifasida mijoz shaxsiy kod va havola oladi (Telegram'da
+ulashish tugmasi bilan). Do'sti birinchi buyurtmasida `REFERRAL_DISCOUNT_PERCENT` (10%) chegirma oladi;
+do'stning buyurtmasi **onlayn to'lanib tasdiqlansa**, kod egasiga keyingi buyurtma uchun bir martalik
+mukofot kodi SMS'da keladi. O'z kodini ishlatib bo'lmaydi; mukofot kodi faqat egasining raqamiga.
+
+**Usta referali.** Kabinetda shaxsiy havola (`/ustalar/royxatdan-otish/?ref=KOD`). Taklif qilingan usta
+tekshiruvdan o'tib birinchi buyurtmasini bajarsa — taklif qilgan ustaga `MASTER_REFERRAL_TOP_DAYS`
+(7) kun bepul TOP.
+
+> Barcha foiz va summalar namunaviy — `.env` da o'zgartiring. Ofertada promo-kod bandi bor.
+
+## Telefonda ilova (PWA) va bildirishnomalar
+
+- Sayt telefonga ilova sifatida o'rnatiladi (`/manifest.webmanifest`, `/sw.js`): bosh ekranda ikonka,
+  internet yo'qolsa — oflayn sahifa. Usta kabinetida «⬇ Ilovani o'rnatish» tugmasi.
+- **Brauzer bildirishnomalari (Web Push):** usta kabinetda, mijoz buyurtma sahifasida (SMS kod bilan
+  tasdiqlangan raqamda) «🔔 Bildirishnomalarni yoqish» ni bosadi. Buyurtma xabarlari (yangi buyurtma,
+  holat, yozishma, kafolat) SMS/Telegram'ga **qo'shimcha** ravishda push bo'lib ham keladi.
+- Sozlash: `python manage.py webpush_keys` → chiqqan ikki qatorni `.env` ga. Kalitsiz push o'chiq.
+- Shifrlash RFC 8291/8292 bo'yicha faqat `cryptography` bilan yozilgan (`pywebpush` ning `http-ece`
+  bog'liqligi ko'p serverlarda o'rnatilmaydi) va RFC dagi rasmiy test-namuna bilan tekshirilgan.
+- iPhone: push faqat saytni «Ulashish → Bosh ekranga qo'shish» orqali o'rnatgandan keyin (iOS 16.4+).
+- Xavfsizlik: obuna manzili faqat ma'lum push xizmatlariga (Google, Mozilla, Apple, Microsoft) ruxsat
+  etiladi; eskirgan obunalar avtomatik o'chiriladi.
+
 ## Telegram bot
 
 Bitta bot ikki vazifani bajaradi (admin'ga yangi ariza xabari ham shu bot orqali):
@@ -381,6 +454,8 @@ yetarli. Mavjud arizalar saqlanadi — har biriga alohida baho kaliti beriladi.
 | `/buyurtma/<kalit>/` | Mijozning buyurtma sahifasi (kuzatish, to'lov, yozishma, kafolat) |
 | `/oferta/`, `/maxfiylik/` | Ommaviy oferta va maxfiylik siyosati |
 | `/admin/statistika/` | Statistika (faqat administrator) |
+| `/admin/nizolar/` | Nizolar: dalillar va qaror (faqat administrator) |
+| `/manifest.webmanifest`, `/sw.js`, `/offline/` | Telefonda ilova (PWA) |
 | `/ustalar/<yo'nalish>/`, `/ustalar/<yo'nalish>/<tuman>/` | SEO sahifalari |
 | `/kabinet/hujjatlar/` | Usta: shaxsni tasdiqlash |
 | `/buyurtma/<kalit>/qayta/` | Mijoz: ustani qayta chaqirish |
@@ -412,13 +487,14 @@ docs/                integratsiyalarni haqiqiy muhitda sinash tartibi
 python manage.py test
 ```
 
-222 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+260 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
 bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
 (rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
 (muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click va Uzum protokollari, Telegram bot (ulash, tugmalar, rasm, xavfsizlik), tariflar,
 ochiq buyurtmalar lentasi, kafolat, kelish vaqti, yozishma, o'tkazmalar hisoboti (Excel), statistika,
 yuridik sahifalar, production tekshiruvlari, `check_integrations`, ustalar hujjatlari (maxfiylik, huquqlar),
-qayta chaqirish, SEO (sitemap, robots, canonical, JSON-LD).
+qayta chaqirish, SEO (sitemap, robots, canonical, JSON-LD), viloyatlar, PWA va Web Push (RFC 8291 test-namunasi),
+nizolar sahifasi, ishonchlilik bali, promo-kodlar va referal (Payme chegirmali summani talab qilishi bilan).
 
 Production'dagidek PostgreSQL va Redis bilan:
 
