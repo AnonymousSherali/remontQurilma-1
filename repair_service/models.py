@@ -195,6 +195,26 @@ class OrderMessage(models.Model):
         return f'#{self.order_id} · {self.get_sender_display()}: {self.text[:40]}'
 
 
+class PushSubscription(models.Model):
+    """Brauzer bildirishnomalariga obuna (repair_service/webpush.py). Usta — akkaunti bilan, mijoz — telefoni bilan."""
+
+    endpoint = models.URLField('Manzil', max_length=1000, unique=True)
+    p256dh = models.CharField('Kalit', max_length=200)
+    auth = models.CharField('Auth', max_length=100)
+    master = models.ForeignKey('masters.Master', on_delete=models.CASCADE, null=True, blank=True,
+                               related_name='push_subscriptions', verbose_name='Usta')
+    phone = models.CharField('Mijoz telefoni', max_length=20, blank=True, db_index=True)
+    user_agent = models.CharField('Brauzer', max_length=200, blank=True)
+    created_at = models.DateTimeField('Yaratilgan', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Push obuna'
+        verbose_name_plural = 'Push obunalar'
+
+    def __str__(self):
+        return f'{self.master or self.phone} · {self.endpoint[:40]}'
+
+
 def _photo_path(instance, filename):
     # Tasodifiy nom: rasm manzilini taxmin qilib bo'lmasin
     return f'orders/{instance.order_id}/{uuid.uuid4().hex}.jpg'

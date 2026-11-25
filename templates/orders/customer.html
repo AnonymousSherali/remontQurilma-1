@@ -146,6 +146,13 @@
         {% endif %}
       </section>
       {% endif %}
+      {% if can_act and WEBPUSH_PUBLIC_KEY %}
+      <section class="card">
+        <div class="card__title">🔔 {% translate "Bildirishnomalar" %}</div>
+        <p class="muted small" style="margin-top:0">{% translate "Usta qabul qilganda, kelganda va yozganda shu brauzerga xabar keladi." %}</p>
+        <button type="button" class="btn btn--block" data-push data-scope="customer" data-token="{{ order.review_token }}" hidden>🔔 {% translate "Bildirishnomalarni yoqish" %}</button>
+      </section>
+      {% endif %}
       <p class="muted small">{% translate "Bu sahifa havolasini boshqalarga bermang." %} <a href="tel:{{ SITE.phone }}">{{ SITE.phone_display }}</a></p>
     </aside>
   </div>

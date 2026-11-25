@@ -145,6 +145,13 @@
         <form method="post" action="{% url 'telegram_bot:connect' %}">{% csrf_token %}<button class="btn btn--sm btn--primary">{% translate "Telegram'ni ulash" %}</button></form>
       {% endif %}
       <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
+      <div class="card__title" style="font-size:1rem">📱 {% translate "Telefonda ilova" %}</div>
+      <p class="small muted" style="margin-top:0">{% translate "Saytni telefon ekraniga o'rnating va yangi buyurtma haqida darhol bildirishnoma oling." %}</p>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button type="button" class="btn btn--sm" data-install hidden>⬇ {% translate "Ilovani o'rnatish" %}</button>
+        <button type="button" class="btn btn--sm btn--primary" data-push data-scope="master" hidden>🔔 {% translate "Bildirishnomalarni yoqish" %}</button>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
       <p class="small muted" style="margin:0">💡 {% translate "Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga o'tkazadi." %}</p>
     </aside>
   </div>

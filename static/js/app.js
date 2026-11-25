@@ -8,6 +8,7 @@
  *  - Yandex xarita:            <div data-map="points-json-id">, tanlash rejimi: data-map-picker
  *  - nusxa olish:              <button data-copy="#input">
  *  - yozishma:                 <div data-chat data-url="...">
+ *  - PWA va push:              <button data-install>, <button data-push data-scope="master|customer">
  */
 (function () {
   'use strict';
@@ -380,6 +381,73 @@
         apply(d);
         log.scrollTop = log.scrollHeight;
       }).catch(function () { busy = false; err.textContent = T.network; });
+    });
+  });
+
+  // ---------------- PWA: service worker, o'rnatish, push ----------------
+  var swReady = null;
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    swReady = navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () { return null; });
+  }
+
+  var installEvent = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    installEvent = e;
+    document.querySelectorAll('[data-install]').forEach(function (b) { b.hidden = false; });
+  });
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-install]');
+    if (!btn || !installEvent) { return; }
+    installEvent.prompt();
+    installEvent.userChoice.finally(function () { installEvent = null; btn.hidden = true; });
+  });
+
+  var pushKey = document.querySelector('meta[name="webpush-key"]');
+  function b64ToBytes(s) {
+    var pad = '='.repeat((4 - s.length % 4) % 4);
+    var raw = atob((s + pad).replace(/-/g, '+').replace(/_/g, '/'));
+    var out = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) { out[i] = raw.charCodeAt(i); }
+    return out;
+  }
+  function csrfToken() {
+    var m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+    var input = document.querySelector('[name="csrfmiddlewaretoken"]');
+    return m ? decodeURIComponent(m[1]) : (input ? input.value : '');
+  }
+  function postJSON(url, data) {
+    return fetch(url, { method: 'POST', credentials: 'same-origin', body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() } });
+  }
+  document.querySelectorAll('[data-push]').forEach(function (btn) {
+    var isIos = /iphone|ipad/i.test(navigator.userAgent) && !window.navigator.standalone;
+    if (!pushKey || !swReady || !('PushManager' in window) || !('Notification' in window)) {
+      if (pushKey && isIos) { btn.hidden = false; btn.disabled = true; btn.title = T.pushIos; btn.insertAdjacentHTML('afterend', '<p class="muted small">' + T.pushIos + '</p>'); }
+      return;
+    }
+    btn.hidden = false;
+    function show(on) { btn.textContent = on ? T.pushOn : T.pushOff; btn.classList.toggle('btn--primary', !on); btn.dataset.on = on ? '1' : ''; }
+    swReady.then(function (reg) {
+      if (!reg) { btn.hidden = true; return; }
+      reg.pushManager.getSubscription().then(function (sub) { show(!!sub && Notification.permission === 'granted'); });
+      btn.addEventListener('click', function () {
+        if (btn.dataset.on) {
+          reg.pushManager.getSubscription().then(function (sub) {
+            if (!sub) { show(false); return; }
+            postJSON('/push/bekor/', { endpoint: sub.endpoint });
+            sub.unsubscribe().then(function () { show(false); });
+          });
+          return;
+        }
+        Notification.requestPermission().then(function (perm) {
+          if (perm !== 'granted') { toast(T.pushDenied, 'error'); return; }
+          return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(pushKey.content) })
+            .then(function (sub) {
+              return postJSON('/push/obuna/', { subscription: sub.toJSON(), scope: btn.dataset.scope, token: btn.dataset.token || '' });
+            }).then(function (r) { if (r && r.ok) { show(true); } else { toast(T.genericError, 'error'); } });
+        }).catch(function () { toast(T.genericError, 'error'); });
+      });
     });
   });
 

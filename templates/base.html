@@ -23,6 +23,11 @@
   {% for code, name in LANGS %}<link rel="alternate" hreflang="{{ code }}" href="{{ request.scheme }}://{{ request.get_host }}{% url_in_language code %}">{% endfor %}
   <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}{% url_in_language 'uz' %}">
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="{% static 'img/icons/apple-touch-icon.png' %}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="{{ SITE.name }}">
+  {% if WEBPUSH_PUBLIC_KEY %}<meta name="webpush-key" content="{{ WEBPUSH_PUBLIC_KEY }}">{% endif %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">

@@ -26,6 +26,10 @@ def _js_i18n():
         'reviews': _('baho'),
         'openProfile': _('Profilni ochish →'),
         'you': _('Siz'),
+        'pushOn': _('🔔 Bildirishnomalar yoqilgan'),
+        'pushOff': _('🔔 Bildirishnomalarni yoqish'),
+        'pushDenied': _("Brauzerda bildirishnomalar taqiqlangan. Sayt sozlamalaridan ruxsat bering."),
+        'pushIos': _("iPhone'da bildirishnoma uchun avval saytni «Ulashish → Bosh ekranga qo'shish» orqali o'rnating."),
     }
 
 
@@ -43,5 +47,6 @@ def site(request):
     return {
         'SITE': info,
         'YANDEX_MAPS_API_KEY': getattr(settings, 'YANDEX_MAPS_API_KEY', ''),
+        'WEBPUSH_PUBLIC_KEY': settings.WEBPUSH_PUBLIC_KEY if settings.WEBPUSH_PRIVATE_KEY else '',
         'js_i18n': _js_i18n(),
     }

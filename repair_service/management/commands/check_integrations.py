@@ -56,6 +56,7 @@ class Command(BaseCommand):
         self.click()
         self.uzum()
         self.telegram(options['live'])
+        self.webpush()
         failed = [r for r in self.results if r[1] == FAIL]
         self.stdout.write('')
         summary = f"{sum(r[1] == OK for r in self.results)} ✓, {len(failed)} ✗, " \
@@ -183,6 +184,22 @@ class Command(BaseCommand):
                         "Protokol Uzum rasmiy hujjati bilan solishtirilmagan — README'ga qarang")
         else:
             self.report('Uzum', FAIL, f'endpoint kutilmagan javob berdi: {data}')
+
+    # ---------- Web Push ----------
+
+    def webpush(self):
+        from repair_service import webpush
+        from repair_service.models import PushSubscription
+        if not webpush.enabled():
+            self.report('Push', SKIP, "WEBPUSH_* kalitlari yo'q — brauzer bildirishnomalari o'chiq",
+                        'python manage.py webpush_keys')
+            return
+        try:
+            webpush.vapid_headers('https://fcm.googleapis.com/fcm/send/x')
+        except Exception as error:  # noqa: BLE001
+            self.report('Push', FAIL, f"WEBPUSH_PRIVATE_KEY noto'g'ri: {error}", 'python manage.py webpush_keys')
+            return
+        self.report('Push', OK, f'kalitlar to\'g\'ri, obunalar: {PushSubscription.objects.count()}')
 
     # ---------- Telegram ----------
 

@@ -296,6 +296,12 @@ CHAT_SMS_INTERVAL_MINUTES = int(os.environ.get('CHAT_SMS_INTERVAL_MINUTES', 30))
 # Muddatni yurist bilan belgilang: kamroq saqlash — kamroq xavf.
 ID_DOCUMENTS_KEEP_DAYS = int(os.environ.get('ID_DOCUMENTS_KEEP_DAYS') or 0)
 
+# --- Brauzer bildirishnomalari (Web Push) ---
+# Kalitlar: python manage.py webpush_keys. Bo'sh bo'lsa — push o'chiq.
+WEBPUSH_PUBLIC_KEY = os.environ.get('WEBPUSH_PUBLIC_KEY', '')
+WEBPUSH_PRIVATE_KEY = os.environ.get('WEBPUSH_PRIVATE_KEY', '')
+WEBPUSH_SUBJECT = os.environ.get('WEBPUSH_SUBJECT', '')   # mailto:... (bo'sh — SITE_EMAIL)
+
 # --- SEO ---
 # Sinov serverida True qiling — robots.txt butun saytni qidiruvdan yopadi
 SEO_DISALLOW_ALL = os.environ.get('SEO_DISALLOW_ALL', 'False') == 'True'

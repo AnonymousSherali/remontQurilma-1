@@ -66,7 +66,7 @@ SITEMAPS = {'static': StaticSitemap, 'categories': CategorySitemap, 'masters': M
 
 # Shaxsiy yoki texnik sahifalar — qidiruvga kirmaydi
 PRIVATE_PATHS = ['/admin/', '/kabinet/', '/buyurtma/', '/buyurtmalarim/', '/baho/', '/kod/', '/api/',
-                 '/payments/', '/tolov/', '/telegram/', '/kirish/', '/parolni-tiklash/', '/healthz/', '/i18n/']
+                 '/payments/', '/tolov/', '/telegram/', '/kirish/', '/parolni-tiklash/', '/healthz/', '/i18n/', '/push/', '/offline/']
 
 
 @cache_page(60 * 60 * 24)
@@ -74,7 +74,8 @@ def robots_txt(request):
     lines = ['User-agent: *']
     for path in PRIVATE_PATHS:
         lines.append(f'Disallow: {path}')
-        if path not in ('/admin/', '/api/', '/payments/', '/telegram/', '/healthz/', '/i18n/', '/kod/'):
+        if path not in ('/admin/', '/api/', '/payments/', '/telegram/', '/healthz/', '/i18n/', '/kod/', '/push/',
+                        '/offline/'):
             lines.append(f'Disallow: /ru{path}')
     # Shaxsiy koordinata bilan qidiruv natijalari
     lines += ['Disallow: /*?*lat=', 'Disallow: /*?*q=', '',

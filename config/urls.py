@@ -15,6 +15,7 @@ from django.views.decorators.cache import cache_page
 from config.seo_urls import SITEMAPS, robots_txt
 from config.stats import stats_view
 from masters import views as master_views
+from repair_service import pwa
 from repair_service.views import healthz
 from otp import views as otp_views
 from payments import click, payme, uzum
@@ -23,6 +24,11 @@ from telegram_bot import views as telegram_views
 urlpatterns = [
     path('healthz/', healthz, name='healthz'),
     path('robots.txt', robots_txt, name='robots_txt'),
+    path('manifest.webmanifest', pwa.manifest, name='manifest'),
+    path('sw.js', pwa.service_worker, name='service_worker'),
+    path('offline/', pwa.offline, name='offline'),
+    path('push/obuna/', pwa.push_subscribe, name='push_subscribe'),
+    path('push/bekor/', pwa.push_unsubscribe, name='push_unsubscribe'),
     path('sitemap.xml', cache_page(60 * 60)(sitemap), {'sitemaps': SITEMAPS}, name='sitemap'),
     path('admin/statistika/', admin.site.admin_view(stats_view), name='admin_stats'),
     path('admin/', admin.site.urls),

@@ -96,6 +96,8 @@ def _absolute(path):
 
 def _notify_master(master, template, **extra):
     text = template % {'url': _absolute(reverse('masters:documents')), **extra}
+    from repair_service import webpush
+    webpush.notify(master.push_subscriptions.all(), settings.SITE_INFO['name'], text, reverse('masters:documents'))
     if master.telegram_chat_id:
         from telegram_bot import client
         client.send_message(master.telegram_chat_id, text)
