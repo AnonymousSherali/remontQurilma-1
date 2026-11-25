@@ -47,6 +47,7 @@ def site(request):
     return {
         'SITE': info,
         'YANDEX_MAPS_API_KEY': getattr(settings, 'YANDEX_MAPS_API_KEY', ''),
+        'MASTER_REFERRAL_TOP_DAYS': settings.MASTER_REFERRAL_TOP_DAYS,
         'WEBPUSH_PUBLIC_KEY': settings.WEBPUSH_PUBLIC_KEY if settings.WEBPUSH_PRIVATE_KEY else '',
         'js_i18n': _js_i18n(),
     }

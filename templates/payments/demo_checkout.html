@@ -15,7 +15,7 @@
     <div style="font-size:2rem;font-weight:800;margin:1rem 0">{{ purchase.amount|floatformat:0|intcomma }} {% translate "so'm" %}</div>
     {% else %}
     <p class="muted">{% translate "Buyurtma" %} #{{ order.pk }} · {{ milestone.title }}</p>
-    <div style="font-size:2rem;font-weight:800;margin:1rem 0">{{ milestone.amount|floatformat:0|intcomma }} {% translate "so'm" %}</div>
+    <div style="font-size:2rem;font-weight:800;margin:1rem 0">{{ milestone.amount_due|floatformat:0|intcomma }} {% translate "so'm" %}</div>
     {% endif %}
     <form method="post" class="form">{% csrf_token %}
       <div class="field"><label for="card">{% translate "Karta raqami" %}</label><input id="card" type="text" value="8600 0000 0000 0000" readonly></div>

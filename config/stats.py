@@ -60,6 +60,7 @@ def collect(days=30, now=None):
 
     released = Milestone.objects.filter(state=Milestone.STATE_RELEASED, released_at__gte=start)
     fee = sum((m.fee_amount for m in released), 0)
+    discounts = sum((m.discount for m in released), 0)   # promo-kod chegirmalari platforma hisobidan
     tariffs = Purchase.objects.filter(status=Purchase.STATUS_PAID, paid_at__gte=start).aggregate(s=Sum('amount'))['s']
 
     # Qabul qilishgacha o'tgan vaqt (mediana) — birinchi "accepted" hodisasi bo'yicha
@@ -116,8 +117,10 @@ def collect(days=30, now=None):
              'footer': f"{agg['n']} ta bajarilgan ish bo'yicha, so'm"},
             {'title': 'Aylanma (GMV)', 'value': f"{_money(agg['gmv']):,}".replace(',', ' '),
              'footer': f"shundan onlayn: {_money(agg['online']):,} so'm".replace(',', ' ')},
-            {'title': 'Platforma daromadi', 'value': f'{_money(fee) + _money(tariffs):,}'.replace(',', ' '),
-             'footer': f"komissiya {_money(fee):,} + tariflar {_money(tariffs):,}".replace(',', ' ')},
+            {'title': 'Platforma daromadi',
+             'value': f'{_money(fee) + _money(tariffs) - _money(discounts):,}'.replace(',', ' '),
+             'footer': f"komissiya {_money(fee):,} + tariflar {_money(tariffs):,} − chegirmalar "
+                       f"{_money(discounts):,}".replace(',', ' ')},
             {'title': 'Qabul qilish tezligi',
              'value': '—' if accept_minutes is None else (
                  f'{accept_minutes} daq' if accept_minutes < 120 else f'{round(accept_minutes / 60, 1)} soat'),

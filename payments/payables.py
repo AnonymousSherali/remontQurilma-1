@@ -14,7 +14,7 @@ class MilestonePayable:
     def __init__(self, milestone):
         self.obj = milestone
         self.key = str(milestone.pk)
-        self.amount = milestone.amount
+        self.amount = milestone.amount_due   # promo-kod chegirmasi bilan
         self.fk = {'milestone': milestone}
 
     @property

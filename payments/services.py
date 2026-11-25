@@ -87,6 +87,8 @@ def approve_quote(order):
             order=order, position=position, title=str(title), amount=amount,
             release_status=release_status, fee_percent=fee,
         )
+    from .promos import distribute
+    distribute(order)   # promo-kod bo'lsa — chegirma bosqichlarga taqsimlanadi
     return quote
 
 
@@ -185,4 +187,5 @@ def summary(order):
     released = sum((m.amount for m in milestones if m.state == Milestone.STATE_RELEASED), 0)
     master_net = sum((m.master_amount for m in milestones if m.state == Milestone.STATE_RELEASED), 0)
     return {'total': total, 'held': held, 'released': released, 'master_net': master_net,
+            'discount': sum((m.discount for m in milestones), 0),
             'paid': held + released, 'milestones': milestones}

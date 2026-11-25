@@ -32,7 +32,7 @@ FALLBACK_BRANDS = [
 logger = logging.getLogger(__name__)
 
 
-def _landing_context():
+def _landing_context(promo=''):
     categories = (
         Category.objects.filter(is_active=True)
         .annotate(masters_total=Count('masters', filter=Q(masters__is_verified=True), distinct=True))
@@ -73,7 +73,7 @@ def _landing_context():
         'brands': Brand.objects.filter(is_active=True),
         'fallback_brands': FALLBACK_BRANDS[:18],
         'districts': DISTRICT_CHOICES,
-        'form': ServiceRequestForm(),
+        'form': ServiceRequestForm(initial={'promo_code': promo} if promo else None),
         'status_timeline': workflow.showcase_timeline(),
     }
 
@@ -81,7 +81,8 @@ def _landing_context():
 def index(request):
     """Bosh sahifa"""
     from masters.seo import site_jsonld
-    return render(request, 'index.html', {**_landing_context(), 'jsonld': site_jsonld(request)})
+    promo = request.GET.get('promo', '')[:32]   # do'st bergan taklif havolasi: /?promo=KOD
+    return render(request, 'index.html', {**_landing_context(promo), 'jsonld': site_jsonld(request)})
 
 
 def _client_ip(request):
@@ -107,6 +108,10 @@ def create_order(form, note=''):
     service_request.language = get_language() or settings.LANGUAGE_CODE
     service_request.save()
     workflow.record(service_request, ServiceRequest.STATUS_NEW, workflow.CUSTOMER, note=note)
+    code = form.cleaned_data.get('promo_code')
+    if code:
+        from payments import promos
+        promos.apply(service_request, code)   # formada tekshirilgan
     transaction.on_commit(lambda: notify_new_request(service_request))
     transaction.on_commit(lambda: notify_order_created(service_request))
     return service_request
@@ -194,7 +199,7 @@ def catalog(request):
 
 # ---------- Yuridik sahifalar ----------
 
-LEGAL_UPDATED = '24.11.2026'   # matn o'zgarganda yangilang
+LEGAL_UPDATED = '25.11.2026'   # matn o'zgarganda yangilang
 
 
 def _legal(request, template, title):
@@ -206,6 +211,7 @@ def _legal(request, template, title):
             'auto_confirm_hours': settings.AUTO_CONFIRM_HOURS, 'auto_release_hours': settings.AUTO_RELEASE_HOURS,
             'warranty_days': settings.WARRANTY_DAYS, 'warranty_response_hours': settings.WARRANTY_RESPONSE_HOURS,
             'guarantee_max': settings.GUARANTEE_MAX_AMOUNT, 'id_keep_days': settings.ID_DOCUMENTS_KEEP_DAYS,
+            'promo_max_share': settings.PROMO_MAX_SHARE_PERCENT,
         },
     })
 

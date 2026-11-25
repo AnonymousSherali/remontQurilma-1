@@ -76,6 +76,9 @@ def resolve(order, released_ids, note):
         'r': _money(released), 'f': _money(refunded), 'note': note}
     OrderEvent.objects.create(order=order, status=order.status, actor=OrderEvent.ACTOR_ADMIN, note=summary[:500])
     transaction.on_commit(lambda: _notify(order, note, released, refunded))
+    if order.status == SR.STATUS_CONFIRMED:
+        from payments.promos import on_confirmed
+        transaction.on_commit(lambda: on_confirmed(order))
     return {'released': released, 'refunded': refunded, 'status': order.status}
 
 

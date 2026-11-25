@@ -29,7 +29,7 @@ def pending():
         row = rows.setdefault(master.pk, {'master': master, 'milestones': [], 'gross': 0, 'fee': 0, 'amount': 0,
                                           'oldest': m.released_at})
         row['milestones'].append(m)
-        row['gross'] += m.amount
+        row['gross'] += m.amount_due   # mijoz haqiqatan to'lagan (promo-kod chegirmasi ayirilgan)
         row['fee'] += m.fee_amount
         row['amount'] += m.master_amount
         if m.released_at and (row['oldest'] is None or m.released_at < row['oldest']):
@@ -59,7 +59,7 @@ def mark_paid(master_ids, user=None, note=''):
     for master, items in by_master.items():
         payout = Payout.objects.create(
             master=master, count=len(items),
-            gross=sum((m.amount for m in items), 0), fee=sum((m.fee_amount for m in items), 0),
+            gross=sum((m.amount_due for m in items), 0), fee=sum((m.fee_amount for m in items), 0),
             amount=sum((m.master_amount for m in items), 0),
             card=master.payout_card, holder=master.payout_holder, note=note[:255], created_at=now,
             created_by=user if getattr(user, 'pk', None) else None,

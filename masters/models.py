@@ -99,6 +99,11 @@ class Master(models.Model):
     # Ishonchlilik (masters/reliability.py): 0–100, kam buyurtmada bo'sh. Qidiruvda hisobga olinadi.
     reliability = models.PositiveSmallIntegerField('Ishonchlilik', null=True, blank=True)
     reliability_data = models.JSONField("Ishonchlilik ko'rsatkichlari", default=dict, blank=True)
+    # Usta referali: taklif qilgan usta tasdiqlanib birinchi ishini bajarsa — taklif qilganga bepul TOP
+    referral_code = models.CharField('Taklif kodi', max_length=12, unique=True, null=True, blank=True)
+    referred_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True,
+                                    related_name='referrals', verbose_name='Taklif qilgan usta')
+    referral_rewarded = models.BooleanField('Taklif mukofoti berilgan', default=False)
     promoted_until = models.DateTimeField('TOP muddati', null=True, blank=True)
     pro_until = models.DateTimeField('PRO muddati', null=True, blank=True)
     telegram_chat_id = models.BigIntegerField('Telegram chat', null=True, blank=True, unique=True,

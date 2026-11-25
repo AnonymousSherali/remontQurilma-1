@@ -7,7 +7,7 @@ from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import action, display
 
 from . import payouts, services, tariffs
-from .models import Milestone, Payment, Payout, Purchase, Quote
+from .models import Milestone, Payment, Payout, PromoCode, PromoRedemption, Purchase, Quote
 
 STATE_COLORS = {"To'lanmagan": 'default', 'Ushlab turilibdi': 'warning', 'Ustaga chiqarildi': 'success',
                 'Qaytarildi': 'danger'}
@@ -32,7 +32,7 @@ class MilestoneAdmin(ModelAdmin):
                     'released_at', 'paid_out_at']
     list_filter = ['state', 'order__status']
     search_fields = ['order__id', 'order__name', 'order__phone', 'order__master__full_name']
-    readonly_fields = ['order', 'position', 'title', 'amount', 'release_status', 'fee_percent', 'state',
+    readonly_fields = ['order', 'position', 'title', 'amount', 'discount', 'release_status', 'fee_percent', 'state',
                        'held_at', 'released_at', 'refunded_at']
     inlines = [PaymentInline]
     actions = ['force_release', 'refund', 'mark_paid_out']
@@ -214,3 +214,56 @@ class PayoutAdmin(ModelAdmin):
     @action(description="Tanlanganlarni Excel'ga yuklash", icon='download')
     def export_xlsx(self, request, queryset):
         return _xlsx_response(payouts.history_xlsx(queryset), 'otkazmalar')
+
+
+class PromoRedemptionInline(TabularInline):
+    model = PromoRedemption
+    extra = 0
+    can_delete = False
+    fields = ['order', 'phone', 'discount', 'rewarded', 'created_at']
+    readonly_fields = fields
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(PromoCode)
+class PromoCodeAdmin(ModelAdmin):
+    """Aksiyalar (admin yaratadi), mijozlarning referal kodlari va mukofot kodlari."""
+
+    list_display = ['code', 'purpose', 'discount_display', 'uses', 'first_order_only', 'valid_until', 'is_active']
+    list_filter = ['purpose', 'is_active', 'kind']
+    list_filter_submit = True
+    list_editable = ['is_active']
+    search_fields = ['code', 'owner_phone', 'only_phone']
+    readonly_fields = ['created_at', 'total_discount']
+    inlines = [PromoRedemptionInline]
+    fieldsets = [
+        (None, {'fields': ['code', 'purpose', 'is_active']}),
+        ('Chegirma', {'fields': [('kind', 'value'), ('max_discount', 'min_amount')],
+                      'description': "Chegirma platforma hisobidan: mijoz kamroq to'laydi, usta to'liq oladi. "
+                                     "Faqat onlayn to'lovda va narxning PROMO_MAX_SHARE_PERCENT foizigacha."}),
+        ('Cheklovlar', {'fields': [('valid_from', 'valid_until'), ('max_uses', 'per_phone_limit'),
+                                   'first_order_only', ('owner_phone', 'only_phone')]}),
+        ('Natija', {'fields': ['total_discount', 'created_at']}),
+    ]
+
+    def get_queryset(self, request):
+        from django.db.models import Count
+        return super().get_queryset(request).annotate(n_uses=Count('redemptions'))
+
+    @display(description='Chegirma')
+    def discount_display(self, obj):
+        text = f'{obj.value:.0f}%' if obj.kind == PromoCode.KIND_PERCENT else f"{obj.value:,.0f} so'm".replace(',', ' ')
+        if obj.max_discount:
+            text += f" (≤ {obj.max_discount:,.0f})".replace(',', ' ')
+        return text
+
+    @display(description='Ishlatilgan', ordering='n_uses')
+    def uses(self, obj):
+        return f'{obj.n_uses} / {obj.max_uses}' if obj.max_uses else obj.n_uses
+
+    @display(description="Berilgan chegirma (so'm)")
+    def total_discount(self, obj):
+        total = sum((r.discount for r in obj.redemptions.all()), 0)
+        return f'{total:,.0f}'.replace(',', ' ')

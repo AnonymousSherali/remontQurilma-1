@@ -173,6 +173,14 @@
         <button type="button" class="btn btn--sm btn--primary" data-push data-scope="master" hidden>🔔 {% translate "Bildirishnomalarni yoqish" %}</button>
       </div>
       <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
+      <div class="card__title" style="font-size:1rem">🤝 {% translate "Usta do'stingizni taklif qiling" %}</div>
+      <p class="small muted" style="margin-top:0">{% blocktranslate with d=MASTER_REFERRAL_TOP_DAYS %}Taklif qilgan ustangiz tekshiruvdan o'tib, birinchi buyurtmasini bajarsa — sizga {{ d }} kun bepul TOP.{% endblocktranslate %}</p>
+      <div class="copy-box">
+        <input type="text" id="master-ref" value="{{ referral_link }}" readonly aria-label="{% translate 'Havola' %}">
+        <button type="button" class="btn btn--sm" data-copy="#master-ref">{% translate "Nusxa" %}</button>
+      </div>
+      {% if referrals %}<p class="small" style="margin:.5rem 0 0">{% for r in referrals %}{{ r.full_name }}{% if r.referral_rewarded %} ✓{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+      <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
       <p class="small muted" style="margin:0">💡 {% translate "Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga o'tkazadi." %}</p>
     </aside>
   </div>

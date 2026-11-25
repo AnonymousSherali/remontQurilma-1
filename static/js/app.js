@@ -174,6 +174,8 @@
     }
     err.textContent = message;
     err.classList.add('show');
+    var details = input.closest('details');
+    if (details) { details.open = true; }
   }
 
   document.querySelectorAll('.js-request-form').forEach(function (form) {

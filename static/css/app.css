@@ -685,3 +685,8 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .reliability__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: .5rem 1rem; margin: 1rem 0 .5rem; }
 .reliability__grid dt { color: var(--muted); font-size: .8rem; }
 .reliability__grid dd { margin: 0; font-weight: 800; }
+
+/* ---------- Promo-kod ---------- */
+.promo-field > summary { cursor: pointer; color: var(--brand-600); font-weight: 600; }
+.promo-form { display: flex; gap: .5rem; }
+.promo-form input { flex: 1; min-width: 0; }

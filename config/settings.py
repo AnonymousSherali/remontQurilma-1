@@ -291,6 +291,16 @@ CHAT_OPEN_DAYS = int(os.environ.get('CHAT_OPEN_DAYS', 30))
 # Telegram ulanmagan tomonga yangi xabar haqida SMS — shu oraliqda bir martadan ko'p emas
 CHAT_SMS_INTERVAL_MINUTES = int(os.environ.get('CHAT_SMS_INTERVAL_MINUTES', 30))
 
+# --- Promo-kodlar va referal (payments/promos.py). Qiymatlar namunaviy! ---
+# Chegirma platforma hisobidan (usta to'liq oladi) — narxning shu foizidan oshmaydi
+PROMO_MAX_SHARE_PERCENT = int(os.environ.get('PROMO_MAX_SHARE_PERCENT') or 50)
+REFERRAL_DISCOUNT_PERCENT = int(os.environ.get('REFERRAL_DISCOUNT_PERCENT') or 10)     # do'stga
+REFERRAL_MAX_DISCOUNT = int(os.environ.get('REFERRAL_MAX_DISCOUNT') or 50000)
+REFERRAL_REWARD_PERCENT = int(os.environ.get('REFERRAL_REWARD_PERCENT') or 10)         # taklif qilganga
+REFERRAL_REWARD_MAX = int(os.environ.get('REFERRAL_REWARD_MAX') or 50000)
+REFERRAL_REWARD_DAYS = int(os.environ.get('REFERRAL_REWARD_DAYS') or 180)
+MASTER_REFERRAL_TOP_DAYS = int(os.environ.get('MASTER_REFERRAL_TOP_DAYS') or 7)
+
 # --- Ustalar ishonchliligi (masters/reliability.py) ---
 RELIABILITY_WINDOW_DAYS = int(os.environ.get('RELIABILITY_WINDOW_DAYS') or 90)
 RELIABILITY_MIN_ORDERS = int(os.environ.get('RELIABILITY_MIN_ORDERS') or 3)
@@ -391,6 +401,8 @@ UNFOLD = {
                      'link': reverse_lazy('admin:payments_payout_changelist')},
                     {'title': 'Narx takliflari', 'icon': 'request_quote',
                      'link': reverse_lazy('admin:payments_quote_changelist')},
+                    {'title': 'Promo-kodlar', 'icon': 'redeem',
+                     'link': reverse_lazy('admin:payments_promocode_changelist')},
                     {'title': 'Tarif xaridlari', 'icon': 'workspace_premium',
                      'link': reverse_lazy('admin:payments_purchase_changelist')},
                     {'title': 'Tranzaksiyalar', 'icon': 'receipt_long',

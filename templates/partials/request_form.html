@@ -105,6 +105,18 @@
       <div class="error-message"></div>
     </div>
 
+    <details class="promo-field"{% if form.promo_code.value %} open{% endif %}>
+      <summary class="small">🎁 {% translate "Promo-kod bormi?" %}</summary>
+      <div class="field" style="margin-top:.5rem">
+        <label for="{{ prefix }}promo" class="sr-only">{% translate "Promo-kod" %}</label>
+        <input type="text" id="{{ prefix }}promo" name="promo_code" maxlength="32" autocomplete="off" style="text-transform:uppercase"
+               value="{{ form.promo_code.value|default_if_none:'' }}" placeholder="{% translate 'Masalan: DABC123' %}">
+        {% for e in form.promo_code.errors %}<div class="field__error">{{ e }}</div>{% endfor %}
+        <div class="error-message"></div>
+        <p class="field__help">{% translate "Chegirma onlayn to'lovda qo'llanadi; usta narxni to'liq oladi." %}</p>
+      </div>
+    </details>
+
     <label class="check">
       <input type="checkbox" name="consent" value="on" required>
       <span>{% translate "Shaxsiy ma'lumotlarim buyurtma bo'yicha bog'lanish uchun qayta ishlanishiga roziman" %} <span class="req" aria-hidden="true">*</span>

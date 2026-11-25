@@ -90,6 +90,19 @@
         <a class="btn btn--primary btn--lg" href="{{ order.get_review_url }}">⭐ {% translate "Ustani baholash" %}</a>
       {% endif %}
 
+      {% if referral %}
+      <section class="card referral" id="taklif">
+        <div class="card__title">🎁 {% translate "Do'stingizga ustani tavsiya qiling" %}</div>
+        <p class="muted small" style="margin-top:0">{% blocktranslate with p=referral.percent|floatformat:0 m=referral.max|floatformat:0|intcomma %}Do'stingiz birinchi buyurtmasida {{ p }}% chegirma oladi (ko'pi bilan {{ m }} so'm). Uning buyurtmasi bajarilsa — sizga ham keyingi buyurtmaga chegirma kodi keladi.{% endblocktranslate %}</p>
+        <div class="copy-box">
+          <input type="text" id="ref-link" value="{{ referral.link }}" readonly aria-label="{% translate 'Havola' %}">
+          <button type="button" class="btn btn--sm" data-copy="#ref-link">{% translate "Nusxa" %}</button>
+          <a class="btn btn--sm btn--soft" target="_blank" rel="noopener" href="https://t.me/share/url?url={{ referral.link|urlencode }}">Telegram</a>
+        </div>
+        <p class="small" style="margin:.5rem 0 0">{% translate "Kod" %}: <strong>{{ referral.code.code }}</strong>{% if referral.used %} · {% blocktranslate count n=referral.used %}{{ n }} kishi ishlatdi{% plural %}{{ n }} kishi ishlatdi{% endblocktranslate %}{% endif %}</p>
+      </section>
+      {% endif %}
+
       {% if chat %}{% include "orders/_chat.html" with side="customer" %}{% endif %}
 
       {% if warranty %}{% include "orders/_warranty.html" with side="customer" %}{% endif %}
@@ -154,6 +167,20 @@
           <div class="card__title">✈️ {% translate "Telegram'da kuzatish" %}</div>
           <p class="muted small" style="margin-top:0">{% translate "Holat o'zgarishlari SMS o'rniga Telegram'ga keladi." %}</p>
           <a class="btn btn--block" href="{{ tg_link }}" target="_blank" rel="noopener">{% translate "Botni ochish" %}</a>
+        {% endif %}
+      </section>
+      {% endif %}
+      {% if promo or promo_can_change %}
+      <section class="card" id="promo">
+        <div class="card__title">🎟 {% translate "Promo-kod" %}</div>
+        {% if promo %}
+          <p style="margin:0"><strong>{{ promo.promo.code }}</strong>{% if promo_discount %} — {% blocktranslate with d=promo_discount|floatformat:0|intcomma %}chegirma {{ d }} so'm{% endblocktranslate %}{% else %} — <span class="muted small">{% translate "chegirma narx kelishilgach onlayn to'lovda hisoblanadi" %}</span>{% endif %}</p>
+          {% if promo_can_change %}<form method="post" action="{% url 'repair_service:promo_apply' order.review_token %}" style="margin-top:.5rem">{% csrf_token %}<button class="btn btn--sm btn--ghost" name="remove" value="1">{% translate "Olib tashlash" %}</button></form>{% endif %}
+        {% elif promo_can_change %}
+          <form method="post" action="{% url 'repair_service:promo_apply' order.review_token %}" class="promo-form">{% csrf_token %}
+            <input type="text" name="code" maxlength="32" required autocomplete="off" style="text-transform:uppercase" aria-label="{% translate 'Promo-kod' %}" placeholder="{% translate 'Kodni kiriting' %}">
+            <button class="btn btn--sm">{% translate "Qo'llash" %}</button>
+          </form>
         {% endif %}
       </section>
       {% endif %}

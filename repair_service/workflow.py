@@ -117,6 +117,8 @@ def apply(order, actor, action, note=''):
 
     if target == SR.STATUS_CONFIRMED:
         payments.release_on_confirm(order)
+        from payments.promos import on_confirmed
+        transaction.on_commit(lambda: on_confirmed(order))   # referal mukofotlari
 
     from .customer_notify import notify_status_change
     transaction.on_commit(lambda: notify_status_change(order, actor))

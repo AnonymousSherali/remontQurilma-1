@@ -15,7 +15,7 @@ from django.utils.translation import gettext as _
 
 from otp import services as otp
 from payments import services as payments
-from payments import tariffs
+from payments import promos, tariffs
 from repair_service import chat, schedule, warranty, workflow
 from repair_service.customer_notify import notify_quote
 from repair_service.forms import ServiceRequestForm
@@ -174,9 +174,15 @@ def register(request):
     if request.user.is_authenticated and hasattr(request.user, 'master'):
         return redirect('masters:dashboard')
 
+    if request.GET.get('ref'):
+        request.session['master_ref'] = request.GET['ref'][:12].upper()   # taklif havolasi
     form = MasterRegistrationForm(request.POST or None, request.FILES or None, request=request)
     if request.method == 'POST' and form.is_valid():
         master = form.save()
+        inviter = Master.objects.filter(referral_code=request.session.pop('master_ref', None) or '-').first()
+        if inviter and inviter.pk != master.pk:
+            master.referred_by = inviter
+            master.save(update_fields=['referred_by'])
         login(request, master.user, backend='django.contrib.auth.backends.ModelBackend')
         messages.success(
             request,
@@ -259,6 +265,9 @@ def dashboard(request):
         'open_count': feed.open_count(master),
         'calendar': schedule.calendar(master),
         'reliability_tips': reliability.tips(master),
+        'referral_link': request.build_absolute_uri(
+            reverse('masters:register') + '?ref=' + promos.master_referral_code(master)),
+        'referrals': master.referrals.all(),
         'warranty_claims': WarrantyClaim.objects.filter(
             order__master=master, status=WarrantyClaim.STATUS_OPEN).select_related('order'),
         'held': held,

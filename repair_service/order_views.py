@@ -61,6 +61,7 @@ def order_detail(request, token):
                         reverse('repair_service:order_photo_upload', args=[order.review_token]),
                         'repair_service:order_photo_delete', [order.review_token]),
         'show_master_phone': order.master and order.status != ServiceRequest.STATUS_NEW,
+        **promo_context(request, order, can_act),
         'reorder': reorder_target(order) if order.status == ServiceRequest.STATUS_CONFIRMED else (None, 'status'),
         **warranty.context(order),
         **chat.context(order, chat.CUSTOMER, can_act),
@@ -140,6 +141,48 @@ def milestone_release(request, token, milestone_id):
                         note=_("To'lov chiqarildi: %(t)s") % {'t': milestone.title})
         messages.success(request, _("Mablag' ustaga chiqarildi. Rahmat!"))
     return redirect(order.get_customer_url())
+
+
+def promo_context(request, order, can_act):
+    from payments import promos
+    from payments.models import PromoRedemption
+    redemption = PromoRedemption.objects.filter(order=order).select_related('promo').first()
+    referral = None
+    if can_act and order.status == ServiceRequest.STATUS_CONFIRMED and promos.can_refer(order.phone):
+        code = promos.referral_code_for(order.phone)
+        link = request.build_absolute_uri(reverse('repair_service:index') + f'?promo={code.code}')
+        referral = {'code': code, 'link': link, 'used': code.redemptions.count(),
+                    'percent': code.value, 'max': code.max_discount}
+    return {
+        'promo': redemption,
+        'promo_discount': promos.total_discount(order),
+        'promo_can_change': can_act and promos.can_apply(order),
+        'referral': referral,
+    }
+
+
+@require_POST
+def promo_apply(request, token):
+    from payments import promos
+    order = _order_by_token(token)
+    if not _can_act(request, order):
+        raise Http404
+    if request.POST.get('remove'):
+        promos.remove(order)
+        messages.info(request, _("Promo-kod olib tashlandi."))
+        return redirect(order.get_customer_url() + '#promo')
+    try:
+        redemption = promos.apply(order, request.POST.get('code', ''))
+    except promos.PromoError as error:
+        messages.error(request, str(error))
+    else:
+        if redemption.discount:
+            messages.success(request, _("Promo-kod qo'llandi: %(d)s so'm chegirma.") % {
+                'd': f'{int(redemption.discount):,}'.replace(',', ' ')})
+        else:
+            messages.success(request, _("Promo-kod saqlandi. Chegirma usta narx taklif qilgach, onlayn to'lovda "
+                                        "hisoblanadi."))
+    return redirect(order.get_customer_url() + '#promo')
 
 
 def chat_endpoint(request, order, viewer, back_url):

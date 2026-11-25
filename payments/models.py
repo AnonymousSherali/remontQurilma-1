@@ -79,6 +79,8 @@ class Milestone(models.Model):
                                        help_text="Admin ustaning kartasiga o'tkazgach belgilaydi")
     payout = models.ForeignKey('Payout', on_delete=models.SET_NULL, null=True, blank=True,
                                related_name='milestones', verbose_name="O'tkazma")
+    # Promo-kod chegirmasi — platforma hisobidan: mijoz kamroq to'laydi, usta to'liq oladi
+    discount = models.DecimalField("Chegirma (so'm)", max_digits=12, decimal_places=0, default=0)
 
     class Meta:
         verbose_name = "To'lov bosqichi"
@@ -96,6 +98,72 @@ class Milestone(models.Model):
     @property
     def master_amount(self):
         return self.amount - self.fee_amount
+
+    @property
+    def amount_due(self):
+        """Mijoz to'laydigan summa (chegirma ayirilgan)."""
+        return self.amount - self.discount
+
+
+class PromoCode(models.Model):
+    """Promo-kod: aksiya (admin yaratadi), mijozning referal kodi yoki referal mukofoti."""
+
+    KIND_PERCENT, KIND_FIXED = 'percent', 'fixed'
+    KIND_CHOICES = [(KIND_PERCENT, _('Foiz')), (KIND_FIXED, _("Qat'iy summa"))]
+    PURPOSE_PROMO, PURPOSE_REFERRAL, PURPOSE_REWARD = 'promo', 'referral', 'reward'
+    PURPOSE_CHOICES = [(PURPOSE_PROMO, _('Aksiya')), (PURPOSE_REFERRAL, _('Referal (do\'stga)')),
+                       (PURPOSE_REWARD, _('Referal mukofoti'))]
+
+    code = models.CharField('Kod', max_length=32, unique=True, help_text="Katta harflar bilan saqlanadi")
+    purpose = models.CharField('Turi', max_length=10, choices=PURPOSE_CHOICES, default=PURPOSE_PROMO)
+    kind = models.CharField('Chegirma turi', max_length=10, choices=KIND_CHOICES, default=KIND_PERCENT)
+    value = models.DecimalField('Qiymati', max_digits=12, decimal_places=0,
+                                help_text="Foiz (masalan 10) yoki so'm (masalan 20000)")
+    max_discount = models.DecimalField("Eng ko'p chegirma (so'm)", max_digits=12, decimal_places=0,
+                                       null=True, blank=True)
+    min_amount = models.DecimalField("Eng kam buyurtma summasi (so'm)", max_digits=12, decimal_places=0, default=0)
+    first_order_only = models.BooleanField('Faqat birinchi buyurtma', default=False)
+    max_uses = models.PositiveIntegerField('Jami foydalanish chegarasi', null=True, blank=True,
+                                           help_text="Bo'sh — cheklanmagan")
+    per_phone_limit = models.PositiveSmallIntegerField('Bitta raqamga', default=1)
+    owner_phone = models.CharField('Egasi (referal)', max_length=20, blank=True, db_index=True,
+                                   help_text="Referal kodi egasi — o'z kodini ishlata olmaydi")
+    only_phone = models.CharField('Faqat shu raqam uchun', max_length=20, blank=True)
+    valid_from = models.DateTimeField('Boshlanishi', null=True, blank=True)
+    valid_until = models.DateTimeField('Tugashi', null=True, blank=True)
+    is_active = models.BooleanField('Faol', default=True)
+    created_at = models.DateTimeField('Yaratilgan', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Promo-kod'
+        verbose_name_plural = 'Promo-kodlar'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.code
+
+    def save(self, *args, **kwargs):
+        self.code = self.code.strip().upper()
+        super().save(*args, **kwargs)
+
+
+class PromoRedemption(models.Model):
+    """Promo-kod buyurtmaga qo'llangani. Bitta buyurtmaga — bitta kod."""
+
+    promo = models.ForeignKey(PromoCode, on_delete=models.PROTECT, related_name='redemptions', verbose_name='Kod')
+    order = models.OneToOneField('repair_service.ServiceRequest', on_delete=models.CASCADE,
+                                 related_name='promo_redemption', verbose_name='Buyurtma')
+    phone = models.CharField('Telefon', max_length=20, db_index=True)
+    discount = models.DecimalField("Chegirma (so'm)", max_digits=12, decimal_places=0, default=0)
+    rewarded = models.BooleanField('Referal mukofoti berilgan', default=False)
+    created_at = models.DateTimeField('Qo\'llangan', auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Promo-kod qo'llanishi"
+        verbose_name_plural = "Promo-kod qo'llanishlari"
+
+    def __str__(self):
+        return f'{self.promo} → #{self.order_id}'
 
 
 class Payout(models.Model):
