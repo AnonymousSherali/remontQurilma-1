@@ -16,7 +16,7 @@ from config.seo_urls import SITEMAPS, robots_txt
 from config.disputes_admin import dispute_detail, dispute_list
 from config.stats import stats_view
 from masters import views as master_views
-from repair_service import pwa
+from repair_service import analytics, pwa
 from repair_service.views import healthz
 from otp import views as otp_views
 from payments import click, payme, uzum
@@ -25,6 +25,7 @@ from telegram_bot import views as telegram_views
 urlpatterns = [
     path('healthz/', healthz, name='healthz'),
     path('robots.txt', robots_txt, name='robots_txt'),
+    path('e/', analytics.beacon, name='analytics_beacon'),
     path('manifest.webmanifest', pwa.manifest, name='manifest'),
     path('sw.js', pwa.service_worker, name='service_worker'),
     path('offline/', pwa.offline, name='offline'),

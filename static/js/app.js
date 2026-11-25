@@ -386,6 +386,20 @@
     });
   });
 
+  // ---------------- Tahlil: ariza formasi to'ldirila boshlandi ----------------
+  // Faqat bir marta, shaxsiy ma'lumot yuborilmaydi. «Do Not Track» yoqilgan bo'lsa — hech narsa.
+  if (navigator.sendBeacon && navigator.doNotTrack !== '1' && !navigator.globalPrivacyControl) {
+    var started = false;
+    document.addEventListener('focusin', function (e) {
+      if (started || !e.target.closest('.js-request-form')) { return; }
+      started = true;
+      var data = new FormData();
+      data.append('e', 'form_start');
+      data.append('p', location.pathname);
+      navigator.sendBeacon('/e/', data);
+    });
+  }
+
   // ---------------- PWA: service worker, o'rnatish, push ----------------
   var swReady = null;
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {

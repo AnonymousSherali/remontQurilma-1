@@ -303,6 +303,7 @@ def reorder(request, token):
         form = ServiceRequestForm(data)
         if form.is_valid():
             new = create_order(form, note=_('Qayta chaqiruv: #%(id)s') % {'id': order.pk})
+            ServiceRequest.objects.filter(pk=new.pk).update(source='qayta', medium='reorder')
             if order.telegram_chat_id:   # Telegram'da kuzatayotgan bo'lsa — yangi buyurtma ham o'sha chatga
                 ServiceRequest.objects.filter(pk=new.pk).update(telegram_chat_id=order.telegram_chat_id)
             messages.success(request, _("Buyurtma %(name)sga yuborildi. Usta tez orada bog'lanadi.") % {

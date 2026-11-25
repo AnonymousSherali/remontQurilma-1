@@ -138,6 +138,8 @@ def submit_request(request):
         return render(request, 'index.html', context, status=400)
 
     service_request = create_order(form)
+    from .analytics import stamp_order
+    stamp_order(request, service_request)
 
     if service_request.master:
         message = _("Arizangiz %(master)sga yuborildi. Usta tez orada qo'ng'iroq qiladi.") % {
@@ -212,6 +214,7 @@ def _legal(request, template, title):
             'warranty_days': settings.WARRANTY_DAYS, 'warranty_response_hours': settings.WARRANTY_RESPONSE_HOURS,
             'guarantee_max': settings.GUARANTEE_MAX_AMOUNT, 'id_keep_days': settings.ID_DOCUMENTS_KEEP_DAYS,
             'promo_max_share': settings.PROMO_MAX_SHARE_PERCENT,
+            'analytics_days': settings.ANALYTICS_RETENTION_DAYS,
         },
     })
 

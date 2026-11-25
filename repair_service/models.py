@@ -90,6 +90,11 @@ class ServiceRequest(models.Model):
     # Buyurtmadan voz kechgan ustalar — lentada ularga qayta ko'rsatilmaydi
     declined_by = models.ManyToManyField('masters.Master', blank=True, related_name='declined_orders',
                                          verbose_name='Voz kechgan ustalar')
+    # Qayerdan kelgan (repair_service/analytics.py): UTM yoki yo'naltiruvchi sayt, kirish sahifasi
+    source = models.CharField('Manba', max_length=60, blank=True, db_index=True)
+    medium = models.CharField('Kanal', max_length=60, blank=True)
+    campaign = models.CharField('Kampaniya', max_length=100, blank=True)
+    landing_path = models.CharField('Kirish sahifasi', max_length=200, blank=True)
     # Mijoz "Telegram'da kuzatish" ni bosgan bo'lsa — xabarlar SMS o'rniga Telegram'ga (bepul)
     telegram_chat_id = models.BigIntegerField('Mijoz Telegram chati', null=True, blank=True, db_index=True)
 
@@ -221,6 +226,26 @@ class PushSubscription(models.Model):
 
     def __str__(self):
         return f'{self.master or self.phone} · {self.endpoint[:40]}'
+
+
+class AnalyticsEvent(models.Model):
+    """Yengil tahlil hodisasi (shaxsiy ma'lumotsiz): tashrif, forma boshlandi, ariza."""
+
+    PAGE_VIEW, FORM_START, REQUEST = 'page_view', 'form_start', 'request'
+    NAME_CHOICES = [(PAGE_VIEW, 'Sahifa ochildi'), (FORM_START, "Forma to'ldirish boshlandi"), (REQUEST, 'Ariza')]
+
+    name = models.CharField('Hodisa', max_length=20, choices=NAME_CHOICES, db_index=True)
+    visitor = models.CharField('Tashrifchi (tasodifiy ID)', max_length=32, db_index=True)
+    path = models.CharField('Sahifa', max_length=200)
+    source = models.CharField('Manba', max_length=60, blank=True, db_index=True)
+    medium = models.CharField('Kanal', max_length=60, blank=True)
+    campaign = models.CharField('Kampaniya', max_length=100, blank=True)
+    landing_path = models.CharField('Kirish sahifasi', max_length=200, blank=True)
+    created_at = models.DateTimeField('Vaqt', default=timezone.now, db_index=True)
+
+    class Meta:
+        verbose_name = 'Tahlil hodisasi'
+        verbose_name_plural = 'Tahlil hodisalari'
 
 
 def _photo_path(instance, filename):

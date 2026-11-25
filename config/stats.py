@@ -107,7 +107,19 @@ def collect(days=30, now=None):
                             'gmv': _money(gmv), 'rating': row['master__rating_avg']})
 
     pending = payouts.totals(payouts.pending())
+    from repair_service.analytics import report
+    traffic = report(start)
+    traffic['funnel'] = [
+        {'label': 'Saytga kirgan (tashrifchi)', 'count': traffic['visits']},
+        {'label': "Ariza formasini to'ldira boshlagan", 'count': traffic['starts']},
+        {'label': 'Ariza yuborgan', 'count': total},
+    ]
+    top = max([f['count'] for f in traffic['funnel']] + [1])
+    for i, f in enumerate(traffic['funnel']):
+        f['percent'] = round(f['count'] * 100 / top)
+        f['step'] = _percent(f['count'], traffic['funnel'][i - 1]['count']) if i else None
     return {
+        'traffic': traffic,
         'days': days, 'start': start, 'total': total,
         'kpis': [
             {'title': 'Arizalar', 'value': total, 'footer': f'{waiting} tasi hali usta kutmoqda'},

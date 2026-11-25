@@ -30,6 +30,8 @@ class Command(BaseCommand):
         reminded = send_reminders()
         purged = purge_old()
         rated = update_all()
+        from repair_service.analytics import purge
+        purge()
         self.stdout.write(f'Avtomatik tasdiqlandi: {len(confirmed)}; chiqarilgan bosqichlar: {len(released)}; '
                           f'yopilgan kafolat murojaatlari: {len(closed)}; tashrif eslatmalari: {len(reminded)}; '
                           f"o'chirilgan hujjat fayllari: {purged}; ishonchlilik yangilandi: {rated}")

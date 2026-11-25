@@ -78,7 +78,7 @@ class OrderEventInline(TabularInline):
 class ServiceRequestAdmin(ModelAdmin):
     list_display = ['id', 'client', 'phone_display', 'category', 'master', 'status_badge', 'created_at']
     list_display_links = ['id', 'client']
-    list_filter = ['status', 'category', 'created_at']
+    list_filter = ['status', 'category', 'source', 'created_at']
     list_filter_submit = True
     search_fields = ['name', 'phone', 'email', 'address', 'problem_description', 'master__full_name']
     readonly_fields = ['created_at', 'updated_at', 'consent', 'review_link']
@@ -94,6 +94,7 @@ class ServiceRequestAdmin(ModelAdmin):
                                  'appliance_type', 'brand']}),
         ("Kelish vaqti", {'fields': [('preferred_date', 'preferred_slot'), 'visit_at']}),
         ("Holat va izohlar", {'fields': ['status', 'admin_notes', 'review_link']}),
+        ("Manba", {'fields': [('source', 'medium'), ('campaign', 'landing_path')], 'classes': ['collapse']}),
         ("Tizim ma'lumotlari", {'fields': ['created_at', 'updated_at'], 'classes': ['collapse']}),
     ]
 

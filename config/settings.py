@@ -73,6 +73,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'repair_service.analytics.AnalyticsMiddleware',  # manba va tashriflar (o'z bazamizda, DNT hurmat qilinadi)
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -315,6 +316,9 @@ ID_DOCUMENTS_KEEP_DAYS = int(os.environ.get('ID_DOCUMENTS_KEEP_DAYS') or 0)
 WEBPUSH_PUBLIC_KEY = os.environ.get('WEBPUSH_PUBLIC_KEY', '')
 WEBPUSH_PRIVATE_KEY = os.environ.get('WEBPUSH_PRIVATE_KEY', '')
 WEBPUSH_SUBJECT = os.environ.get('WEBPUSH_SUBJECT', '')   # mailto:... (bo'sh — SITE_EMAIL)
+
+# --- Tahlil (repair_service/analytics.py) ---
+ANALYTICS_RETENTION_DAYS = int(os.environ.get('ANALYTICS_RETENTION_DAYS') or 180)
 
 # --- SEO ---
 # Sinov serverida True qiling — robots.txt butun saytni qidiruvdan yopadi

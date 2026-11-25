@@ -66,7 +66,7 @@ SITEMAPS = {'static': StaticSitemap, 'categories': CategorySitemap, 'masters': M
 
 # Shaxsiy yoki texnik sahifalar — qidiruvga kirmaydi
 PRIVATE_PATHS = ['/admin/', '/kabinet/', '/buyurtma/', '/buyurtmalarim/', '/baho/', '/kod/', '/api/',
-                 '/payments/', '/tolov/', '/telegram/', '/kirish/', '/parolni-tiklash/', '/healthz/', '/i18n/', '/push/', '/offline/']
+                 '/payments/', '/tolov/', '/telegram/', '/kirish/', '/parolni-tiklash/', '/healthz/', '/i18n/', '/push/', '/offline/', '/e/']
 
 
 @cache_page(60 * 60 * 24)

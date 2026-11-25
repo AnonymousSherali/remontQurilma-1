@@ -51,6 +51,42 @@
     {% endcomponent %}
   </div>
 
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    {% component "unfold/components/card.html" with title="Saytdan arizagacha" %}
+      {% for f in traffic.funnel %}
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;gap:8px" class="text-sm">
+            <span class="font-semibold">{{ f.label }}</span>
+            <span>{{ f.count }}{% if f.step is not None %} <span class="text-xs text-font-subtle-light">· {{ f.step }}%</span>{% endif %}</span>
+          </div>
+          <div style="height:10px;border-radius:5px;background:rgba(127,127,127,.15);margin-top:6px"><div class="bg-primary-500" style="height:10px;border-radius:5px;width:{{ f.percent|unlocalize }}%;min-width:2px"></div></div>
+        </div>
+      {% endfor %}
+      <p class="text-xs text-font-subtle-light">Formani boshlab yubormaganlar ko'p bo'lsa — formani soddalashtiring yoki telefon raqamini birinchi so'rang. «Do Not Track» yoqilgan va bot tashriflari hisobga olinmaydi.</p>
+    {% endcomponent %}
+    {% component "unfold/components/card.html" with title="Manbalar" class="lg:col-span-2" %}
+      <div style="overflow-x:auto"><table class="w-full" style="border-collapse:collapse">
+        <thead><tr class="text-xs text-font-subtle-light" style="text-align:left">
+          <th class="py-3" style="padding-right:12px">Manba</th><th class="py-3" style="padding-right:12px">Tashrifchilar</th><th class="py-3" style="padding-right:12px">Forma</th>
+          <th class="py-3" style="padding-right:12px">Arizalar</th><th class="py-3" style="padding-right:12px">Konversiya</th><th class="py-3" style="padding-right:12px">Bajarildi</th><th class="py-3">Aylanma, so'm</th></tr></thead>
+        <tbody>
+          {% for r in traffic.sources %}
+            <tr style="border-top:1px solid rgba(127,127,127,.15)">
+              <td class="py-3 font-semibold" style="padding-right:12px">{{ r.source }}</td><td class="py-3" style="padding-right:12px">{{ r.visits }}</td>
+              <td class="py-3" style="padding-right:12px">{{ r.starts }}</td><td class="py-3" style="padding-right:12px">{{ r.requests }}</td>
+              <td class="py-3" style="padding-right:12px">{% if r.conversion is not None %}{{ r.conversion }}%{% else %}—{% endif %}</td>
+              <td class="py-3" style="padding-right:12px">{{ r.done }}</td><td class="py-3">{{ r.gmv|intcomma }}</td>
+            </tr>
+          {% empty %}<tr><td colspan="7" class="py-3 text-font-subtle-light">Hali ma'lumot yo'q.</td></tr>{% endfor %}
+        </tbody></table></div>
+      <p class="text-xs text-font-subtle-light" style="margin-top:8px">Reklama havolalariga UTM qo'shing: <code>?utm_source=instagram&amp;utm_medium=cpc&amp;utm_campaign=kuz</code>. Referal havolalari «referal» bo'lib ko'rinadi.</p>
+      {% if traffic.landing %}
+      <div class="text-sm" style="margin-top:12px"><strong>Eng ko'p ariza keltirgan kirish sahifalari:</strong>
+        <ul style="display:grid;gap:4px;margin-top:6px">{% for l in traffic.landing %}<li><code>{{ l.landing_path }}</code> — {{ l.requests }} ariza, {{ l.done }} bajarildi</li>{% endfor %}</ul></div>
+      {% endif %}
+    {% endcomponent %}
+  </div>
+
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     {% component "unfold/components/card.html" with title="Yo'nalishlar bo'yicha" %}
       <div style="overflow-x:auto"><table class="w-full" style="border-collapse:collapse">
