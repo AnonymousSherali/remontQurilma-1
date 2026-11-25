@@ -287,11 +287,11 @@ boshqa ustalar ro'yxatiga yo'naltiriladi.
 
 ## Viloyatlar
 
-Toshkentning 12 tumani va 12 ta viloyat markazi (Samarqand, Buxoro, Andijon, Farg'ona, Namangan,
-Qarshi, Navoiy, Jizzax, Guliston, Termiz, Urganch, Nukus) — qidiruv, ariza formasi, usta
-ro'yxatdan o'tishi va SEO sahifalarida (`/ustalar/santexnik/samarqand/`). Tanlov ro'yxatlari
-«Toshkent» va «Viloyatlar» guruhlariga bo'lingan. Yangi shahar qo'shish: `masters/locations.py` →
-`REGIONAL_CITIES` ga bitta qator (slug, o'zbekcha, ruscha nomi, kenglik, uzunlik).
+Toshkentning 12 tumani va barcha viloyatlar (Qoraqalpog'iston bilan) bo'yicha 28 ta shahar — viloyat
+markazlari va yirik shaharlar (Chirchiq, Olmaliq, Qo'qon, Marg'ilon, Shahrisabz, Xiva va boshqalar) — qidiruv,
+ariza formasi, usta ro'yxatdan o'tishi va SEO sahifalarida (`/ustalar/santexnik/samarqand/`). Tanlov ro'yxatlari
+viloyatlar bo'yicha guruhlangan. Yangi shahar qo'shish: `masters/locations.py` →
+`REGIONS` dagi viloyatga bitta qator (slug, o'zbekcha, ruscha nomi, kenglik, uzunlik).
 
 ## Nizolar (administrator)
 
