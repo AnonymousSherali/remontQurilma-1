@@ -12,14 +12,18 @@
   {% endif %}
 
   <section class="card">
-    <h2 class="card__title">{% blocktranslate with c=seo.category_name %}{{ c }} — tumanlar bo'yicha{% endblocktranslate %}</h2>
+    <h2 class="card__title">{% blocktranslate with c=seo.category_name %}{{ c }} — Toshkent tumanlari{% endblocktranslate %}</h2>
     <div class="chips">
       {% for name, url, current in seo.district_links %}{% if current %}<span class="chip chip--brand" aria-current="page">{{ name }}</span>{% else %}<a class="chip" href="{{ url }}">{{ name }}</a>{% endif %}{% endfor %}
+    </div>
+    <h3 class="card__title" style="font-size:1rem;margin-top:1rem">{% translate "Viloyatlar" %}</h3>
+    <div class="chips">
+      {% for name, url, current in seo.city_links %}{% if current %}<span class="chip chip--brand" aria-current="page">{{ name }}</span>{% else %}<a class="chip" href="{{ url }}">{{ name }}</a>{% endif %}{% endfor %}
     </div>
   </section>
 
   <section class="card">
-    <h2 class="card__title">{% if seo.place %}{% blocktranslate with d=seo.place %}{{ d }} tumanidagi boshqa ustalar{% endblocktranslate %}{% else %}{% translate "Boshqa yo'nalishlar" %}{% endif %}</h2>
+    <h2 class="card__title">{% if seo.place %}{% blocktranslate with d=seo.place_name %}{{ d }}: boshqa ustalar{% endblocktranslate %}{% else %}{% translate "Boshqa yo'nalishlar" %}{% endif %}</h2>
     <div class="chips">{% for c, url in seo.category_links %}<a class="chip" href="{{ url }}">{{ c.icon }} {{ c|tr:"name" }}</a>{% endfor %}</div>
   </section>
 

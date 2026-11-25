@@ -30,8 +30,8 @@
     <div class="field">
       <label for="f-district">{% translate "Joylashuv" %}</label>
       <select id="f-district" name="district">
-        <option value="">{% if lat is not None and not district %}📍 {% translate "Joriy joylashuv" %}{% else %}{% translate "Tumanni tanlang" %}{% endif %}</option>
-        {% for slug, name in districts %}<option value="{{ slug }}" {% if district == slug %}selected{% endif %}>{{ name }}</option>{% endfor %}
+        <option value="">{% if lat is not None and not district %}📍 {% translate "Joriy joylashuv" %}{% else %}{% translate "Tuman yoki shahar" %}{% endif %}</option>
+        {% include "partials/location_options.html" with selected=district %}
       </select>
       <input type="hidden" name="lat" value="{% if lat is not None and not district %}{{ lat|stringformat:'.6f' }}{% endif %}">
       <input type="hidden" name="lng" value="{% if lng is not None and not district %}{{ lng|stringformat:'.6f' }}{% endif %}">

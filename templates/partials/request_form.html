@@ -62,10 +62,10 @@
     {% if not form.master.value %}
     <div class="form-row">
       <div class="field">
-        <label for="{{ prefix }}district">{% translate "Tuman" %}</label>
+        <label for="{{ prefix }}district">{% translate "Tuman yoki shahar" %}</label>
         <select id="{{ prefix }}district" name="district">
-          <option value="">{% translate "Tumanni tanlang" %}</option>
-          {% for slug, name in form.district_choices %}<option value="{{ slug }}">{{ name }}</option>{% endfor %}
+          <option value="">{% translate "Tuman yoki shahar" %}</option>
+          {% include "partials/location_options.html" with selected=form.district.value %}
         </select>
       </div>
       <div class="field">

@@ -1,0 +1,1 @@
+{% load ui %}{# Tuman/shahar tanlovi variantlari (optgroup). Parametr: selected (slug) #}{% location_groups as groups %}{% for label, items in groups %}<optgroup label="{{ label }}">{% for slug, name in items %}<option value="{{ slug }}"{% if selected == slug %} selected{% endif %}>{{ name }}</option>{% endfor %}</optgroup>{% endfor %}

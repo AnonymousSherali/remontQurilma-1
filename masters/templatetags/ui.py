@@ -73,6 +73,13 @@ def telegram_order_link(order):
 
 
 @register.simple_tag
+def location_groups():
+    """Toshkent tumanlari va viloyat shaharlari — joriy tilda, tanlov ro'yxatlari uchun."""
+    from masters.locations import location_groups as groups
+    return groups()
+
+
+@register.simple_tag
 def jsonld(data):
     """Tuzilgan ma'lumot (schema.org) — <script type="application/ld+json">. <, >, & qochiriladi."""
     import json

@@ -13,7 +13,7 @@ from django.utils.translation import gettext as _
 
 from repair_service.models import Service
 
-from .locations import DISTRICT_CHOICES, district_coords, district_name
+from .locations import DISTRICT_CHOICES, district_coords, district_name, is_city, nearest_city
 from .models import Category, Master
 from .services import DEFAULT_RADIUS_KM, SORT_DISTANCE, SORT_RATING, search_masters
 
@@ -50,12 +50,17 @@ def landing_context(request, category, district, results):
               .order_by('-is_popular', 'order')[:6])
 
     if place:
-        h1 = _('%(category)s — %(district)s tumani') % {'category': cat_name, 'district': place}
-        title = _("%(category)s %(district)s tumanida: %(n)s ta usta, baholar va narxlar") % {
-            'category': cat_name, 'district': place, 'n': len(results)}
+        # Toshkent tumani yoki viloyat shahri — so'z shakli farq qiladi
+        city = is_city(district)
+        place_name = (_('%(name)s shahri') if city else _('%(name)s tumani')) % {'name': place}
+        place_in = (_('%(name)s shahrida') if city else _('%(name)s tumanida')) % {'name': place}
+        h1 = '%s — %s' % (cat_name, place_name)
+        title = _("%(category)s %(place)s: %(n)s ta usta, baholar va narxlar") % {
+            'category': cat_name, 'place': place_in, 'n': len(results)}
     else:
-        h1 = _('%(category)s — Toshkent') % {'category': cat_name}
-        title = _("%(category)s Toshkentda: %(n)s ta tekshirilgan usta, narxlar") % {
+        city, place_name = False, ''
+        h1 = _('%(category)s: tekshirilgan ustalar') % {'category': cat_name}
+        title = _("%(category)s: %(n)s ta tekshirilgan usta, baholar va narxlar") % {
             'category': cat_name, 'n': len(results)}
     parts = [_("%(n)s ta tekshirilgan usta") % {'n': len(results)}]
     if avg:
@@ -87,9 +92,12 @@ def landing_context(request, category, district, results):
             'h1': h1, 'title': title, 'description': description, 'crumbs': crumbs, 'jsonld': ld,
             'canonical': absolute(request, category_url(category, district)),
             'noindex': not results, 'avg': avg, 'reviews': reviews, 'min_price': min_price,
-            'place': place, 'category_name': cat_name, 'prices': prices,
+            'place': place, 'place_name': place_name, 'is_city': city,
+            'category_name': cat_name, 'prices': prices,
             'district_links': [(district_name(slug), category_url(category, slug), slug == district)
-                               for slug, _name in DISTRICT_CHOICES],
+                               for slug, _name in DISTRICT_CHOICES if not is_city(slug)],
+            'city_links': [(district_name(slug), category_url(category, slug), slug == district)
+                           for slug, _name in DISTRICT_CHOICES if is_city(slug)],
             'category_links': [(c, category_url(c, district)) for c in
                                Category.objects.filter(is_active=True).exclude(pk=category.pk)],
         },
@@ -98,11 +106,12 @@ def landing_context(request, category, district, results):
 
 def master_jsonld(request, master):
     """Usta profili uchun schema.org (LocalBusiness turi). Telefon va aniq manzil kiritilmaydi."""
+    _slug, city = nearest_city(master.latitude, master.longitude)
     data = {
         '@context': 'https://schema.org', '@type': 'HomeAndConstructionBusiness',
         'name': master.full_name, 'url': request.build_absolute_uri(master.get_absolute_url()),
-        'address': {'@type': 'PostalAddress', 'addressLocality': 'Toshkent', 'addressCountry': 'UZ'},
-        'areaServed': master.address or 'Toshkent',
+        'address': {'@type': 'PostalAddress', 'addressLocality': city or 'Toshkent', 'addressCountry': 'UZ'},
+        'areaServed': master.address or city or 'Toshkent',
         'knowsAbout': [c.name for c in master.categories.all()],
     }
     if master.photo:
