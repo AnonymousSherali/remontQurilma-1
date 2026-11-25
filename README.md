@@ -358,6 +358,62 @@ tekshiruvdan o'tib birinchi buyurtmasini bajarsa — taklif qilgan ustaga `MASTE
 - Xavfsizlik: obuna manzili faqat ma'lum push xizmatlariga (Google, Mozilla, Apple, Microsoft) ruxsat
   etiladi; eskirgan obunalar avtomatik o'chiriladi.
 
+## Pul qaytarish
+
+Nizo mijoz foydasiga hal qilinsa yoki admin «Mijozga qaytarish» amalini bossa, `/admin/` →
+**Pul qaytarishlar** navbatida yozuv ochiladi (summa, to'lov tizimi, tranzaksiya raqami, nima qilish kerak):
+
+- **Click** — `CLICK_AUTO_REFUND=True` bo'lsa, Click Merchant API orqali avtomatik
+  (`DELETE /v2/merchant/payment/reversal/{service_id}/{payment_id}`). Click faqat joriy hisobot
+  oyidagi to'lovlarni qaytaradi; rad etsa — yozuv «qo'lda» holatiga o'tadi. **Yoqishdan oldin
+  Click bilan bitta kichik to'lovda sinab ko'ring.**
+- **Payme** — Merchant API'da do'kon tomonidan qaytarish so'rovi yo'q: kassir Payme Business
+  kabinetida tranzaksiyani bekor qiladi, Payme bizga `CancelTransaction` yuboradi va yozuv
+  avtomatik «Qaytarildi» bo'ladi.
+- **Uzum** — `reverse` so'rovi kelganda xuddi shunday.
+
+Qaytarilganda mijoz xabar oladi. Qo'lda qaytarilganlarni «Qaytarildi deb belgilash» amali bilan yoping.
+
+## Ustalarga haftalik to'lov
+
+`process_orders` (cron) `PAYOUT_WEEKDAY` kuni (standart — dushanba) o'tkazmalarni tayyorlaydi:
+kartasi bor, summasi `PAYOUT_MIN_AMOUNT` dan kam bo'lmagan va bosqichi chiqarilganiga
+`PAYOUT_DELAY_HOURS` bo'lgan ustalar uchun. Administrator Telegram'da xabar oladi, Excel'ni
+yuklab bank orqali o'tkazadi va «O'tkazmalar tarixi» da «O'tkazildi» deb belgilaydi — usta
+SMS/Telegram/bildirishnoma oladi. «To'lanishi kerak» sahifasida «Hozir tayyorlash» tugmasi ham bor.
+Usta kabinetida: keyingi to'lov sanasi, o'tkazilayotgan summa, karta.
+
+**Avtomatik o'tkazma** (kartaga to'lash API'si) uchun to'lov tizimi bilan alohida shartnoma va
+hujjat kerak — u ochiq emas, shuning uchun hozir faqat «qo'lda» usuli bor. Hujjat kelgach
+`payments/payout_providers.py` ga bitta sinf (`send()`) qo'shiladi va `PAYOUT_PROVIDER` o'zgartiriladi;
+jadval, xabarlar va hisobot o'zgarmaydi.
+
+## Marketing xabarnomalari
+
+`/admin/` → **Xabarnomalar**: matn (o'zbekcha/ruscha), havola, promo-kod, auditoriya va kanallar.
+«Rejalashtirish» amalidan keyin cron partiyalab (`CAMPAIGN_BATCH`) va faqat `CAMPAIGN_HOURS`
+(09–21) oralig'ida yuboradi.
+
+- Mijozlarga — **faqat rozilik berganlarga**: ariza formasida va buyurtma sahifasida alohida,
+  oldindan belgilanmagan belgi. Har xabarda obunani bekor qilish havolasi (`/obuna/bekor/<kalit>/`,
+  bekor qilish tugma bilan — messenjer havolani oldindan ochganda tasodifan o'chib ketmasligi uchun).
+- Auditoriya: barcha rozilik berganlar; uzoq vaqt buyurtma qilmaganlar; tanlangan yo'nalishda
+  buyurtma qilganlar; ustalar (xizmat xabari).
+- Har bir kishiga bitta xabar, eng arzon kanal orqali: bildirishnoma → Telegram → SMS (yoqilgan bo'lsa).
+  SMS reklama matni Eskiz'da alohida tasdiqlanishi kerak.
+
+## Tahlil: manbalar va voronka
+
+Uchinchi tomon xizmatisiz, o'z bazamizda (`repair_service/analytics.py`):
+
+- Birinchi tashrifda manba aniqlanadi — UTM (`?utm_source=instagram&utm_medium=cpc&utm_campaign=kuz`),
+  qidiruv tizimi, Telegram, referal havola — va imzolangan cookie'ga yoziladi; ariza o'zi ham manbani saqlaydi.
+- Hodisalar: ommaviy sahifa ochildi, ariza formasi to'ldirila boshlandi, ariza yuborildi.
+  Tasodifiy tashrifchi ID; ism, telefon va IP saqlanmaydi; «Do Not Track»/GPC va botlar hisobga olinmaydi;
+  `ANALYTICS_RETENTION_DAYS` (180) kundan keyin o'chiriladi.
+- `/admin/statistika/`: «Saytdan arizagacha» voronkasi, manbalar bo'yicha tashriflar → ariza →
+  bajarilgan → aylanma, eng ko'p ariza keltirgan kirish sahifalari.
+
 ## Telegram bot
 
 Bitta bot ikki vazifani bajaradi (admin'ga yangi ariza xabari ham shu bot orqali):
@@ -455,6 +511,7 @@ yetarli. Mavjud arizalar saqlanadi — har biriga alohida baho kaliti beriladi.
 | `/oferta/`, `/maxfiylik/` | Ommaviy oferta va maxfiylik siyosati |
 | `/admin/statistika/` | Statistika (faqat administrator) |
 | `/admin/nizolar/` | Nizolar: dalillar va qaror (faqat administrator) |
+| `/obuna/bekor/<kalit>/` | Aksiya xabarlaridan voz kechish |
 | `/manifest.webmanifest`, `/sw.js`, `/offline/` | Telefonda ilova (PWA) |
 | `/ustalar/<yo'nalish>/`, `/ustalar/<yo'nalish>/<tuman>/` | SEO sahifalari |
 | `/kabinet/hujjatlar/` | Usta: shaxsni tasdiqlash |
@@ -487,14 +544,16 @@ docs/                integratsiyalarni haqiqiy muhitda sinash tartibi
 python manage.py test
 ```
 
-260 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+286 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
 bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
 (rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
 (muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click va Uzum protokollari, Telegram bot (ulash, tugmalar, rasm, xavfsizlik), tariflar,
 ochiq buyurtmalar lentasi, kafolat, kelish vaqti, yozishma, o'tkazmalar hisoboti (Excel), statistika,
 yuridik sahifalar, production tekshiruvlari, `check_integrations`, ustalar hujjatlari (maxfiylik, huquqlar),
 qayta chaqirish, SEO (sitemap, robots, canonical, JSON-LD), viloyatlar, PWA va Web Push (RFC 8291 test-namunasi),
-nizolar sahifasi, ishonchlilik bali, promo-kodlar va referal (Payme chegirmali summani talab qilishi bilan).
+nizolar sahifasi, ishonchlilik bali, promo-kodlar va referal (Payme chegirmali summani talab qilishi bilan),
+tahlil (manba, DNT, botlar), marketing (rozilik, tinch soatlar, partiyalar), pul qaytarish (Payme bekor qilishi,
+Click API imzosi), haftalik to'lov jadvali.
 
 Production'dagidek PostgreSQL va Redis bilan:
 

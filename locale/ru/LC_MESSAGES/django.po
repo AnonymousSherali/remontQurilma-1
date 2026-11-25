@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-25 11:07+0500\n"
+"POT-Creation-Date: 2026-11-25 11:36+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -224,11 +224,8 @@ msgstr "Новый пароль"
 msgid "Bu raqam bilan ro'yxatdan o'tilmagan"
 msgstr "Этот номер не зарегистрирован"
 
-msgid "Toshkent"
-msgstr "Ташкент"
-
-msgid "Viloyatlar"
-msgstr "Регионы"
+msgid "Toshkent shahri"
+msgstr "Город Ташкент"
 
 msgid "Yuklanmagan"
 msgstr "Не загружены"
@@ -484,6 +481,10 @@ msgstr "Оплачено"
 msgid "Bekor qilingan"
 msgstr "Отменено"
 
+#, python-format
+msgid "%(amount)s so'm kartangizga (•••• %(card)s) o'tkazildi. Rahmat!"
+msgstr "%(amount)s сум переведено на вашу карту (•••• %(card)s). Спасибо!"
+
 msgid "To'liq summa — tasdiqlangandan keyin"
 msgstr "Полная сумма — после подтверждения"
 
@@ -554,6 +555,14 @@ msgid ""
 msgstr ""
 "Приглашённый вами мастер %(name)s выполнил первый заказ. Вам %(days)s дней "
 "ТОП бесплатно!"
+
+#, python-format
+msgid ""
+"%(amount)s so'm qaytarildi (#%(id)s buyurtma). Pul kartangizga to'lov tizimi"
+" qoidalariga ko'ra tushadi. %(url)s"
+msgstr ""
+"%(amount)s сум возвращено (заказ #%(id)s). Деньги поступят на карту в сроки "
+"платёжной системы. %(url)s"
 
 msgid "Narxni hozir o'zgartirib bo'lmaydi"
 msgstr "Сейчас цену изменить нельзя"
@@ -805,6 +814,14 @@ msgstr "Этот мастер не выполняет выбранную усл�
 msgid "Bu usta hozir buyurtma qabul qilmayapti. Boshqa ustani tanlang."
 msgstr "Этот мастер сейчас не принимает заказы. Выберите другого мастера."
 
+#, python-format
+msgid "Promo-kod: %(code)s"
+msgstr "Промокод: %(code)s"
+
+#, python-format
+msgid "Obunani bekor qilish: %(url)s"
+msgstr "Отписаться: %(url)s"
+
 msgid "Yaratildi"
 msgstr "Создан"
 
@@ -939,6 +956,13 @@ msgstr "Оплата выплачена: %(t)s"
 
 msgid "Mablag' ustaga chiqarildi. Rahmat!"
 msgstr "Средства выплачены мастеру. Спасибо!"
+
+msgid "Aksiyalar haqida xabar olasiz. Istalgan vaqtda bekor qilish mumkin."
+msgstr ""
+"Вы будете получать сообщения об акциях. Отписаться можно в любой момент."
+
+msgid "Aksiya xabarlari o'chirildi."
+msgstr "Сообщения об акциях отключены."
 
 msgid "Promo-kod olib tashlandi."
 msgstr "Промокод удалён."
@@ -1874,6 +1898,9 @@ msgstr "Все цены"
 msgid "%(c)s — Toshkent tumanlari"
 msgstr "%(c)s — районы Ташкента"
 
+msgid "Viloyatlar"
+msgstr "Регионы"
+
 #, python-format
 msgid "%(d)s: boshqa ustalar"
 msgstr "%(d)s: другие мастера"
@@ -2110,12 +2137,27 @@ msgstr "Ссылка"
 msgid "Nusxa"
 msgstr "Копировать"
 
-msgid ""
-"Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga "
-"o'tkazadi."
-msgstr ""
-"После выполнения этапа деньги поступают на ваш счёт; администратор переводит"
-" их на вашу карту."
+msgid "To'lovlar"
+msgstr "Выплаты"
+
+#, python-format
+msgid "Keyingi to'lov: <strong>%(d)s</strong>"
+msgstr "Следующая выплата: <strong>%(d)s</strong>"
+
+#, python-format
+msgid "O'tkazilmoqda: %(a)s so'm"
+msgstr "Переводится: %(a)s сум"
+
+#, python-format
+msgid "Karta •••• %(c)s"
+msgstr "Карта •••• %(c)s"
+
+#, python-format
+msgid "%(m)s so'mdan kam summa keyingi haftaga o'tadi."
+msgstr "Сумма меньше %(m)s сум переносится на следующую неделю."
+
+msgid "Karta"
+msgstr "Карта"
 
 msgid "Barcha ustalar"
 msgstr "Все мастера"
@@ -2913,6 +2955,21 @@ msgstr "Введите код"
 msgid "Qo'llash"
 msgstr "Применить"
 
+msgid "Aksiyalar"
+msgstr "Акции"
+
+msgid "Aksiya va chegirmalar haqida xabar olasiz."
+msgstr "Вы получаете сообщения об акциях и скидках."
+
+msgid "Chegirmalar va aksiyalar haqida kamdan-kam xabar yuboramiz."
+msgstr "Изредка присылаем сообщения о скидках и акциях."
+
+msgid "Obunani bekor qilish"
+msgstr "Отписаться"
+
+msgid "Xabar olishga roziman"
+msgstr "Согласен получать сообщения"
+
 msgid "Bildirishnomalar"
 msgstr "Уведомления"
 
@@ -3075,6 +3132,28 @@ msgstr "политика конфиденциальности"
 msgid "Ustaga yuborish"
 msgstr "Отправить мастеру"
 
+msgid "Obuna bekor qilindi"
+msgstr "Подписка отменена"
+
+msgid ""
+"Endi aksiya xabarlarini olmaysiz. Buyurtmalaringiz bo'yicha xabarlar "
+"avvalgidek keladi."
+msgstr ""
+"Вы больше не будете получать сообщения об акциях. Уведомления о ваших "
+"заказах продолжат приходить."
+
+msgid "Aksiya xabarlaridan voz kechasizmi?"
+msgstr "Отказаться от сообщений об акциях?"
+
+msgid ""
+"Buyurtma holati haqidagi xabarlar bunga bog'liq emas — ular kelishda davom "
+"etadi."
+msgstr ""
+"Уведомления о статусе заказов от этого не зависят — они продолжат приходить."
+
+msgid "Ha, bekor qilish"
+msgstr "Да, отписаться"
+
 msgid "Pullik joylashuv"
 msgstr "Платное размещение"
 
@@ -3172,6 +3251,13 @@ msgstr "Например: DABC123"
 
 msgid "Chegirma onlayn to'lovda qo'llanadi; usta narxni to'liq oladi."
 msgstr "Скидка действует при онлайн-оплате; мастер получает цену полностью."
+
+msgid ""
+"Aksiya va chegirmalar haqida xabar olishga roziman (istalgan vaqtda bekor "
+"qilish mumkin)"
+msgstr ""
+"Согласен получать сообщения об акциях и скидках (отписаться можно в любой "
+"момент)"
 
 msgid "Ariza yuborish"
 msgstr "Отправить заявку"
@@ -3274,6 +3360,13 @@ msgstr "Не удалось отправить заявку"
 msgid "Buyurtma holatini SMS'dagi havola orqali kuzatishingiz mumkin."
 msgstr "Статус заказа можно отслеживать по ссылке из SMS."
 
+#~ msgid ""
+#~ "Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga "
+#~ "o'tkazadi."
+#~ msgstr ""
+#~ "После выполнения этапа деньги поступают на ваш счёт; администратор переводит"
+#~ " их на вашу карту."
+
 #~ msgid "Tuman"
 #~ msgstr "Район"
 
@@ -3291,9 +3384,6 @@ msgstr "Статус заказа можно отслеживать по ссы�
 #~ msgid ""
 #~ "Shaxsiy ma'lumotlar faqat buyurtma bo'yicha bog'lanish uchun ishlatiladi."
 #~ msgstr "Персональные данные используются только для связи по заказу."
-
-#~ msgid "Bekor qilish"
-#~ msgstr "Отменить"
 
 #~ msgid "Buyruqlar: /buyurtmalar, /stop"
 #~ msgstr "Команды: /buyurtmalar, /stop"
