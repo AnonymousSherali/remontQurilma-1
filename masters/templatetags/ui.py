@@ -147,3 +147,13 @@ def work_status(master):
 def work_summary(master):
     from masters.schedule import summary
     return summary(master)
+
+
+@register.simple_tag(takes_context=True)
+def ab(context, key):
+    """A/B test varianti: {% ab 'kalit' as v %} — repair_service/experiments.py."""
+    request = context.get('request')
+    if request is None:
+        return 'a'
+    from repair_service.experiments import variant_for
+    return variant_for(request, key)

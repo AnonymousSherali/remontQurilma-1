@@ -15,7 +15,8 @@ from . import workflow
 from .customer_notify import notify_master_new_order
 from . import warranty
 from . import marketing
-from .models import Brand, Campaign, MarketingConsent, OrderEvent, OrderMessage, OrderPhoto, Service, ServiceRequest, Testimonial, WarrantyClaim
+from . import experiments
+from .models import Brand, Campaign, Experiment, MarketingConsent, OrderEvent, OrderMessage, OrderPhoto, Service, ServiceRequest, Testimonial, WarrantyClaim
 from .phone import format_phone
 
 admin.site.site_header = 'TechService boshqaruv paneli'
@@ -358,3 +359,44 @@ class CampaignAdmin(ModelAdmin):
     def cancel(self, request, queryset):
         updated = queryset.exclude(status=Campaign.STATUS_DONE).update(status=Campaign.STATUS_CANCELLED)
         messages.info(request, f'{updated} ta xabarnoma bekor qilindi.')
+
+
+@admin.register(Experiment)
+class ExperimentAdmin(ModelAdmin):
+    """A/B testlar. Natija: ariza yuborganlar ulushi, nazorat variantiga nisbatan."""
+
+    list_display = ['name', 'key', 'variants', 'is_active', 'winner', 'started_at']
+    list_editable = ['is_active']
+    readonly_fields = ['started_at', 'results_table']
+    fields = ['name', 'key', 'description', 'variants', 'is_active', 'winner', 'started_at', 'results_table']
+
+    def save_model(self, request, obj, form, change):
+        from django.core.cache import cache
+        from django.utils import timezone
+        if obj.is_active and not obj.started_at:
+            obj.started_at = timezone.now()
+        super().save_model(request, obj, form, change)
+        cache.delete(f'experiment:{obj.key}')
+
+    @display(description='Natijalar')
+    def results_table(self, obj):
+        if not obj.pk:
+            return '—'
+        rows = experiments.results(obj)
+        html = ['<table style="border-collapse:collapse;width:100%"><tr style="text-align:left">'
+                '<th>Variant</th><th>Tashrifchilar</th><th>Forma</th><th>Ariza</th><th>Ariza %</th>'
+                '<th>Farq</th><th>p</th></tr>']
+        for r in rows:
+            sig = ''
+            if 'p_value' in r:
+                sig = ('✅ ahamiyatli' if r['significant'] else 'hali aniq emas') if r['p_value'] is not None else '—'
+            html.append(format_html(
+                '<tr style="border-top:1px solid rgba(127,127,127,.2)"><td><strong>{}</strong></td><td>{}</td>'
+                '<td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{} {}</td></tr>',
+                r['variant'], r['visitors'], r['starts'], r['requests'],
+                '—' if r['request_rate'] is None else f"{r['request_rate']}%",
+                f"{r['lift']:+}%" if r.get('lift') is not None else '—', r.get('p_value', ''), sig))
+        html.append('</table><p style="font-size:12px;opacity:.7">Har variantda kamida 100 tashrifchi va p &lt; 0.05 '
+                    "bo'lsa — farq tasodif emas. G'olibni «G'olib» maydoniga yozing.</p>")
+        from django.utils.safestring import mark_safe
+        return mark_safe(''.join(str(h) for h in html))   # qatorlar format_html bilan qochirilgan

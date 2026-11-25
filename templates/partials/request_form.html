@@ -129,7 +129,8 @@
     </label>
 
     <p class="results field__error" role="alert"></p>
-    <button type="submit" class="btn btn--primary btn--lg btn--block">{% if button %}{{ button }}{% else %}{% translate "Ariza yuborish" %}{% endif %}</button>
+    {% ab 'ariza_tugmasi' as cta %}
+    <button type="submit" class="btn btn--primary btn--lg btn--block">{% if button %}{{ button }}{% elif cta == 'b' %}{% translate "Usta chaqirish — bepul" %}{% else %}{% translate "Ariza yuborish" %}{% endif %}</button>
     <p class="muted small" style="margin:0;text-align:center">{% translate "Ariza bepul. Usta narxni oldindan aytadi." %}</p>
   </form>
 

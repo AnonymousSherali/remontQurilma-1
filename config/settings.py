@@ -426,6 +426,8 @@ UNFOLD = {
                      'link': reverse_lazy('admin:payments_payout_changelist')},
                     {'title': 'Narx takliflari', 'icon': 'request_quote',
                      'link': reverse_lazy('admin:payments_quote_changelist')},
+                    {'title': 'A/B testlar', 'icon': 'science',
+                     'link': reverse_lazy('admin:repair_service_experiment_changelist')},
                     {'title': 'Xabarnomalar', 'icon': 'campaign',
                      'link': reverse_lazy('admin:repair_service_campaign_changelist')},
                     {'title': 'Promo-kodlar', 'icon': 'redeem',

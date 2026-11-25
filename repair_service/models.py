@@ -342,6 +342,41 @@ class SupportMessage(models.Model):
         ordering = ['created_at', 'id']
 
 
+class Experiment(models.Model):
+    """A/B test (repair_service/experiments.py). Shablonda: {% ab 'kalit' as v %}."""
+
+    key = models.SlugField('Kalit', unique=True, help_text="Shablondagi {% ab '…' %} bilan bir xil")
+    name = models.CharField('Nomi', max_length=120)
+    description = models.TextField('Nimani tekshiramiz', blank=True)
+    variants = models.CharField('Variantlar', max_length=60, default='a,b',
+                                help_text="Vergul bilan; birinchisi — hozirgi (nazorat) varianti")
+    is_active = models.BooleanField('Faol', default=False)
+    started_at = models.DateTimeField('Boshlangan', null=True, blank=True)
+    winner = models.CharField("G'olib (qo'llangan)", max_length=20, blank=True,
+                              help_text="To'ldirilsa — test to'xtaydi va hamma shu variantni ko'radi")
+
+    class Meta:
+        verbose_name = 'A/B test'
+        verbose_name_plural = 'A/B testlar'
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def variant_list(self):
+        return [v.strip() for v in self.variants.split(',') if v.strip()] or ['a']
+
+
+class ExperimentExposure(models.Model):
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name='exposures')
+    visitor = models.CharField(max_length=32)
+    variant = models.CharField(max_length=20)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = [('experiment', 'visitor')]
+
+
 class AnalyticsEvent(models.Model):
     """Yengil tahlil hodisasi (shaxsiy ma'lumotsiz): tashrif, forma boshlandi, ariza."""
 
