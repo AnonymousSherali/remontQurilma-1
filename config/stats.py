@@ -60,6 +60,7 @@ def collect(days=30, now=None):
 
     released = Milestone.objects.filter(state=Milestone.STATE_RELEASED, released_at__gte=start)
     fee = sum((m.fee_amount for m in released), 0)
+    discounts = sum((m.discount for m in released), 0)   # promo-kod chegirmalari platforma hisobidan
     tariffs = Purchase.objects.filter(status=Purchase.STATUS_PAID, paid_at__gte=start).aggregate(s=Sum('amount'))['s']
 
     # Qabul qilishgacha o'tgan vaqt (mediana) — birinchi "accepted" hodisasi bo'yicha
@@ -106,7 +107,19 @@ def collect(days=30, now=None):
                             'gmv': _money(gmv), 'rating': row['master__rating_avg']})
 
     pending = payouts.totals(payouts.pending())
+    from repair_service.analytics import report
+    traffic = report(start)
+    traffic['funnel'] = [
+        {'label': 'Saytga kirgan (tashrifchi)', 'count': traffic['visits']},
+        {'label': "Ariza formasini to'ldira boshlagan", 'count': traffic['starts']},
+        {'label': 'Ariza yuborgan', 'count': total},
+    ]
+    top = max([f['count'] for f in traffic['funnel']] + [1])
+    for i, f in enumerate(traffic['funnel']):
+        f['percent'] = round(f['count'] * 100 / top)
+        f['step'] = _percent(f['count'], traffic['funnel'][i - 1]['count']) if i else None
     return {
+        'traffic': traffic,
         'days': days, 'start': start, 'total': total,
         'kpis': [
             {'title': 'Arizalar', 'value': total, 'footer': f'{waiting} tasi hali usta kutmoqda'},
@@ -116,8 +129,10 @@ def collect(days=30, now=None):
              'footer': f"{agg['n']} ta bajarilgan ish bo'yicha, so'm"},
             {'title': 'Aylanma (GMV)', 'value': f"{_money(agg['gmv']):,}".replace(',', ' '),
              'footer': f"shundan onlayn: {_money(agg['online']):,} so'm".replace(',', ' ')},
-            {'title': 'Platforma daromadi', 'value': f'{_money(fee) + _money(tariffs):,}'.replace(',', ' '),
-             'footer': f"komissiya {_money(fee):,} + tariflar {_money(tariffs):,}".replace(',', ' ')},
+            {'title': 'Platforma daromadi',
+             'value': f'{_money(fee) + _money(tariffs) - _money(discounts):,}'.replace(',', ' '),
+             'footer': f"komissiya {_money(fee):,} + tariflar {_money(tariffs):,} − chegirmalar "
+                       f"{_money(discounts):,}".replace(',', ' ')},
             {'title': 'Qabul qilish tezligi',
              'value': '—' if accept_minutes is None else (
                  f'{accept_minutes} daq' if accept_minutes < 120 else f'{round(accept_minutes / 60, 1)} soat'),

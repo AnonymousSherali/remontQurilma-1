@@ -14,7 +14,7 @@ class MilestonePayable:
     def __init__(self, milestone):
         self.obj = milestone
         self.key = str(milestone.pk)
-        self.amount = milestone.amount
+        self.amount = milestone.amount_due   # promo-kod chegirmasi bilan
         self.fk = {'milestone': milestone}
 
     @property
@@ -32,7 +32,7 @@ class MilestonePayable:
 
     def cancel_paid(self):
         if self.obj.state == Milestone.STATE_HELD:
-            services.refund(self.obj)
+            services.refund(self.obj, by_provider=True)
 
     def return_path(self):
         return self.obj.order.get_customer_url()

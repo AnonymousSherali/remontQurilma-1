@@ -14,7 +14,8 @@ from django.db import transaction
 from . import workflow
 from .customer_notify import notify_master_new_order
 from . import warranty
-from .models import Brand, OrderEvent, OrderMessage, OrderPhoto, Service, ServiceRequest, Testimonial, WarrantyClaim
+from . import marketing
+from .models import Brand, Campaign, MarketingConsent, OrderEvent, OrderMessage, OrderPhoto, Service, ServiceRequest, Testimonial, WarrantyClaim
 from .phone import format_phone
 
 admin.site.site_header = 'TechService boshqaruv paneli'
@@ -78,7 +79,7 @@ class OrderEventInline(TabularInline):
 class ServiceRequestAdmin(ModelAdmin):
     list_display = ['id', 'client', 'phone_display', 'category', 'master', 'status_badge', 'created_at']
     list_display_links = ['id', 'client']
-    list_filter = ['status', 'category', 'created_at']
+    list_filter = ['status', 'category', 'source', 'created_at']
     list_filter_submit = True
     search_fields = ['name', 'phone', 'email', 'address', 'problem_description', 'master__full_name']
     readonly_fields = ['created_at', 'updated_at', 'consent', 'review_link']
@@ -94,6 +95,7 @@ class ServiceRequestAdmin(ModelAdmin):
                                  'appliance_type', 'brand']}),
         ("Kelish vaqti", {'fields': [('preferred_date', 'preferred_slot'), 'visit_at']}),
         ("Holat va izohlar", {'fields': ['status', 'admin_notes', 'review_link']}),
+        ("Manba", {'fields': [('source', 'medium'), ('campaign', 'landing_path')], 'classes': ['collapse']}),
         ("Tizim ma'lumotlari", {'fields': ['created_at', 'updated_at'], 'classes': ['collapse']}),
     ]
 
@@ -295,3 +297,64 @@ class UserAdmin(BaseUserAdmin, ModelAdmin):
 @admin.register(Group)
 class GroupAdmin(BaseGroupAdmin, ModelAdmin):
     pass
+
+
+@admin.register(MarketingConsent)
+class MarketingConsentAdmin(ModelAdmin):
+    list_display = ['phone', 'language', 'source', 'consented_at', 'unsubscribed_at']
+    list_filter = ['language', 'source', ('unsubscribed_at', admin.EmptyFieldListFilter)]
+    search_fields = ['phone']
+    readonly_fields = ['phone', 'token', 'source', 'consented_at', 'unsubscribed_at']
+
+    def has_add_permission(self, request):
+        return False   # rozilikni faqat mijozning o'zi beradi
+
+
+@admin.register(Campaign)
+class CampaignAdmin(ModelAdmin):
+    """Aksiya va yangiliklar. «Rejalashtirish» dan keyin cron partiyalab yuboradi."""
+
+    list_display = ['title', 'audience', 'status', 'scheduled_at', 'sent', 'failed', 'skipped']
+    list_filter = ['status', 'audience']
+    readonly_fields = ['status', 'sent', 'failed', 'skipped', 'finished_at', 'audience_preview', 'preview']
+    autocomplete_fields = []
+    actions = ['schedule', 'cancel']
+    fieldsets = [
+        (None, {'fields': ['title', 'text_uz', 'text_ru', 'link', 'promo']}),
+        ('Kimga', {'fields': ['audience', 'category', 'inactive_days', 'audience_preview'],
+                   'description': "Mijozlarga faqat rozilik berganlarga yuboriladi; har xabarda obunani bekor "
+                                  "qilish havolasi bo'ladi."}),
+        ('Kanallar', {'fields': [('use_push', 'use_telegram', 'use_sms')],
+                      'description': "Har bir qabul qiluvchiga bitta xabar — eng arzon mavjud kanal orqali "
+                                     "(bildirishnoma → Telegram → SMS). SMS reklama matni Eskiz'da alohida "
+                                     "tasdiqlangan bo'lishi kerak."}),
+        ('Yuborish', {'fields': ['scheduled_at', 'status', ('sent', 'failed', 'skipped'), 'finished_at', 'preview']}),
+    ]
+
+    @display(description='Qabul qiluvchilar soni')
+    def audience_preview(self, obj):
+        return marketing.audience_size(obj) if obj.pk else '— (saqlagandan keyin)'
+
+    @display(description="Xabar ko'rinishi")
+    def preview(self, obj):
+        if not obj.pk:
+            return '—'
+        return format_html('<pre style="white-space:pre-wrap">{}</pre>',
+                           marketing.compose(obj, 'uz', 'https://…/obuna/bekor/…'))
+
+    @action(description='Rejalashtirish (yuborishni boshlash)', icon='send')
+    def schedule(self, request, queryset):
+        from django.utils import timezone
+        count = 0
+        for campaign in queryset.filter(status=Campaign.STATUS_DRAFT):
+            campaign.status = Campaign.STATUS_SCHEDULED
+            campaign.scheduled_at = campaign.scheduled_at or timezone.now()
+            campaign.save(update_fields=['status', 'scheduled_at'])
+            count += 1
+        messages.success(request, f"{count} ta xabarnoma navbatga qo'yildi. Cron (process_orders) "
+                                  "har soatda partiyalab yuboradi, faqat ruxsat etilgan soatlarda.")
+
+    @action(description='Bekor qilish', icon='cancel')
+    def cancel(self, request, queryset):
+        updated = queryset.exclude(status=Campaign.STATUS_DONE).update(status=Campaign.STATUS_CANCELLED)
+        messages.info(request, f'{updated} ta xabarnoma bekor qilindi.')

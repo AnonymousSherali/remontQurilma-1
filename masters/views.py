@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -15,7 +16,7 @@ from django.utils.translation import gettext as _
 
 from otp import services as otp
 from payments import services as payments
-from payments import tariffs
+from payments import payouts, promos, tariffs
 from repair_service import chat, schedule, warranty, workflow
 from repair_service.customer_notify import notify_quote
 from repair_service.forms import ServiceRequestForm
@@ -25,7 +26,7 @@ from repair_service.photos import can_delete as can_delete_photo
 from repair_service.photos import portfolio
 from repair_service.models import ServiceRequest
 
-from . import feed
+from . import documents, feed, reliability, seo
 from .forms import (
     deviation_percent, MasterProfileForm, MasterRegistrationForm, PasswordResetForm, PhoneLoginForm, QuoteForm, ReviewForm,
 )
@@ -34,7 +35,7 @@ from .locations import DISTRICT_CHOICES, district_coords, district_name
 from payments.models import Milestone
 from repair_service.models import Service
 
-from .models import Category, Master
+from .models import Category, Master, MasterDocument
 from .services import (
     DEFAULT_RADIUS_KM, RADIUS_CHOICES, SORT_DISTANCE, SORT_RATING, master_to_dict, search_masters,
 )
@@ -87,8 +88,16 @@ def master_list(request):
     query_without_page = request.GET.copy()
     query_without_page.pop('page', None)
 
+    # Faqat yo'nalish (va tuman) tanlangan qidiruv — SEO sahifasining nusxasi: canonical o'shanga.
+    # Shaxsiy koordinata yoki ism bo'yicha qidiruv indekslanmaydi.
+    personal = bool(request.GET.get('lat') or request.GET.get('q'))
+    canonical = request.build_absolute_uri(
+        seo.category_url(params['category'], params['district']) if params['category'] else request.path)
+
     return render(request, 'masters/list.html', {
         **params,
+        'canonical': canonical,
+        'noindex': personal,
         'page': page,
         'total': len(results),
         'categories': Category.objects.filter(is_active=True),
@@ -96,6 +105,30 @@ def master_list(request):
         'radius_choices': RADIUS_CHOICES,
         'map_points': [master_to_dict(m) for m in page.object_list],
         'querystring': query_without_page.urlencode(),
+    })
+
+
+def category_landing(request, category, district=''):
+    """/ustalar/santexnik/ va /ustalar/santexnik/chilonzor/ — qidiruv tizimlari uchun toza manzillar."""
+    category = get_object_or_404(Category, slug=category, is_active=True)
+    if district and district_coords(district)[0] is None:
+        raise Http404
+    results = seo.landing_results(category, district)
+    page = Paginator(results, 12).get_page(request.GET.get('page'))
+    lat, lng = district_coords(district) if district else (None, None)
+    context = seo.landing_context(request, category, district, results)
+    return render(request, 'masters/list.html', {
+        **context,
+        'category': category, 'district': district, 'lat': lat, 'lng': lng,
+        'location_label': district_name(district) if district else '',
+        'radius': DEFAULT_RADIUS_KM, 'sort': 'distance' if district else 'rating', 'query': '',
+        'page': page, 'total': len(results),
+        'categories': Category.objects.filter(is_active=True),
+        'districts': DISTRICT_CHOICES, 'radius_choices': RADIUS_CHOICES,
+        'map_points': [master_to_dict(m) for m in page.object_list],
+        'querystring': '',
+        'canonical': context['seo']['canonical'] + (f'?page={page.number}' if page.number > 1 else ''),
+        'noindex': context['seo']['noindex'],
     })
 
 
@@ -132,6 +165,9 @@ def master_detail(request, pk):
         'criteria': master.criteria_breakdown(),
         'form': form,
         'map_points': [master_to_dict(master)],
+        'jsonld': seo.master_jsonld(request, master),
+        'canonical': request.build_absolute_uri(master.get_absolute_url()),
+        'og_image': request.build_absolute_uri(master.photo.url) if master.photo else '',
     })
 
 
@@ -139,9 +175,15 @@ def register(request):
     if request.user.is_authenticated and hasattr(request.user, 'master'):
         return redirect('masters:dashboard')
 
+    if request.GET.get('ref'):
+        request.session['master_ref'] = request.GET['ref'][:12].upper()   # taklif havolasi
     form = MasterRegistrationForm(request.POST or None, request.FILES or None, request=request)
     if request.method == 'POST' and form.is_valid():
         master = form.save()
+        inviter = Master.objects.filter(referral_code=request.session.pop('master_ref', None) or '-').first()
+        if inviter and inviter.pk != master.pk:
+            master.referred_by = inviter
+            master.save(update_fields=['referred_by'])
         login(request, master.user, backend='django.contrib.auth.backends.ModelBackend')
         messages.success(
             request,
@@ -223,6 +265,13 @@ def dashboard(request):
         'balance': balance,
         'open_count': feed.open_count(master),
         'calendar': schedule.calendar(master),
+        'reliability_tips': reliability.tips(master),
+        'referral_link': request.build_absolute_uri(
+            reverse('masters:register') + '?ref=' + promos.master_referral_code(master)),
+        'referrals': master.referrals.all(),
+        'next_payout': payouts.next_payout_date(),
+        'payout_in_progress': sum((p.amount for p in master.payouts.filter(status='prepared')), 0),
+        'payout_min': settings.PAYOUT_MIN_AMOUNT,
         'warranty_claims': WarrantyClaim.objects.filter(
             order__master=master, status=WarrantyClaim.STATUS_OPEN).select_related('order'),
         'held': held,
@@ -270,6 +319,27 @@ def profile_edit(request):
         return redirect('masters:dashboard')
     return render(request, 'masters/profile_edit.html', {
         'form': form, 'master': master, 'payouts': master.payouts.all()[:5]})
+
+
+@login_required
+def documents_page(request):
+    """Shaxsni tasdiqlash: pasport/ID va selfi yuklash."""
+    master = _get_own_master(request)
+    if request.method == 'POST':
+        files = {kind: request.FILES.get(kind) for kind, _label in MasterDocument.KIND_CHOICES}
+        try:
+            documents.submit(master, files)
+        except documents.DocumentError as error:
+            messages.error(request, str(error))
+        else:
+            messages.success(request, _('Hujjatlar yuborildi. Administrator 1 ish kuni ichida tekshiradi.'))
+            return redirect('masters:dashboard')
+    return render(request, 'masters/documents.html', {
+        'master': master,
+        'can_upload': documents.can_upload(master),
+        'kinds': [(k, label, k in documents.REQUIRED) for k, label in MasterDocument.KIND_CHOICES],
+        'uploaded': master.documents.all(),
+    })
 
 
 @login_required

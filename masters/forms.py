@@ -13,7 +13,7 @@ from payments.plans import PLAN_CHOICES
 from repair_service.phone import normalize_phone
 
 from .geo import in_uzbekistan
-from .locations import DISTRICT_CHOICES, district_coords
+from .locations import DISTRICT_CHOICES, district_coords, location_groups
 from .models import RATING_CHOICES, Category, Master, Review
 
 MAX_PHOTO_MB = 3
@@ -30,8 +30,8 @@ class MasterProfileForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'inputmode': 'numeric', 'autocomplete': 'off', 'placeholder': '8600 0000 0000 0000'}),
     )
     district = forms.ChoiceField(
-        label=_('Tuman'), required=False, choices=[('', _('Tumanni tanlang'))] + DISTRICT_CHOICES,
-        help_text=_("Joylashuvni aniqlay olmasangiz, tumanni tanlang."),
+        label=_('Tuman yoki shahar'), required=False, choices=[('', _('Tuman yoki shahar'))] + DISTRICT_CHOICES,
+        help_text=_("Joylashuvni aniqlay olmasangiz, tuman yoki shaharni tanlang."),
     )
 
     class Meta:
@@ -67,6 +67,8 @@ class MasterProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['categories'].queryset = Category.objects.filter(is_active=True)
+        # Toshkent tumanlari va viloyat shaharlari guruhlab, joriy tilda
+        self.fields['district'].choices = [('', _('Tuman yoki shahar'))] + location_groups()
 
     def clean_payout_card(self):
         card = ''.join(ch for ch in (self.cleaned_data.get('payout_card') or '') if ch.isdigit())

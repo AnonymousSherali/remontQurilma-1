@@ -176,6 +176,9 @@ def cancel(params):
     payment.reason = params.get('reason')
     payment.cancelled_at = timezone.now()
     payment.save(update_fields=['state', 'reason', 'cancelled_at'])
+    if payment.state == Payment.STATE_CANCELLED_AFTER_PERFORM:
+        from .refunds import on_provider_cancelled
+        on_provider_cancelled(payment)   # kassir kabinetdan qaytardi — qaytarish navbatidagi yozuv yopiladi
     return {'transaction': str(payment.pk), 'cancel_time': _ms(payment.cancelled_at), 'state': payment.state}
 
 

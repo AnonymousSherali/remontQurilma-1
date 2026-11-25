@@ -87,6 +87,8 @@ def approve_quote(order):
             order=order, position=position, title=str(title), amount=amount,
             release_status=release_status, fee_percent=fee,
         )
+    from .promos import distribute
+    distribute(order)   # promo-kod bo'lsa — chegirma bosqichlarga taqsimlanadi
     return quote
 
 
@@ -142,14 +144,17 @@ def release(milestone):
 
 
 @transaction.atomic
-def refund(milestone):
-    """Admin nizoni mijoz foydasiga hal qilganda. Pulni to'lov tizimi kabinetidan qaytarish kerak."""
+def refund(milestone, by_provider=False):
+    """Mablag'ni mijozga qaytarish. by_provider — to'lov tizimi o'zi bekor qilgan (pul allaqachon qaytgan)."""
     milestone = Milestone.objects.select_for_update().get(pk=milestone.pk)
     if milestone.state != Milestone.STATE_HELD:
         raise PaymentError(_('Faqat ushlab turilgan mablag\' qaytariladi'))
     milestone.state = Milestone.STATE_REFUNDED
     milestone.refunded_at = timezone.now()
     milestone.save(update_fields=['state', 'refunded_at'])
+    if not by_provider:
+        from .refunds import request_refund
+        transaction.on_commit(lambda: request_refund(milestone))
     return milestone
 
 
@@ -185,4 +190,5 @@ def summary(order):
     released = sum((m.amount for m in milestones if m.state == Milestone.STATE_RELEASED), 0)
     master_net = sum((m.master_amount for m in milestones if m.state == Milestone.STATE_RELEASED), 0)
     return {'total': total, 'held': held, 'released': released, 'master_net': master_net,
+            'discount': sum((m.discount for m in milestones), 0),
             'paid': held + released, 'milestones': milestones}

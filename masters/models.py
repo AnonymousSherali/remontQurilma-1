@@ -1,6 +1,9 @@
+import os
+import uuid
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Avg, Count
@@ -38,7 +41,7 @@ class Category(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return f"{reverse('masters:list')}?category={self.slug}"
+        return reverse('masters:category', args=[self.slug])
 
 
 class MasterQuerySet(models.QuerySet):
@@ -81,6 +84,26 @@ class Master(models.Model):
     # Ishlab topilgan pul shu kartaga o'tkaziladi (faqat usta va administrator ko'radi)
     payout_card = models.CharField('Karta raqami', max_length=16, blank=True)
     payout_holder = models.CharField('Karta egasi', max_length=100, blank=True)
+    # Shaxsni tasdiqlash: usta pasport/ID va selfi yuklaydi, administrator tekshiradi
+    ID_NONE, ID_PENDING, ID_APPROVED, ID_REJECTED = 'none', 'pending', 'approved', 'rejected'
+    ID_STATUS_CHOICES = [
+        (ID_NONE, _('Yuklanmagan')),
+        (ID_PENDING, _('Tekshirilmoqda')),
+        (ID_APPROVED, _('Tasdiqlangan')),
+        (ID_REJECTED, _('Rad etilgan')),
+    ]
+    id_status = models.CharField('Hujjatlar', max_length=10, choices=ID_STATUS_CHOICES, default=ID_NONE)
+    id_note = models.CharField('Hujjat bo\'yicha izoh', max_length=255, blank=True,
+                               help_text="Rad etilganda — sababi (ustaga ko'rinadi).")
+    id_checked_at = models.DateTimeField('Hujjat tekshirilgan', null=True, blank=True)
+    # Ishonchlilik (masters/reliability.py): 0–100, kam buyurtmada bo'sh. Qidiruvda hisobga olinadi.
+    reliability = models.PositiveSmallIntegerField('Ishonchlilik', null=True, blank=True)
+    reliability_data = models.JSONField("Ishonchlilik ko'rsatkichlari", default=dict, blank=True)
+    # Usta referali: taklif qilgan usta tasdiqlanib birinchi ishini bajarsa — taklif qilganga bepul TOP
+    referral_code = models.CharField('Taklif kodi', max_length=12, unique=True, null=True, blank=True)
+    referred_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True,
+                                    related_name='referrals', verbose_name='Taklif qilgan usta')
+    referral_rewarded = models.BooleanField('Taklif mukofoti berilgan', default=False)
     promoted_until = models.DateTimeField('TOP muddati', null=True, blank=True)
     pro_until = models.DateTimeField('PRO muddati', null=True, blank=True)
     telegram_chat_id = models.BigIntegerField('Telegram chat', null=True, blank=True, unique=True,
@@ -113,6 +136,10 @@ class Master(models.Model):
         return bool(self.promoted_until and self.promoted_until > timezone.now())
 
     @property
+    def id_verified(self):
+        return self.id_status == self.ID_APPROVED
+
+    @property
     def is_pro(self):
         return bool(self.pro_until and self.pro_until > timezone.now())
 
@@ -136,6 +163,15 @@ class Master(models.Model):
         n = self.reviews_count
         avg = float(self.rating_avg)
         return (RATING_PRIOR_WEIGHT * RATING_PRIOR_MEAN + n * avg) / (RATING_PRIOR_WEIGHT + n)
+
+    @property
+    def reliability_factor(self):
+        """Qidiruv tartibi uchun ko'paytuvchi: 0.7 (ishonchsiz) … 1.0. Yangi usta — 1.0 (jazolanmaydi)."""
+        return 1.0 if self.reliability is None else 0.7 + 0.3 * self.reliability / 100
+
+    @property
+    def search_score(self):
+        return self.ranking_score * self.reliability_factor
 
     def recalculate_rating(self):
         stats = self.reviews.filter(is_published=True).aggregate(
@@ -161,6 +197,59 @@ class Master(models.Model):
             (label, round(stats[key], 1) if stats[key] is not None else None)
             for key, label in Review.CRITERIA
         ]
+
+
+class PrivateStorage(FileSystemStorage):
+    """MEDIA_ROOT dan tashqaridagi maxfiy papka. Ochiq URL yo'q — fayl faqat admin ko'rish sahifasi orqali."""
+
+    def __init__(self):
+        super().__init__(base_url=None)
+
+    @property
+    def base_location(self):
+        return str(settings.PRIVATE_MEDIA_ROOT)
+
+    @property
+    def location(self):
+        return os.path.abspath(self.base_location)
+
+    def url(self, name):
+        raise ValueError("Maxfiy fayl: ochiq havola yo'q")
+
+
+def private_storage():
+    return PrivateStorage()
+
+
+def _document_path(instance, filename):
+    # Fayl nomida ism/telefon bo'lmasin — tasodifiy nom
+    return f'documents/{instance.master_id}/{uuid.uuid4().hex}.jpg'
+
+
+class MasterDocument(models.Model):
+    """Ustaning shaxsini tasdiqlovchi hujjat rasmi. Faqat administrator ko'radi."""
+
+    KIND_ID = 'id'
+    KIND_SELFIE = 'selfie'
+    KIND_CERTIFICATE = 'certificate'
+    KIND_CHOICES = [
+        (KIND_ID, _('Pasport yoki ID-karta (rasmli sahifa)')),
+        (KIND_SELFIE, _('Hujjat bilan selfi')),
+        (KIND_CERTIFICATE, _('Malaka sertifikati yoki diplom')),
+    ]
+
+    master = models.ForeignKey(Master, on_delete=models.CASCADE, related_name='documents', verbose_name='Usta')
+    kind = models.CharField('Turi', max_length=12, choices=KIND_CHOICES)
+    file = models.ImageField('Fayl', upload_to=_document_path, storage=private_storage)
+    created_at = models.DateTimeField('Yuklangan', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Usta hujjati'
+        verbose_name_plural = 'Usta hujjatlari'
+        ordering = ['master', 'kind']
+
+    def __str__(self):
+        return f'{self.master} · {self.get_kind_display()}'
 
 
 class Review(models.Model):

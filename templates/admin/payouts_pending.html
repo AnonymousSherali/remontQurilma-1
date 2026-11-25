@@ -21,6 +21,12 @@
     {% endcomponent %}
   </div>
 
+  <div class="text-sm" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+    <span>Keyingi haftalik to'lov: <strong>{{ next_payout|date:"d.m.Y (l)" }}</strong> — cron kartasi bor va summasi chegaradan katta ustalar uchun o'tkazmalarni tayyorlaydi.</span>
+    {% if prepared %}<a class="text-primary-600 font-semibold" href="{% url 'admin:payments_payout_changelist' %}?status__exact=prepared">Tayyorlangan, o'tkazilmagan: {{ prepared }} →</a>{% endif %}
+    <form method="post" style="margin-left:auto">{% csrf_token %}<button name="prepare" value="1" class="font-medium px-3 py-2 rounded-default border border-base-200 dark:border-base-700">Hozir tayyorlash</button></form>
+  </div>
+
   {% component "unfold/components/card.html" with title="To'lanishi kerak" %}
     <p class="text-sm text-font-subtle-light" style="margin-bottom:12px">1) Ro'yxatni Excel'ga yuklang → 2) bank yoki to'lov tizimi orqali kartalarga o'tkazing → 3) o'tkazilganlarni belgilab, «O'tkazildi» ni bosing. Tizim pulni o'zi o'tkazmaydi — bu faqat hisob.</p>
     <form method="post">{% csrf_token %}

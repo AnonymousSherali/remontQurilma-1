@@ -1,0 +1,24 @@
+{% load static %}<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Internet yo'q | {{ SITE.name }}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+  <main class="container" style="min-height:80vh;display:grid;place-items:center;text-align:center">
+    <div class="card card--raised" style="max-width:420px">
+      <div style="font-size:3rem">📡</div>
+      <h1 style="font-size:1.5rem">Internet aloqasi yo'q</h1>
+      <p class="muted">Ulanish tiklangach sahifa ochiladi. Shoshilinch bo'lsa — qo'ng'iroq qiling.</p>
+      <p class="muted small" lang="ru">Нет подключения к интернету. Страница откроется, когда связь восстановится.</p>
+      <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn--primary" onclick="location.reload()">Qayta urinish</button>
+        <a class="btn" href="tel:{{ SITE.phone }}">📞 {{ SITE.phone_display }}</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

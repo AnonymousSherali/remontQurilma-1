@@ -117,6 +117,7 @@ def nearby_masters(order, limit=30):
     result = []
     for master in qs.distinct():
         if _annotate(order, master) is not None:
-            result.append((order.distance_km if order.distance_km is not None else 9999, master))
+            distance = order.distance_km if order.distance_km is not None else 9999
+            result.append((distance / master.reliability_factor, master))
     result.sort(key=lambda pair: (not pair[1].is_pro, pair[0]))
     return [m for _d, m in result[:limit]]

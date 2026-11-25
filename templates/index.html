@@ -32,10 +32,10 @@
         <button type="button" class="btn btn--soft btn--block" data-geolocate>📍 {% translate "Joylashuvimni aniqlash" %}</button>
         <div class="search-card__or">{% translate "yoki" %}</div>
         <div class="field">
-          <label for="hero-district" class="sr-only">{% translate "Tuman" %}</label>
+          <label for="hero-district" class="sr-only">{% translate "Tuman yoki shahar" %}</label>
           <select id="hero-district" name="district">
-            <option value="">{% translate "Tumanni tanlang" %}</option>
-            {% for slug, name in districts %}<option value="{{ slug }}">{{ name }}</option>{% endfor %}
+            <option value="">{% translate "Tuman yoki shahar" %}</option>
+            {% include "partials/location_options.html" %}
           </select>
         </div>
         <div class="geo-status" aria-live="polite"></div>

@@ -18,14 +18,17 @@
     </div>
     <div class="card">
       {% for order in orders %}
-        <a class="req-item" href="{{ order.get_customer_url }}" style="color:inherit">
-          <div>
+        <div class="req-item">
+          <a href="{{ order.get_customer_url }}" style="color:inherit">
             <strong>#{{ order.pk }}{% if order.category %} · {{ order.category.icon }} {{ order.category|tr:"name" }}{% endif %}</strong>
             <span class="badge badge--{{ order.status }}">{{ order.get_status_display }}</span>
             <div class="muted small">{{ order.created_at|date:"d.m.Y H:i" }}{% if order.master %} · {{ order.master.full_name }}{% endif %}</div>
+          </a>
+          <div class="req-item__actions">
+            {% if order.can_reorder %}<a class="btn btn--sm btn--soft" href="{% url 'repair_service:reorder' order.review_token %}">🔁 {% translate "Qayta chaqirish" %}</a>{% endif %}
+            <a class="btn btn--sm" href="{{ order.get_customer_url }}">{% translate "Ochish" %} →</a>
           </div>
-          <span class="btn btn--sm">{% translate "Ochish" %} →</span>
-        </a>
+        </div>
       {% empty %}
         <div class="empty"><div class="empty__icon">📭</div><p class="muted">{% translate "Bu raqam bilan buyurtma topilmadi." %}</p>
           <a class="btn btn--primary" href="{% url 'repair_service:index' %}#ariza">{% translate "Ariza qoldirish" %}</a></div>

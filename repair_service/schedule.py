@@ -69,7 +69,7 @@ def _visit_text(order):
 @transaction.atomic
 def set_visit(order, when, now=None):
     now = now or timezone.now()
-    order = SR.objects.select_for_update().select_related('master').get(pk=order.pk)
+    order = SR.objects.select_for_update(of=('self',)).select_related('master').get(pk=order.pk)
     if not can_set(order):
         raise ScheduleError(_("Kelish vaqtini hozir o'zgartirib bo'lmaydi."))
     if when < now - timedelta(minutes=5):

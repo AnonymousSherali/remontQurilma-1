@@ -7,6 +7,7 @@
     <span>🟩 {% translate "Ustaga chiqarilgan" %}: <strong>{{ money.released|floatformat:0|intcomma }}</strong></span>
     <span>🟨 {% translate "Ushlab turilibdi" %}: <strong>{{ money.held|floatformat:0|intcomma }}</strong></span>
     <span>{% translate "Jami" %}: <strong>{{ money.total|floatformat:0|intcomma }} {% translate "so'm" %}</strong></span>
+    {% if money.discount %}<span>🎟 {% translate "Chegirma" %}: <strong>−{{ money.discount|floatformat:0|intcomma }}</strong>{% if side == 'master' %} <span class="muted">({% translate "platforma hisobidan, sizga to'liq" %})</span>{% endif %}</span>{% endif %}
   </div>
   <div style="margin-top:.5rem">
   {% for m in milestones %}
@@ -17,7 +18,7 @@
         {% if side == 'master' %}<span class="muted small">· {% translate "sizga" %} {{ m.master_amount|floatformat:0|intcomma }} ({% translate "komissiya" %} {{ m.fee_percent|floatformat:0 }}%)</span>{% endif %}
       </div>
       <div style="text-align:right">
-        <div class="milestone__amount">{{ m.amount|floatformat:0|intcomma }} {% translate "so'm" %}</div>
+        <div class="milestone__amount">{% if m.discount and side == 'customer' %}<s class="muted small" style="font-weight:400">{{ m.amount|floatformat:0|intcomma }}</s> {{ m.amount_due|floatformat:0|intcomma }}{% else %}{{ m.amount|floatformat:0|intcomma }}{% endif %} {% translate "so'm" %}</div>
         {% if side == 'customer' %}
           {% if m.can_pay %}
             <form method="post" action="{% url 'repair_service:milestone_pay' order.review_token m.pk %}">{% csrf_token %}

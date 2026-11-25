@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.core.cache import cache
 from django.db import transaction
@@ -27,8 +29,10 @@ FALLBACK_BRANDS = [
     ], start=1)
 ]
 
+logger = logging.getLogger(__name__)
 
-def _landing_context():
+
+def _landing_context(promo=''):
     categories = (
         Category.objects.filter(is_active=True)
         .annotate(masters_total=Count('masters', filter=Q(masters__is_verified=True), distinct=True))
@@ -69,14 +73,16 @@ def _landing_context():
         'brands': Brand.objects.filter(is_active=True),
         'fallback_brands': FALLBACK_BRANDS[:18],
         'districts': DISTRICT_CHOICES,
-        'form': ServiceRequestForm(),
+        'form': ServiceRequestForm(initial={'promo_code': promo} if promo else None),
         'status_timeline': workflow.showcase_timeline(),
     }
 
 
 def index(request):
     """Bosh sahifa"""
-    return render(request, 'index.html', _landing_context())
+    from masters.seo import site_jsonld
+    promo = request.GET.get('promo', '')[:32]   # do'st bergan taklif havolasi: /?promo=KOD
+    return render(request, 'index.html', {**_landing_context(promo), 'jsonld': site_jsonld(request)})
 
 
 def _client_ip(request):
@@ -94,6 +100,21 @@ def _rate_limited(request):
         return True
     cache.set(key, count + 1, timeout=600)
     return False
+
+
+def create_order(form, note=''):
+    """Tekshirilgan formadan buyurtma yaratadi va xabarnomalarni navbatga qo'yadi (ariza va qayta chaqirish)."""
+    service_request = form.save(commit=False)
+    service_request.language = get_language() or settings.LANGUAGE_CODE
+    service_request.save()
+    workflow.record(service_request, ServiceRequest.STATUS_NEW, workflow.CUSTOMER, note=note)
+    code = form.cleaned_data.get('promo_code')
+    if code:
+        from payments import promos
+        promos.apply(service_request, code)   # formada tekshirilgan
+    transaction.on_commit(lambda: notify_new_request(service_request))
+    transaction.on_commit(lambda: notify_order_created(service_request))
+    return service_request
 
 
 @require_POST
@@ -116,12 +137,12 @@ def submit_request(request):
         context.update({'errors': errors, 'form': form})
         return render(request, 'index.html', context, status=400)
 
-    service_request = form.save(commit=False)
-    service_request.language = get_language() or settings.LANGUAGE_CODE
-    service_request.save()
-    workflow.record(service_request, ServiceRequest.STATUS_NEW, workflow.CUSTOMER)
-    transaction.on_commit(lambda: notify_new_request(service_request))
-    transaction.on_commit(lambda: notify_order_created(service_request))
+    service_request = create_order(form)
+    from .analytics import stamp_order
+    stamp_order(request, service_request)
+    if form.cleaned_data.get('marketing'):
+        from .marketing import subscribe
+        subscribe(service_request.phone, service_request.language, 'ariza')
 
     if service_request.master:
         message = _("Arizangiz %(master)sga yuborildi. Usta tez orada qo'ng'iroq qiladi.") % {
@@ -183,7 +204,7 @@ def catalog(request):
 
 # ---------- Yuridik sahifalar ----------
 
-LEGAL_UPDATED = '12.11.2026'   # matn o'zgarganda yangilang
+LEGAL_UPDATED = '25.11.2026'   # matn o'zgarganda yangilang
 
 
 def _legal(request, template, title):
@@ -194,7 +215,9 @@ def _legal(request, template, title):
             'fee_percent': f'{settings.PLATFORM_FEE_PERCENT:g}', 'pro_fee_percent': f'{settings.PRO_FEE_PERCENT:g}',
             'auto_confirm_hours': settings.AUTO_CONFIRM_HOURS, 'auto_release_hours': settings.AUTO_RELEASE_HOURS,
             'warranty_days': settings.WARRANTY_DAYS, 'warranty_response_hours': settings.WARRANTY_RESPONSE_HOURS,
-            'guarantee_max': settings.GUARANTEE_MAX_AMOUNT,
+            'guarantee_max': settings.GUARANTEE_MAX_AMOUNT, 'id_keep_days': settings.ID_DOCUMENTS_KEEP_DAYS,
+            'promo_max_share': settings.PROMO_MAX_SHARE_PERCENT,
+            'analytics_days': settings.ANALYTICS_RETENTION_DAYS,
         },
     })
 
@@ -206,3 +229,27 @@ def offer(request):
 
 def privacy(request):
     return _legal(request, 'legal/privacy.html', _('Maxfiylik siyosati'))
+
+
+def healthz(request):
+    """Monitoring va yuk balansirovkasi uchun: ma'lumotlar bazasi va kesh ishlayaptimi."""
+    from django.core.cache import cache
+    from django.db import connection
+    status = {}
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT 1')
+        status['db'] = 'ok'
+    except Exception:  # noqa: BLE001 — sababini logga, javobga emas
+        logger.exception('healthz: database')
+        status['db'] = 'error'
+    try:
+        cache.set('healthz', '1', 10)
+        status['cache'] = 'ok' if cache.get('healthz') == '1' else 'error'
+    except Exception:  # noqa: BLE001
+        logger.exception('healthz: cache')
+        status['cache'] = 'error'
+    ok = all(v == 'ok' for v in status.values())
+    response = JsonResponse({'status': 'ok' if ok else 'error', **status}, status=200 if ok else 503)
+    response['Cache-Control'] = 'no-store'
+    return response

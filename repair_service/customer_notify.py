@@ -25,8 +25,16 @@ def _customer_link(order):
         return _absolute(order.get_customer_url())
 
 
+def _push(subscriptions, order, text, url):
+    """Brauzer bildirishnomasi (obuna bo'lsa) — SMS/Telegram'ga qo'shimcha, bepul."""
+    from . import webpush
+    webpush.notify(subscriptions, f"{settings.SITE_INFO['name']} · #{order.pk}", text, url)
+
+
 def _to_customer(order, text):
-    """Telegram ulangan bo'lsa — Telegram (bepul), aks holda SMS."""
+    """Telegram ulangan bo'lsa — Telegram (bepul), aks holda SMS. Push obunasi bo'lsa — qo'shimcha."""
+    from .models import PushSubscription
+    _push(PushSubscription.objects.filter(phone=order.phone), order, text, order.get_customer_url())
     if order.telegram_chat_id:
         from telegram_bot import client
         with translation.override(order.language or 'uz'):
@@ -38,6 +46,7 @@ def _to_customer(order, text):
 def _to_master(order, sms_text, with_card=False):
     """Usta Telegram'ga ulangan bo'lsa — buyurtma kartasi va keyingi qadam tugmasi bilan."""
     master = order.master
+    _push(master.push_subscriptions.all(), order, sms_text, order.get_master_url())
     if master.telegram_chat_id:
         from telegram_bot import client
         from telegram_bot.handlers import master_buttons, order_card

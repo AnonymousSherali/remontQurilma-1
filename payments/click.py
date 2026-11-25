@@ -122,7 +122,8 @@ def prepare(request):
 
     payment, _created = Payment.objects.get_or_create(
         provider=Payment.PROVIDER_CLICK, provider_id=str(data.get('click_trans_id')),
-        defaults={'amount': payable.amount, **payable.fk},
+        defaults={'amount': payable.amount, 'provider_doc_id': str(data.get('click_paydoc_id', ''))[:64],
+                  **payable.fk},
     )
     if payables.account_key(payment) != payable.key:
         return _reply(data, ERR_REQUEST)

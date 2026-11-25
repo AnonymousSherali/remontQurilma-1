@@ -78,8 +78,8 @@ def next_master_action(order):
     return None
 
 
-def record(order, status, actor, note=''):
-    return OrderEvent.objects.create(order=order, status=status, actor=actor, note=note[:500])
+def record(order, status, actor, note='', master=None):
+    return OrderEvent.objects.create(order=order, status=status, actor=actor, note=note[:500], master=master)
 
 
 @transaction.atomic
@@ -117,9 +117,14 @@ def apply(order, actor, action, note=''):
 
     if target == SR.STATUS_CONFIRMED:
         payments.release_on_confirm(order)
+        from payments.promos import on_confirmed
+        transaction.on_commit(lambda: on_confirmed(order))   # referal mukofotlari
 
     from .customer_notify import notify_status_change
     transaction.on_commit(lambda: notify_status_change(order, actor))
+    if target == SR.STATUS_DISPUTED:
+        from .disputes import notify_admin_opened
+        transaction.on_commit(lambda: notify_admin_opened(order, note))
     return order
 
 
@@ -140,11 +145,14 @@ def release_to_feed(order, note=''):
     order.status = SR.STATUS_NEW
     order.open_since = timezone.now()
     order.save(update_fields=['master', 'status', 'open_since', 'updated_at'])
-    record(order, SR.STATUS_NEW, MASTER, note or _('Usta voz kechdi: %(name)s') % {'name': master.full_name})
+    record(order, SR.STATUS_NEW, MASTER, note or _('Usta voz kechdi: %(name)s') % {'name': master.full_name},
+           master=master)
 
     from .customer_notify import notify_open_order, notify_status_change
     transaction.on_commit(lambda: notify_status_change(order, MASTER))
     transaction.on_commit(lambda: notify_open_order(order))
+    from masters.reliability import update as update_reliability
+    transaction.on_commit(lambda: update_reliability(master))   # voz kechish balga darhol ta'sir qiladi
     return order
 
 

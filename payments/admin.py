@@ -3,11 +3,12 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import path, reverse
 from django.utils import timezone
+from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import action, display
 
-from . import payouts, services, tariffs
-from .models import Milestone, Payment, Payout, Purchase, Quote
+from . import payouts, refunds, services, tariffs
+from .models import Milestone, Payment, Payout, PromoCode, PromoRedemption, Purchase, Quote, Refund
 
 STATE_COLORS = {"To'lanmagan": 'default', 'Ushlab turilibdi': 'warning', 'Ustaga chiqarildi': 'success',
                 'Qaytarildi': 'danger'}
@@ -32,7 +33,7 @@ class MilestoneAdmin(ModelAdmin):
                     'released_at', 'paid_out_at']
     list_filter = ['state', 'order__status']
     search_fields = ['order__id', 'order__name', 'order__phone', 'order__master__full_name']
-    readonly_fields = ['order', 'position', 'title', 'amount', 'release_status', 'fee_percent', 'state',
+    readonly_fields = ['order', 'position', 'title', 'amount', 'discount', 'release_status', 'fee_percent', 'state',
                        'held_at', 'released_at', 'refunded_at']
     inlines = [PaymentInline]
     actions = ['force_release', 'refund', 'mark_paid_out']
@@ -63,7 +64,8 @@ class MilestoneAdmin(ModelAdmin):
         for m in queryset.filter(state=Milestone.STATE_HELD):
             services.refund(m)
             count += 1
-        messages.warning(request, f"{count} ta bosqich 'qaytarildi' deb belgilandi. Pulni Payme kabinetidan qaytaring.")
+        messages.warning(request, f"{count} ta bosqich mijozga qaytarishga yuborildi — «Pul qaytarishlar» "
+                                  "navbatini ko'ring.")
 
     @action(description="Ustaning kartasiga o'tkazildi deb belgilash", icon='account_balance')
     def mark_paid_out(self, request, queryset):
@@ -146,16 +148,34 @@ def _xlsx_response(data, name):
 class PayoutAdmin(ModelAdmin):
     """Ustalarga o'tkazmalar tarixi. Yangi o'tkazma — «To'lanishi kerak» sahifasida."""
 
-    list_display = ['created_at', 'master', 'amount_display', 'fee_display', 'count', 'card_display', 'note',
-                    'created_by']
-    list_filter = ['created_at']
+    list_display = ['created_at', 'master', 'amount_display', 'status_badge', 'paid_at', 'fee_display', 'count',
+                    'card_display', 'note', 'created_by']
+    list_filter = ['status', 'created_at']
     list_filter_submit = True
     search_fields = ['master__full_name', 'master__phone', 'note', 'card']
     date_hierarchy = 'created_at'
-    readonly_fields = ['master', 'amount', 'gross', 'fee', 'count', 'card', 'holder', 'created_at', 'created_by',
-                       'orders']
+    readonly_fields = ['master', 'amount', 'gross', 'fee', 'count', 'card', 'holder', 'status', 'provider',
+                       'provider_ref', 'created_at', 'paid_at', 'created_by', 'orders']
     fields = readonly_fields + ['note']
-    actions = ['export_xlsx']
+    actions = ['confirm_paid', 'cancel_prepared', 'export_xlsx']
+
+    @display(description='Holat', ordering='status', label={
+        "Tayyorlangan — o'tkazilishi kerak": 'warning', "O'tkazildi": 'success', "O'tkazilmadi": 'danger'})
+    def status_badge(self, obj):
+        return obj.get_status_display()
+
+    @action(description="O'tkazildi deb belgilash (ustaga xabar boradi)", icon='task_alt')
+    def confirm_paid(self, request, queryset):
+        count = 0
+        for payout in queryset.exclude(status=Payout.STATUS_PAID):
+            payouts.confirm(payout, request.user)
+            count += 1
+        messages.success(request, f"{count} ta o'tkazma tasdiqlandi, ustalarga xabar yuborildi.")
+
+    @action(description="Tayyorlanganni bekor qilish (keyingi haftaga)", icon='undo')
+    def cancel_prepared(self, request, queryset):
+        count = sum(1 for payout in queryset if payouts.cancel_prepared(payout))
+        messages.info(request, f"{count} ta tayyorlangan o'tkazma bekor qilindi — summa yana «to'lanishi kerak».")
 
     def has_add_permission(self, request):
         return False
@@ -177,6 +197,11 @@ class PayoutAdmin(ModelAdmin):
         rows = payouts.pending()
         if request.GET.get('format') == 'xlsx':
             return _xlsx_response(payouts.pending_xlsx(rows), 'tolanishi-kerak')
+        if request.method == 'POST' and request.POST.get('prepare'):
+            created = payouts.prepare_weekly(force=True)
+            messages.success(request, f"Tayyorlandi: {len(created)} ta o'tkazma. Ularni bank orqali o'tkazib, "
+                                      "«O'tkazmalar tarixi» da «O'tkazildi» deb belgilang.")
+            return redirect(reverse('admin:payments_payout_changelist') + '?status__exact=prepared')
         if request.method == 'POST':
             ids = [int(v) for v in request.POST.getlist('master') if v.isdigit()]
             allowed = {r['master'].pk for r in rows if r['has_card']}
@@ -192,7 +217,8 @@ class PayoutAdmin(ModelAdmin):
             row['card'] = payouts.card_display(row['master'].payout_card)
         return render(request, 'admin/payouts_pending.html', {
             **self.admin_site.each_context(request), 'title': "Ustalarga to'lanishi kerak",
-            'rows': rows, 'totals': payouts.totals(rows),
+            'rows': rows, 'totals': payouts.totals(rows), 'next_payout': payouts.next_payout_date(),
+            'prepared': Payout.objects.filter(status=Payout.STATUS_PREPARED).count(),
         })
 
     @display(description="O'tkazilgan", ordering='amount')
@@ -214,3 +240,125 @@ class PayoutAdmin(ModelAdmin):
     @action(description="Tanlanganlarni Excel'ga yuklash", icon='download')
     def export_xlsx(self, request, queryset):
         return _xlsx_response(payouts.history_xlsx(queryset), 'otkazmalar')
+
+
+class PromoRedemptionInline(TabularInline):
+    model = PromoRedemption
+    extra = 0
+    can_delete = False
+    fields = ['order', 'phone', 'discount', 'rewarded', 'created_at']
+    readonly_fields = fields
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(PromoCode)
+class PromoCodeAdmin(ModelAdmin):
+    """Aksiyalar (admin yaratadi), mijozlarning referal kodlari va mukofot kodlari."""
+
+    list_display = ['code', 'purpose', 'discount_display', 'uses', 'first_order_only', 'valid_until', 'is_active']
+    list_filter = ['purpose', 'is_active', 'kind']
+    list_filter_submit = True
+    list_editable = ['is_active']
+    search_fields = ['code', 'owner_phone', 'only_phone']
+    readonly_fields = ['created_at', 'total_discount']
+    inlines = [PromoRedemptionInline]
+    fieldsets = [
+        (None, {'fields': ['code', 'purpose', 'is_active']}),
+        ('Chegirma', {'fields': [('kind', 'value'), ('max_discount', 'min_amount')],
+                      'description': "Chegirma platforma hisobidan: mijoz kamroq to'laydi, usta to'liq oladi. "
+                                     "Faqat onlayn to'lovda va narxning PROMO_MAX_SHARE_PERCENT foizigacha."}),
+        ('Cheklovlar', {'fields': [('valid_from', 'valid_until'), ('max_uses', 'per_phone_limit'),
+                                   'first_order_only', ('owner_phone', 'only_phone')]}),
+        ('Natija', {'fields': ['total_discount', 'created_at']}),
+    ]
+
+    def get_queryset(self, request):
+        from django.db.models import Count
+        return super().get_queryset(request).annotate(n_uses=Count('redemptions'))
+
+    @display(description='Chegirma')
+    def discount_display(self, obj):
+        text = f'{obj.value:.0f}%' if obj.kind == PromoCode.KIND_PERCENT else f"{obj.value:,.0f} so'm".replace(',', ' ')
+        if obj.max_discount:
+            text += f" (≤ {obj.max_discount:,.0f})".replace(',', ' ')
+        return text
+
+    @display(description='Ishlatilgan', ordering='n_uses')
+    def uses(self, obj):
+        return f'{obj.n_uses} / {obj.max_uses}' if obj.max_uses else obj.n_uses
+
+    @display(description="Berilgan chegirma (so'm)")
+    def total_discount(self, obj):
+        total = sum((r.discount for r in obj.redemptions.all()), 0)
+        return f'{total:,.0f}'.replace(',', ' ')
+
+
+@admin.register(Refund)
+class RefundAdmin(ModelAdmin):
+    """Mijozga pul qaytarish navbati. Payme/Uzum kabinetidan bekor qilinganda o'zi yopiladi."""
+
+    list_display = ['order_link', 'amount_display', 'provider', 'transaction', 'status_badge', 'method', 'created_at',
+                    'done_at']
+    list_filter = ['status', 'method', 'payment__provider']
+    search_fields = ['milestone__order__id', 'milestone__order__phone', 'payment__provider_id']
+    readonly_fields = ['milestone', 'payment', 'amount', 'status', 'method', 'created_at', 'done_at', 'how_to']
+    fields = ['milestone', 'payment', 'amount', 'status', 'method', 'how_to', 'note', 'created_at', 'done_at']
+    actions = ['mark_done', 'retry_click']
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('milestone__order', 'payment')
+
+    @display(description='Buyurtma')
+    def order_link(self, obj):
+        order = obj.milestone.order
+        return format_html('<a href="{}">#{}</a> · {}', reverse('admin:repair_service_servicerequest_change',
+                                                                  args=[order.pk]), order.pk, order.phone)
+
+    @display(description="Summa", ordering='amount')
+    def amount_display(self, obj):
+        return f"{obj.amount:,.0f} so'm".replace(',', ' ')
+
+    @display(description='Tizim')
+    def provider(self, obj):
+        return obj.payment.get_provider_display() if obj.payment else '—'
+
+    @display(description='Tranzaksiya')
+    def transaction(self, obj):
+        return obj.payment.provider_id if obj.payment else '—'
+
+    @display(description='Holat', ordering='status', label={
+        'Qaytarilishi kerak': 'warning', 'Qaytarildi': 'success', "Avtomatik qaytarilmadi — qo'lda": 'danger'})
+    def status_badge(self, obj):
+        return obj.get_status_display()
+
+    @display(description='Qanday qaytariladi')
+    def how_to(self, obj):
+        return refunds.instructions(obj)
+
+    @action(description="Qaytarildi deb belgilash (kabinetdan qo'lda qaytarilgan)", icon='task_alt')
+    def mark_done(self, request, queryset):
+        count = 0
+        for refund in queryset.exclude(status=Refund.STATUS_DONE):
+            refunds.mark_manual(refund, f'{request.user}')
+            count += 1
+        messages.success(request, f'{count} ta qaytarish yopildi, mijozlarga xabar yuborildi.')
+
+    @action(description='Click orqali qaytarish (API)', icon='undo')
+    def retry_click(self, request, queryset):
+        from django.conf import settings
+        if not settings.CLICK_SECRET_KEY:
+            messages.error(request, "Click sozlanmagan.")
+            return
+        done = 0
+        for refund in queryset.exclude(status=Refund.STATUS_DONE).filter(payment__provider=Payment.PROVIDER_CLICK):
+            if refunds.click_reversal(refund).status == Refund.STATUS_DONE:
+                done += 1
+        messages.info(request, f"Click orqali qaytarildi: {done}. Qolganlari uchun izohga qarang.")

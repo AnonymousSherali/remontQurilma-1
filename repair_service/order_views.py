@@ -22,6 +22,7 @@ from payments.providers import checkout_url, choices as payment_choices
 
 from . import photos as photo_rules
 from . import chat, schedule, warranty, workflow
+from .marketing import is_subscribed as marketing_subscribed
 from .models import OrderPhoto, ServiceRequest, WarrantyClaim
 
 
@@ -61,6 +62,9 @@ def order_detail(request, token):
                         reverse('repair_service:order_photo_upload', args=[order.review_token]),
                         'repair_service:order_photo_delete', [order.review_token]),
         'show_master_phone': order.master and order.status != ServiceRequest.STATUS_NEW,
+        **promo_context(request, order, can_act),
+        'marketing_on': can_act and marketing_subscribed(order.phone),
+        'reorder': reorder_target(order) if order.status == ServiceRequest.STATUS_CONFIRMED else (None, 'status'),
         **warranty.context(order),
         **chat.context(order, chat.CUSTOMER, can_act),
         'chat_url': reverse('repair_service:order_chat', args=[order.review_token]),
@@ -75,6 +79,9 @@ def order_action(request, token, action):
         messages.error(request, _('Avval telefon raqamingizni SMS kod bilan tasdiqlang.'))
         return redirect(order.get_customer_url())
 
+    if action == 'dispute' and len(request.POST.get('note', '').strip()) < 10:
+        messages.error(request, _('Muammoni qisqacha yozing (kamida 10 ta belgi) — administrator shunga qarab qaror qiladi.'))
+        return redirect(order.get_customer_url())
     if action == 'confirm':
         # Tasdiqlash baho bilan birga — baho sahifasi o'zi tasdiqlaydi
         if order.status == ServiceRequest.STATUS_COMPLETED and order.can_be_reviewed:
@@ -136,6 +143,76 @@ def milestone_release(request, token, milestone_id):
                         note=_("To'lov chiqarildi: %(t)s") % {'t': milestone.title})
         messages.success(request, _("Mablag' ustaga chiqarildi. Rahmat!"))
     return redirect(order.get_customer_url())
+
+
+def promo_context(request, order, can_act):
+    from payments import promos
+    from payments.models import PromoRedemption
+    redemption = PromoRedemption.objects.filter(order=order).select_related('promo').first()
+    referral = None
+    if can_act and order.status == ServiceRequest.STATUS_CONFIRMED and promos.can_refer(order.phone):
+        code = promos.referral_code_for(order.phone)
+        link = request.build_absolute_uri(reverse('repair_service:index') + f'?promo={code.code}')
+        referral = {'code': code, 'link': link, 'used': code.redemptions.count(),
+                    'percent': code.value, 'max': code.max_discount}
+    return {
+        'promo': redemption,
+        'promo_discount': promos.total_discount(order),
+        'promo_can_change': can_act and promos.can_apply(order),
+        'referral': referral,
+    }
+
+
+@require_POST
+def marketing_toggle(request, token):
+    from . import marketing
+    order = _order_by_token(token)
+    if not _can_act(request, order):
+        raise Http404
+    if request.POST.get('on'):
+        marketing.subscribe(order.phone, order.language, 'buyurtma')
+        messages.success(request, _('Aksiyalar haqida xabar olasiz. Istalgan vaqtda bekor qilish mumkin.'))
+    else:
+        marketing.unsubscribe(phone=order.phone)
+        messages.info(request, _("Aksiya xabarlari o'chirildi."))
+    return redirect(order.get_customer_url() + '#aksiyalar')
+
+
+def unsubscribe_page(request, token):
+    """Xabardagi havola: ochilganda emas, tugma bosilganda bekor qilinadi (havola ko'rinishini oldindan
+    yuklaydigan messenjerlar tasodifan obunani o'chirib yubormasligi uchun)."""
+    from . import marketing
+    from .models import MarketingConsent
+    consent = get_object_or_404(MarketingConsent, token=token)
+    done = False
+    if request.method == 'POST':
+        marketing.unsubscribe(token=token)
+        done = True
+    return render(request, 'orders/unsubscribe.html', {'consent': consent, 'done': done or not consent.is_active})
+
+
+@require_POST
+def promo_apply(request, token):
+    from payments import promos
+    order = _order_by_token(token)
+    if not _can_act(request, order):
+        raise Http404
+    if request.POST.get('remove'):
+        promos.remove(order)
+        messages.info(request, _("Promo-kod olib tashlandi."))
+        return redirect(order.get_customer_url() + '#promo')
+    try:
+        redemption = promos.apply(order, request.POST.get('code', ''))
+    except promos.PromoError as error:
+        messages.error(request, str(error))
+    else:
+        if redemption.discount:
+            messages.success(request, _("Promo-kod qo'llandi: %(d)s so'm chegirma.") % {
+                'd': f'{int(redemption.discount):,}'.replace(',', ' ')})
+        else:
+            messages.success(request, _("Promo-kod saqlandi. Chegirma usta narx taklif qilgach, onlayn to'lovda "
+                                        "hisoblanadi."))
+    return redirect(order.get_customer_url() + '#promo')
 
 
 def chat_endpoint(request, order, viewer, back_url):
@@ -201,13 +278,88 @@ def warranty_action(request, token, claim_id, action):
     return redirect(order.get_customer_url() + '#kafolat')
 
 
+def reorder_target(order):
+    """Shu buyurtma ustasini qayta chaqirish mumkinmi: (usta, sabab). Mumkin bo'lsa sabab None."""
+    from masters.models import Master
+    if order.master_id is None or order.status != ServiceRequest.STATUS_CONFIRMED:
+        return None, 'status'
+    master = Master.objects.public().filter(pk=order.master_id).first()
+    if master is None:
+        return None, 'gone'
+    if not master.is_available:
+        return master, 'busy'
+    return master, None
+
+
+def reorder(request, token):
+    """«Shu ustani qayta chaqirish»: ism, telefon, manzil va joylashuv avvalgi buyurtmadan olinadi."""
+    from .forms import ServiceRequestForm
+    from .views import _rate_limited, create_order
+    order = _order_by_token(token)
+    if not _can_act(request, order):
+        messages.error(request, _('Avval telefon raqamingizni SMS kod bilan tasdiqlang.'))
+        return redirect(order.get_customer_url())
+    master, problem = reorder_target(order)
+    if problem:
+        if problem == 'busy':
+            messages.warning(request, _("%(name)s hozir buyurtma qabul qilmayapti. Boshqa ustani tanlang.") % {
+                'name': master.full_name})
+        elif problem == 'gone':
+            messages.warning(request, _("Bu usta hozir saytda ishlamayapti. Boshqa ustani tanlang."))
+        else:
+            raise Http404
+        url = reverse('masters:list') + (f'?category={order.category.slug}' if order.category else '')
+        return redirect(url)
+
+    category = order.category if order.category and master.categories.filter(pk=order.category_id).exists() \
+        else master.categories.order_by('order').first()
+    form = None
+    if request.method == 'POST':
+        if _rate_limited(request):
+            messages.error(request, _("Juda ko'p ariza yuborildi. Iltimos, birozdan keyin urinib ko'ring."))
+            return redirect(order.get_customer_url())
+        data = {
+            'name': order.name, 'phone': order.phone, 'master': master.pk,
+            'category': category.pk if category else '',
+            'address': request.POST.get('address', order.address),
+            'district': order.district,
+            'latitude': str(order.latitude) if order.latitude is not None else '',
+            'longitude': str(order.longitude) if order.longitude is not None else '',
+            'problem_description': request.POST.get('problem_description', ''),
+            'preferred_date': request.POST.get('preferred_date', ''),
+            'preferred_slot': request.POST.get('preferred_slot', ''),
+            'consent': request.POST.get('consent', ''),
+        }
+        form = ServiceRequestForm(data)
+        if form.is_valid():
+            new = create_order(form, note=_('Qayta chaqiruv: #%(id)s') % {'id': order.pk})
+            ServiceRequest.objects.filter(pk=new.pk).update(source='qayta', medium='reorder')
+            if order.telegram_chat_id:   # Telegram'da kuzatayotgan bo'lsa — yangi buyurtma ham o'sha chatga
+                ServiceRequest.objects.filter(pk=new.pk).update(telegram_chat_id=order.telegram_chat_id)
+            messages.success(request, _("Buyurtma %(name)sga yuborildi. Usta tez orada bog'lanadi.") % {
+                'name': master.full_name})
+            return redirect(new.get_customer_url())
+    if form is None:
+        form = ServiceRequestForm(initial={'address': order.address})
+    return render(request, 'orders/reorder.html', {
+        'order': order, 'master': master, 'category': category, 'form': form,
+    })
+
+
 def my_orders(request):
     """SMS kod bilan tasdiqlangan raqam(lar)ga tegishli barcha buyurtmalar."""
     phones = otp.verified_phones(request)
-    orders = (
+    orders = list(
         ServiceRequest.objects.filter(phone__in=phones).select_related('master', 'category')
         if phones else ServiceRequest.objects.none()
     )
+    # Bir ustani faqat eng so'nggi tasdiqlangan buyurtmasida qayta chaqirish tugmasi
+    seen = set()
+    for item in orders:
+        item.can_reorder = (item.status == ServiceRequest.STATUS_CONFIRMED and item.master_id
+                            and item.master_id not in seen and item.master.is_verified)
+        if item.can_reorder:
+            seen.add(item.master_id)
     return render(request, 'orders/my_orders.html', {'orders': orders, 'phones': phones})
 
 

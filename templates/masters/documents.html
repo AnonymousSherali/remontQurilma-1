@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Shaxsni tasdiqlash" %} | {{ SITE.name }}{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}{% endblock %}
+{% block mobile_cta %}{% endblock %}
+
+{% block content %}
+<div class="container auth-wrap">
+  <div class="card card--raised auth-card auth-card--wide">
+    <a href="{% url 'masters:dashboard' %}" class="btn btn--ghost btn--sm">← {% translate "Kabinet" %}</a>
+    <h1 style="font-size:1.9rem;margin-top:1rem">🪪 {% translate "Shaxsni tasdiqlash" %}</h1>
+    <p class="muted">{% translate "Mijozlar uyiga begona odamni kiritadi — shuning uchun har bir ustaning shaxsini tekshiramiz. Tasdiqlangan ustalar profilida «Hujjatlari tekshirilgan» belgisi chiqadi va ularga ko'proq ishonishadi." %}</p>
+
+    {% if master.id_status == 'approved' %}
+      <div class="alert alert--success"><div><strong>✓ {% translate "Hujjatlaringiz tasdiqlangan" %}</strong>{% if master.id_checked_at %} · {{ master.id_checked_at|date:"d.m.Y" }}{% endif %}</div></div>
+    {% elif master.id_status == 'pending' %}
+      <div class="alert alert--info"><div><strong>⏳ {% translate "Tekshirilmoqda" %}</strong> — {% translate "administrator 1 ish kuni ichida ko'rib chiqadi. Natija haqida xabar olasiz." %}</div></div>
+    {% elif master.id_status == 'rejected' %}
+      <div class="alert alert--error"><div><strong>{% translate "Hujjatlar qabul qilinmadi" %}:</strong> {{ master.id_note }}. {% translate "Qayta yuklang." %}</div></div>
+    {% endif %}
+
+    {% if uploaded and not can_upload %}
+      <ul class="events" style="margin:1rem 0">
+        {% for d in uploaded %}<li><time>{{ d.created_at|date:"d.m.Y" }}</time><span>✓ {{ d.get_kind_display }}</span></li>{% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if can_upload %}
+    <form method="post" enctype="multipart/form-data" class="form" style="margin-top:1rem">{% csrf_token %}
+      {% for kind, label, required in kinds %}
+        <div class="field">
+          <label for="doc-{{ kind }}">{{ label }}{% if required %} <span class="req" aria-hidden="true">*</span>{% else %} <span class="muted small">({% translate "ixtiyoriy" %})</span>{% endif %}</label>
+          <input type="file" id="doc-{{ kind }}" name="{{ kind }}" accept="image/jpeg,image/png,image/webp" {% if required %}required{% endif %}>
+          {% if kind == 'id' %}<p class="field__help">{% translate "Rasm, F.I.Sh. va hujjat raqami aniq o'qiladigan bo'lsin. Yaltiramasin, burchaklari kesilmasin." %}</p>
+          {% elif kind == 'selfie' %}<p class="field__help">{% translate "Hujjatni yuzingiz yonida ushlab rasmga tushing — yuz va hujjat aniq ko'rinsin." %}</p>{% endif %}
+        </div>
+      {% endfor %}
+      <div class="alert alert--info"><div>🔒 {% translate "Hujjatlar saytda e'lon qilinmaydi va mijozlarga ko'rsatilmaydi. Ular yopiq joyda saqlanadi va faqat tekshiruvchi administrator ko'radi. Rasmdagi joylashuv ma'lumotlari (GPS) avtomatik o'chiriladi." %} <a href="{% url 'repair_service:privacy' %}" target="_blank" rel="noopener">{% translate "Maxfiylik siyosati" %}</a></div></div>
+      <button class="btn btn--primary btn--lg btn--block">{% translate "Tekshiruvga yuborish" %}</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

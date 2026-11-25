@@ -1,0 +1,46 @@
+name: Testlar
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [sqlite, postgres]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: techservice
+          POSTGRES_PASSWORD: techservice
+          POSTGRES_DB: techservice
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U techservice" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+    env:
+      DATABASE_URL: ${{ matrix.database == 'postgres' && 'postgres://techservice:techservice@127.0.0.1:5432/techservice' || '' }}
+      REDIS_URL: ${{ matrix.database == 'postgres' && 'redis://127.0.0.1:6379/1' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Paketlar
+        run: |
+          sudo apt-get install -y gettext
+          pip install -r requirements.txt -r requirements-prod.txt
+      - name: Migratsiyalar to'liqmi
+        run: python manage.py makemigrations --check --dry-run
+      - name: Tarjimalar kompilyatsiya bo'ladimi
+        run: python manage.py compilemessages -l ru
+      - name: Testlar
+        run: python manage.py test --parallel 1

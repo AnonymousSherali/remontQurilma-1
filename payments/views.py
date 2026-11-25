@@ -28,7 +28,7 @@ def demo_checkout(request, milestone_id):
 
     if request.method == 'POST':
         if milestone.state == Milestone.STATE_PENDING:
-            Payment.objects.create(milestone=milestone, provider=Payment.PROVIDER_DEMO, amount=milestone.amount,
+            Payment.objects.create(milestone=milestone, provider=Payment.PROVIDER_DEMO, amount=milestone.amount_due,
                                    state=Payment.STATE_PERFORMED)
             services.mark_held(milestone)
             messages.success(request, _("To'lov qabul qilindi. Mablag' bosqich bajarilguncha platformada ushlab turiladi."))

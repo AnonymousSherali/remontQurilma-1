@@ -8,15 +8,32 @@ from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
+from django.views.decorators.cache import cache_page
 
+from config.seo_urls import SITEMAPS, robots_txt
+from config.disputes_admin import dispute_detail, dispute_list
 from config.stats import stats_view
 from masters import views as master_views
+from repair_service import analytics, pwa
+from repair_service.views import healthz
 from otp import views as otp_views
 from payments import click, payme, uzum
 from telegram_bot import views as telegram_views
 
 urlpatterns = [
+    path('healthz/', healthz, name='healthz'),
+    path('robots.txt', robots_txt, name='robots_txt'),
+    path('e/', analytics.beacon, name='analytics_beacon'),
+    path('manifest.webmanifest', pwa.manifest, name='manifest'),
+    path('sw.js', pwa.service_worker, name='service_worker'),
+    path('offline/', pwa.offline, name='offline'),
+    path('push/obuna/', pwa.push_subscribe, name='push_subscribe'),
+    path('push/bekor/', pwa.push_unsubscribe, name='push_unsubscribe'),
+    path('sitemap.xml', cache_page(60 * 60)(sitemap), {'sitemaps': SITEMAPS}, name='sitemap'),
+    path('admin/nizolar/', admin.site.admin_view(dispute_list), name='admin_disputes'),
+    path('admin/nizolar/<int:pk>/', admin.site.admin_view(dispute_detail), name='admin_dispute'),
     path('admin/statistika/', admin.site.admin_view(stats_view), name='admin_stats'),
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),  # tilni almashtirish (set_language)

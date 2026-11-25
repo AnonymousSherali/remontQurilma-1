@@ -30,7 +30,7 @@ def search_masters(*, category=None, lat=None, lng=None, radius_km=DEFAULT_RADIU
         for master in results:
             master.distance_km = None
         # TOP (pullik) ustalar birinchi — kartochkada "TOP" belgisi bilan ochiq ko'rsatiladi
-        results.sort(key=lambda m: (not m.is_promoted, -m.ranking_score))
+        results.sort(key=lambda m: (not m.is_promoted, -m.search_score))
         return results
 
     lat_min, lat_max, lng_min, lng_max = bounding_box(lat, lng, radius_km)
@@ -46,10 +46,11 @@ def search_masters(*, category=None, lat=None, lng=None, radius_km=DEFAULT_RADIU
             master.distance_km = round(distance, 1)
             results.append(master)
 
+    # Ishonchliligi past usta (ko'p voz kechadi, kechikadi) bir oz pastga tushadi
     if sort == SORT_RATING:
-        results.sort(key=lambda m: (not m.is_promoted, -m.ranking_score, m.distance_km))
+        results.sort(key=lambda m: (not m.is_promoted, -m.search_score, m.distance_km))
     else:
-        results.sort(key=lambda m: (not m.is_promoted, m.distance_km, -m.ranking_score))
+        results.sort(key=lambda m: (not m.is_promoted, m.distance_km / m.reliability_factor, -m.search_score))
     return results
 
 

@@ -4,6 +4,9 @@ Django settings for TechService project.
 
 from pathlib import Path
 import os
+from urllib.parse import unquote, urlparse
+
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -35,6 +38,12 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
+if not DEBUG and SECRET_KEY.startswith('django-insecure-'):
+    # Standart kalit bilan production'da ishga tushirish — sessiya va parollarni tiklash
+    # havolalarini soxtalashtirishga yo'l ochadi.
+    raise ImproperlyConfigured("DJANGO_SECRET_KEY o'rnatilmagan. Yarating: "
+                               "python -c \"import secrets; print(secrets.token_urlsafe(50))\"")
+
 _allowed = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = [h.strip() for h in _allowed.split(',') if h.strip()] or (['*'] if DEBUG else [])
 
@@ -48,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',  # narxlarni ajratuvchi bilan chiqarish uchun
+    'django.contrib.sitemaps',  # /sitemap.xml
     'repair_service',
     'masters',
     'otp',
@@ -63,6 +73,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'repair_service.analytics.AnalyticsMiddleware',  # manba va tashriflar (o'z bazamizda, DNT hurmat qilinadi)
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -88,17 +99,46 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- Database ---
+# DATABASE_URL bo'lmasa — SQLite (lokal ishlash). Production: PostgreSQL
+#   DATABASE_URL=postgres://techservice:parol@127.0.0.1:5432/techservice
+def database_from_url(url):
+    parsed = urlparse(url)
+    if parsed.scheme in ('postgres', 'postgresql'):
+        return {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': unquote(parsed.path.lstrip('/')),
+            'USER': unquote(parsed.username or ''),
+            'PASSWORD': unquote(parsed.password or ''),
+            'HOST': parsed.hostname or '',
+            'PORT': str(parsed.port or ''),
+            'CONN_MAX_AGE': int(os.environ.get('DATABASE_CONN_MAX_AGE') or 60),
+            'CONN_HEALTH_CHECKS': True,
+        }
+    if parsed.scheme == 'sqlite':
+        return {'ENGINE': 'django.db.backends.sqlite3', 'NAME': unquote(parsed.path) or BASE_DIR / 'db.sqlite3'}
+    raise ImproperlyConfigured(f"DATABASE_URL: qo'llab-quvvatlanmaydigan sxema «{parsed.scheme}»")
+
+
+_database_url = os.environ.get('DATABASE_URL', '')
 DATABASES = {
-    'default': {
+    'default': database_from_url(_database_url) if _database_url else {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-# --- Kesh (spamdan himoya hisoblagichlari uchun) ---
-# Bir nechta gunicorn worker bo'lsa, Redis yoki ma'lumotlar bazasi keshiga o'tkazing:
-# LocMem har bir jarayonda alohida bo'ladi.
-CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
+# --- Kesh ---
+# Kesh spam/SMS cheklovlari, Eskiz tokeni va Telegram rasm navbati uchun ishlatiladi.
+# LocMem har bir gunicorn worker'da alohida — production'da REDIS_URL yoki
+# DJANGO_CACHE=db (python manage.py createcachetable) ishlating.
+_redis_url = os.environ.get('REDIS_URL', '')
+if _redis_url:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.redis.RedisCache', 'LOCATION': _redis_url,
+                          'KEY_PREFIX': 'techservice'}}
+elif os.environ.get('DJANGO_CACHE') == 'db':
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.db.DatabaseCache', 'LOCATION': 'django_cache'}}
+else:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
 
 # --- Password validation ---
 AUTH_PASSWORD_VALIDATORS = [
@@ -125,7 +165,11 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = Path(os.environ.get('DJANGO_MEDIA_ROOT') or BASE_DIR / 'media')  # bo'sh qiymat — standart
+STATIC_ROOT = Path(os.environ.get('DJANGO_STATIC_ROOT') or STATIC_ROOT)
+# Maxfiy fayllar (ustalarning shaxsini tasdiqlovchi hujjatlari) — MEDIA_ROOT dan TASHQARIDA,
+# veb-server ularni hech qachon to'g'ridan-to'g'ri bermaydi; faqat admin ko'rish sahifasi orqali.
+PRIVATE_MEDIA_ROOT = Path(os.environ.get('DJANGO_PRIVATE_MEDIA_ROOT') or BASE_DIR / 'private_media')
 
 # --- Default primary key ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -147,6 +191,25 @@ if not DEBUG:
     X_FRAME_OPTIONS = 'DENY'
     # Nginx/reverse-proxy orqasida HTTPS ni to'g'ri aniqlash uchun
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    # Health-check ichki tarmoqdan HTTP orqali so'raladi — HTTPS'ga yo'naltirilmaydi
+    SECURE_REDIRECT_EXEMPT = [r'^healthz/$']
+    SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+    SESSION_COOKIE_HTTPONLY = True
+
+# --- Loglar ---
+# gunicorn/systemd jurnaliga (journalctl -u techservice) chiqadi.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {'plain': {'format': '%(asctime)s %(levelname)s %(name)s: %(message)s'}},
+    'handlers': {'console': {'class': 'logging.StreamHandler', 'formatter': 'plain'}},
+    'root': {'handlers': ['console'], 'level': os.environ.get('DJANGO_LOG_LEVEL', 'INFO')},
+    'loggers': {
+        'django': {'handlers': ['console'], 'level': os.environ.get('DJANGO_LOG_LEVEL', 'INFO'), 'propagate': False},
+        # 404 lar shovqin — faqat ogohlantirish va xatolar
+        'django.request': {'handlers': ['console'], 'level': 'ERROR', 'propagate': False},
+    },
+}
 
 # --- Kirish ---
 LOGIN_URL = 'masters:login'
@@ -195,6 +258,8 @@ CLICK_SERVICE_ID = os.environ.get('CLICK_SERVICE_ID', '')
 CLICK_MERCHANT_ID = os.environ.get('CLICK_MERCHANT_ID', '')
 CLICK_SECRET_KEY = os.environ.get('CLICK_SECRET_KEY', '')
 CLICK_MERCHANT_USER_ID = os.environ.get('CLICK_MERCHANT_USER_ID', '')
+# Click Merchant API orqali avtomatik pul qaytarish (payment/reversal). Avval Click bilan sinab ko'ring!
+CLICK_AUTO_REFUND = os.environ.get('CLICK_AUTO_REFUND', 'False') == 'True'
 UZUM_SERVICE_ID = os.environ.get('UZUM_SERVICE_ID', '')
 UZUM_LOGIN = os.environ.get('UZUM_LOGIN', '')
 UZUM_PASSWORD = os.environ.get('UZUM_PASSWORD', '')
@@ -228,6 +293,49 @@ VISIT_REMINDER_HOURS = int(os.environ.get('VISIT_REMINDER_HOURS', 2))
 CHAT_OPEN_DAYS = int(os.environ.get('CHAT_OPEN_DAYS', 30))
 # Telegram ulanmagan tomonga yangi xabar haqida SMS — shu oraliqda bir martadan ko'p emas
 CHAT_SMS_INTERVAL_MINUTES = int(os.environ.get('CHAT_SMS_INTERVAL_MINUTES', 30))
+
+# --- Ustalarga haftalik to'lov (payments/payouts.py) ---
+PAYOUT_WEEKDAY = int(os.environ.get('PAYOUT_WEEKDAY') or 0)            # 0 — dushanba … 6 — yakshanba
+PAYOUT_MIN_AMOUNT = int(os.environ.get('PAYOUT_MIN_AMOUNT') or 50000)   # kichik summa keyingi haftaga o'tadi
+PAYOUT_DELAY_HOURS = int(os.environ.get('PAYOUT_DELAY_HOURS') or 24)    # chiqarilgandan keyin kutish
+PAYOUT_PROVIDER = os.environ.get('PAYOUT_PROVIDER') or 'manual'         # payments/payout_providers.py
+
+# --- Promo-kodlar va referal (payments/promos.py). Qiymatlar namunaviy! ---
+# Chegirma platforma hisobidan (usta to'liq oladi) — narxning shu foizidan oshmaydi
+PROMO_MAX_SHARE_PERCENT = int(os.environ.get('PROMO_MAX_SHARE_PERCENT') or 50)
+REFERRAL_DISCOUNT_PERCENT = int(os.environ.get('REFERRAL_DISCOUNT_PERCENT') or 10)     # do'stga
+REFERRAL_MAX_DISCOUNT = int(os.environ.get('REFERRAL_MAX_DISCOUNT') or 50000)
+REFERRAL_REWARD_PERCENT = int(os.environ.get('REFERRAL_REWARD_PERCENT') or 10)         # taklif qilganga
+REFERRAL_REWARD_MAX = int(os.environ.get('REFERRAL_REWARD_MAX') or 50000)
+REFERRAL_REWARD_DAYS = int(os.environ.get('REFERRAL_REWARD_DAYS') or 180)
+MASTER_REFERRAL_TOP_DAYS = int(os.environ.get('MASTER_REFERRAL_TOP_DAYS') or 7)
+
+# --- Ustalar ishonchliligi (masters/reliability.py) ---
+RELIABILITY_WINDOW_DAYS = int(os.environ.get('RELIABILITY_WINDOW_DAYS') or 90)
+RELIABILITY_MIN_ORDERS = int(os.environ.get('RELIABILITY_MIN_ORDERS') or 3)
+
+# --- Ustalar hujjatlari ---
+# Tasdiqlangandan shuncha kun o'tgach pasport/selfi fayllari o'chiriladi (0 — saqlanadi).
+# Muddatni yurist bilan belgilang: kamroq saqlash — kamroq xavf.
+ID_DOCUMENTS_KEEP_DAYS = int(os.environ.get('ID_DOCUMENTS_KEEP_DAYS') or 0)
+
+# --- Brauzer bildirishnomalari (Web Push) ---
+# Kalitlar: python manage.py webpush_keys. Bo'sh bo'lsa — push o'chiq.
+WEBPUSH_PUBLIC_KEY = os.environ.get('WEBPUSH_PUBLIC_KEY', '')
+WEBPUSH_PRIVATE_KEY = os.environ.get('WEBPUSH_PRIVATE_KEY', '')
+WEBPUSH_SUBJECT = os.environ.get('WEBPUSH_SUBJECT', '')   # mailto:... (bo'sh — SITE_EMAIL)
+
+# --- Marketing xabarnomalari (repair_service/marketing.py) ---
+# Faqat shu soatlar oralig'ida (mahalliy vaqt) va har cron'da shuncha xabar
+CAMPAIGN_HOURS = tuple(int(x) for x in (os.environ.get('CAMPAIGN_HOURS') or '9-21').split('-'))
+CAMPAIGN_BATCH = int(os.environ.get('CAMPAIGN_BATCH') or 500)
+
+# --- Tahlil (repair_service/analytics.py) ---
+ANALYTICS_RETENTION_DAYS = int(os.environ.get('ANALYTICS_RETENTION_DAYS') or 180)
+
+# --- SEO ---
+# Sinov serverida True qiling — robots.txt butun saytni qidiruvdan yopadi
+SEO_DISALLOW_ALL = os.environ.get('SEO_DISALLOW_ALL', 'False') == 'True'
 
 # --- Integratsiyalar (ixtiyoriy) ---
 YANDEX_MAPS_API_KEY = os.environ.get('YANDEX_MAPS_API_KEY', '')
@@ -270,6 +378,10 @@ UNFOLD = {
                     {'title': 'Boshqaruv paneli', 'icon': 'dashboard', 'link': reverse_lazy('admin:index')},
                     {'title': 'Statistika', 'icon': 'monitoring', 'link': reverse_lazy('admin_stats')},
                     {
+                        'title': 'Nizolar', 'icon': 'gavel', 'link': reverse_lazy('admin_disputes'),
+                        'badge': 'config.dashboard.badge_disputes',
+                    },
+                    {
                         'title': 'Arizalar', 'icon': 'assignment',
                         'link': reverse_lazy('admin:repair_service_servicerequest_changelist'),
                         'badge': 'config.dashboard.badge_new_requests',
@@ -297,6 +409,9 @@ UNFOLD = {
             {
                 'title': "To'lovlar",
                 'items': [
+                    {'title': 'Pul qaytarishlar', 'icon': 'currency_exchange',
+                     'link': reverse_lazy('admin:payments_refund_changelist'),
+                     'badge': 'config.dashboard.badge_refunds'},
                     {"title": "To'lov bosqichlari", 'icon': 'account_balance_wallet',
                      'link': reverse_lazy('admin:payments_milestone_changelist')},
                     {'title': "Ustalarga to'lanishi kerak", 'icon': 'payments',
@@ -306,6 +421,10 @@ UNFOLD = {
                      'link': reverse_lazy('admin:payments_payout_changelist')},
                     {'title': 'Narx takliflari', 'icon': 'request_quote',
                      'link': reverse_lazy('admin:payments_quote_changelist')},
+                    {'title': 'Xabarnomalar', 'icon': 'campaign',
+                     'link': reverse_lazy('admin:repair_service_campaign_changelist')},
+                    {'title': 'Promo-kodlar', 'icon': 'redeem',
+                     'link': reverse_lazy('admin:payments_promocode_changelist')},
                     {'title': 'Tarif xaridlari', 'icon': 'workspace_premium',
                      'link': reverse_lazy('admin:payments_purchase_changelist')},
                     {'title': 'Tranzaksiyalar', 'icon': 'receipt_long',

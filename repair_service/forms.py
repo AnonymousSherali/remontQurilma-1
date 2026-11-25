@@ -25,6 +25,9 @@ class ServiceRequestForm(forms.ModelForm):
     latitude = forms.CharField(required=False)
     longitude = forms.CharField(required=False)
     district = forms.CharField(required=False)
+    promo_code = forms.CharField(required=False, max_length=32)
+    # Aksiyalar haqida xabar — alohida, ixtiyoriy rozilik (oldindan belgilanmaydi)
+    marketing = forms.BooleanField(required=False)
 
     consent = forms.BooleanField(
         required=True,
@@ -88,6 +91,9 @@ class ServiceRequestForm(forms.ModelForm):
             raise forms.ValidationError(_("Kunni bugundan boshlab 30 kun ichida tanlang"))
         return day
 
+    def clean_promo_code(self):
+        return (self.cleaned_data.get('promo_code') or '').strip().upper()
+
     def clean_quantity(self):
         quantity = self.cleaned_data.get('quantity') or 1
         if not 1 <= quantity <= 999:
@@ -110,6 +116,12 @@ class ServiceRequestForm(forms.ModelForm):
             cleaned['latitude'], cleaned['longitude'] = Decimal(str(round(lat, 6))), Decimal(str(round(lng, 6)))
         else:
             cleaned['latitude'] = cleaned['longitude'] = None
+        if cleaned.get('promo_code') and cleaned.get('phone'):
+            from payments.promos import PromoError, validate
+            try:
+                validate(cleaned['promo_code'], cleaned['phone'])
+            except PromoError as error:
+                self.add_error('promo_code', str(error))
         category = cleaned.get('category')
         if master and not master.is_available:
             self.add_error('master', _('Bu usta hozir buyurtma qabul qilmayapti. Boshqa ustani tanlang.'))

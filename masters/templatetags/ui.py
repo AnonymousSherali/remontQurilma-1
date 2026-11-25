@@ -72,6 +72,27 @@ def telegram_order_link(order):
     return deep_link('o' + order.review_token.hex)
 
 
+@register.simple_tag
+def location_groups():
+    """Toshkent tumanlari va viloyat shaharlari — joriy tilda, tanlov ro'yxatlari uchun."""
+    from masters.locations import location_groups as groups
+    return groups()
+
+
+@register.simple_tag
+def jsonld(data):
+    """Tuzilgan ma'lumot (schema.org) — <script type="application/ld+json">. <, >, & qochiriladi."""
+    import json
+
+    from django.core.serializers.json import DjangoJSONEncoder
+    from django.utils.html import _json_script_escapes
+    from django.utils.safestring import mark_safe
+    if not data:
+        return ''
+    payload = json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii=False).translate(_json_script_escapes)
+    return mark_safe(f'<script type="application/ld+json">{payload}</script>')
+
+
 @register.simple_tag(takes_context=True)
 def url_in_language(context, code):
     """Joriy sahifaning boshqa tildagi manzili (hreflang va til almashtirish uchun)."""
@@ -104,3 +125,12 @@ def absval(value):
         return abs(value)
     except TypeError:
         return value
+
+
+@register.filter
+def get_item(mapping, key):
+    """Lug'atdan kalit bo'yicha qiymat (shablonlarda)."""
+    try:
+        return mapping.get(key)
+    except AttributeError:
+        return None

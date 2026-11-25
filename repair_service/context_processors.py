@@ -1,5 +1,8 @@
 from django.conf import settings
+from django.utils.functional import SimpleLazyObject
 from django.utils.translation import gettext as _
+
+from masters.models import Category
 
 from .phone import format_phone
 
@@ -23,6 +26,10 @@ def _js_i18n():
         'reviews': _('baho'),
         'openProfile': _('Profilni ochish →'),
         'you': _('Siz'),
+        'pushOn': _('🔔 Bildirishnomalar yoqilgan'),
+        'pushOff': _('🔔 Bildirishnomalarni yoqish'),
+        'pushDenied': _("Brauzerda bildirishnomalar taqiqlangan. Sayt sozlamalaridan ruxsat bering."),
+        'pushIos': _("iPhone'da bildirishnoma uchun avval saytni «Ulashish → Bosh ekranga qo'shish» orqali o'rnating."),
     }
 
 
@@ -35,8 +42,12 @@ def site(request):
     info = dict(settings.SITE_INFO)
     info['phone_display'] = format_phone(info.get('phone', ''))
     info['warranty_days'] = settings.WARRANTY_DAYS
+    # Footer'dagi yo'nalishlar havolalari (SEO: ichki havolalar). Faqat shablon ishlatganda so'raladi.
+    info['categories'] = SimpleLazyObject(lambda: list(Category.objects.filter(is_active=True)))
     return {
         'SITE': info,
         'YANDEX_MAPS_API_KEY': getattr(settings, 'YANDEX_MAPS_API_KEY', ''),
+        'MASTER_REFERRAL_TOP_DAYS': settings.MASTER_REFERRAL_TOP_DAYS,
+        'WEBPUSH_PUBLIC_KEY': settings.WEBPUSH_PUBLIC_KEY if settings.WEBPUSH_PRIVATE_KEY else '',
         'js_i18n': _js_i18n(),
     }

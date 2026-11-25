@@ -23,6 +23,7 @@
       <a class="btn {% if open_count %}btn--primary{% endif %}" href="{% url 'masters:feed' %}">📥 {% translate "Ochiq buyurtmalar" %}{% if open_count %} · {{ open_count }}{% endif %}</a>
       <a class="btn" href="{% url 'payments:tariffs' %}">⭐ {% translate "Tariflar" %}{% if master.is_pro %} · PRO{% endif %}{% if master.is_promoted %} · TOP{% endif %}</a>
       <a class="btn" href="{% url 'masters:profile_edit' %}">✏️ {% translate "Profil" %}</a>
+      <a class="btn" href="{% url 'masters:documents' %}">🪪 {% translate "Hujjatlar" %}{% if master.id_status == 'approved' %} ✓{% elif master.id_status == 'pending' %} ⏳{% endif %}</a>
       <a class="btn" href="{{ master.get_absolute_url }}">👁 {% translate "Ommaviy sahifa" %}</a>
       <form method="post" action="{% url 'masters:logout' %}">{% csrf_token %}<button class="btn btn--ghost">{% translate "Chiqish" %}</button></form>
     </div>
@@ -31,6 +32,9 @@
   {% for claim in warranty_claims %}
   <div class="alert alert--warning"><div>🛡 <strong>{% blocktranslate with id=claim.order_id %}#{{ id }} buyurtma bo'yicha kafolat murojaati.{% endblocktranslate %}</strong> {% translate "Mijoz muammo bildirdi — bepul tuzatib bering." %} <a href="{{ claim.order.get_master_url }}#kafolat">{% translate "Ochish" %} →</a></div></div>
   {% endfor %}
+  {% if master.id_status == 'none' or master.id_status == 'rejected' %}
+  <div class="alert alert--warning"><div>🪪 <strong>{% if master.id_status == 'rejected' %}{% translate "Hujjatlaringiz qabul qilinmadi." %}{% else %}{% translate "Shaxsingizni tasdiqlang." %}{% endif %}</strong> {% if master.id_status == 'rejected' %}{{ master.id_note }}. {% endif %}{% translate "Pasport va selfi yuklang — tekshirilgan ustalarga mijozlar ko'proq ishonadi." %} <a href="{% url 'masters:documents' %}">{% translate "Yuklash" %} →</a></div></div>
+  {% endif %}
   {% if balance and not master.payout_card %}
   <div class="alert alert--warning"><div>💳 <strong>{% translate "Karta kiritilmagan." %}</strong> {% translate "Hisobingizdagi pulni olish uchun profilda karta raqamini kiriting." %} <a href="{% url 'masters:profile_edit' %}#karta">{% translate "Kiritish" %} →</a></div></div>
   {% endif %}
@@ -45,6 +49,27 @@
     <div class="card kpi"><div class="kpi__value">{{ balance|floatformat:0|intcomma }}</div><div class="kpi__label">{% translate "Hisobingizda (so'm)" %}{% if held %} · {% blocktranslate with h=held|floatformat:0|intcomma %}{{ h }} kafolatlangan{% endblocktranslate %}{% endif %}</div></div>
     <div class="card kpi"><div class="kpi__value">{% if master.reviews_count %}★ {{ master.rating_avg|floatformat:1 }}{% else %}—{% endif %}</div><div class="kpi__label">{% blocktranslate count n=master.reviews_count %}{{ n }} ta baho{% plural %}{{ n }} ta baho{% endblocktranslate %}</div></div>
   </div>
+
+  <section class="card reliability" style="margin-bottom:1.5rem">
+    <div class="reliability__head">
+      <div>
+        <div class="card__title" style="margin:0">🛡 {% translate "Ishonchlilik" %}</div>
+        <p class="muted small" style="margin:.25rem 0 0">{% blocktranslate with d=master.reliability_data.window_days|default:90 %}So'nggi {{ d }} kun bo'yicha. Ball qidiruvdagi o'rningizga ta'sir qiladi.{% endblocktranslate %}</p>
+      </div>
+      <div class="reliability__score {% if master.reliability is None %}is-new{% elif master.reliability >= 85 %}is-good{% elif master.reliability >= 60 %}is-mid{% else %}is-low{% endif %}">{% if master.reliability is None %}{% translate "Yangi" %}{% else %}{{ master.reliability }}<small>/100</small>{% endif %}</div>
+    </div>
+    {% with d=master.reliability_data %}
+    <dl class="reliability__grid">
+      <div><dt>{% translate "Qabul qilingan" %}</dt><dd>{{ d.accepted|default:0 }}</dd></div>
+      <div><dt>{% translate "Voz kechilgan" %}</dt><dd>{{ d.declined|default:0 }}</dd></div>
+      <div><dt>{% translate "O'z vaqtida kelish" %}</dt><dd>{% if d.on_time_rate is not None %}{{ d.on_time_rate }}%{% else %}—{% endif %}</dd></div>
+      <div><dt>{% translate "Javob berish" %}</dt><dd>{% if d.response_minutes is not None %}~{{ d.response_minutes }} {% translate "daq" %}{% else %}—{% endif %}</dd></div>
+      <div><dt>{% translate "Nizolar" %}</dt><dd>{{ d.disputes|default:0 }}</dd></div>
+    </dl>
+    {% endwith %}
+    {% if master.reliability is None %}<p class="muted small" style="margin:0">{% translate "Bir nechta buyurtmadan keyin ball paydo bo'ladi. Yangi ustalar qidiruvda jazolanmaydi." %}</p>{% endif %}
+    {% if reliability_tips %}<ul class="small" style="margin:.5rem 0 0;padding-left:1.1rem">{% for t in reliability_tips %}<li>{{ t }}</li>{% endfor %}</ul>{% endif %}
+  </section>
 
   {% if calendar.days or calendar.unscheduled %}
   <section class="card" id="taqvim" style="margin-bottom:1.5rem">
@@ -141,7 +166,25 @@
         <form method="post" action="{% url 'telegram_bot:connect' %}">{% csrf_token %}<button class="btn btn--sm btn--primary">{% translate "Telegram'ni ulash" %}</button></form>
       {% endif %}
       <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
-      <p class="small muted" style="margin:0">💡 {% translate "Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga o'tkazadi." %}</p>
+      <div class="card__title" style="font-size:1rem">📱 {% translate "Telefonda ilova" %}</div>
+      <p class="small muted" style="margin-top:0">{% translate "Saytni telefon ekraniga o'rnating va yangi buyurtma haqida darhol bildirishnoma oling." %}</p>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button type="button" class="btn btn--sm" data-install hidden>⬇ {% translate "Ilovani o'rnatish" %}</button>
+        <button type="button" class="btn btn--sm btn--primary" data-push data-scope="master" hidden>🔔 {% translate "Bildirishnomalarni yoqish" %}</button>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
+      <div class="card__title" style="font-size:1rem">🤝 {% translate "Usta do'stingizni taklif qiling" %}</div>
+      <p class="small muted" style="margin-top:0">{% blocktranslate with d=MASTER_REFERRAL_TOP_DAYS %}Taklif qilgan ustangiz tekshiruvdan o'tib, birinchi buyurtmasini bajarsa — sizga {{ d }} kun bepul TOP.{% endblocktranslate %}</p>
+      <div class="copy-box">
+        <input type="text" id="master-ref" value="{{ referral_link }}" readonly aria-label="{% translate 'Havola' %}">
+        <button type="button" class="btn btn--sm" data-copy="#master-ref">{% translate "Nusxa" %}</button>
+      </div>
+      {% if referrals %}<p class="small" style="margin:.5rem 0 0">{% for r in referrals %}{{ r.full_name }}{% if r.referral_rewarded %} ✓{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+      <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
+      <div class="card__title" style="font-size:1rem">💳 {% translate "To'lovlar" %}</div>
+      <p class="small" style="margin:0">{% blocktranslate with d=next_payout|date:"j-F, l" %}Keyingi to'lov: <strong>{{ d }}</strong>{% endblocktranslate %}</p>
+      {% if payout_in_progress %}<p class="small" style="margin:.25rem 0 0">⏳ {% blocktranslate with a=payout_in_progress|floatformat:0|intcomma %}O'tkazilmoqda: {{ a }} so'm{% endblocktranslate %}</p>{% endif %}
+      <p class="small muted" style="margin:.25rem 0 0">{% if master.payout_card %}{% blocktranslate with c=master.payout_card|slice:"-4:" %}Karta •••• {{ c }}{% endblocktranslate %} · {% endif %}{% blocktranslate with m=payout_min|floatformat:0|intcomma %}{{ m }} so'mdan kam summa keyingi haftaga o'tadi.{% endblocktranslate %} <a href="{% url 'masters:profile_edit' %}#karta">{% translate "Karta" %}</a></p>
     </aside>
   </div>
 </div>

@@ -92,3 +92,12 @@ def badge_pending_payouts(request):
     """Hisob-kitob kutayotgan ustalar soni."""
     from payments import payouts
     return str(len(payouts.pending()))
+
+
+def badge_disputes(request):
+    return str(ServiceRequest.objects.filter(status=ServiceRequest.STATUS_DISPUTED).count())
+
+
+def badge_refunds(request):
+    from payments.refunds import pending_count
+    return str(pending_count())

@@ -1,0 +1,78 @@
+{% extends 'admin/base.html' %}
+{% load i18n unfold humanize ui %}
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block branding %}{% include "unfold/helpers/site_branding.html" %}{% endblock %}
+{% block content %}
+<div class="flex flex-col gap-6">
+  <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+    <a href="{% url 'admin_disputes' %}" class="text-primary-600 font-medium">← Nizolar</a>
+    <span class="text-sm text-font-subtle-light">Holat: <strong>{{ order.get_status_display }}</strong></span>
+    <a href="{% url 'admin:repair_service_servicerequest_change' order.pk %}" class="text-sm text-primary-600">Buyurtmani admin'da ochish ↗</a>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    {% component "unfold/components/card.html" with title="Mijoz" %}
+      <div class="text-sm" style="display:grid;gap:4px"><strong>{{ order.name }}</strong><a class="text-primary-600" href="tel:{{ order.phone }}">{{ order.phone|phone }}</a>
+        {% if order.address %}<span>📍 {{ order.address }}</span>{% endif %}</div>
+    {% endcomponent %}
+    {% component "unfold/components/card.html" with title="Usta" %}
+      {% if order.master %}<div class="text-sm" style="display:grid;gap:4px"><a class="font-semibold text-primary-600" href="{% url 'admin:masters_master_change' order.master.pk %}">{{ order.master.full_name }}</a>
+        <a class="text-primary-600" href="tel:{{ order.master.phone }}">{{ order.master.phone|phone }}</a>
+        <span>★ {{ order.master.rating_avg|floatformat:1 }} · {{ order.master.reviews_count }} ta baho</span></div>{% else %}—{% endif %}
+    {% endcomponent %}
+    {% component "unfold/components/card.html" with title="Nizo sababi" %}
+      <div class="text-sm">{% if opened %}<p style="white-space:pre-line">{{ opened.note|default:"(sabab yozilmagan)" }}</p><p class="text-xs text-font-subtle-light" style="margin-top:6px">{{ opened.created_at|date:"d.m.Y H:i" }} · {{ opened.get_actor_display }}</p>{% else %}—{% endif %}</div>
+    {% endcomponent %}
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    {% component "unfold/components/card.html" with title="Narx va to'lovlar" %}
+      <div class="text-sm">
+        {% if quote %}<p style="margin-bottom:8px"><strong>{{ quote.amount|floatformat:0|intcomma }} so'm</strong> · {{ quote.get_plan_display }}{% if quote.note %} — {{ quote.note }}{% endif %}</p>{% endif %}
+        {% if order.catalog_item %}<p class="text-xs text-font-subtle-light" style="margin-bottom:8px">Katalog: {{ order.catalog_item.name }} — {{ order.catalog_estimate|floatformat:0|intcomma }} so'm</p>{% endif %}
+        <table class="w-full" style="border-collapse:collapse">
+          {% for m in milestones %}<tr style="border-top:1px solid rgba(127,127,127,.15)"><td class="py-2" style="padding-right:12px">{{ m.position }}. {{ m.title }}</td><td class="py-2" style="padding-right:12px">{{ m.amount|floatformat:0|intcomma }}</td><td class="py-2">{{ m.get_state_display }}</td></tr>
+          {% empty %}<tr><td class="py-2 text-font-subtle-light">Onlayn to'lov yo'q (naqd yoki narx kelishilmagan) — pul bo'yicha qaror yo'q, faqat holat.</td></tr>{% endfor %}
+        </table>
+      </div>
+    {% endcomponent %}
+    {% component "unfold/components/card.html" with title="Yozishma" %}
+      <div class="text-sm" style="display:grid;gap:8px;max-height:320px;overflow-y:auto">
+        {% for m in messages_list %}<div><span class="text-xs text-font-subtle-light">{{ m.created_at|date:"d.m H:i" }} · {{ m.get_sender_display }}</span><br>{{ m.text|linebreaksbr }}</div>
+        {% empty %}<span class="text-font-subtle-light">Yozishma yo'q.</span>{% endfor %}
+      </div>
+    {% endcomponent %}
+  </div>
+
+  {% component "unfold/components/card.html" with title="Rasmlar (dalil)" %}
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      {% for p in photos %}<a href="{{ p.image.url }}" target="_blank" rel="noopener" title="{{ p.get_kind_display }} · {{ p.get_uploaded_by_display }}"><img src="{% if p.thumbnail %}{{ p.thumbnail.url }}{% else %}{{ p.image.url }}{% endif %}" alt="" style="height:110px;border-radius:8px"><div class="text-xs text-font-subtle-light">{{ p.get_kind_display }} · {{ p.get_uploaded_by_display }}</div></a>
+      {% empty %}<span class="text-sm text-font-subtle-light">Rasm yuklanmagan.</span>{% endfor %}
+    </div>
+  {% endcomponent %}
+
+  {% component "unfold/components/card.html" with title="Buyurtma tarixi" %}
+    <ul class="text-sm" style="display:grid;gap:4px">{% for e in events %}<li><span class="text-xs text-font-subtle-light" style="font-family:ui-monospace,monospace">{{ e.created_at|date:"d.m H:i" }}</span> <strong>{{ e.get_status_display }}</strong> · {{ e.get_actor_display }}{% if e.note %} — {{ e.note }}{% endif %}</li>{% endfor %}</ul>
+  {% endcomponent %}
+
+  {% if is_open %}
+  {% component "unfold/components/card.html" with title="Qaror" %}
+    <form method="post" style="display:grid;gap:14px">{% csrf_token %}
+      {% if held %}
+        <div class="text-sm"><p style="margin-bottom:6px">Ushlab turilgan bosqichlar — <strong>belgilanganlari ustaga chiqariladi</strong>, qolganlari mijozga qaytariladi:</p>
+          {% for m in held %}<label style="display:flex;gap:8px;align-items:center;padding:4px 0"><input type="checkbox" name="release" value="{{ m.pk }}"> {{ m.position }}. {{ m.title }} — <strong>{{ m.amount|floatformat:0|intcomma }} so'm</strong> <span class="text-xs text-font-subtle-light">(ustaga {{ m.master_amount|floatformat:0|intcomma }})</span></label>{% endfor %}
+        </div>
+      {% endif %}
+      <label class="text-sm">Qaror izohi (ikkala tomon ko'radi)
+        <textarea name="note" rows="3" required maxlength="400" class="border border-base-200 rounded-default px-3 py-2 w-full dark:border-base-700 dark:bg-base-900" placeholder="Masalan: rasmlarga ko'ra ish bajarilgan, lekin kran almashtirilmagan — 2-qism mijozga qaytariladi."></textarea>
+      </label>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button type="submit" name="decision" value="resolve" class="bg-primary-600 text-white font-medium px-4 py-2 rounded-default" onclick="return confirm('Qaror yakuniy. Davom etamizmi?')">Qarorni qo'llash{% if not held %} (buyurtmani tasdiqlash){% endif %}</button>
+        <button type="submit" name="decision" value="withdraw" class="font-medium px-4 py-2 rounded-default border border-base-200 dark:border-base-700">Kelishildi — ish davom etadi («{{ status_labels|get_item:back_status|default:back_status }}» ga qaytarish)</button>
+      </div>
+      <p class="text-xs text-font-subtle-light">Mijozga qaytariladigan qismlar «Pul qaytarishlar» navbatiga tushadi: Click orqali — avtomatik (CLICK_AUTO_REFUND), Payme — kabinetda bekor qilinsa o'zi yopiladi.</p>
+    </form>
+  {% endcomponent %}
+  {% endif %}
+</div>
+{% endblock %}

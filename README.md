@@ -237,10 +237,182 @@ kafolat) sozlamalardan olinadi, shuning uchun tizim bilan doim mos turadi.
 
 > ⚠️ **Bu matnlar — namunaviy loyiha, yurist tekshirmagan.** Sahifalarda «Loyiha»
 > ogohlantirishi chiqadi. Yurist tasdiqlagach `.env` da `LEGAL_DRAFT=False` qiling va
-> `SITE_LEGAL_NAME`, `SITE_LEGAL_INN`, `SITE_LEGAL_ADDRESS` ni to'ldiring. Yurist bilan
-> alohida aniqlang: «Shaxsga doir ma'lumotlar to'g'risida»gi qonun O'zbekiston fuqarolari
-> ma'lumotlarini mamlakat hududidagi serverlarda saqlashni talab qilishi mumkin — hosting
-> tanlashda buni hisobga oling.
+> `SITE_LEGAL_NAME`, `SITE_LEGAL_INN`, `SITE_LEGAL_ADDRESS` ni to'ldiring.
+> Ma'lumotlarni qayerda saqlash — «Production» bo'limidagi eslatmaga qarang.
+
+## Shaxsni tasdiqlash (ustalar)
+
+Usta kabinetda «🪪 Hujjatlar» (`/kabinet/hujjatlar/`) sahifasida pasport/ID-karta va hujjat bilan
+selfi yuklaydi (sertifikat — ixtiyoriy). Administrator `/admin/` → Ustalar → usta sahifasida
+rasmlarni ko'radi va holatni «Tasdiqlangan» yoki «Rad etilgan» (sababi bilan) qiladi —
+usta SMS/Telegram xabar oladi. Tasdiqlanganda profil ham faollashadi va saytda
+«🪪 Hujjatlari tekshirilgan» belgisi chiqadi. Ro'yxatda «Hujjatlarni tasdiqlash» ommaviy amali bor.
+
+- Fayllar `PRIVATE_MEDIA_ROOT` da — `MEDIA_ROOT` dan tashqarida, nginx ularni bermaydi, ochiq
+  havolasi yo'q. Ko'rish faqat admin sahifasi orqali va faqat **«Can view usta hujjati»**
+  huquqi bor xodimga (superuser'dan tashqari bu huquqni alohida bering).
+- Rasmdan EXIF (GPS) o'chiriladi, fayl nomi tasodifiy.
+- `ID_DOCUMENTS_KEEP_DAYS=N` — tasdiqlangandan N kun o'tgach fayllar o'chiriladi (holat saqlanadi).
+  Standart 0 — saqlanadi; muddatni yurist bilan belgilang.
+
+> ⚠️ Hujjat bilan selfi (yuz tasviri) qonunchilikda **biometrik ma'lumot** hisoblanishi mumkin —
+> u holda uni faqat O'zbekiston hududidagi serverda saqlash talab qilinadi (pastdagi
+> «Production» eslatmasi). Yurist bilan aniqlang; kerak bo'lsa selfini so'ramang yoki
+> `PRIVATE_MEDIA_ROOT` ni mahalliy serverga qo'ying.
+
+## Ustani qayta chaqirish
+
+Tasdiqlangan buyurtma sahifasida va «Mening buyurtmalarim» ro'yxatida «🔁 Shu ustani qayta
+chaqirish» tugmasi chiqadi (SMS kod bilan tasdiqlangan raqamga). Ism, telefon, manzil va
+joylashuv avvalgi buyurtmadan olinadi — mijoz faqat muammoni va qulay vaqtni yozadi; buyurtma
+to'g'ridan-to'g'ri o'sha ustaga boradi. Usta band yoki saytda bo'lmasa — shu yo'nalishdagi
+boshqa ustalar ro'yxatiga yo'naltiriladi.
+
+## SEO
+
+- **Yo'nalish va tuman sahifalari:** `/ustalar/santexnik/`, `/ustalar/santexnik/chilonzor/`
+  (ruscha `/ru/...`) — sarlavha, tavsif, ustalar soni, o'rtacha baho, katalog narxlari,
+  qo'shni tumanlar va boshqa yo'nalishlarga havolalar. Ustasi yo'q sahifa `noindex`.
+- **`/sitemap.xml`** — statik sahifalar, ustasi bor yo'nalish/tuman sahifalari va usta
+  profillari, ikki tilda (`hreflang`, `x-default`). Google Search Console va Yandex Webmaster'ga
+  shu manzilni qo'shing.
+- **`/robots.txt`** — kabinet, buyurtma, to'lov va API sahifalari yopiq; shaxsiy koordinatali
+  qidiruv (`?lat=`) indekslanmaydi. Sinov serverida `SEO_DISALLOW_ALL=True` — butun sayt yopiladi.
+- `canonical`: filtrli qidiruv (`/ustalar/?category=santexnik&district=chilonzor`) toza manzilga ishora qiladi.
+- **JSON-LD:** Organization va WebSite (bosh sahifa), BreadcrumbList va ItemList (yo'nalish
+  sahifalari), usta profili (`HomeAndConstructionBusiness`, baho bilan; telefon va aniq manzilsiz).
+- **Open Graph / Twitter:** Telegram va boshqa ilovalarda havola rasm bilan ochiladi
+  (`static/img/og.png`; sayt nomini o'zgartirsangiz, rasmni ham almashtiring; usta profilida — usta rasmi).
+- Footer'da barcha yo'nalishlarga ichki havolalar.
+
+## Viloyatlar
+
+Toshkentning 12 tumani va barcha viloyatlar (Qoraqalpog'iston bilan) bo'yicha 28 ta shahar — viloyat
+markazlari va yirik shaharlar (Chirchiq, Olmaliq, Qo'qon, Marg'ilon, Shahrisabz, Xiva va boshqalar) — qidiruv,
+ariza formasi, usta ro'yxatdan o'tishi va SEO sahifalarida (`/ustalar/santexnik/samarqand/`). Tanlov ro'yxatlari
+viloyatlar bo'yicha guruhlangan. Yangi shahar qo'shish: `masters/locations.py` →
+`REGIONS` dagi viloyatga bitta qator (slug, o'zbekcha, ruscha nomi, kenglik, uzunlik).
+
+## Nizolar (administrator)
+
+`/admin/nizolar/` — ochiq nizolar (eng eskisi yuqorida, muzlatilgan summa, necha kun). Nizo sahifasida
+hamma dalil bitta joyda: mijoz va usta (qo'ng'iroq havolasi bilan), mijoz yozgan sabab, narx va
+to'lov bosqichlari, yozishma, rasmlar, buyurtma tarixi. Qaror:
+
+- **har bir ushlab turilgan bosqich** bo'yicha: ustaga chiqarish yoki mijozga qaytarish (qisman ham
+  mumkin). Biror qism ustaga — buyurtma «Tasdiqlandi», hammasi mijozga — «Bekor qilindi»;
+- **«Kelishildi — ish davom etadi»** — buyurtma nizodan oldingi holatiga qaytadi, pul muzlatilgan holicha.
+
+Ikkala tomon qaror izohini SMS/Telegram'da oladi. Mijoz nizoni faqat sababini yozib ochadi;
+administrator chatiga Telegram xabari keladi. Qaror uchun «arizani o'zgartirish» huquqi kerak.
+Qaytarilgan pulni to'lov tizimi kabinetidan qaytarish kerak — tizim faqat qayd etadi.
+
+## Ustalar ishonchliligi
+
+Har bir ustaga so'nggi 90 kun bo'yicha 0–100 ball (`masters/reliability.py`):
+voz kechish (−35 gacha), nizolar (−35), kechikish yoki kelmaslik (−20; belgilangan vaqtdan
+30 daqiqa kech), javob tezligi (−10; to'g'ridan-to'g'ri buyurtmani qabul qilishgacha, mediana).
+Kam buyurtmali (`RELIABILITY_MIN_ORDERS`, 3) yangi usta jazolanmaydi.
+
+- Qidiruvda reyting `0.7 + 0.3 × ball/100` ga ko'paytiriladi; masofa bo'yicha saralashda ham
+  ishonchsiz usta pastroqqa tushadi; ochiq buyurtma xabarlari ham shu tartibda.
+- Usta kabinetida ball, ko'rsatkichlar va uni oshirish bo'yicha maslahatlar.
+- Profilda: «⚡ Odatda ~15 daqiqada javob beradi», «🕒 O'z vaqtida keladi: 96%».
+- `process_orders` (cron) har soatda yangilaydi; voz kechganda darhol.
+
+## Promo-kodlar va referal
+
+**Promo-kod** (admin → To'lovlar → Promo-kodlar): foiz yoki qat'iy summa, eng ko'p chegirma, eng kam
+buyurtma, muddat, umumiy va bitta raqamga limit, «faqat birinchi buyurtma».
+
+- Chegirma **platforma hisobidan**: mijoz kamroq to'laydi, usta kelishilgan narxni to'liq oladi
+  (komissiya kelishilgan narxdan). Faqat onlayn to'lovda, narxning `PROMO_MAX_SHARE_PERCENT` (50%)
+  foizigacha; to'lanmagan bosqichlarga ulushiga qarab taqsimlanadi. Payme/Click/Uzum chegirmali
+  summani talab qiladi.
+- Kod ariza formasida («🎁 Promo-kod bormi?»), buyurtma sahifasida (birinchi to'lovgacha) yoki
+  havola orqali kiritiladi: `https://sayt.uz/?promo=KOD`.
+- Statistika: «Platforma daromadi» chegirmalarni ayirib hisoblanadi.
+
+**Mijoz referali.** Tasdiqlangan buyurtma sahifasida mijoz shaxsiy kod va havola oladi (Telegram'da
+ulashish tugmasi bilan). Do'sti birinchi buyurtmasida `REFERRAL_DISCOUNT_PERCENT` (10%) chegirma oladi;
+do'stning buyurtmasi **onlayn to'lanib tasdiqlansa**, kod egasiga keyingi buyurtma uchun bir martalik
+mukofot kodi SMS'da keladi. O'z kodini ishlatib bo'lmaydi; mukofot kodi faqat egasining raqamiga.
+
+**Usta referali.** Kabinetda shaxsiy havola (`/ustalar/royxatdan-otish/?ref=KOD`). Taklif qilingan usta
+tekshiruvdan o'tib birinchi buyurtmasini bajarsa — taklif qilgan ustaga `MASTER_REFERRAL_TOP_DAYS`
+(7) kun bepul TOP.
+
+> Barcha foiz va summalar namunaviy — `.env` da o'zgartiring. Ofertada promo-kod bandi bor.
+
+## Telefonda ilova (PWA) va bildirishnomalar
+
+- Sayt telefonga ilova sifatida o'rnatiladi (`/manifest.webmanifest`, `/sw.js`): bosh ekranda ikonka,
+  internet yo'qolsa — oflayn sahifa. Usta kabinetida «⬇ Ilovani o'rnatish» tugmasi.
+- **Brauzer bildirishnomalari (Web Push):** usta kabinetda, mijoz buyurtma sahifasida (SMS kod bilan
+  tasdiqlangan raqamda) «🔔 Bildirishnomalarni yoqish» ni bosadi. Buyurtma xabarlari (yangi buyurtma,
+  holat, yozishma, kafolat) SMS/Telegram'ga **qo'shimcha** ravishda push bo'lib ham keladi.
+- Sozlash: `python manage.py webpush_keys` → chiqqan ikki qatorni `.env` ga. Kalitsiz push o'chiq.
+- Shifrlash RFC 8291/8292 bo'yicha faqat `cryptography` bilan yozilgan (`pywebpush` ning `http-ece`
+  bog'liqligi ko'p serverlarda o'rnatilmaydi) va RFC dagi rasmiy test-namuna bilan tekshirilgan.
+- iPhone: push faqat saytni «Ulashish → Bosh ekranga qo'shish» orqali o'rnatgandan keyin (iOS 16.4+).
+- Xavfsizlik: obuna manzili faqat ma'lum push xizmatlariga (Google, Mozilla, Apple, Microsoft) ruxsat
+  etiladi; eskirgan obunalar avtomatik o'chiriladi.
+
+## Pul qaytarish
+
+Nizo mijoz foydasiga hal qilinsa yoki admin «Mijozga qaytarish» amalini bossa, `/admin/` →
+**Pul qaytarishlar** navbatida yozuv ochiladi (summa, to'lov tizimi, tranzaksiya raqami, nima qilish kerak):
+
+- **Click** — `CLICK_AUTO_REFUND=True` bo'lsa, Click Merchant API orqali avtomatik
+  (`DELETE /v2/merchant/payment/reversal/{service_id}/{payment_id}`). Click faqat joriy hisobot
+  oyidagi to'lovlarni qaytaradi; rad etsa — yozuv «qo'lda» holatiga o'tadi. **Yoqishdan oldin
+  Click bilan bitta kichik to'lovda sinab ko'ring.**
+- **Payme** — Merchant API'da do'kon tomonidan qaytarish so'rovi yo'q: kassir Payme Business
+  kabinetida tranzaksiyani bekor qiladi, Payme bizga `CancelTransaction` yuboradi va yozuv
+  avtomatik «Qaytarildi» bo'ladi.
+- **Uzum** — `reverse` so'rovi kelganda xuddi shunday.
+
+Qaytarilganda mijoz xabar oladi. Qo'lda qaytarilganlarni «Qaytarildi deb belgilash» amali bilan yoping.
+
+## Ustalarga haftalik to'lov
+
+`process_orders` (cron) `PAYOUT_WEEKDAY` kuni (standart — dushanba) o'tkazmalarni tayyorlaydi:
+kartasi bor, summasi `PAYOUT_MIN_AMOUNT` dan kam bo'lmagan va bosqichi chiqarilganiga
+`PAYOUT_DELAY_HOURS` bo'lgan ustalar uchun. Administrator Telegram'da xabar oladi, Excel'ni
+yuklab bank orqali o'tkazadi va «O'tkazmalar tarixi» da «O'tkazildi» deb belgilaydi — usta
+SMS/Telegram/bildirishnoma oladi. «To'lanishi kerak» sahifasida «Hozir tayyorlash» tugmasi ham bor.
+Usta kabinetida: keyingi to'lov sanasi, o'tkazilayotgan summa, karta.
+
+**Avtomatik o'tkazma** (kartaga to'lash API'si) uchun to'lov tizimi bilan alohida shartnoma va
+hujjat kerak — u ochiq emas, shuning uchun hozir faqat «qo'lda» usuli bor. Hujjat kelgach
+`payments/payout_providers.py` ga bitta sinf (`send()`) qo'shiladi va `PAYOUT_PROVIDER` o'zgartiriladi;
+jadval, xabarlar va hisobot o'zgarmaydi.
+
+## Marketing xabarnomalari
+
+`/admin/` → **Xabarnomalar**: matn (o'zbekcha/ruscha), havola, promo-kod, auditoriya va kanallar.
+«Rejalashtirish» amalidan keyin cron partiyalab (`CAMPAIGN_BATCH`) va faqat `CAMPAIGN_HOURS`
+(09–21) oralig'ida yuboradi.
+
+- Mijozlarga — **faqat rozilik berganlarga**: ariza formasida va buyurtma sahifasida alohida,
+  oldindan belgilanmagan belgi. Har xabarda obunani bekor qilish havolasi (`/obuna/bekor/<kalit>/`,
+  bekor qilish tugma bilan — messenjer havolani oldindan ochganda tasodifan o'chib ketmasligi uchun).
+- Auditoriya: barcha rozilik berganlar; uzoq vaqt buyurtma qilmaganlar; tanlangan yo'nalishda
+  buyurtma qilganlar; ustalar (xizmat xabari).
+- Har bir kishiga bitta xabar, eng arzon kanal orqali: bildirishnoma → Telegram → SMS (yoqilgan bo'lsa).
+  SMS reklama matni Eskiz'da alohida tasdiqlanishi kerak.
+
+## Tahlil: manbalar va voronka
+
+Uchinchi tomon xizmatisiz, o'z bazamizda (`repair_service/analytics.py`):
+
+- Birinchi tashrifda manba aniqlanadi — UTM (`?utm_source=instagram&utm_medium=cpc&utm_campaign=kuz`),
+  qidiruv tizimi, Telegram, referal havola — va imzolangan cookie'ga yoziladi; ariza o'zi ham manbani saqlaydi.
+- Hodisalar: ommaviy sahifa ochildi, ariza formasi to'ldirila boshlandi, ariza yuborildi.
+  Tasodifiy tashrifchi ID; ism, telefon va IP saqlanmaydi; «Do Not Track»/GPC va botlar hisobga olinmaydi;
+  `ANALYTICS_RETENTION_DAYS` (180) kundan keyin o'chiriladi.
+- `/admin/statistika/`: «Saytdan arizagacha» voronkasi, manbalar bo'yicha tashriflar → ariza →
+  bajarilgan → aylanma, eng ko'p ariza keltirgan kirish sahifalari.
 
 ## Telegram bot
 
@@ -338,6 +510,13 @@ yetarli. Mavjud arizalar saqlanadi — har biriga alohida baho kaliti beriladi.
 | `/buyurtma/<kalit>/` | Mijozning buyurtma sahifasi (kuzatish, to'lov, yozishma, kafolat) |
 | `/oferta/`, `/maxfiylik/` | Ommaviy oferta va maxfiylik siyosati |
 | `/admin/statistika/` | Statistika (faqat administrator) |
+| `/admin/nizolar/` | Nizolar: dalillar va qaror (faqat administrator) |
+| `/obuna/bekor/<kalit>/` | Aksiya xabarlaridan voz kechish |
+| `/manifest.webmanifest`, `/sw.js`, `/offline/` | Telefonda ilova (PWA) |
+| `/ustalar/<yo'nalish>/`, `/ustalar/<yo'nalish>/<tuman>/` | SEO sahifalari |
+| `/kabinet/hujjatlar/` | Usta: shaxsni tasdiqlash |
+| `/buyurtma/<kalit>/qayta/` | Mijoz: ustani qayta chaqirish |
+| `/sitemap.xml`, `/robots.txt`, `/healthz/` | Qidiruv tizimlari va monitoring uchun |
 | `/baho/<kalit>/` | Mijoz bahosi |
 | `/api/ustalar/?lat=41.31&lng=69.28&category=elektrik` | JSON API (mobil ilova uchun) |
 
@@ -354,6 +533,9 @@ masters/             ustalar, kategoriyalar, baholar, qidiruv
 templates/           base.html, bosh sahifa, masters/*, admin/index.html
 static/css/app.css   dizayn tizimi (framework'siz, tungi rejim bilan)
 static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuery'siz)
+deploy/              serverga o'rnatish: gunicorn, systemd, nginx, cron, deploy.sh, backup.sh
+docs/                integratsiyalarni haqiqiy muhitda sinash tartibi
+.github/workflows/   testlar har push'da SQLite va PostgreSQL+Redis'da
 ```
 
 ## Testlar
@@ -362,40 +544,42 @@ static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuer
 python manage.py test
 ```
 
-198 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+286 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
 bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
 (rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
 (muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click va Uzum protokollari, Telegram bot (ulash, tugmalar, rasm, xavfsizlik), tariflar,
 ochiq buyurtmalar lentasi, kafolat, kelish vaqti, yozishma, o'tkazmalar hisoboti (Excel), statistika,
-yuridik sahifalar.
+yuridik sahifalar, production tekshiruvlari, `check_integrations`, ustalar hujjatlari (maxfiylik, huquqlar),
+qayta chaqirish, SEO (sitemap, robots, canonical, JSON-LD), viloyatlar, PWA va Web Push (RFC 8291 test-namunasi),
+nizolar sahifasi, ishonchlilik bali, promo-kodlar va referal (Payme chegirmali summani talab qilishi bilan),
+tahlil (manba, DNT, botlar), marketing (rozilik, tinch soatlar, partiyalar), pul qaytarish (Payme bekor qilishi,
+Click API imzosi), haftalik to'lov jadvali.
+
+Production'dagidek PostgreSQL va Redis bilan:
+
+```bash
+DATABASE_URL=postgres://user:parol@127.0.0.1:5432/techservice REDIS_URL=redis://127.0.0.1:6379/1 \
+    python manage.py test --parallel 1
+```
 
 ## Production
 
-`.env` da:
-```env
-DJANGO_DEBUG=False
-DJANGO_SECRET_KEY=<python -c "from django.core.management.utils import get_random_secret_key as g; print(g())">
-DJANGO_ALLOWED_HOSTS=techservice.uz,www.techservice.uz
-DJANGO_CSRF_TRUSTED_ORIGINS=https://techservice.uz
-```
+To'liq qo'llanma: **[deploy/README.md](deploy/README.md)** — Ubuntu VPS, PostgreSQL, Redis,
+gunicorn (systemd), nginx + HTTPS (certbot), cron, kunlik zaxira va tiklash, yangilash skripti.
 
-`DEBUG=False` bo'lganda HTTPS'ga yo'naltirish, HSTS, Secure cookie'lar avtomatik
-yoqiladi. Tekshirish: `python manage.py check --deploy`.
+Qisqacha:
 
-```bash
-python manage.py collectstatic
-gunicorn config.wsgi:application --bind 127.0.0.1:8000 --workers 3
-```
-
-Nginx `/static/` → `staticfiles/`, `/media/` → `media/` ni o'zi berishi va
-`X-Real-IP` sarlavhasini qo'yishi kerak (spam cheklovi shu IP bo'yicha ishlaydi).
-
-**Muhim:**
+- `requirements-prod.txt` — gunicorn, psycopg, redis.
+- `.env`: `DJANGO_DEBUG=False`, `DJANGO_SECRET_KEY` (standart kalit bilan sayt ishga tushmaydi),
+  `DATABASE_URL`, `REDIS_URL`, `SITE_URL=https://...`, `DJANGO_MEDIA_ROOT`, `DJANGO_PRIVATE_MEDIA_ROOT`.
+- `python manage.py check --deploy` — Django xavfsizlik tekshiruvlari + loyiha tekshiruvlari
+  (`techservice.W001…W008`: kesh, baza, SMS, SITE_URL, to'lov tizimlari, demo to'lov, oferta,
+  maxfiy papka). Hammasi tuzatilgach «no issues».
+- `python manage.py check_integrations [--live]` — Payme/Click/Uzum kalitlari, Eskiz, Telegram
+  webhook va sayt manzilini tekshiradi; haqiqiy sinov tartibi — [docs/INTEGRATSIYALAR.md](docs/INTEGRATSIYALAR.md).
+- `/healthz/` — tashqi monitoring uchun (baza va kesh).
 - **HTTPS majburiy** — brauzerlar geolokatsiyani faqat HTTPS (yoki localhost) da beradi.
-- Bir nechta gunicorn worker bo'lsa, `CACHES` ni Redis'ga o'tkazing (spam hisoblagichi umumiy bo'lishi uchun).
-- SQLite o'rniga PostgreSQL tavsiya etiladi.
 - Shaxsga doir ma'lumotlar: 2026-yil 27-martdan kuchga kirgan o'zgartirishlarga
   ko'ra O'zbekistonda saqlash majburiyati asosan biometrik va genetik ma'lumotlarga
   qoldirilgan; boshqalarini chet elda saqlash shartlar bilan ruxsat etilgan.
   Hosting tanlashdan oldin amaldagi tahririni lex.uz da va yurist bilan tekshiring.
-- `process_orders` ni cron'ga qo'shing (yuqoriga qarang).
