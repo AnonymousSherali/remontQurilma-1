@@ -4,7 +4,6 @@ from datetime import timedelta
 from io import BytesIO
 
 from django.contrib.auth.models import User
-from django.core import mail  # noqa: F401
 from django.core.cache import cache
 from django.core.management import call_command
 from django.test import TestCase, override_settings

@@ -211,7 +211,7 @@ class ReviewForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # ModelForm tanlovlarga bo'sh "---------" ni qo'shadi — u 6-yulduz bo'lib chiqardi
-        for name, _ in Review.CRITERIA:
+        for name, _label in Review.CRITERIA:
             self.fields[name].choices = RATING_CHOICES
 
 
