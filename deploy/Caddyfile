@@ -1,0 +1,20 @@
+# Caddy: HTTPS sertifikatni o'zi oladi va yangilaydi (Let's Encrypt). DOMAIN — .env da.
+{$DOMAIN} {
+	encode gzip
+	# Ochiq media (usta va ish rasmlari). Ustalarning hujjatlari bu yerda EMAS — ular alohida maxfiy papkada.
+	handle_path /media/* {
+		root * /srv/data/media
+		@scripts path *.html *.htm *.svg *.js *.php
+		respond @scripts 403
+		header X-Content-Type-Options nosniff
+		header Cache-Control "public, max-age=604800"
+		file_server
+	}
+	handle {
+		reverse_proxy web:8000
+	}
+}
+
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}

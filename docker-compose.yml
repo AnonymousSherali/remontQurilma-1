@@ -1,0 +1,65 @@
+# Bitta serverda hammasi: HTTPS (Caddy), sayt, PostgreSQL, Redis va soatlik vazifalar.
+#   1) Domen A-yozuvi server IP manziliga qaratilgan bo'lsin
+#   2) cp .env.example .env — DOMAIN, DJANGO_DEBUG=False, DJANGO_SECRET_KEY, DJANGO_ALLOWED_HOSTS,
+#      DJANGO_CSRF_TRUSTED_ORIGINS, SITE_URL=https://DOMAIN, POSTGRES_PASSWORD va integratsiya kalitlari
+#   3) docker compose up -d --build
+#   4) docker compose exec web python manage.py createsuperuser
+#      docker compose exec web python manage.py launch_check
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://techservice:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env da yo'q}@db:5432/techservice
+      REDIS_URL: redis://redis:6379/1
+    expose: ["8000"]
+    volumes: [data:/data]
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_started}
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    env_file: .env
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data          # sertifikatlar
+      - data:/srv/data:ro         # faqat o'qish: /srv/data/media ochiq beriladi
+    depends_on: [web]
+
+  cron:
+    # process_orders har soatda: avtomatik tasdiqlash, eslatmalar, kampaniyalar, haftalik to'lov va h.k.
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://techservice:${POSTGRES_PASSWORD}@db:5432/techservice
+      REDIS_URL: redis://redis:6379/1
+    volumes: [data:/data]
+    depends_on: [web]
+    command: sh -c "while true; do python manage.py process_orders; python manage.py clearsessions; sleep 3600; done"
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: techservice
+      POSTGRES_USER: techservice
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U techservice"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+volumes:
+  data:
+  pgdata:
+  caddy_data:

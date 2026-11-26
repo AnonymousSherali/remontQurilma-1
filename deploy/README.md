@@ -1,5 +1,9 @@
 # Serverga o'rnatish (Ubuntu 24.04, bitta VPS)
 
+> **Tezroq yo'l — Docker:** loyiha ildizidagi `docker-compose.yml` sayt, PostgreSQL, Redis, soatlik
+> vazifalar va HTTPS'ni (Caddy) bitta buyruq bilan ko'taradi: `docker compose up -d --build`.
+> To'liq ro'yxat — `docs/ISHGA_TUSHIRISH.md`. Quyida — Docker'siz, qo'lda o'rnatish.
+
 Sxema: **nginx** (HTTPS, statik fayllar) → **gunicorn** (Django) → **PostgreSQL** + **Redis**.
 Kichik loyiha uchun 2 GB RAM, 1–2 CPU yetarli. Fayllar:
 
