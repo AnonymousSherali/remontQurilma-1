@@ -11,7 +11,7 @@ export DJANGO_DEBUG=True DATABASE_URL="sqlite:///$WORK/e2e.sqlite3" DJANGO_MEDIA
        DJANGO_PRIVATE_MEDIA_ROOT="$WORK/private" PAYMENT_PROVIDERS=demo ALLOW_DEMO_PAYMENTS=True SMS_BACKEND=console \
        FEED_PRO_HEAD_START_MINUTES=0 SITE_URL="http://127.0.0.1:$PORT" REDIS_URL= DJANGO_CACHE= TELEGRAM_BOT_TOKEN= WEBPUSH_PRIVATE_KEY=
 python manage.py migrate --noinput -v0
-CREDS=$(python manage.py e2e_seed)
+CREDS=$(python manage.py e2e_seed | tail -n 1)   # konsol SMS chiqishi aralashmasin
 python manage.py runserver "127.0.0.1:$PORT" --noreload >"$WORK/server.log" 2>&1 &
 SERVER=$!
 trap 'kill $SERVER 2>/dev/null; rm -rf "$WORK"' EXIT
