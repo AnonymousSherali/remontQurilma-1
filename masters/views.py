@@ -26,7 +26,7 @@ from repair_service.photos import can_delete as can_delete_photo
 from repair_service.photos import portfolio
 from repair_service.models import ServiceRequest
 
-from . import documents, feed, learning, reliability, seo
+from . import documents, feed, learning, onboarding, reliability, seo
 from .forms import (
     deviation_percent, MasterProfileForm, MasterRegistrationForm, PasswordResetForm, PhoneLoginForm, QuoteForm, ReviewForm,
 )
@@ -171,6 +171,25 @@ def master_detail(request, pk):
     })
 
 
+def for_masters(request):
+    """Ustalar uchun sahifa: nega bizda ishlash foydali, qanday boshlash. Havoladagi ?ref= saqlanadi."""
+    from django.db.models import Count
+
+    from repair_service.models import ServiceRequest as SR
+    if request.GET.get('ref'):
+        request.session['master_ref'] = request.GET['ref'][:12].upper()
+    from datetime import timedelta
+    month_ago = timezone.now() - timedelta(days=30)
+    demand = (SR.objects.filter(created_at__gte=month_ago, category__isnull=False).order_by()
+              .values('category__name', 'category__icon').annotate(n=Count('id')).order_by('-n')[:6])
+    return render(request, 'masters/for_masters.html', {
+        'fee': settings.PLATFORM_FEE_PERCENT, 'pro_fee': settings.PRO_FEE_PERCENT,
+        'free_top_days': settings.NEW_MASTER_FREE_TOP_DAYS, 'payout_min': settings.PAYOUT_MIN_AMOUNT,
+        'demand': demand, 'requests_month': SR.objects.filter(created_at__gte=month_ago).count(),
+        'register_url': reverse('masters:register'),
+    })
+
+
 def register(request):
     if request.user.is_authenticated and hasattr(request.user, 'master'):
         return redirect('masters:dashboard')
@@ -184,6 +203,11 @@ def register(request):
         if inviter and inviter.pk != master.pk:
             master.referred_by = inviter
             master.save(update_fields=['referred_by'])
+        from repair_service import analytics
+        src = analytics.attribution(request)
+        master.signup_source = 'taklif' if inviter else src.get('source', '')[:60]
+        master.save(update_fields=['signup_source'])
+        analytics.record(request, 'master_signup')
         login(request, master.user, backend='django.contrib.auth.backends.ModelBackend')
         messages.success(
             request,
@@ -265,6 +289,7 @@ def dashboard(request):
         'balance': balance,
         'open_count': feed.open_count(master),
         'calendar': schedule.calendar(master),
+        'readiness': onboarding.checklist(master),
         'learning': learning.progress(master),
         'reliability_tips': reliability.tips(master),
         'referral_link': request.build_absolute_uri(

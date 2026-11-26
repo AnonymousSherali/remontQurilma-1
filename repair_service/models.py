@@ -380,8 +380,9 @@ class ExperimentExposure(models.Model):
 class AnalyticsEvent(models.Model):
     """Yengil tahlil hodisasi (shaxsiy ma'lumotsiz): tashrif, forma boshlandi, ariza."""
 
-    PAGE_VIEW, FORM_START, REQUEST = 'page_view', 'form_start', 'request'
-    NAME_CHOICES = [(PAGE_VIEW, 'Sahifa ochildi'), (FORM_START, "Forma to'ldirish boshlandi"), (REQUEST, 'Ariza')]
+    PAGE_VIEW, FORM_START, REQUEST, MASTER_SIGNUP = 'page_view', 'form_start', 'request', 'master_signup'
+    NAME_CHOICES = [(PAGE_VIEW, 'Sahifa ochildi'), (FORM_START, "Forma to'ldirish boshlandi"), (REQUEST, 'Ariza'),
+                    (MASTER_SIGNUP, "Usta ro'yxatdan o'tdi")]
 
     name = models.CharField('Hodisa', max_length=20, choices=NAME_CHOICES, db_index=True)
     visitor = models.CharField('Tashrifchi (tasodifiy ID)', max_length=32, db_index=True)

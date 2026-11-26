@@ -80,6 +80,10 @@
           {% empty %}<tr><td colspan="7" class="py-3 text-font-subtle-light">Hali ma'lumot yo'q.</td></tr>{% endfor %}
         </tbody></table></div>
       <p class="text-xs text-font-subtle-light" style="margin-top:8px">Reklama havolalariga UTM qo'shing: <code>?utm_source=instagram&amp;utm_medium=cpc&amp;utm_campaign=kuz</code>. Referal havolalari «referal» bo'lib ko'rinadi.</p>
+      {% if traffic.masters %}
+      <div class="text-sm" style="margin-top:12px"><strong>Yangi ustalar manbasi:</strong>
+        <ul style="display:grid;gap:4px;margin-top:6px">{% for m in traffic.masters %}<li>{{ m.signup_source }} — {{ m.n }} ro'yxatdan o'tdi, {{ m.verified }} tasdiqlandi</li>{% endfor %}</ul></div>
+      {% endif %}
       {% if traffic.landing %}
       <div class="text-sm" style="margin-top:12px"><strong>Eng ko'p ariza keltirgan kirish sahifalari:</strong>
         <ul style="display:grid;gap:4px;margin-top:6px">{% for l in traffic.landing %}<li><code>{{ l.landing_path }}</code> — {{ l.requests }} ariza, {{ l.done }} bajarildi</li>{% endfor %}</ul></div>

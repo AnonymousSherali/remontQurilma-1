@@ -9,6 +9,7 @@ urlpatterns = [
     path('ustalar/', views.master_list, name='list'),
     path('ustalar/<int:pk>/', views.master_detail, name='detail'),
     path('ustalar/royxatdan-otish/', views.register, name='register'),
+    path('ustalar-uchun/', views.for_masters, name='for_masters'),
 
     path('kirish/', views.MasterLoginView.as_view(), name='login'),
     path('parolni-tiklash/', views.password_reset, name='password_reset'),

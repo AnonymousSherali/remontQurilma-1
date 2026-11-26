@@ -306,6 +306,9 @@ PAYOUT_MIN_AMOUNT = int(os.environ.get('PAYOUT_MIN_AMOUNT') or 50000)   # kichik
 PAYOUT_DELAY_HOURS = int(os.environ.get('PAYOUT_DELAY_HOURS') or 24)    # chiqarilgandan keyin kutish
 PAYOUT_PROVIDER = os.environ.get('PAYOUT_PROVIDER') or 'manual'         # payments/payout_providers.py
 
+# --- Yangi ustalar: birinchi tasdiqlanganda bepul TOP (kun; 0 — o'chiq) ---
+NEW_MASTER_FREE_TOP_DAYS = int(os.environ.get('NEW_MASTER_FREE_TOP_DAYS') or 30)
+
 # --- Promo-kodlar va referal (payments/promos.py). Qiymatlar namunaviy! ---
 # Chegirma platforma hisobidan (usta to'liq oladi) — narxning shu foizidan oshmaydi
 PROMO_MAX_SHARE_PERCENT = int(os.environ.get('PROMO_MAX_SHARE_PERCENT') or 50)

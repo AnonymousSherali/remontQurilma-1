@@ -27,7 +27,7 @@ SOURCE_COOKIE = 'ts_src'
 VISITOR_COOKIE = 'ts_vid'
 COOKIE_AGE = 60 * 60 * 24 * 90
 # Tashrif hisoblanadigan ommaviy sahifalar (url nomi)
-TRACKED_VIEWS = {'index', 'list', 'detail', 'category', 'category_district', 'catalog'}
+TRACKED_VIEWS = {'index', 'list', 'detail', 'category', 'category_district', 'catalog', 'for_masters', 'register'}
 BOT_RE = re.compile(r'bot|crawl|spider|slurp|preview|monitor|curl|wget|python-requests|headless', re.I)
 KNOWN_SOURCES = [  # yo'naltiruvchi sayt domeni -> (manba, kanal)
     ('google.', 'google', 'organic'), ('yandex.', 'yandex', 'organic'), ('bing.', 'bing', 'organic'),
@@ -188,4 +188,9 @@ def report(start):
                    .annotate(requests=Count('id'), done=Count('id', filter=done)).order_by('-requests')[:10])
     total_visits = events.filter(name=AnalyticsEvent.PAGE_VIEW).values('visitor').distinct().count()
     total_starts = events.filter(name=AnalyticsEvent.FORM_START).values('visitor').distinct().count()
-    return {'sources': rows, 'landing': landing, 'visits': total_visits, 'starts': total_starts}
+    from masters.models import Master
+    masters = list(Master.objects.filter(created_at__gte=start).order_by().values('signup_source')
+                   .annotate(n=Count('id'), verified=Count('id', filter=Q(is_verified=True))).order_by('-n'))
+    for m in masters:
+        m['signup_source'] = m['signup_source'] or "noma'lum"
+    return {'sources': rows, 'landing': landing, 'visits': total_visits, 'starts': total_starts, 'masters': masters}

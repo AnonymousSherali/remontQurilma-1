@@ -204,6 +204,9 @@ class MasterAdmin(ModelAdmin):
     def verify(self, request, queryset):
         without_docs = queryset.exclude(id_status=Master.ID_APPROVED).count()
         updated = queryset.update(is_verified=True)
+        from .onboarding import grant_welcome_bonus
+        for master in queryset:            # update() signal bermaydi — bonusni alohida
+            grant_welcome_bonus(master)
         messages.success(request, f'{updated} ta usta tasdiqlandi va saytda ko\'rinadi.')
         if without_docs:
             messages.warning(request, f'{without_docs} tasining hujjatlari tekshirilmagan — saytda «Hujjatlari '

@@ -723,3 +723,14 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .lesson-video { position: relative; padding-top: 56.25%; border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
 .lesson-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .lesson-text p { line-height: 1.7; }
+
+/* ---------- Ustalar uchun sahifa ---------- */
+.for-masters-hero h1 { font-size: clamp(1.9rem, 4.5vw, 3rem); max-width: 20ch; margin: .4rem 0 .8rem; }
+.for-masters-hero .lead { font-size: 1.15rem; color: var(--ink-2); max-width: 60ch; }
+.for-masters-gift { display: inline-block; margin-top: 1rem; padding: .6rem .9rem; border-radius: var(--radius-sm); background: var(--brand-50); color: var(--brand-600); font-weight: 700; }
+.benefits h3 { margin: .4rem 0; font-size: 1.1rem; }
+.benefits__icon { font-size: 1.8rem; }
+.steps-list { display: grid; gap: .6rem; padding-left: 1.2rem; margin-bottom: 1.25rem; }
+.readiness__list { list-style: none; padding: 0; margin: .5rem 0 0; display: grid; gap: .35rem; }
+.readiness__list a { color: inherit; }
+.readiness__list .is-done { color: var(--muted); text-decoration: line-through; }

@@ -109,6 +109,8 @@ class Master(models.Model):
     referred_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True,
                                     related_name='referrals', verbose_name='Taklif qilgan usta')
     referral_rewarded = models.BooleanField('Taklif mukofoti berilgan', default=False)
+    welcome_bonus_given = models.BooleanField('Boshlang\'ich bepul TOP berilgan', default=False)
+    signup_source = models.CharField("Qayerdan kelgan", max_length=60, blank=True)
     promoted_until = models.DateTimeField('TOP muddati', null=True, blank=True)
     pro_until = models.DateTimeField('PRO muddati', null=True, blank=True)
     telegram_chat_id = models.BigIntegerField('Telegram chat', null=True, blank=True, unique=True,
