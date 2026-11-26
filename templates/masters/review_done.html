@@ -14,5 +14,6 @@
       <a class="btn btn--primary" href="{{ master.get_absolute_url }}">{% translate "Usta profili" %}</a>
     </div>
   </div>
+  {% if nps_open %}<div style="margin-top:1rem;text-align:left">{% include "orders/_nps.html" with next=order.get_customer_url %}</div>{% endif %}
 </div>
 {% endblock %}

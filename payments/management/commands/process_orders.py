@@ -36,6 +36,8 @@ class Command(BaseCommand):
         campaign_messages = send_campaigns()
         from payments.payouts import prepare_weekly
         prepare_weekly()
+        from repair_service.nps import send_invites
+        send_invites()
         self.stdout.write(f'Avtomatik tasdiqlandi: {len(confirmed)}; chiqarilgan bosqichlar: {len(released)}; '
                           f'yopilgan kafolat murojaatlari: {len(closed)}; tashrif eslatmalari: {len(reminded)}; '
                           f"o'chirilgan hujjat fayllari: {purged}; ishonchlilik yangilandi: {rated}; "

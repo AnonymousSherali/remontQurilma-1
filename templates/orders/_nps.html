@@ -1,0 +1,15 @@
+{% load i18n %}
+{# NPS: «Bizni do'stingizga tavsiya qilasizmi?» Kontekst: order, next (ixtiyoriy) #}
+<section class="card nps" id="nps">
+  <div class="card__title">💬 {% translate "Bizni do'stingizga tavsiya qilasizmi?" %}</div>
+  <form method="post" action="{% url 'repair_service:nps_submit' order.review_token %}" class="form">{% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <div class="nps__scale" role="radiogroup" aria-label="{% translate '0 — hech qachon, 10 — albatta' %}">
+      {% for n in nps_range %}<label><input type="radio" name="score" value="{{ n }}" required><span>{{ n }}</span></label>{% endfor %}
+    </div>
+    <div class="nps__legend muted small"><span>{% translate "Hech qachon" %}</span><span>{% translate "Albatta" %}</span></div>
+    <div class="field"><label for="nps-comment" class="small">{% translate "Nimani yaxshilashimiz kerak? (ixtiyoriy)" %}</label>
+      <textarea id="nps-comment" name="comment" rows="2" maxlength="1000"></textarea></div>
+    <button class="btn btn--primary">{% translate "Yuborish" %}</button>
+  </form>
+</section>

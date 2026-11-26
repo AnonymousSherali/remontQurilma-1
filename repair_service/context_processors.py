@@ -48,6 +48,7 @@ def site(request):
         'SITE': info,
         'YANDEX_MAPS_API_KEY': getattr(settings, 'YANDEX_MAPS_API_KEY', ''),
         'MASTER_REFERRAL_TOP_DAYS': settings.MASTER_REFERRAL_TOP_DAYS,
+        'nps_range': range(11),
         'support': SimpleLazyObject(lambda: _support(request)),
         'WEBPUSH_PUBLIC_KEY': settings.WEBPUSH_PUBLIC_KEY if settings.WEBPUSH_PRIVATE_KEY else '',
         'js_i18n': _js_i18n(),

@@ -29,6 +29,7 @@ urlpatterns = [
     path('buyurtma/<uuid:token>/xabar/', order_views.order_chat, name='order_chat'),
     path('buyurtma/<uuid:token>/aksiyalar/', order_views.marketing_toggle, name='marketing_toggle'),
     path('obuna/bekor/<uuid:token>/', order_views.unsubscribe_page, name='unsubscribe'),
+    path('buyurtma/<uuid:token>/nps/', order_views.nps_submit, name='nps_submit'),
     path('buyurtma/<uuid:token>/promo/', order_views.promo_apply, name='promo_apply'),
     path('buyurtma/<uuid:token>/qayta/', order_views.reorder, name='reorder'),
     path('yordam/', order_views.support_endpoint, name='support'),

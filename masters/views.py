@@ -637,8 +637,10 @@ def review_create(request, token):
         review.master = service_request.master
         review.service_request = service_request
         review.save()
+        from repair_service.nps import can_answer
+        service_request.refresh_from_db()
         return render(request, 'masters/review_done.html', {
-            'master': service_request.master, 'order': service_request,
+            'master': service_request.master, 'order': service_request, 'nps_open': can_answer(service_request),
         })
 
     return render(request, 'masters/review_form.html', {

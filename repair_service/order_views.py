@@ -24,6 +24,7 @@ from payments.providers import checkout_url, choices as payment_choices
 from . import photos as photo_rules
 from . import chat, schedule, warranty, workflow
 from .marketing import is_subscribed as marketing_subscribed
+from .nps import can_answer as nps_can_answer
 from .models import OrderPhoto, ServiceRequest, WarrantyClaim
 
 
@@ -65,6 +66,7 @@ def order_detail(request, token):
         'show_master_phone': order.master and order.status != ServiceRequest.STATUS_NEW,
         **promo_context(request, order, can_act),
         'marketing_on': can_act and marketing_subscribed(order.phone),
+        'nps_open': nps_can_answer(order),
         'reorder': reorder_target(order) if order.status == ServiceRequest.STATUS_CONFIRMED else (None, 'status'),
         **warranty.context(order),
         **chat.context(order, chat.CUSTOMER, can_act),
@@ -478,3 +480,17 @@ def support_thread_page(request, token):
     response.set_cookie(support.COOKIE, str(thread.token), max_age=support.COOKIE_AGE, httponly=True,
                         samesite='Lax', secure=request.is_secure())
     return response
+
+
+@require_POST
+def nps_submit(request, token):
+    """«Tavsiya qilasizmi?» javobi. Havolaning o'zi yetarli (pul yoki shaxsiy ma'lumotga tegmaydi, bir marta)."""
+    from . import nps
+    order = _order_by_token(token)
+    try:
+        nps.submit(order, request.POST.get('score'), request.POST.get('comment', ''))
+        messages.success(request, _("Rahmat! Fikringiz xizmatni yaxshilashga yordam beradi."))
+    except nps.NpsError as error:
+        messages.info(request, str(error))
+    return redirect(request.POST.get('next') if request.POST.get('next', '').startswith('/') else
+                    order.get_customer_url() + '#nps')

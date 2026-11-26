@@ -339,6 +339,9 @@ WEBPUSH_SUBJECT = os.environ.get('WEBPUSH_SUBJECT', '')   # mailto:... (bo'sh â€
 CAMPAIGN_HOURS = tuple(int(x) for x in (os.environ.get('CAMPAIGN_HOURS') or '9-21').split('-'))
 CAMPAIGN_BATCH = int(os.environ.get('CAMPAIGN_BATCH') or 500)
 
+# --- NPS so'rovnomasi: tasdiqlangandan necha soat keyin eslatma (faqat Telegram/push) ---
+NPS_INVITE_HOURS = int(os.environ.get('NPS_INVITE_HOURS') or 24)
+
 # --- Tahlil (repair_service/analytics.py) ---
 ANALYTICS_RETENTION_DAYS = int(os.environ.get('ANALYTICS_RETENTION_DAYS') or 180)
 

@@ -734,3 +734,12 @@ input[type="file"] { font: inherit; font-size: .9rem; }
 .readiness__list { list-style: none; padding: 0; margin: .5rem 0 0; display: grid; gap: .35rem; }
 .readiness__list a { color: inherit; }
 .readiness__list .is-done { color: var(--muted); text-decoration: line-through; }
+
+/* ---------- NPS ---------- */
+.nps__scale { display: grid; grid-template-columns: repeat(11, 1fr); gap: .25rem; }
+.nps__scale label { position: relative; }
+.nps__scale input { position: absolute; opacity: 0; }
+.nps__scale span { display: grid; place-items: center; height: 2.4rem; border: 1px solid var(--line); border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; }
+.nps__scale input:checked + span { background: var(--brand); color: #fff; border-color: var(--brand); }
+.nps__scale input:focus-visible + span { outline: 2px solid var(--brand); outline-offset: 2px; }
+.nps__legend { display: flex; justify-content: space-between; margin: .3rem 0 .6rem; }

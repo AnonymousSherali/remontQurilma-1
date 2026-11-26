@@ -51,6 +51,22 @@
     {% endcomponent %}
   </div>
 
+  {% component "unfold/components/card.html" with title="Mijozlar fikri (NPS)" %}
+    {% if nps.count %}
+    <div style="display:flex;gap:32px;flex-wrap:wrap;align-items:flex-end">
+      <div><div class="text-xs text-font-subtle-light">NPS</div><div class="text-3xl font-semibold" style="color:{% if nps.score >= 50 %}#059669{% elif nps.score >= 0 %}#d97706{% else %}#dc2626{% endif %}">{{ nps.score }}</div>
+        <div class="text-xs text-font-subtle-light">{{ nps.count }} javob · {{ nps.promoters }}% tavsiya qiladi · {{ nps.detractors_pct }}% norozi</div></div>
+      <div style="display:flex;align-items:flex-end;gap:4px;height:80px;flex:1;min-width:260px">
+        {% for c in nps.distribution %}<div title="{{ forloop.counter0 }}: {{ c }}" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:2px">
+          <div style="width:100%;height:{% widthratio c nps.peak 100 %}%;min-height:2px;border-radius:3px 3px 0 0;background:{% if forloop.counter0 >= 9 %}#10b981{% elif forloop.counter0 >= 7 %}#f59e0b{% else %}#ef4444{% endif %}"></div>
+          <span class="text-xs text-font-subtle-light">{{ forloop.counter0 }}</span></div>{% endfor %}
+      </div>
+    </div>
+    {% if nps.detractors %}<div class="text-sm" style="margin-top:12px"><strong>Norozilar — bog'laning:</strong>
+      <ul style="display:grid;gap:4px;margin-top:6px">{% for r in nps.detractors %}<li><a class="text-primary-600" href="{% url 'admin:repair_service_npsresponse_change' r.pk %}">#{{ r.order_id }}</a> · {{ r.score }}/10 · {{ r.order.phone }} — {{ r.comment|default:"(izohsiz)"|truncatechars:120 }}</li>{% endfor %}</ul></div>{% endif %}
+    {% else %}<p class="text-sm text-font-subtle-light">Bu davrda javob yo'q. So'rovnoma tasdiqlangan buyurtma sahifasida va bahodan keyin chiqadi.</p>{% endif %}
+  {% endcomponent %}
+
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
     {% component "unfold/components/card.html" with title="Saytdan arizagacha" %}
       {% for f in traffic.funnel %}

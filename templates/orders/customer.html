@@ -90,6 +90,8 @@
         <a class="btn btn--primary btn--lg" href="{{ order.get_review_url }}">⭐ {% translate "Ustani baholash" %}</a>
       {% endif %}
 
+      {% if nps_open %}{% include "orders/_nps.html" %}{% endif %}
+
       {% if referral %}
       <section class="card referral" id="taklif">
         <div class="card__title">🎁 {% translate "Do'stingizga ustani tavsiya qiling" %}</div>

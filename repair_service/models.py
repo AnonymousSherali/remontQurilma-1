@@ -99,6 +99,7 @@ class ServiceRequest(models.Model):
     # Mijoz "Telegram'da kuzatish" ni bosgan bo'lsa — xabarlar SMS o'rniga Telegram'ga (bepul)
     telegram_chat_id = models.BigIntegerField('Mijoz Telegram chati', null=True, blank=True, db_index=True)
 
+    nps_invited_at = models.DateTimeField('NPS so\'rovnomasi yuborilgan', null=True, blank=True)
     # Mijozning maxfiy havolasi: /buyurtma/<kalit>/ (kuzatish) va /baho/<kalit>/
     review_token = models.UUIDField('Baho kaliti', default=uuid.uuid4, unique=True, editable=False)
 
@@ -306,6 +307,30 @@ class CampaignDelivery(models.Model):
 
     class Meta:
         unique_together = [('campaign', 'recipient')]
+
+
+class NpsResponse(models.Model):
+    """«Bizni do'stingizga tavsiya qilasizmi?» (0–10). NPS = 9–10 foizi − 0–6 foizi."""
+
+    order = models.OneToOneField(ServiceRequest, on_delete=models.CASCADE, related_name='nps',
+                                 verbose_name='Buyurtma')
+    score = models.PositiveSmallIntegerField('Baho (0–10)')
+    comment = models.TextField('Izoh', max_length=1000, blank=True)
+    followed_up = models.BooleanField("Bog'lanildi", default=False,
+                                      help_text="Norozi mijoz bilan gaplashib, muammo hal qilinganda belgilang")
+    created_at = models.DateTimeField('Vaqt', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'NPS javobi'
+        verbose_name_plural = 'NPS javoblari'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'#{self.order_id}: {self.score}'
+
+    @property
+    def group(self):
+        return 'promoter' if self.score >= 9 else 'passive' if self.score >= 7 else 'detractor'
 
 
 class SupportThread(models.Model):
