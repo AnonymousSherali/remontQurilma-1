@@ -67,6 +67,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # /static/ — nginx bo'lmasa ham (Docker)
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',  # til: /ru/ prefiksi yoki tanlangan til
     'django.middleware.common.CommonMiddleware',
@@ -163,6 +164,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Siqilgan (gzip/brotli) statik fayllar; manifestsiz — testlar collectstatic talab qilmaydi
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = Path(os.environ.get('DJANGO_MEDIA_ROOT') or BASE_DIR / 'media')  # bo'sh qiymat — standart
@@ -229,6 +235,11 @@ SITE_INFO = {
     'legal_name': os.environ.get('SITE_LEGAL_NAME', ''),       # masalan: «TechService» MChJ
     'legal_inn': os.environ.get('SITE_LEGAL_INN', ''),         # STIR
     'legal_address': os.environ.get('SITE_LEGAL_ADDRESS', ''),
+    # Bank rekvizitlari — yuridik shaxslarga schyot (bank o'tkazmasi) uchun
+    'bank_name': os.environ.get('SITE_BANK_NAME', ''),
+    'bank_account': os.environ.get('SITE_BANK_ACCOUNT', ''),   # 20 xonali hisob raqami
+    'bank_mfo': os.environ.get('SITE_BANK_MFO', ''),           # 5 xonali MFO
+    'vat_percent': os.environ.get('SITE_VAT_PERCENT', ''),     # bo'sh — «QQSsiz»
 }
 # Oferta va maxfiylik siyosati matni yurist tomonidan tasdiqlanmaguncha True qoldiring —
 # sahifalarda "loyiha" degan ogohlantirish chiqadi.
@@ -300,6 +311,9 @@ PAYOUT_MIN_AMOUNT = int(os.environ.get('PAYOUT_MIN_AMOUNT') or 50000)   # kichik
 PAYOUT_DELAY_HOURS = int(os.environ.get('PAYOUT_DELAY_HOURS') or 24)    # chiqarilgandan keyin kutish
 PAYOUT_PROVIDER = os.environ.get('PAYOUT_PROVIDER') or 'manual'         # payments/payout_providers.py
 
+# --- Yangi ustalar: birinchi tasdiqlanganda bepul TOP (kun; 0 — o'chiq) ---
+NEW_MASTER_FREE_TOP_DAYS = int(os.environ.get('NEW_MASTER_FREE_TOP_DAYS') or 30)
+
 # --- Promo-kodlar va referal (payments/promos.py). Qiymatlar namunaviy! ---
 # Chegirma platforma hisobidan (usta to'liq oladi) — narxning shu foizidan oshmaydi
 PROMO_MAX_SHARE_PERCENT = int(os.environ.get('PROMO_MAX_SHARE_PERCENT') or 50)
@@ -330,6 +344,9 @@ WEBPUSH_SUBJECT = os.environ.get('WEBPUSH_SUBJECT', '')   # mailto:... (bo'sh �
 CAMPAIGN_HOURS = tuple(int(x) for x in (os.environ.get('CAMPAIGN_HOURS') or '9-21').split('-'))
 CAMPAIGN_BATCH = int(os.environ.get('CAMPAIGN_BATCH') or 500)
 
+# --- NPS so'rovnomasi: tasdiqlangandan necha soat keyin eslatma (faqat Telegram/push) ---
+NPS_INVITE_HOURS = int(os.environ.get('NPS_INVITE_HOURS') or 24)
+
 # --- Tahlil (repair_service/analytics.py) ---
 ANALYTICS_RETENTION_DAYS = int(os.environ.get('ANALYTICS_RETENTION_DAYS') or 180)
 
@@ -351,6 +368,7 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
 # --- Admin dizayni (django-unfold) ---
 from django.urls import reverse_lazy  # noqa: E402
+from django.utils.text import format_lazy  # noqa: E402
 
 UNFOLD = {
     'SITE_TITLE': 'TechService admin',
@@ -434,6 +452,9 @@ UNFOLD = {
                      'link': reverse_lazy('admin:payments_promocode_changelist')},
                     {'title': 'Tarif xaridlari', 'icon': 'workspace_premium',
                      'link': reverse_lazy('admin:payments_purchase_changelist')},
+                    {"title": "Bank o'tkazmalari (schyot)", 'icon': 'request_page',
+                     'link': format_lazy('{}?provider__exact=bank&state__exact=1',
+                                         reverse_lazy('admin:payments_payment_changelist'))},
                     {'title': 'Tranzaksiyalar', 'icon': 'receipt_long',
                      'link': reverse_lazy('admin:payments_payment_changelist')},
                     {'title': 'SMS kodlar', 'icon': 'sms', 'link': reverse_lazy('admin:otp_phonecode_changelist')},

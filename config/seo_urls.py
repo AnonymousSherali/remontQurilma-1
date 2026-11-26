@@ -22,7 +22,7 @@ class StaticSitemap(I18nSitemap):
     changefreq = 'weekly'
 
     def items(self):
-        return ['repair_service:index', 'masters:list', 'repair_service:catalog',
+        return ['repair_service:index', 'masters:list', 'masters:for_masters', 'repair_service:catalog',
                 'repair_service:offer', 'repair_service:privacy']
 
     def location(self, item):

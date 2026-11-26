@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load i18n humanize %}
+{% block title %}{% translate "Ustalar uchun — buyurtmalarni bepul oling" %} | {{ SITE.name }}{% endblock %}
+{% block description %}{% translate "Santexnik, elektrik va maishiy texnika ustalari uchun: yaqin atrofdagi buyurtmalar, kafolatlangan to'lov, haqiqiy baholar. Ro'yxatdan o'tish bepul." %}{% endblock %}
+{% block content %}
+<section class="section for-masters-hero">
+  <div class="container">
+    <span class="eyebrow">{% translate "Ustalar uchun" %}</span>
+    <h1>{% translate "Uyingizga yaqin buyurtmalar — oylik to'lovsiz" %}</h1>
+    <p class="lead">{% translate "Mijoz arizasi telefoningizga keladi, narxni o'zingiz aytasiz, pul ish bajarilgach kafolatlangan holda hisobingizga o'tadi." %}</p>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem">
+      <a class="btn btn--primary btn--lg" href="{{ register_url }}">{% translate "Bepul ro'yxatdan o'tish" %}</a>
+      <a class="btn btn--lg" href="#savollar">{% translate "Savollar" %}</a>
+    </div>
+    {% if free_top_days %}<p class="for-masters-gift">🎁 {% blocktranslate with d=free_top_days %}Tasdiqlangan har bir yangi ustaga {{ d }} kun bepul TOP — qidiruvda birinchi qatorlarda.{% endblocktranslate %}</p>{% endif %}
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="grid grid--3 benefits">
+      <div class="card"><div class="benefits__icon">📍</div><h3>{% translate "Yaqin buyurtmalar" %}</h3><p class="muted">{% translate "Yo'nalishingiz va xizmat radiusingizga mos arizalar. O'zingiz tanlaysiz — majburiy emas." %}</p></div>
+      <div class="card"><div class="benefits__icon">🔒</div><h3>{% translate "Kafolatlangan to'lov" %}</h3><p class="muted">{% translate "Mijoz oldindan to'laydi, pul bosqich bajarilgach sizga o'tadi. Bepul ishlab qolmaysiz." %}</p></div>
+      <div class="card"><div class="benefits__icon">⭐</div><h3>{% translate "Haqiqiy baholar" %}</h3><p class="muted">{% translate "Baho faqat bajarilgan ishdan keyin. Yaxshi ish — ko'proq buyurtma." %}</p></div>
+      <div class="card"><div class="benefits__icon">✈️</div><h3>{% translate "Telegram'da ishlash" %}</h3><p class="muted">{% translate "Buyurtmani bir tugma bilan oling, holatni Telegram'dan belgilang, rasm yuboring." %}</p></div>
+      <div class="card"><div class="benefits__icon">💳</div><h3>{% translate "Har hafta kartaga" %}</h3><p class="muted">{% blocktranslate with f=fee|floatformat:0 p=pro_fee|floatformat:0 %}Komissiya faqat onlayn to'langan ishdan — {{ f }}% (PRO tarifida {{ p }}%). Obuna to'lovi yo'q.{% endblocktranslate %}</p></div>
+      <div class="card"><div class="benefits__icon">🛡</div><h3>{% translate "Adolatli nizolar" %}</h3><p class="muted">{% translate "Hamma narsa yozma: narx, bosqichlar, yozishma, rasmlar. Nizoda administrator dalilga qaraydi." %}</p></div>
+    </div>
+  </div>
+</section>
+
+{% if demand %}
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <h2>{% blocktranslate with n=requests_month %}So'nggi 30 kunda {{ n }} ta ariza{% endblocktranslate %}</h2>
+    <div class="chips">{% for d in demand %}<span class="chip">{{ d.category__icon }} {{ d.category__name }} · {{ d.n }}</span>{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <h2>{% translate "Qanday boshlash" %}</h2>
+    <ol class="steps-list">
+      <li><strong>{% translate "Ro'yxatdan o'ting" %}</strong> — {% translate "telefon (SMS kod), yo'nalishlar, ish hududi. 5 daqiqa." %}</li>
+      <li><strong>{% translate "Hujjat yuklang" %}</strong> — {% translate "pasport va selfi; administrator 1 ish kunida tekshiradi." %}</li>
+      <li><strong>{% translate "Qisqa kursdan o'ting" %}</strong> — {% translate "platforma qoidalari, 10 daqiqa." %}</li>
+      <li><strong>{% translate "Telegram'ni ulang va buyurtma oling" %}</strong> — {% translate "birinchi buyurtma odatda shu hafta." %}</li>
+    </ol>
+    <a class="btn btn--primary btn--lg" href="{{ register_url }}">{% translate "Ro'yxatdan o'tish" %}</a>
+  </div>
+</section>
+
+<section class="section" id="savollar" style="padding-top:0">
+  <div class="container faq">
+    <h2>{% translate "Savollar" %}</h2>
+    <details><summary>{% translate "Ro'yxatdan o'tish pullikmi?" %}</summary><p>{% translate "Yo'q. Obuna to'lovi yo'q; komissiya faqat platforma orqali onlayn to'langan ishdan olinadi. Naqd to'lovda komissiya yo'q." %}</p></details>
+    <details><summary>{% translate "Narxni kim belgilaydi?" %}</summary><p>{% translate "Siz. Muammoni ko'rib narx taklif qilasiz, mijoz rozi bo'lgach ish boshlanadi. Katalog narxidan 20% dan ko'p farq qilsa, sababini yozasiz." %}</p></details>
+    <details><summary>{% translate "Pulni qachon olaman?" %}</summary><p>{% blocktranslate with m=payout_min|floatformat:0|intcomma %}Bosqich bajarilgach pul hisobingizga o'tadi va har hafta kartangizga o'tkaziladi ({{ m }} so'mdan boshlab).{% endblocktranslate %}</p></details>
+    <details><summary>{% translate "Buyurtma olishga majburmanmi?" %}</summary><p>{% translate "Yo'q. Band bo'lsangiz «Band» rejimini yoqing yoki dam olish kunlarini belgilang — qidiruvdan vaqtincha yashirinasiz." %}</p></details>
+  </div>
+</section>
+{% endblock %}

@@ -34,6 +34,13 @@
   {% for claim in warranty_claims %}
   <div class="alert alert--warning"><div>🛡 <strong>{% blocktranslate with id=claim.order_id %}#{{ id }} buyurtma bo'yicha kafolat murojaati.{% endblocktranslate %}</strong> {% translate "Mijoz muammo bildirdi — bepul tuzatib bering." %} <a href="{{ claim.order.get_master_url }}#kafolat">{% translate "Ochish" %} →</a></div></div>
   {% endfor %}
+  {% if not readiness.complete %}
+  <section class="card readiness" style="margin-bottom:1rem">
+    <div class="card__title" style="margin:0">🚀 {% blocktranslate with d=readiness.done t=readiness.total %}Ishni boshlashga tayyorlik: {{ d }}/{{ t }}{% endblocktranslate %}</div>
+    <div class="lesson-progress"><span style="width:{{ readiness.percent }}%"></span></div>
+    <ul class="readiness__list small">{% for ok, text, url in readiness.items %}<li class="{% if ok %}is-done{% endif %}">{% if ok %}✓{% else %}○{% endif %} <a href="{{ url }}">{{ text }}</a></li>{% endfor %}</ul>
+  </section>
+  {% endif %}
   {% if not learning.complete %}
   <div class="alert alert--info"><div>📚 <strong>{% translate "Boshlang'ich kurs" %}: {{ learning.done }}/{{ learning.total }}.</strong> {% translate "Platforma qoidalari bo'yicha qisqa darslar — 10 daqiqa. Xatolardan va nizolardan saqlaydi." %} <a href="{% url 'masters:lessons' %}">{% translate "Davom etish" %} →</a></div></div>
   {% endif %}
@@ -162,7 +169,7 @@
       <p class="muted">{% translate "Hali baho yo'q. Ish yakunlangach mijoz tasdiqlaydi va sizni baholaydi." %}</p>
       {% endif %}
       <hr style="border:0;border-top:1px solid var(--line);margin:1.25rem 0">
-      <div class="card__title" style="font-size:1rem">✈️ Telegram</div>
+      <div class="card__title" style="font-size:1rem" id="telegram">✈️ Telegram</div>
       {% if master.telegram_chat_id %}
         <p class="small" style="margin-top:0">✓ {% translate "Ulangan. Yangi buyurtmalar Telegram'ga tugmalar bilan keladi." %}</p>
         <form method="post" action="{% url 'telegram_bot:disconnect' %}">{% csrf_token %}<button class="btn btn--sm btn--ghost">{% translate "Uzish" %}</button></form>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-25 12:30+0500\n"
+"POT-Creation-Date: 2026-11-26 19:40+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -303,6 +303,35 @@ msgstr "Селфи с документом"
 
 msgid "Malaka sertifikati yoki diplom"
 msgstr "Сертификат о квалификации или диплом"
+
+#, python-format
+msgid ""
+"Tabriklaymiz, profilingiz tasdiqlandi! Sizga %(days)s kun bepul TOP — "
+"qidiruvda birinchi qatorlardasiz. Kabinet: %(url)s"
+msgstr ""
+"Поздравляем, ваш профиль подтверждён! Вам %(days)s дней ТОП бесплатно — вы в"
+" первых строках поиска. Кабинет: %(url)s"
+
+msgid "Profil rasmi"
+msgstr "Фото профиля"
+
+msgid "O'zingiz haqingizda (tajriba, ixtisos)"
+msgstr "О себе (опыт, специализация)"
+
+msgid "Hujjatlar tasdiqlangan"
+msgstr "Документы подтверждены"
+
+msgid "Pul olish uchun karta"
+msgstr "Карта для выплат"
+
+msgid "Telegram yoki bildirishnomalar — buyurtmani darhol bilish uchun"
+msgstr "Telegram или уведомления — чтобы сразу узнавать о заказах"
+
+msgid "Ish vaqti"
+msgstr "Время работы"
+
+msgid "Boshlang'ich kurs"
+msgstr "Вводный курс"
 
 msgid ""
 "Buyurtmani faqat albatta bora olsangiz qabul qiling — voz kechish ballni "
@@ -896,11 +925,20 @@ msgstr "Обнаружен спам"
 msgid "Kunni bugundan boshlab 30 kun ichida tanlang"
 msgstr "Выберите день в пределах 30 дней, начиная с сегодня"
 
+msgid "STIR 9 ta raqamdan iborat bo'lishi kerak"
+msgstr "ИНН должен состоять из 9 цифр"
+
 msgid "Miqdor 1 dan 999 gacha bo'lishi kerak"
 msgstr "Количество должно быть от 1 до 999"
 
 msgid "Bu usta tanlangan xizmatni bajarmaydi. Boshqa ustani tanlang."
 msgstr "Этот мастер не выполняет выбранную услугу. Выберите другого мастера."
+
+msgid "Tashkilot nomini kiriting"
+msgstr "Укажите название организации"
+
+msgid "Tashkilot STIR raqamini kiriting"
+msgstr "Укажите ИНН организации"
 
 msgid "Bu usta hozir buyurtma qabul qilmayapti. Boshqa ustani tanlang."
 msgstr "Этот мастер сейчас не принимает заказы. Выберите другого мастера."
@@ -1012,6 +1050,25 @@ msgstr "точка"
 msgid "soat"
 msgstr "час"
 
+msgid "0 dan 10 gacha baho tanlang."
+msgstr "Выберите оценку от 0 до 10."
+
+msgid "So'rovnoma buyurtma tasdiqlangandan keyin."
+msgstr "Опрос доступен после подтверждения заказа."
+
+msgid "Javobingiz allaqachon qabul qilingan. Rahmat!"
+msgstr "Ваш ответ уже принят. Спасибо!"
+
+#, python-format
+msgid ""
+"Ishdan mamnunmisiz? Bizni do'stingizga tavsiya qilasizmi — 0 dan 10 gacha "
+"baholang: %(url)s"
+msgstr ""
+"Довольны работой? Порекомендуете нас другу — оцените от 0 до 10: %(url)s"
+
+msgid "Bank o'tkazmasi (schyot)"
+msgstr "Банковский перевод (счёт)"
+
 msgid "Avval telefon raqamingizni SMS kod bilan tasdiqlang."
 msgstr "Сначала подтвердите номер телефона кодом из SMS."
 
@@ -1112,6 +1169,9 @@ msgstr "Фото работы будут показаны в портфолио 
 
 msgid "Ish rasmlari usta portfoliosida ko'rsatilmaydi."
 msgstr "Фото работы не будут показаны в портфолио мастера."
+
+msgid "Rahmat! Fikringiz xizmatni yaxshilashga yordam beradi."
+msgstr "Спасибо! Ваш отзыв помогает улучшать сервис."
 
 msgid "Telefon raqamini to'g'ri kiriting: +998 (XX) XXX-XX-XX"
 msgstr "Введите номер в формате: +998 (XX) XXX-XX-XX"
@@ -1553,6 +1613,9 @@ msgstr "Вопросы"
 msgid "Ustalarga"
 msgstr "Мастерам"
 
+msgid "Nega bizda ishlash kerak"
+msgstr "Почему стоит работать у нас"
+
 msgid "Ro'yxatdan o'tish"
 msgstr "Регистрация"
 
@@ -1576,6 +1639,110 @@ msgstr "Помощь"
 
 msgid "Operator bilan yozishma"
 msgstr "Чат с оператором"
+
+#, python-format
+msgid "Buyurtma #%(id)s"
+msgstr "Заказ #%(id)s"
+
+msgid "Chop etish / PDF"
+msgstr "Печать / PDF"
+
+msgid ""
+"Elektron hisob-faktura (ESF) soliq tizimi operatori orqali alohida "
+"yuboriladi."
+msgstr ""
+"Электронная счёт-фактура (ЭСФ) направляется отдельно через оператора "
+"налоговой системы."
+
+msgid "Bajarilgan ishlar dalolatnomasi"
+msgstr "Акт выполненных работ"
+
+#, python-format
+msgid ""
+"Bajarilgan ishlar (ko'rsatilgan xizmatlar) dalolatnomasi № %(id)s — %(d)s"
+msgstr "Акт выполненных работ (оказанных услуг) № %(id)s — %(d)s"
+
+msgid "Ijrochi"
+msgstr "Исполнитель"
+
+msgid "STIR"
+msgstr "ИНН"
+
+msgid "Ishni bajargan usta"
+msgstr "Мастер, выполнивший работу"
+
+msgid "Ish / xizmat"
+msgstr "Работа / услуга"
+
+msgid "Summa, so'm"
+msgstr "Сумма, сум"
+
+msgid "Manzil"
+msgstr "Адрес"
+
+msgid "Jami"
+msgstr "Итого"
+
+#, python-format
+msgid "Shu jumladan QQS %(p)s%%: %(v)s so'm"
+msgstr "В том числе НДС %(p)s%%: %(v)s сум"
+
+msgid "QQSsiz"
+msgstr "Без НДС"
+
+msgid ""
+"Yuqoridagi ishlar to'liq va o'z vaqtida bajarildi. Buyurtmachining hajm, "
+"sifat va muddat bo'yicha e'tirozlari yo'q."
+msgstr ""
+"Вышеперечисленные работы выполнены полностью и в срок. Заказчик претензий по"
+" объёму, качеству и срокам не имеет."
+
+msgid "To'lov uchun schyot"
+msgstr "Счёт на оплату"
+
+#, python-format
+msgid "To'lov uchun schyot № %(n)s — %(d)s"
+msgstr "Счёт на оплату № %(n)s — %(d)s"
+
+msgid "Oluvchi (ijrochi)"
+msgstr "Получатель (исполнитель)"
+
+msgid "Hisob raqami"
+msgstr "Расчётный счёт"
+
+msgid "Bank"
+msgstr "Банк"
+
+msgid "MFO"
+msgstr "МФО"
+
+msgid "To'lovchi (buyurtmachi)"
+msgstr "Плательщик (заказчик)"
+
+msgid "Jami to'lash kerak"
+msgstr "Итого к оплате"
+
+msgid "To'lov maqsadi"
+msgstr "Назначение платежа"
+
+#, python-format
+msgid "Schyot № %(n)s bo'yicha, buyurtma #%(id)s uchun xizmat haqi"
+msgstr "Оплата по счёту № %(n)s, услуги по заказу #%(id)s"
+
+msgid ""
+"To'lov maqsadida schyot raqamini albatta ko'rsating — pul shu raqam bo'yicha"
+" avtomatik bog'lanadi. Pul tushgach ish davom etadi va bu sahifada "
+"«To'langan» belgisi chiqadi."
+msgstr ""
+"Обязательно укажите номер счёта в назначении платежа — по нему платёж "
+"сопоставляется. После поступления денег работа продолжится, а на этой "
+"странице появится отметка «Оплачено»."
+
+msgid "Rahbar"
+msgstr "Руководитель"
+
+msgid "Bosh hisobchi"
+msgstr "Главный бухгалтер"
 
 msgid ""
 "Santexnik, elektrik va maishiy texnika ta'mirlash narxlari: aniq summa, "
@@ -1965,12 +2132,6 @@ msgstr "Реквизиты"
 msgid "Nomi"
 msgstr "Наименование"
 
-msgid "STIR"
-msgstr "ИНН"
-
-msgid "Manzil"
-msgstr "Адрес"
-
 msgid "Aloqa"
 msgstr "Контакты"
 
@@ -2079,9 +2240,6 @@ msgstr "Профиль"
 msgid "O'quv"
 msgstr "Обучение"
 
-msgid "Ish vaqti"
-msgstr "Время работы"
-
 msgid "Hujjatlar"
 msgstr "Документы"
 
@@ -2101,8 +2259,9 @@ msgstr "Клиент сообщил о проблеме — исправьте �
 msgid "Ochish"
 msgstr "Открыть"
 
-msgid "Boshlang'ich kurs"
-msgstr "Вводный курс"
+#, python-format
+msgid "Ishni boshlashga tayyorlik: %(d)s/%(t)s"
+msgstr "Готовность к работе: %(d)s/%(t)s"
 
 msgid ""
 "Platforma qoidalari bo'yicha qisqa darslar — 10 daqiqa. Xatolardan va "
@@ -2498,6 +2657,171 @@ msgstr ""
 "Имя, телефон и точный адрес клиента будут видны после того, как вы возьмёте "
 "заказ."
 
+msgid "Ustalar uchun — buyurtmalarni bepul oling"
+msgstr "Мастерам — получайте заказы бесплатно"
+
+msgid ""
+"Santexnik, elektrik va maishiy texnika ustalari uchun: yaqin atrofdagi "
+"buyurtmalar, kafolatlangan to'lov, haqiqiy baholar. Ro'yxatdan o'tish bepul."
+msgstr ""
+"Для сантехников, электриков и мастеров по бытовой технике: заказы рядом, "
+"гарантированная оплата, реальные отзывы. Регистрация бесплатная."
+
+msgid "Ustalar uchun"
+msgstr "Для мастеров"
+
+msgid "Uyingizga yaqin buyurtmalar — oylik to'lovsiz"
+msgstr "Заказы рядом с домом — без абонентской платы"
+
+msgid ""
+"Mijoz arizasi telefoningizga keladi, narxni o'zingiz aytasiz, pul ish "
+"bajarilgach kafolatlangan holda hisobingizga o'tadi."
+msgstr ""
+"Заявка клиента приходит на телефон, цену называете вы, деньги после работы "
+"гарантированно поступают на ваш счёт."
+
+msgid "Bepul ro'yxatdan o'tish"
+msgstr "Бесплатная регистрация"
+
+#, python-format
+msgid ""
+"Tasdiqlangan har bir yangi ustaga %(d)s kun bepul TOP — qidiruvda birinchi "
+"qatorlarda."
+msgstr ""
+"Каждому новому подтверждённому мастеру %(d)s дней ТОП бесплатно — в первых "
+"строках поиска."
+
+msgid "Yaqin buyurtmalar"
+msgstr "Заказы рядом"
+
+msgid ""
+"Yo'nalishingiz va xizmat radiusingizga mos arizalar. O'zingiz tanlaysiz — "
+"majburiy emas."
+msgstr ""
+"Заявки по вашим направлениям и радиусу выезда. Выбираете сами — без "
+"обязательств."
+
+msgid "Kafolatlangan to'lov"
+msgstr "Гарантированная оплата"
+
+msgid ""
+"Mijoz oldindan to'laydi, pul bosqich bajarilgach sizga o'tadi. Bepul ishlab "
+"qolmaysiz."
+msgstr ""
+"Клиент платит заранее, деньги переходят к вам после этапа. Вы не работаете "
+"бесплатно."
+
+msgid "Haqiqiy baholar"
+msgstr "Реальные отзывы"
+
+msgid "Baho faqat bajarilgan ishdan keyin. Yaxshi ish — ko'proq buyurtma."
+msgstr ""
+"Отзыв — только после выполненной работы. Хорошая работа — больше заказов."
+
+msgid "Telegram'da ishlash"
+msgstr "Работа в Telegram"
+
+msgid ""
+"Buyurtmani bir tugma bilan oling, holatni Telegram'dan belgilang, rasm "
+"yuboring."
+msgstr ""
+"Берите заказ одной кнопкой, отмечайте этапы в Telegram, отправляйте фото."
+
+msgid "Har hafta kartaga"
+msgstr "Каждую неделю на карту"
+
+#, python-format
+msgid ""
+"Komissiya faqat onlayn to'langan ishdan — %(f)s%% (PRO tarifida %(p)s%%). "
+"Obuna to'lovi yo'q."
+msgstr ""
+"Комиссия только с работ, оплаченных онлайн, — %(f)s%% (на тарифе PRO "
+"%(p)s%%). Абонентской платы нет."
+
+msgid "Adolatli nizolar"
+msgstr "Честные споры"
+
+msgid ""
+"Hamma narsa yozma: narx, bosqichlar, yozishma, rasmlar. Nizoda administrator"
+" dalilga qaraydi."
+msgstr ""
+"Всё письменно: цена, этапы, переписка, фото. При споре администратор смотрит"
+" на доказательства."
+
+#, python-format
+msgid "So'nggi 30 kunda %(n)s ta ariza"
+msgstr "За последние 30 дней — заявок: %(n)s"
+
+msgid "Qanday boshlash"
+msgstr "Как начать"
+
+msgid "Ro'yxatdan o'ting"
+msgstr "Зарегистрируйтесь"
+
+msgid "telefon (SMS kod), yo'nalishlar, ish hududi. 5 daqiqa."
+msgstr "телефон (SMS-код), направления, район работы. 5 минут."
+
+msgid "Hujjat yuklang"
+msgstr "Загрузите документы"
+
+msgid "pasport va selfi; administrator 1 ish kunida tekshiradi."
+msgstr "паспорт и селфи; администратор проверит за 1 рабочий день."
+
+msgid "Qisqa kursdan o'ting"
+msgstr "Пройдите короткий курс"
+
+msgid "platforma qoidalari, 10 daqiqa."
+msgstr "правила платформы, 10 минут."
+
+msgid "Telegram'ni ulang va buyurtma oling"
+msgstr "Подключите Telegram и берите заказы"
+
+msgid "birinchi buyurtma odatda shu hafta."
+msgstr "первый заказ обычно на этой же неделе."
+
+msgid "Ro'yxatdan o'tish pullikmi?"
+msgstr "Регистрация платная?"
+
+msgid ""
+"Yo'q. Obuna to'lovi yo'q; komissiya faqat platforma orqali onlayn to'langan "
+"ishdan olinadi. Naqd to'lovda komissiya yo'q."
+msgstr ""
+"Нет. Абонентской платы нет; комиссия берётся только с работ, оплаченных "
+"онлайн через платформу. С наличных комиссии нет."
+
+msgid "Narxni kim belgilaydi?"
+msgstr "Кто устанавливает цену?"
+
+#, python-format
+msgid ""
+"Siz. Muammoni ko'rib narx taklif qilasiz, mijoz rozi bo'lgach ish "
+"boshlanadi. Katalog narxidan 20%% dan ko'p farq qilsa, sababini yozasiz."
+msgstr ""
+"Вы. Осмотрев проблему, предлагаете цену; работа начинается после согласия "
+"клиента. Если цена отличается от каталожной больше чем на 20%%, указываете "
+"причину."
+
+msgid "Pulni qachon olaman?"
+msgstr "Когда я получу деньги?"
+
+#, python-format
+msgid ""
+"Bosqich bajarilgach pul hisobingizga o'tadi va har hafta kartangizga "
+"o'tkaziladi (%(m)s so'mdan boshlab)."
+msgstr ""
+"После этапа деньги поступают на ваш счёт и каждую неделю переводятся на "
+"карту (от %(m)s сум)."
+
+msgid "Buyurtma olishga majburmanmi?"
+msgstr "Обязан ли я брать заказы?"
+
+msgid ""
+"Yo'q. Band bo'lsangiz «Band» rejimini yoqing yoki dam olish kunlarini "
+"belgilang — qidiruvdan vaqtincha yashirinasiz."
+msgstr ""
+"Нет. Если заняты — включите режим «Занят» или отметьте выходные: вы временно"
+" скроетесь из поиска."
+
 msgid "Barcha darslar"
 msgstr "Все уроки"
 
@@ -2656,9 +2980,6 @@ msgstr[2] "%(n)s платежей"
 
 msgid "Usta sifatida ro'yxatdan o'tish"
 msgstr "Регистрация мастера"
-
-msgid "Ustalar uchun"
-msgstr "Для мастеров"
 
 msgid ""
 "Bepul. Profilingiz administrator tekshiruvidan so'ng (odatda 1 ish kuni) "
@@ -2820,9 +3141,6 @@ msgstr ""
 msgid "Ustaga chiqarilgan"
 msgstr "Выплачено мастеру"
 
-msgid "Jami"
-msgstr "Итого"
-
 msgid "Chegirma"
 msgstr "Скидка"
 
@@ -2866,6 +3184,21 @@ msgstr "Согласованная цена"
 
 msgid "to'lov ustaga to'g'ridan-to'g'ri (platforma kafolatisiz)."
 msgstr "оплата мастеру напрямую (без гарантии платформы)."
+
+msgid "Bizni do'stingizga tavsiya qilasizmi?"
+msgstr "Порекомендуете нас другу?"
+
+msgid "0 — hech qachon, 10 — albatta"
+msgstr "0 — ни за что, 10 — обязательно"
+
+msgid "Hech qachon"
+msgstr "Ни за что"
+
+msgid "Albatta"
+msgstr "Обязательно"
+
+msgid "Nimani yaxshilashimiz kerak? (ixtiyoriy)"
+msgstr "Что нам улучшить? (необязательно)"
 
 msgid "Rasmlar"
 msgstr "Фото"
@@ -2951,10 +3284,6 @@ msgid "Murojaat qilish uchun yuqorida telefon raqamingizni tasdiqlang."
 msgstr "Чтобы оставить обращение, подтвердите номер телефона выше."
 
 #, python-format
-msgid "Buyurtma #%(id)s"
-msgstr "Заказ #%(id)s"
-
-#, python-format
 msgid "Usta %(t)s da keladi."
 msgstr "Мастер приедет %(t)s."
 
@@ -3032,6 +3361,22 @@ msgid ""
 msgstr ""
 "При подтверждении вы оцениваете мастера. Если не ответите, через 72 часа "
 "заказ подтвердится автоматически."
+
+msgid "Schyot"
+msgstr "Счёт"
+
+msgid "to'lov kutilmoqda"
+msgstr "ожидает оплаты"
+
+msgid "to'langan"
+msgstr "оплачено"
+
+msgid ""
+"To'lov bosqichida «Bank o'tkazmasi (schyot)» ni tanlang — schyot ochiladi. "
+"Elektron hisob-faktura alohida yuboriladi."
+msgstr ""
+"На этапе оплаты выберите «Банковский перевод (счёт)» — откроется счёт. "
+"Электронная счёт-фактура направляется отдельно."
 
 msgid "Ustani baholash"
 msgstr "Оценить мастера"
@@ -3425,6 +3770,25 @@ msgstr "Кратко опишите проблему"
 msgid "Masalan: oshxonada kran oqyapti / kir mashina suvni chiqarmayapti"
 msgstr "Например: течёт кран на кухне / стиральная машина не сливает воду"
 
+msgid "Tashkilot nomidan (schyot va dalolatnoma bilan)"
+msgstr "От имени организации (со счётом и актом)"
+
+msgid "Tashkilot nomi"
+msgstr "Название организации"
+
+msgid "Masalan: «Baraka Savdo» MChJ"
+msgstr "Например: ООО «Baraka Savdo»"
+
+msgid "Yuridik manzil (ixtiyoriy)"
+msgstr "Юридический адрес (необязательно)"
+
+msgid ""
+"Bank o'tkazmasi orqali to'lash uchun schyot va ish yakunida bajarilgan "
+"ishlar dalolatnomasi beriladi."
+msgstr ""
+"Для оплаты банковским переводом выдаётся счёт, по завершении — акт "
+"выполненных работ."
+
 msgid "Promo-kod bormi?"
 msgstr "Есть промокод?"
 
@@ -3553,13 +3917,6 @@ msgstr "Телефон (необязательно)"
 
 msgid "Telefon qoldirsangiz, javob haqida SMS keladi."
 msgstr "Оставьте телефон — придёт SMS об ответе."
-
-#~ msgid ""
-#~ "Pul bosqich bajarilgach hisobingizga o'tadi; administrator uni kartangizga "
-#~ "o'tkazadi."
-#~ msgstr ""
-#~ "После выполнения этапа деньги поступают на ваш счёт; администратор переводит"
-#~ " их на вашу карту."
 
 #~ msgid "Tuman"
 #~ msgstr "Район"

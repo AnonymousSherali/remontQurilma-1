@@ -39,6 +39,10 @@ class ServiceRequest(models.Model):
     phone = models.CharField('Telefon', max_length=20)
     email = models.EmailField('Email', blank=True, null=True)
     address = models.CharField('Manzil', max_length=255, blank=True)
+    # Yuridik shaxs (tashkilot, do'kon, ofis) — schyot va dalolatnoma uchun (repair_service/business.py)
+    company_name = models.CharField('Tashkilot nomi', max_length=200, blank=True)
+    company_inn = models.CharField('Tashkilot STIR', max_length=9, blank=True)
+    company_address = models.CharField('Yuridik manzil', max_length=255, blank=True)
     # Taxminiy joylashuv (GPS yoki tuman markazi) — ochiq buyurtmalar lentasida ustaga masofani
     # ko'rsatish uchun. Aniq manzil ustaga faqat buyurtmani olgandan keyin ko'rinadi.
     district = models.CharField('Tuman', max_length=40, blank=True)
@@ -99,6 +103,7 @@ class ServiceRequest(models.Model):
     # Mijoz "Telegram'da kuzatish" ni bosgan bo'lsa — xabarlar SMS o'rniga Telegram'ga (bepul)
     telegram_chat_id = models.BigIntegerField('Mijoz Telegram chati', null=True, blank=True, db_index=True)
 
+    nps_invited_at = models.DateTimeField('NPS so\'rovnomasi yuborilgan', null=True, blank=True)
     # Mijozning maxfiy havolasi: /buyurtma/<kalit>/ (kuzatish) va /baho/<kalit>/
     review_token = models.UUIDField('Baho kaliti', default=uuid.uuid4, unique=True, editable=False)
 
@@ -116,6 +121,10 @@ class ServiceRequest(models.Model):
 
     def __str__(self):
         return f"Ariza #{self.id} - {self.name} ({self.phone})"
+
+    @property
+    def is_business(self):
+        return bool(self.company_inn)
 
     @property
     def catalog_estimate(self):
@@ -308,6 +317,30 @@ class CampaignDelivery(models.Model):
         unique_together = [('campaign', 'recipient')]
 
 
+class NpsResponse(models.Model):
+    """«Bizni do'stingizga tavsiya qilasizmi?» (0–10). NPS = 9–10 foizi − 0–6 foizi."""
+
+    order = models.OneToOneField(ServiceRequest, on_delete=models.CASCADE, related_name='nps',
+                                 verbose_name='Buyurtma')
+    score = models.PositiveSmallIntegerField('Baho (0–10)')
+    comment = models.TextField('Izoh', max_length=1000, blank=True)
+    followed_up = models.BooleanField("Bog'lanildi", default=False,
+                                      help_text="Norozi mijoz bilan gaplashib, muammo hal qilinganda belgilang")
+    created_at = models.DateTimeField('Vaqt', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'NPS javobi'
+        verbose_name_plural = 'NPS javoblari'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'#{self.order_id}: {self.score}'
+
+    @property
+    def group(self):
+        return 'promoter' if self.score >= 9 else 'passive' if self.score >= 7 else 'detractor'
+
+
 class SupportThread(models.Model):
     """Saytdagi «Yordam» vidjeti orqali operator bilan yozishma (repair_service/support.py)."""
 
@@ -380,8 +413,9 @@ class ExperimentExposure(models.Model):
 class AnalyticsEvent(models.Model):
     """Yengil tahlil hodisasi (shaxsiy ma'lumotsiz): tashrif, forma boshlandi, ariza."""
 
-    PAGE_VIEW, FORM_START, REQUEST = 'page_view', 'form_start', 'request'
-    NAME_CHOICES = [(PAGE_VIEW, 'Sahifa ochildi'), (FORM_START, "Forma to'ldirish boshlandi"), (REQUEST, 'Ariza')]
+    PAGE_VIEW, FORM_START, REQUEST, MASTER_SIGNUP = 'page_view', 'form_start', 'request', 'master_signup'
+    NAME_CHOICES = [(PAGE_VIEW, 'Sahifa ochildi'), (FORM_START, "Forma to'ldirish boshlandi"), (REQUEST, 'Ariza'),
+                    (MASTER_SIGNUP, "Usta ro'yxatdan o'tdi")]
 
     name = models.CharField('Hodisa', max_length=20, choices=NAME_CHOICES, db_index=True)
     visitor = models.CharField('Tashrifchi (tasodifiy ID)', max_length=32, db_index=True)

@@ -16,7 +16,7 @@ from .customer_notify import notify_master_new_order
 from . import warranty
 from . import marketing
 from . import experiments
-from .models import Brand, Campaign, Experiment, MarketingConsent, OrderEvent, OrderMessage, OrderPhoto, Service, ServiceRequest, Testimonial, WarrantyClaim
+from .models import Brand, Campaign, Experiment, NpsResponse, MarketingConsent, OrderEvent, OrderMessage, OrderPhoto, Service, ServiceRequest, Testimonial, WarrantyClaim
 from .phone import format_phone
 
 admin.site.site_header = 'TechService boshqaruv paneli'
@@ -96,6 +96,8 @@ class ServiceRequestAdmin(ModelAdmin):
                                  'appliance_type', 'brand']}),
         ("Kelish vaqti", {'fields': [('preferred_date', 'preferred_slot'), 'visit_at']}),
         ("Holat va izohlar", {'fields': ['status', 'admin_notes', 'review_link']}),
+        ("Tashkilot (yuridik shaxs)", {'fields': ['company_name', 'company_inn', 'company_address'],
+                                       'classes': ['collapse']}),
         ("Manba", {'fields': [('source', 'medium'), ('campaign', 'landing_path')], 'classes': ['collapse']}),
         ("Tizim ma'lumotlari", {'fields': ['created_at', 'updated_at'], 'classes': ['collapse']}),
     ]
@@ -400,3 +402,24 @@ class ExperimentAdmin(ModelAdmin):
                     "bo'lsa — farq tasodif emas. G'olibni «G'olib» maydoniga yozing.</p>")
         from django.utils.safestring import mark_safe
         return mark_safe(''.join(str(h) for h in html))   # qatorlar format_html bilan qochirilgan
+
+
+@admin.register(NpsResponse)
+class NpsResponseAdmin(ModelAdmin):
+    list_display = ['order', 'score_badge', 'comment_short', 'followed_up', 'created_at']
+    list_filter = ['followed_up', 'score', 'created_at']
+    list_editable = ['followed_up']
+    search_fields = ['order__id', 'order__phone', 'comment']
+    readonly_fields = ['order', 'score', 'comment', 'created_at']
+
+    def has_add_permission(self, request):
+        return False
+
+    @display(description='Baho', ordering='score', label={'Tavsiya qiladi': 'success', 'Neytral': 'warning',
+                                                           'Norozi': 'danger'})
+    def score_badge(self, obj):
+        return {'promoter': 'Tavsiya qiladi', 'passive': 'Neytral', 'detractor': 'Norozi'}[obj.group]
+
+    @display(description='Izoh')
+    def comment_short(self, obj):
+        return (obj.comment[:80] + '…') if len(obj.comment) > 80 else obj.comment or '—'

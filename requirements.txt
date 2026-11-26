@@ -4,6 +4,7 @@ Django>=5.2,<5.3
 Pillow>=11.0
 django-unfold==0.91.0   # zamonaviy admin dizayni
 cryptography>=42       # Web Push (bildirishnomalar) shifrlash va imzosi
+whitenoise>=6.7           # statik fayllar (nginx'siz ham, Docker uchun)
 openpyxl>=3.1         # ustalarga o'tkazmalar hisobotini Excel'ga yuklash
 
 # Production uchun qo'shimcha paketlar — requirements-prod.txt da

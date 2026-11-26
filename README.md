@@ -455,6 +455,55 @@ boshlaganlar, ariza yuborganlar, nazorat variantiga nisbatan farq va p-qiymat. H
 tashrifchi va p < 0.05 bo'lsa — «ahamiyatli». G'olibni «G'olib» maydoniga yozsangiz, hamma shu variantni
 ko'radi. Tayyor namuna: ariza formasi tugmasi (`ariza_tugmasi`) — testni yaratib, faollashtirish kifoya.
 
+## Yuridik shaxslar (tashkilot, ofis, do'kon)
+
+- Arizada «🏢 Tashkilot nomidan»: nomi, STIR (9 raqam), yuridik manzil.
+- Onlayn to'lov rejasida har bir bosqichda **«Bank o'tkazmasi (schyot)»** — chop etiladigan to'lov uchun
+  schyot: platforma rekvizitlari, buyurtmachi, summa (QQS bilan yoki «QQSsiz»), to'lov maqsadi
+  («Schyot № TS-<buyurtma>-<bosqich>»). Havolani tashkilot buxgalteriyasiga yuborish mumkin.
+- Pul hisobga tushgach admin → «Bank o'tkazmalari (schyot)» → «Bank o'tkazmasi tushdi» — bosqich to'langan
+  bo'ladi, usta ishni davom ettiradi (karta to'lovi bilan bir xil eskrou qoidalari).
+- Buyurtma tasdiqlangach — **bajarilgan ishlar dalolatnomasi** (chop etish/PDF).
+- `.env`: `SITE_LEGAL_NAME`, `SITE_LEGAL_INN`, `SITE_BANK_NAME`, `SITE_BANK_ACCOUNT`, `SITE_BANK_MFO`,
+  `SITE_VAT_PERCENT` (bo'sh — QQSsiz). Rekvizitlar to'ldirilmaguncha bank o'tkazmasi taklif qilinmaydi.
+
+> ⚠️ Schyot va dalolatnoma — buxgalteriya hujjatlari. **Elektron hisob-faktura (ESF)** soliq tizimi
+> operatori (Didox, Faktura.uz va h.k.) orqali buxgalter tomonidan alohida rasmiylashtiriladi. Platforma
+> qaysi rolda (agent yoki ijrochi) ekanini, QQS va hujjat shakllarini buxgalter va yurist bilan aniqlang.
+
+## Ustalarni jalb qilish
+
+- `/ustalar-uchun/` — ustalar uchun sahifa: afzalliklar, so'nggi 30 kundagi talab (yo'nalishlar bo'yicha),
+  qanday boshlash, savollar. Saytdagi «Usta bo'lish» shu yerga olib boradi. Reklama uchun UTM bilan:
+  `/ustalar-uchun/?utm_source=olx&utm_campaign=start` — statistikada «Yangi ustalar manbasi».
+- **Birinchi oy bepul TOP:** usta birinchi marta tasdiqlanganda `NEW_MASTER_FREE_TOP_DAYS` (30) kun TOP
+  (bir marta, SMS/Telegram xabari bilan). Mavjud ustalarga orqaga sanab berilmaydi.
+- Kabinetda **«Ishni boshlashga tayyorlik»** — 7 band: rasm, o'zi haqida, hujjatlar, karta, Telegram yoki
+  bildirishnoma, ish vaqti, boshlang'ich kurs.
+- Taklif havolalari (usta referali) avvalgidek: taklif qilingan usta birinchi ishini bajarsa — bepul TOP.
+
+## Mijozlar fikri (NPS)
+
+«Bizni do'stingizga tavsiya qilasizmi?» (0–10) va ixtiyoriy izoh — tasdiqlangan buyurtma sahifasida va
+bahodan keyin; bir buyurtmaga bir marta. Tasdiqlangandan `NPS_INVITE_HOURS` (24) soat keyin eslatma —
+faqat Telegram yoki bildirishnoma orqali (SMS'siz). 0–6 bergan (norozi) mijoz haqida administratorga
+darhol Telegram — qo'ng'iroq qilib, muammoni hal qiling va admin'da «bog'lanildi» deb belgilang.
+Statistikada: NPS (−100…+100), taqsimot va norozilar ro'yxati.
+
+## Ishga tushirish
+
+**Qadamma-qadam:** [docs/ISHGA_TUSHIRISH.md](docs/ISHGA_TUSHIRISH.md) — yuridik asos, shartnomalar
+(Eskiz, Payme, Click), domen, server, kontent, tekshiruv va birinchi haftalar.
+
+```bash
+docker compose up -d --build                       # sayt + PostgreSQL + Redis + cron + HTTPS (Caddy)
+docker compose exec web python manage.py createsuperuser
+docker compose exec web python manage.py launch_check --live   # nima qolganini ko'rsatadi
+```
+
+`launch_check` — xavfsizlik (`check --deploy`), integratsiyalar va kontent: namunaviy kontaktlar, yuridik
+ma'lumotlar, demo ustalar qolib ketmaganmi, administrator, yo'nalishlar va narxlar, ustalar soni.
+
 ## Telegram bot
 
 Bitta bot ikki vazifani bajaradi (admin'ga yangi ariza xabari ham shu bot orqali):
@@ -554,6 +603,8 @@ yetarli. Mavjud arizalar saqlanadi — har biriga alohida baho kaliti beriladi.
 | `/admin/nizolar/` | Nizolar: dalillar va qaror (faqat administrator) |
 | `/obuna/bekor/<kalit>/` | Aksiya xabarlaridan voz kechish |
 | `/kabinet/jadval/`, `/kabinet/oqish/` | Usta: ish vaqti, o'quv bo'limi |
+| `/ustalar-uchun/` | Ustalar uchun sahifa (jalb qilish) |
+| `/buyurtma/<kalit>/schyot/<bosqich>/`, `/buyurtma/<kalit>/dalolatnoma/` | Tashkilotlar: schyot va dalolatnoma |
 | `/admin/yordam/` | Operator: «Yordam» suhbatlari |
 | `/manifest.webmanifest`, `/sw.js`, `/offline/` | Telefonda ilova (PWA) |
 | `/ustalar/<yo'nalish>/`, `/ustalar/<yo'nalish>/<tuman>/` | SEO sahifalari |
@@ -576,6 +627,7 @@ masters/             ustalar, kategoriyalar, baholar, qidiruv
 templates/           base.html, bosh sahifa, masters/*, admin/index.html
 static/css/app.css   dizayn tizimi (framework'siz, tungi rejim bilan)
 static/js/app.js     telefon maskasi, geolokatsiya, AJAX formalar, xarita (jQuery'siz)
+Dockerfile, docker-compose.yml   bitta buyruq bilan o'rnatish (HTTPS — deploy/Caddyfile)
 deploy/              serverga o'rnatish: gunicorn, systemd, nginx, cron, deploy.sh, backup.sh
 docs/                integratsiyalarni haqiqiy muhitda sinash tartibi
 e2e/                 brauzerda to'liq ssenariy (Playwright)
@@ -588,7 +640,7 @@ e2e/                 brauzerda to'liq ssenariy (Playwright)
 python manage.py test
 ```
 
-308 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
+324 ta test: telefon formati, masofa va qidiruv, ro'yxatdan o'tish, buyurtma
 bosqichlari (navbat, bekor qilish qoidalari, avtomatik tasdiqlash), eskrou
 (rejalar, bosqichlar, nizo, avtomatik chiqarish), Payme protokoli, SMS kod
 (muddat, urinishlar, cheklovlar, Eskiz), rus tili, admin sahifalari, Click va Uzum protokollari, Telegram bot (ulash, tugmalar, rasm, xavfsizlik), tariflar,
@@ -597,7 +649,8 @@ yuridik sahifalar, production tekshiruvlari, `check_integrations`, ustalar hujja
 qayta chaqirish, SEO (sitemap, robots, canonical, JSON-LD), viloyatlar, PWA va Web Push (RFC 8291 test-namunasi),
 nizolar sahifasi, ishonchlilik bali, promo-kodlar va referal (Payme chegirmali summani talab qilishi bilan),
 tahlil (manba, DNT, botlar), marketing (rozilik, tinch soatlar, partiyalar), pul qaytarish (Payme bekor qilishi,
-Click API imzosi), haftalik to'lov jadvali, ish vaqti, «Yordam» chati, o'quv bo'limi, A/B testlar.
+Click API imzosi), haftalik to'lov jadvali, ish vaqti, «Yordam» chati, o'quv bo'limi, A/B testlar,
+ustalarni jalb qilish (bepul TOP, tayyorlik), NPS, yuridik shaxslar (schyot, bank o'tkazmasi, dalolatnoma), launch_check.
 
 **Brauzerda to'liq ssenariy** (11 qadam: ariza → to'lov → baho → ustaga to'lov → kafolat → qayta chaqirish):
 

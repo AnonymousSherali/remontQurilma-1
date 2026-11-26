@@ -118,7 +118,9 @@ def collect(days=30, now=None):
     for i, f in enumerate(traffic['funnel']):
         f['percent'] = round(f['count'] * 100 / top)
         f['step'] = _percent(f['count'], traffic['funnel'][i - 1]['count']) if i else None
+    from repair_service.nps import summary as nps_summary
     return {
+        'nps': nps_summary(start),
         'traffic': traffic,
         'days': days, 'start': start, 'total': total,
         'kpis': [

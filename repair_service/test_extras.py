@@ -342,3 +342,16 @@ class E2ESeedSafetyTests(TestCase):
         from django.core.management.base import CommandError
         with self.assertRaises(CommandError):
             call_command('e2e_seed')        # test bazasi nomida «e2e» yo'q
+
+
+class LaunchCheckTests(TestCase):
+    def test_namunaviy_sozlamalarni_topadi(self):
+        from io import StringIO
+        out = StringIO()
+        call_command('launch_check', stdout=out)
+        text = out.getvalue()
+        self.assertIn('telefon yoki email namunaviy', text)
+        self.assertIn("Administrator yo'q", text)
+        from django.core.management.base import CommandError
+        with self.assertRaises(CommandError):
+            call_command('launch_check', '--fail', stdout=StringIO())
