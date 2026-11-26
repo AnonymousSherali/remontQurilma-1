@@ -39,6 +39,10 @@ class ServiceRequest(models.Model):
     phone = models.CharField('Telefon', max_length=20)
     email = models.EmailField('Email', blank=True, null=True)
     address = models.CharField('Manzil', max_length=255, blank=True)
+    # Yuridik shaxs (tashkilot, do'kon, ofis) — schyot va dalolatnoma uchun (repair_service/business.py)
+    company_name = models.CharField('Tashkilot nomi', max_length=200, blank=True)
+    company_inn = models.CharField('Tashkilot STIR', max_length=9, blank=True)
+    company_address = models.CharField('Yuridik manzil', max_length=255, blank=True)
     # Taxminiy joylashuv (GPS yoki tuman markazi) — ochiq buyurtmalar lentasida ustaga masofani
     # ko'rsatish uchun. Aniq manzil ustaga faqat buyurtmani olgandan keyin ko'rinadi.
     district = models.CharField('Tuman', max_length=40, blank=True)
@@ -117,6 +121,10 @@ class ServiceRequest(models.Model):
 
     def __str__(self):
         return f"Ariza #{self.id} - {self.name} ({self.phone})"
+
+    @property
+    def is_business(self):
+        return bool(self.company_inn)
 
     @property
     def catalog_estimate(self):

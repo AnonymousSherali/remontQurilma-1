@@ -96,6 +96,8 @@ class ServiceRequestAdmin(ModelAdmin):
                                  'appliance_type', 'brand']}),
         ("Kelish vaqti", {'fields': [('preferred_date', 'preferred_slot'), 'visit_at']}),
         ("Holat va izohlar", {'fields': ['status', 'admin_notes', 'review_link']}),
+        ("Tashkilot (yuridik shaxs)", {'fields': ['company_name', 'company_inn', 'company_address'],
+                                       'classes': ['collapse']}),
         ("Manba", {'fields': [('source', 'medium'), ('campaign', 'landing_path')], 'classes': ['collapse']}),
         ("Tizim ma'lumotlari", {'fields': ['created_at', 'updated_at'], 'classes': ['collapse']}),
     ]

@@ -105,6 +105,29 @@
       <div class="error-message"></div>
     </div>
 
+    <details class="promo-field"{% if form.company_inn.value or form.company_name.value %} open{% endif %}>
+      <summary class="small">🏢 {% translate "Tashkilot nomidan (schyot va dalolatnoma bilan)" %}</summary>
+      <div class="form-row" style="margin-top:.5rem">
+        <div class="field">
+          <label for="{{ prefix }}company">{% translate "Tashkilot nomi" %}</label>
+          <input type="text" id="{{ prefix }}company" name="company_name" maxlength="200" value="{{ form.company_name.value|default_if_none:'' }}" placeholder="{% translate 'Masalan: «Baraka Savdo» MChJ' %}">
+          {% for e in form.company_name.errors %}<div class="field__error">{{ e }}</div>{% endfor %}
+          <div class="error-message"></div>
+        </div>
+        <div class="field">
+          <label for="{{ prefix }}inn">{% translate "STIR" %}</label>
+          <input type="text" id="{{ prefix }}inn" name="company_inn" maxlength="11" inputmode="numeric" value="{{ form.company_inn.value|default_if_none:'' }}" placeholder="301234567">
+          {% for e in form.company_inn.errors %}<div class="field__error">{{ e }}</div>{% endfor %}
+          <div class="error-message"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="{{ prefix }}caddr">{% translate "Yuridik manzil (ixtiyoriy)" %}</label>
+        <input type="text" id="{{ prefix }}caddr" name="company_address" maxlength="255" value="{{ form.company_address.value|default_if_none:'' }}">
+      </div>
+      <p class="field__help">{% translate "Bank o'tkazmasi orqali to'lash uchun schyot va ish yakunida bajarilgan ishlar dalolatnomasi beriladi." %}</p>
+    </details>
+
     <details class="promo-field"{% if form.promo_code.value %} open{% endif %}>
       <summary class="small">🎁 {% translate "Promo-kod bormi?" %}</summary>
       <div class="field" style="margin-top:.5rem">

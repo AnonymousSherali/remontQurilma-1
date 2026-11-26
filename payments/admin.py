@@ -105,7 +105,14 @@ class PaymentAdmin(ModelAdmin):
     list_display = ['id', 'provider', 'provider_id', 'milestone', 'purchase', 'amount', 'state', 'created_at',
                     'performed_at']
     list_filter = ['provider', 'state']
-    search_fields = ['provider_id', 'milestone__order__id']
+    search_fields = ['provider_id', 'milestone__order__id', 'milestone__order__company_inn']
+    actions = ['confirm_bank_transfer']
+
+    @action(description="Bank o'tkazmasi tushdi — bosqichni to'langan qilish", icon='account_balance')
+    def confirm_bank_transfer(self, request, queryset):
+        from repair_service.business import confirm_transfer
+        done = sum(1 for p in queryset.filter(provider=Payment.PROVIDER_BANK) if confirm_transfer(p))
+        messages.success(request, f"{done} ta bank o'tkazmasi tasdiqlandi — buyurtmalar davom etadi.")
     readonly_fields = [f.name for f in Payment._meta.fields]
 
     def has_add_permission(self, request):

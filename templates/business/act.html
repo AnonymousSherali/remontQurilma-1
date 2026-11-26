@@ -1,0 +1,22 @@
+{% extends "business/_doc_base.html" %}
+{% load i18n humanize %}
+{% block title %}{% translate "Bajarilgan ishlar dalolatnomasi" %} #{{ order.pk }} | {{ SITE.name }}{% endblock %}
+{% block doc %}
+<h1>{% blocktranslate with id=order.pk d=date|date:"d.m.Y" %}Bajarilgan ishlar (ko'rsatilgan xizmatlar) dalolatnomasi № {{ id }} — {{ d }}{% endblocktranslate %}</h1>
+<table class="doc-parties">
+  <tr><th>{% translate "Ijrochi" %}</th><td><strong>{{ SITE.legal_name|default:SITE.name }}</strong>{% if SITE.legal_inn %}, {% translate "STIR" %} {{ SITE.legal_inn }}{% endif %}{% if order.master %}<br><span class="small">{% translate "Ishni bajargan usta" %}: {{ order.master.full_name }}</span>{% endif %}</td></tr>
+  <tr><th>{% translate "Buyurtmachi" %}</th><td><strong>{{ order.company_name }}</strong>, {% translate "STIR" %} {{ order.company_inn }}{% if order.company_address %}<br>{{ order.company_address }}{% endif %}</td></tr>
+</table>
+<table class="doc-items">
+  <thead><tr><th>№</th><th>{% translate "Ish / xizmat" %}</th><th>{% translate "Summa, so'm" %}</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>{% if order.catalog_item %}{{ order.catalog_item.name }}{% elif order.category %}{{ order.category.name }}{% endif %}{% if quote.note %} — {{ quote.note }}{% endif %}{% if order.address %}<br><span class="muted small">{% translate "Manzil" %}: {{ order.address }}</span>{% endif %}</td><td class="num">{{ total|floatformat:0|intcomma }}</td></tr>
+  </tbody>
+  <tfoot>
+    <tr><th colspan="2">{% translate "Jami" %}</th><th class="num">{{ total|floatformat:0|intcomma }}</th></tr>
+    <tr><td colspan="3" class="small">{% if vat_percent is not None %}{% blocktranslate with p=vat_percent|floatformat:0 v=vat_amount|intcomma %}Shu jumladan QQS {{ p }}%: {{ v }} so'm{% endblocktranslate %}{% else %}{% translate "QQSsiz" %}{% endif %}</td></tr>
+  </tfoot>
+</table>
+<p>{% translate "Yuqoridagi ishlar to'liq va o'z vaqtida bajarildi. Buyurtmachining hajm, sifat va muddat bo'yicha e'tirozlari yo'q." %}</p>
+<div class="doc-sign"><span>{% translate "Ijrochi" %} ____________</span><span>{% translate "Buyurtmachi" %} ____________</span></div>
+{% endblock %}

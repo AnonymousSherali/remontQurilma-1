@@ -86,6 +86,17 @@
       </section>
       {% endif %}
 
+      {% if order.is_business %}
+      <section class="card" id="hujjatlar">
+        <div class="card__title">🏢 {{ order.company_name }} · {% translate "STIR" %} {{ order.company_inn }}</div>
+        <ul class="events">
+          {% for m in milestones %}{% if m.payments.all %}{% for p in m.payments.all %}{% if p.provider == 'bank' %}<li><time>{{ p.created_at|date:"d.m" }}</time><span><a href="{% url 'repair_service:invoice' order.review_token m.pk %}">{% translate "Schyot" %} TS-{{ order.pk }}-{{ m.position }}</a> · {{ m.amount_due|floatformat:0|intcomma }} {% translate "so'm" %} · {% if m.state == 'pending' %}{% translate "to'lov kutilmoqda" %}{% else %}✓ {% translate "to'langan" %}{% endif %}</span></li>{% endif %}{% endfor %}{% endif %}{% endfor %}
+          {% if order.status == 'confirmed' %}<li><time>✓</time><span><a href="{% url 'repair_service:act' order.review_token %}">{% translate "Bajarilgan ishlar dalolatnomasi" %}</a></span></li>{% endif %}
+        </ul>
+        <p class="muted small" style="margin:0">{% translate "To'lov bosqichida «Bank o'tkazmasi (schyot)» ni tanlang — schyot ochiladi. Elektron hisob-faktura alohida yuboriladi." %}</p>
+      </section>
+      {% endif %}
+
       {% if order.status == 'confirmed' and order.can_be_reviewed %}
         <a class="btn btn--primary btn--lg" href="{{ order.get_review_url }}">⭐ {% translate "Ustani baholash" %}</a>
       {% endif %}

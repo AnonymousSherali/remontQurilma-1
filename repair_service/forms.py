@@ -26,6 +26,8 @@ class ServiceRequestForm(forms.ModelForm):
     longitude = forms.CharField(required=False)
     district = forms.CharField(required=False)
     promo_code = forms.CharField(required=False, max_length=32)
+    # «301 234 567» ham qabul qilinadi — tozalangach 9 raqam tekshiriladi
+    company_inn = forms.CharField(required=False, max_length=15)
     # Aksiyalar haqida xabar — alohida, ixtiyoriy rozilik (oldindan belgilanmaydi)
     marketing = forms.BooleanField(required=False)
 
@@ -37,7 +39,8 @@ class ServiceRequestForm(forms.ModelForm):
     class Meta:
         model = ServiceRequest
         fields = ['name', 'phone', 'email', 'address', 'district', 'latitude', 'longitude', 'category', 'master',
-                  'catalog_item', 'quantity', 'problem_description', 'preferred_date', 'preferred_slot', 'consent']
+                  'catalog_item', 'quantity', 'problem_description', 'preferred_date', 'preferred_slot', 'company_name', 'company_inn',
+                  'company_address', 'consent']
         error_messages = {
             'name': {'required': _('Ismingizni kiriting')},
             'phone': {'required': _('Telefon raqamni kiriting')},
@@ -91,6 +94,13 @@ class ServiceRequestForm(forms.ModelForm):
             raise forms.ValidationError(_("Kunni bugundan boshlab 30 kun ichida tanlang"))
         return day
 
+    def clean_company_inn(self):
+        from .business import INN_RE, normalize_inn
+        inn = normalize_inn(self.cleaned_data.get('company_inn'))
+        if inn and not INN_RE.match(inn):
+            raise forms.ValidationError(_("STIR 9 ta raqamdan iborat bo'lishi kerak"))
+        return inn
+
     def clean_promo_code(self):
         return (self.cleaned_data.get('promo_code') or '').strip().upper()
 
@@ -116,6 +126,10 @@ class ServiceRequestForm(forms.ModelForm):
             cleaned['latitude'], cleaned['longitude'] = Decimal(str(round(lat, 6))), Decimal(str(round(lng, 6)))
         else:
             cleaned['latitude'] = cleaned['longitude'] = None
+        if cleaned.get('company_inn') and not (cleaned.get('company_name') or '').strip():
+            self.add_error('company_name', _('Tashkilot nomini kiriting'))
+        if (cleaned.get('company_name') or '').strip() and not cleaned.get('company_inn'):
+            self.add_error('company_inn', _('Tashkilot STIR raqamini kiriting'))
         if cleaned.get('promo_code') and cleaned.get('phone'):
             from payments.promos import PromoError, validate
             try:

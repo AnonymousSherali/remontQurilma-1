@@ -235,6 +235,11 @@ SITE_INFO = {
     'legal_name': os.environ.get('SITE_LEGAL_NAME', ''),       # masalan: «TechService» MChJ
     'legal_inn': os.environ.get('SITE_LEGAL_INN', ''),         # STIR
     'legal_address': os.environ.get('SITE_LEGAL_ADDRESS', ''),
+    # Bank rekvizitlari — yuridik shaxslarga schyot (bank o'tkazmasi) uchun
+    'bank_name': os.environ.get('SITE_BANK_NAME', ''),
+    'bank_account': os.environ.get('SITE_BANK_ACCOUNT', ''),   # 20 xonali hisob raqami
+    'bank_mfo': os.environ.get('SITE_BANK_MFO', ''),           # 5 xonali MFO
+    'vat_percent': os.environ.get('SITE_VAT_PERCENT', ''),     # bo'sh — «QQSsiz»
 }
 # Oferta va maxfiylik siyosati matni yurist tomonidan tasdiqlanmaguncha True qoldiring —
 # sahifalarda "loyiha" degan ogohlantirish chiqadi.
@@ -363,6 +368,7 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
 # --- Admin dizayni (django-unfold) ---
 from django.urls import reverse_lazy  # noqa: E402
+from django.utils.text import format_lazy  # noqa: E402
 
 UNFOLD = {
     'SITE_TITLE': 'TechService admin',
@@ -446,6 +452,9 @@ UNFOLD = {
                      'link': reverse_lazy('admin:payments_promocode_changelist')},
                     {'title': 'Tarif xaridlari', 'icon': 'workspace_premium',
                      'link': reverse_lazy('admin:payments_purchase_changelist')},
+                    {"title": "Bank o'tkazmalari (schyot)", 'icon': 'request_page',
+                     'link': format_lazy('{}?provider__exact=bank&state__exact=1',
+                                         reverse_lazy('admin:payments_payment_changelist'))},
                     {'title': 'Tranzaksiyalar', 'icon': 'receipt_long',
                      'link': reverse_lazy('admin:payments_payment_changelist')},
                     {'title': 'SMS kodlar', 'icon': 'sms', 'link': reverse_lazy('admin:otp_phonecode_changelist')},

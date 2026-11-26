@@ -25,6 +25,7 @@ from . import photos as photo_rules
 from . import chat, schedule, warranty, workflow
 from .marketing import is_subscribed as marketing_subscribed
 from .nps import can_answer as nps_can_answer
+from .business import bank_enabled as business_enabled
 from .models import OrderPhoto, ServiceRequest, WarrantyClaim
 
 
@@ -56,7 +57,8 @@ def order_detail(request, token):
         'quote': quote,
         'milestones': milestones,
         'money': payments.summary(order),
-        'payment_providers': payment_choices(),
+        'payment_providers': payment_choices() + ([('bank', _("Bank o'tkazmasi (schyot)"))]
+                                                  if order.is_business and business_enabled() else []),
         'estimate': order.catalog_estimate,
         'quote_deviation': deviation_percent(quote.amount, order.catalog_estimate) if quote else None,
         'deviation_limit': QUOTE_DEVIATION_LIMIT,
@@ -128,6 +130,14 @@ def milestone_pay(request, token, milestone_id):
     milestone = get_object_or_404(Milestone, pk=milestone_id, order=order, state=Milestone.STATE_PENDING)
     if not _can_act(request, order):
         raise Http404
+    if request.POST.get('provider') == 'bank' and order.is_business:
+        from . import business
+        try:
+            business.request_transfer(milestone)
+        except business.BusinessError as error:
+            messages.error(request, str(error))
+            return redirect(order.get_customer_url())
+        return redirect(reverse('repair_service:invoice', args=[order.review_token, milestone.pk]))
     return redirect(checkout_url(milestone, request, provider=request.POST.get('provider')))
 
 
@@ -494,3 +504,36 @@ def nps_submit(request, token):
         messages.info(request, str(error))
     return redirect(request.POST.get('next') if request.POST.get('next', '').startswith('/') else
                     order.get_customer_url() + '#nps')
+
+
+# ---------- Yuridik shaxslar: schyot va dalolatnoma ----------
+
+def invoice(request, token, milestone_id):
+    """To'lov uchun schyot (chop etish). Havola orqali — tashkilot buxgalteriyasi ham ocha oladi."""
+    from . import business
+    order = _order_by_token(token)
+    milestone = get_object_or_404(Milestone, pk=milestone_id, order=order)
+    if not order.is_business or not business.bank_enabled():
+        raise Http404
+    vat_amount, vat_percent = business.vat(milestone.amount_due)
+    payment = milestone.payments.filter(provider='bank').first()
+    return render(request, 'business/invoice.html', {
+        'order': order, 'milestone': milestone, 'number': business.invoice_number(milestone),
+        'date': payment.created_at if payment else timezone.now(), 'paid': milestone.state != Milestone.STATE_PENDING,
+        'vat_amount': vat_amount, 'vat_percent': vat_percent, 'quote': payments.get_quote(order)})
+
+
+def act(request, token):
+    """Bajarilgan ishlar dalolatnomasi — buyurtma tasdiqlangach."""
+    from . import business
+    order = _order_by_token(token)
+    if not order.is_business or order.status != ServiceRequest.STATUS_CONFIRMED:
+        raise Http404
+    quote = payments.get_quote(order)
+    total = quote.amount if quote else 0
+    vat_amount, vat_percent = business.vat(total)
+    confirmed = order.events.filter(status=ServiceRequest.STATUS_CONFIRMED).order_by('-created_at').first()
+    return render(request, 'business/act.html', {
+        'order': order, 'quote': quote, 'total': total, 'vat_amount': vat_amount, 'vat_percent': vat_percent,
+        'date': confirmed.created_at if confirmed else order.updated_at,
+        'milestones': order.milestones.filter(state__in=(Milestone.STATE_HELD, Milestone.STATE_RELEASED))})

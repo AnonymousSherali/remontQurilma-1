@@ -272,8 +272,9 @@ class Payment(models.Model):
     PROVIDER_PAYME = 'payme'
     PROVIDER_CLICK = 'click'
     PROVIDER_UZUM = 'uzum'
+    PROVIDER_BANK = 'bank'
     PROVIDER_CHOICES = [(PROVIDER_DEMO, 'Demo'), (PROVIDER_PAYME, 'Payme'), (PROVIDER_CLICK, 'Click'),
-                        (PROVIDER_UZUM, 'Uzum Bank')]
+                        (PROVIDER_UZUM, 'Uzum Bank'), (PROVIDER_BANK, "Bank o'tkazmasi (schyot)")]
 
     # Payme holat kodlari bilan mos: 1 yaratilgan, 2 bajarilgan, -1/-2 bekor qilingan
     STATE_CREATED = 1

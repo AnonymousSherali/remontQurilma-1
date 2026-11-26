@@ -1,0 +1,30 @@
+{% extends "business/_doc_base.html" %}
+{% load i18n humanize %}
+{% block title %}{% translate "To'lov uchun schyot" %} {{ number }} | {{ SITE.name }}{% endblock %}
+{% block doc %}
+<h1>{% blocktranslate with n=number d=date|date:"d.m.Y" %}To'lov uchun schyot № {{ n }} — {{ d }}{% endblocktranslate %}</h1>
+{% if paid %}<p class="doc-stamp">✓ {% translate "To'langan" %}</p>{% endif %}
+<table class="doc-parties">
+  <tr><th>{% translate "Oluvchi (ijrochi)" %}</th><td>
+    <strong>{{ SITE.legal_name }}</strong><br>{% translate "STIR" %}: {{ SITE.legal_inn }}<br>
+    {% if SITE.legal_address %}{{ SITE.legal_address }}<br>{% endif %}
+    {% translate "Hisob raqami" %}: {{ SITE.bank_account }}<br>{% translate "Bank" %}: {{ SITE.bank_name }}, {% translate "MFO" %}: {{ SITE.bank_mfo }}
+  </td></tr>
+  <tr><th>{% translate "To'lovchi (buyurtmachi)" %}</th><td>
+    <strong>{{ order.company_name }}</strong><br>{% translate "STIR" %}: {{ order.company_inn }}{% if order.company_address %}<br>{{ order.company_address }}{% endif %}
+  </td></tr>
+</table>
+<table class="doc-items">
+  <thead><tr><th>№</th><th>{% translate "Ish / xizmat" %}</th><th>{% translate "Summa, so'm" %}</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>{% blocktranslate with id=order.pk %}Buyurtma #{{ id }}{% endblocktranslate %}{% if order.category %} — {{ order.category.name }}{% endif %}: {{ milestone.title }}{% if quote.note %}<br><span class="muted small">{{ quote.note }}</span>{% endif %}</td><td class="num">{{ milestone.amount_due|floatformat:0|intcomma }}</td></tr>
+  </tbody>
+  <tfoot>
+    <tr><th colspan="2">{% translate "Jami to'lash kerak" %}</th><th class="num">{{ milestone.amount_due|floatformat:0|intcomma }}</th></tr>
+    <tr><td colspan="3" class="small">{% if vat_percent is not None %}{% blocktranslate with p=vat_percent|floatformat:0 v=vat_amount|intcomma %}Shu jumladan QQS {{ p }}%: {{ v }} so'm{% endblocktranslate %}{% else %}{% translate "QQSsiz" %}{% endif %}</td></tr>
+  </tfoot>
+</table>
+<p><strong>{% translate "To'lov maqsadi" %}:</strong> {% blocktranslate with n=number id=order.pk %}Schyot № {{ n }} bo'yicha, buyurtma #{{ id }} uchun xizmat haqi{% endblocktranslate %}</p>
+<p class="muted small">{% translate "To'lov maqsadida schyot raqamini albatta ko'rsating — pul shu raqam bo'yicha avtomatik bog'lanadi. Pul tushgach ish davom etadi va bu sahifada «To'langan» belgisi chiqadi." %}</p>
+<div class="doc-sign"><span>{% translate "Rahbar" %} ____________</span><span>{% translate "Bosh hisobchi" %} ____________</span></div>
+{% endblock %}
