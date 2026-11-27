@@ -20,7 +20,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from . import tariffs
-from .models import Milestone, Quote
+from .models import Milestone, Payment, Quote
 from .plans import PLAN_CASH, split_amount
 
 
@@ -63,6 +63,10 @@ def propose_quote(order, amount, plan, note=''):
         raise PaymentError(_("Narxni hozir o'zgartirib bo'lmaydi"))
     if amount <= 0:
         raise PaymentError(_("Summa musbat bo'lishi kerak"))
+    # Qulf: mijoz shu payt tasdiqlayotgan bo'lsa, tasdiqlangan narx ustidan yozib yubormaylik
+    locked = Quote.objects.select_for_update().filter(order=order).first()
+    if locked and locked.status == Quote.STATUS_APPROVED:
+        raise PaymentError(_("Narxni hozir o'zgartirib bo'lmaydi"))
     quote, _created = Quote.objects.update_or_create(order=order, defaults={
         'amount': amount, 'plan': plan, 'note': note,
         'status': Quote.STATUS_PROPOSED, 'proposed_at': timezone.now(), 'decided_at': None,
@@ -72,10 +76,16 @@ def propose_quote(order, amount, plan, note=''):
 
 
 @transaction.atomic
-def approve_quote(order):
+def approve_quote(order, version=None):
+    """version — mijoz ko'rgan taklifning vaqti (proposed_at, sekundlarda). Shu orada usta narxni
+    o'zgartirgan bo'lsa, mijoz ko'rmagan narxga rozilik bildirilmasin."""
     quote = Quote.objects.select_for_update().get(order=order)
     if quote.status != Quote.STATUS_PROPOSED:
         raise PaymentError(_('Bu taklif allaqachon ko\'rib chiqilgan'))
+    if version is not None and str(version) != str(int(quote.proposed_at.timestamp())):
+        raise PaymentError(_("Usta narxni o'zgartirdi — yangi taklif bilan tanishib chiqing"))
+    if Payment.objects.filter(milestone__order=order).exists():
+        raise PaymentError(_("Bu buyurtma bo'yicha to'lovlar bor — administratorga murojaat qiling"))
     quote.status = Quote.STATUS_APPROVED
     quote.decided_at = timezone.now()
     quote.save(update_fields=['status', 'decided_at'])
@@ -108,7 +118,9 @@ def unfunded_for(order, new_status):
     quote = get_quote(order)
     if not quote or quote.status != Quote.STATUS_APPROVED or quote.plan == PLAN_CASH:
         return []
-    return list(order.milestones.filter(release_status=new_status, state=Milestone.STATE_PENDING))
+    # Qaytarilgan bosqich ham "to'lanmagan" — ish pulsiz davom etmasin
+    return list(order.milestones.filter(release_status=new_status,
+                                        state__in=(Milestone.STATE_PENDING, Milestone.STATE_REFUNDED)))
 
 
 @transaction.atomic
@@ -134,7 +146,11 @@ def releasable(milestone):
 
 @transaction.atomic
 def release(milestone):
-    milestone = Milestone.objects.select_for_update().select_related('order').get(pk=milestone.pk)
+    # Avval buyurtma, keyin bosqich (workflow.apply bilan bir xil tartib — deadlock bo'lmaydi):
+    # bir vaqtda nizo ochilsa, pul chiqib ketmasin
+    order = _order_model().objects.select_for_update().get(pk=milestone.order_id)
+    milestone = Milestone.objects.select_for_update().get(pk=milestone.pk)
+    milestone.order = order
     if not releasable(milestone):
         raise PaymentError(_("Bu bosqich mablag'ini hozir chiqarib bo'lmaydi"))
     milestone.state = Milestone.STATE_RELEASED

@@ -48,7 +48,8 @@ class TelegramBotTests(TestCase):
         self.assertEqual(self.update({}, secret='wrong').status_code, 403)
 
     def test_mijoz_buyurtmani_ulaydi_va_sms_orniga_telegram(self):
-        self.message(CHAT, f'/start o{self.order.review_token.hex}')
+        from telegram_bot.order_links import make
+        self.message(CHAT, '/start ' + make(self.order))
         self.order.refresh_from_db()
         self.assertEqual(self.order.telegram_chat_id, CHAT)
         self.assertIn(f'#{self.order.pk}', self.last_text())
@@ -59,6 +60,10 @@ class TelegramBotTests(TestCase):
 
     def test_notogri_kalit(self):
         self.message(CHAT, '/start onotahex')
+        # Faqat ko'rish uchun bo'lgan buyurtma havolasi (review_token) bilan ulab bo'lmaydi
+        self.message(CHAT, f'/start o{self.order.review_token.hex}')
+        from telegram_bot.order_links import make
+        self.message(CHAT, '/start ' + make(self.order, now=0))   # eskirgan kod
         self.assertFalse(ServiceRequest.objects.filter(telegram_chat_id=CHAT).exists())
 
     def test_usta_ulanadi_va_tugma_bilan_boshqaradi(self):
@@ -122,8 +127,13 @@ class TelegramBotTests(TestCase):
         self.assertContains(self.client.get(reverse('masters:dashboard')), "Telegram")
 
     def test_buyurtma_sahifasida_tugma(self):
+        # SMS-kod tasdiqlanmagan brauzer (faqat havola bor) — ulash tugmasi yo'q
         page = self.client.get(self.order.get_customer_url())
-        self.assertContains(page, f'https://t.me/ts_bot?start=o{self.order.review_token.hex}')
+        self.assertNotContains(page, 'https://t.me/ts_bot?start=o')
+        from masters.tests import verify_phone
+        verify_phone(self.client, self.order.phone)
+        page = self.client.get(self.order.get_customer_url())
+        self.assertContains(page, f'https://t.me/ts_bot?start=o{self.order.pk}-')
 
     def test_admin_usta_biriktirsa_xabar(self):
         from django.contrib.auth import get_user_model

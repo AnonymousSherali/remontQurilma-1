@@ -1,7 +1,7 @@
 """Bot mantiqi: Telegram'dan kelgan yangilanishni (update) qayta ishlash.
 
 Buyruqlar:
-    /start o<kalit>  — mijoz: buyurtmani kuzatishni yoqish (saytdagi tugmadan)
+    /start o<id>-<vaqt>-<imzo>  — mijoz: buyurtmani kuzatishni yoqish (saytdagi tugmadan)
     /start m<kod>    — usta: akkauntni ulash (kabinetdagi tugmadan)
     /buyurtmalar     — faol buyurtmalar ro'yxati
     /stop            — xabarlarni o'chirish (chatni uzish)
@@ -10,7 +10,6 @@ Tugmalar (faqat ustaga): "a:<buyurtma_id>:<amal>" — buyurtma bosqichini o'zgar
 Xavfsizlik: tugma faqat shu buyurtma biriktirilgan ustaning chatidan ishlaydi.
 """
 
-import uuid
 
 from django.conf import settings
 from django.core.cache import cache
@@ -72,11 +71,11 @@ def _reply(chat_id, text, buttons=None):
 # ---------- /start ----------
 
 def _link_order(chat_id, param):
-    try:
-        token = uuid.UUID(hex=param[1:])
-    except ValueError:
-        return _reply(chat_id, _("Havola noto'g'ri yoki eskirgan."))
-    order = ServiceRequest.objects.filter(review_token=token).first()
+    from .order_links import parse
+    order_id = parse(param)
+    if order_id is None:
+        return _reply(chat_id, _("Havola noto'g'ri yoki eskirgan. Buyurtma sahifasidan «Botni ochish» ni qayta bosing."))
+    order = ServiceRequest.objects.filter(pk=order_id).first()
     if order is None:
         return _reply(chat_id, _('Buyurtma topilmadi.'))
     order.telegram_chat_id = chat_id

@@ -148,7 +148,7 @@ def confirm(body):
     if payment.state in (Payment.STATE_CANCELLED, Payment.STATE_CANCELLED_AFTER_PERFORM):
         raise UzumError(ERR_CANCELLED)
     if payment.state == Payment.STATE_CREATED:
-        if not payable.is_pending:  # shu orada boshqa tizim orqali to'langan
+        if not payable.can_complete(payment):  # boshqa tizim orqali to'langan yoki summa o'zgargan
             raise UzumError(ERR_ALREADY_PAID)
         payment.state = Payment.STATE_PERFORMED
         payment.performed_at = timezone.now()
@@ -166,7 +166,7 @@ def reverse(body):
         if payable.cancel_locked:
             raise UzumError(ERR_CANNOT_REVERSE)
         payment.state = Payment.STATE_CANCELLED_AFTER_PERFORM
-        payable.cancel_paid()
+        payable.cancel_paid(payment)
     elif payment.state == Payment.STATE_CREATED:
         payment.state = Payment.STATE_CANCELLED
     if not payment.cancelled_at:

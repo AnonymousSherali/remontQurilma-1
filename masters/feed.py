@@ -17,6 +17,7 @@ from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
+from django.utils import translation
 from django.utils.translation import gettext as _
 
 from payments import tariffs
@@ -105,7 +106,10 @@ def claim(master, order_id):
 
     order.master = master
     order.save(update_fields=['master', 'updated_at'])
-    return workflow.apply(order, workflow.MASTER, 'accept', note=_('Lentadan olindi'))
+    # Izoh har doim asosiy tilda: ishonchlilik hisobi uni til bo'yicha emas, matn bo'yicha taniydi
+    with translation.override(settings.LANGUAGE_CODE):
+        note = _('Lentadan olindi')
+    return workflow.apply(order, workflow.MASTER, 'accept', note=note)
 
 
 def nearby_masters(order, limit=30):

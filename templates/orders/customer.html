@@ -45,7 +45,7 @@
           {% if quote.note %}<p style="white-space:pre-line;margin:.75rem 0">{{ quote.note }}</p>{% endif %}
           {% if can_act %}
           <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem">
-            <form method="post" action="{% url 'repair_service:quote_decision' order.review_token 'approve' %}">{% csrf_token %}<button class="btn btn--primary">{% translate "Narxga roziman" %}</button></form>
+            <form method="post" action="{% url 'repair_service:quote_decision' order.review_token 'approve' %}">{% csrf_token %}<input type="hidden" name="v" value="{{ quote.proposed_at|date:'U' }}"><button class="btn btn--primary">{% translate "Narxga roziman" %}</button></form>
             <form method="post" action="{% url 'repair_service:quote_decision' order.review_token 'reject' %}">{% csrf_token %}<button class="btn">{% translate "Rad etish" %}</button></form>
           </div>
           {% endif %}
@@ -171,7 +171,7 @@
           {% if order.problem_description %}<dt>{% translate "Muammo" %}</dt><dd style="font-weight:400">{{ order.problem_description }}</dd>{% endif %}
         </dl>
       </section>
-      {% telegram_order_link order as tg_link %}
+      {% telegram_order_link order can_act as tg_link %}
       {% if tg_link %}
       <section class="card">
         {% if order.telegram_chat_id %}

@@ -62,12 +62,17 @@
         <div class="text-sm"><p style="margin-bottom:6px">Ushlab turilgan bosqichlar — <strong>belgilanganlari ustaga chiqariladi</strong>, qolganlari mijozga qaytariladi:</p>
           {% for m in held %}<label style="display:flex;gap:8px;align-items:center;padding:4px 0"><input type="checkbox" name="release" value="{{ m.pk }}"> {{ m.position }}. {{ m.title }} — <strong>{{ m.amount|floatformat:0|intcomma }} so'm</strong> <span class="text-xs text-font-subtle-light">(ustaga {{ m.master_amount|floatformat:0|intcomma }})</span></label>{% endfor %}
         </div>
+      {% else %}
+        <div class="text-sm"><p style="margin-bottom:6px">Platformada ushlab turilgan mablag' yo'q. Qaror kimning foydasiga?</p>
+          <label style="display:flex;gap:8px;align-items:center;padding:4px 0"><input type="radio" name="outcome" value="master" required> Usta haq — buyurtma tasdiqlanadi</label>
+          <label style="display:flex;gap:8px;align-items:center;padding:4px 0"><input type="radio" name="outcome" value="customer"> Mijoz haq — buyurtma bekor qilinadi</label>
+        </div>
       {% endif %}
       <label class="text-sm">Qaror izohi (ikkala tomon ko'radi)
         <textarea name="note" rows="3" required maxlength="400" class="border border-base-200 rounded-default px-3 py-2 w-full dark:border-base-700 dark:bg-base-900" placeholder="Masalan: rasmlarga ko'ra ish bajarilgan, lekin kran almashtirilmagan — 2-qism mijozga qaytariladi."></textarea>
       </label>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button type="submit" name="decision" value="resolve" class="bg-primary-600 text-white font-medium px-4 py-2 rounded-default" onclick="return confirm('Qaror yakuniy. Davom etamizmi?')">Qarorni qo'llash{% if not held %} (buyurtmani tasdiqlash){% endif %}</button>
+        <button type="submit" name="decision" value="resolve" class="bg-primary-600 text-white font-medium px-4 py-2 rounded-default" onclick="return confirm('Qaror yakuniy. Davom etamizmi?')">Qarorni qo'llash</button>
         <button type="submit" name="decision" value="withdraw" class="font-medium px-4 py-2 rounded-default border border-base-200 dark:border-base-700">Kelishildi — ish davom etadi («{{ status_labels|get_item:back_status|default:back_status }}» ga qaytarish)</button>
       </div>
       <p class="text-xs text-font-subtle-light">Mijozga qaytariladigan qismlar «Pul qaytarishlar» navbatiga tushadi: Click orqali — avtomatik (CLICK_AUTO_REFUND), Payme — kabinetda bekor qilinsa o'zi yopiladi.</p>

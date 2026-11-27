@@ -19,11 +19,14 @@ from .models import PushSubscription, ServiceRequest
 
 def _assets_version():
     """Statik fayllar o'zgarsa — service worker keshi yangilanadi (har deploy'da avtomatik)."""
-    stamps = []
-    for name in ('css/app.css', 'js/app.js'):
-        path = Path(settings.BASE_DIR) / 'static' / name
-        stamps.append(str(int(path.stat().st_mtime)) if path.exists() else '0')
-    return '-'.join(stamps)
+    # Barcha statik fayllar (rasm, ikonka ham): nomlari xeshlanmagan, shuning uchun keshni shu versiya yangilaydi
+    import hashlib
+    root = Path(settings.BASE_DIR) / 'static'
+    digest = hashlib.sha1()
+    for path in sorted(p for p in root.rglob('*') if p.is_file()):
+        stat = path.stat()
+        digest.update(f'{path.relative_to(root)}:{int(stat.st_mtime)}:{stat.st_size};'.encode())
+    return digest.hexdigest()[:12]
 
 
 @cache_control(max_age=3600)

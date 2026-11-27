@@ -111,6 +111,8 @@ def apply(order, code):
     order = SR.objects.select_for_update().get(pk=order.pk)
     if not can_apply(order):
         raise PromoError(_("Promo-kodni faqat birinchi to'lovgacha qo'shish mumkin."))
+    # Kod qatori qulflanadi: limit (max_uses) bir vaqtdagi so'rovlarda oshib ketmasin
+    PromoCode.objects.select_for_update().filter(code=(code or '').strip().upper()).first()
     promo = validate(code, order.phone, order)
     redemption, _created = PromoRedemption.objects.update_or_create(
         order=order, defaults={'promo': promo, 'phone': order.phone, 'discount': 0})
@@ -119,7 +121,9 @@ def apply(order, code):
     return redemption
 
 
+@transaction.atomic
 def remove(order):
+    order = _orders().objects.select_for_update().get(pk=order.pk)
     if can_apply(order):
         PromoRedemption.objects.filter(order=order).delete()
         order.milestones.filter(state=Milestone.STATE_PENDING).update(discount=0)

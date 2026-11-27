@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext as _
@@ -8,8 +9,9 @@ from django.views.decorators.http import require_POST
 
 from otp import services as otp
 
-from . import services, tariffs
+from . import tariffs
 from .models import Milestone, Payment, Purchase
+from .payables import MilestonePayable
 from .providers import available, checkout_url, choices
 
 
@@ -27,10 +29,14 @@ def demo_checkout(request, milestone_id):
         raise Http404
 
     if request.method == 'POST':
-        if milestone.state == Milestone.STATE_PENDING:
-            Payment.objects.create(milestone=milestone, provider=Payment.PROVIDER_DEMO, amount=milestone.amount_due,
-                                   state=Payment.STATE_PERFORMED)
-            services.mark_held(milestone)
+        with transaction.atomic():
+            payable = MilestonePayable(milestone)
+            ok = payable.can_complete(Payment(amount=milestone.amount_due))
+            if ok:
+                Payment.objects.create(milestone=payable.obj, provider=Payment.PROVIDER_DEMO,
+                                       amount=payable.amount, state=Payment.STATE_PERFORMED)
+                payable.mark_paid()
+        if ok:
             messages.success(request, _("To'lov qabul qilindi. Mablag' bosqich bajarilguncha platformada ushlab turiladi."))
         return redirect(order.get_customer_url())
 

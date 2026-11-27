@@ -22,7 +22,8 @@ services:
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
-    env_file: .env
+    environment:
+      DOMAIN: ${DOMAIN}   # faqat domen — ilova sirlari Caddy konteyneriga berilmaydi
     ports: ["80:80", "443:443"]
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
@@ -34,6 +35,8 @@ services:
     # process_orders har soatda: avtomatik tasdiqlash, eslatmalar, kampaniyalar, haftalik to'lov va h.k.
     build: .
     restart: unless-stopped
+    healthcheck:
+      disable: true   # obraz HEALTHCHECK'i veb-server uchun (8000-port) — bu yerda u yo'q
     env_file: .env
     environment:
       DATABASE_URL: postgres://techservice:${POSTGRES_PASSWORD}@db:5432/techservice

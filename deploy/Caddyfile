@@ -11,7 +11,11 @@
 		file_server
 	}
 	handle {
-		reverse_proxy web:8000
+		reverse_proxy web:8000 {
+			# Ilova limitlari (SMS, buyurtma) haqiqiy mijoz IP'si bo'yicha ishlaydi.
+			# Mijoz yuborgan X-Real-IP shu bilan almashtiriladi — soxtalashtirib bo'lmaydi.
+			header_up X-Real-IP {remote_host}
+		}
 	}
 }
 

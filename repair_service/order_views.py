@@ -12,6 +12,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
@@ -107,7 +108,7 @@ def quote_decision(request, token, decision):
         raise Http404
     try:
         if decision == 'approve':
-            payments.approve_quote(order)
+            payments.approve_quote(order, version=request.POST.get('v'))
             quote = payments.get_quote(order)
             if quote.is_online:
                 messages.success(request, _("Narx kelishildi. Endi birinchi qismni to'lang — pul ustaga darhol "
@@ -130,6 +131,9 @@ def milestone_pay(request, token, milestone_id):
     milestone = get_object_or_404(Milestone, pk=milestone_id, order=order, state=Milestone.STATE_PENDING)
     if not _can_act(request, order):
         raise Http404
+    if order.status in (ServiceRequest.STATUS_CANCELLED, ServiceRequest.STATUS_DISPUTED):
+        messages.error(request, _("Bu buyurtma bo'yicha hozir to'lov qabul qilinmaydi"))
+        return redirect(order.get_customer_url())
     if request.POST.get('provider') == 'bank' and order.is_business:
         from . import business
         try:
@@ -502,8 +506,11 @@ def nps_submit(request, token):
         messages.success(request, _("Rahmat! Fikringiz xizmatni yaxshilashga yordam beradi."))
     except nps.NpsError as error:
         messages.info(request, str(error))
-    return redirect(request.POST.get('next') if request.POST.get('next', '').startswith('/') else
-                    order.get_customer_url() + '#nps')
+    target = request.POST.get('next', '')
+    if not url_has_allowed_host_and_scheme(target, allowed_hosts={request.get_host()},
+                                           require_https=request.is_secure()):
+        target = order.get_customer_url() + '#nps'
+    return redirect(target)
 
 
 # ---------- Yuridik shaxslar: schyot va dalolatnoma ----------

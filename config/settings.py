@@ -36,7 +36,9 @@ SECRET_KEY = os.environ.get(
     'django-insecure-w@shm@ch1ne-rep@1r-serv1ce-k3y-ch@nge-1n-pr0duct10n'
 )
 
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+# DJANGO_DEBUG ko'rsatilmasa: haqiqiy kalit berilgan (server) — False, kalitsiz (dasturchi kompyuteri) — True.
+# Shunda serverda DJANGO_DEBUG ni unutish debug sahifalari, demo to'lov va OTP kodini ochib qo'ymaydi.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True' if 'DJANGO_SECRET_KEY' not in os.environ else 'False') == 'True'
 
 if not DEBUG and SECRET_KEY.startswith('django-insecure-'):
     # Standart kalit bilan production'da ishga tushirish — sessiya va parollarni tiklash
@@ -46,6 +48,9 @@ if not DEBUG and SECRET_KEY.startswith('django-insecure-'):
 
 _allowed = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = [h.strip() for h in _allowed.split(',') if h.strip()] or (['*'] if DEBUG else [])
+if '*' not in ALLOWED_HOSTS:
+    # Serverning o'zidan tekshiruv (Docker HEALTHCHECK, deploy.sh: curl 127.0.0.1:8000/healthz/)
+    ALLOWED_HOSTS += ['127.0.0.1', 'localhost']
 
 # --- Applications ---
 INSTALLED_APPS = [

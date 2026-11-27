@@ -110,9 +110,12 @@ def send_reminders(now=None):
         if not SR.objects.filter(pk=order.pk, visit_reminded=False).update(visit_reminded=True):
             continue
         with translation.override(order.language or 'uz'):
-            customer_notify._to_customer(order, _('Eslatma: usta bugun %(t)s da keladi. %(url)s') % {
-                't': date_format(timezone.localtime(order.visit_at), 'H:i'),
-                'url': customer_notify._customer_link(order)})
+            visit = timezone.localtime(order.visit_at)
+            text = (_('Eslatma: usta bugun %(t)s da keladi. %(url)s')
+                    if visit.date() == timezone.localdate(now) else
+                    _('Eslatma: usta ertaga %(t)s da keladi. %(url)s'))
+            customer_notify._to_customer(order, text % {
+                't': date_format(visit, 'H:i'), 'url': customer_notify._customer_link(order)})
         with translation.override(settings.LANGUAGE_CODE):
             customer_notify._to_master(order, _('Eslatma: #%(id)s buyurtma — %(t)s da. %(url)s') % {
                 'id': order.pk, 't': date_format(timezone.localtime(order.visit_at), 'H:i'),

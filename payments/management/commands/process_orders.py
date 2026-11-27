@@ -1,6 +1,6 @@
 """Muddati o'tgan bosqichlarni avtomatik bajarish. Cron orqali har soatda ishga tushiring:
 
-    0 * * * *  cd /srv/techservice && venv/bin/python manage.py process_orders
+    5 * * * *  cd /srv/techservice/app && /srv/techservice/venv/bin/python manage.py process_orders  (deploy/cron.txt)
 
 1) Usta "Bajarildi" deganiga AUTO_CONFIRM_HOURS bo'lgan, mijoz javob bermagan buyurtmalar tasdiqlanadi.
 2) Bosqichi kelganiga AUTO_RELEASE_HOURS bo'lgan, nizo ochilmagan ushlab turilgan mablag'lar chiqariladi.
@@ -10,7 +10,9 @@
 6) Ustalarning ishonchlilik bali qayta hisoblanadi.
 """
 
-from django.core.management.base import BaseCommand
+import logging
+
+from django.core.management.base import BaseCommand, CommandError
 
 from masters.documents import purge_old
 from masters.reliability import update_all
@@ -20,25 +22,42 @@ from repair_service.warranty import auto_close
 from repair_service.workflow import auto_confirm
 
 
+logger = logging.getLogger(__name__)
+
+
 class Command(BaseCommand):
     help = "Avtomatik tasdiqlash va mablag'larni chiqarish"
 
     def handle(self, *args, **options):
-        confirmed = auto_confirm()
-        released = auto_release()
-        closed = auto_close()
-        reminded = send_reminders()
-        purged = purge_old()
-        rated = update_all()
-        from repair_service.analytics import purge
-        purge()
-        from repair_service.marketing import process as send_campaigns
-        campaign_messages = send_campaigns()
         from payments.payouts import prepare_weekly
-        prepare_weekly()
+        from repair_service.analytics import purge
+        from repair_service.marketing import process as send_campaigns
         from repair_service.nps import send_invites
-        send_invites()
+
+        failed = []
+
+        def step(name, func, empty):
+            # Bitta qadamdagi xato qolganlarini to'xtatmasin (har soat takrorlanadi)
+            try:
+                return func()
+            except Exception:  # noqa: BLE001
+                logger.exception('process_orders: %s xatosi', name)
+                failed.append(name)
+                return empty
+
+        confirmed = step('auto_confirm', auto_confirm, [])
+        released = step('auto_release', auto_release, [])
+        closed = step('auto_close', auto_close, [])
+        reminded = step('send_reminders', send_reminders, [])
+        purged = step('purge_documents', purge_old, 0)
+        rated = step('reliability', update_all, 0)
+        step('analytics_purge', purge, None)
+        campaign_messages = step('campaigns', send_campaigns, 0)
+        step('payouts', prepare_weekly, [])
+        step('nps', send_invites, [])
         self.stdout.write(f'Avtomatik tasdiqlandi: {len(confirmed)}; chiqarilgan bosqichlar: {len(released)}; '
                           f'yopilgan kafolat murojaatlari: {len(closed)}; tashrif eslatmalari: {len(reminded)}; '
                           f"o'chirilgan hujjat fayllari: {purged}; ishonchlilik yangilandi: {rated}; "
                           f"kampaniya xabarlari: {campaign_messages}")
+        if failed:
+            raise CommandError('Xato bilan tugagan qadamlar: ' + ', '.join(failed))

@@ -115,7 +115,7 @@ o'sha yerdagi barcha testlardan o'tkazing.
 Avtomatik tasdiqlash va chiqarish uchun cron (har soatda):
 
 ```bash
-0 * * * *  cd /srv/techservice && venv/bin/python manage.py process_orders
+5 * * * *  cd /srv/techservice/app && /srv/techservice/venv/bin/python manage.py process_orders   # to'liq ro'yxat: deploy/cron.txt
 ```
 
 > ⚖️ Platforma hisobida boshqa shaxs (usta) uchun pul ushlab turish to'lov

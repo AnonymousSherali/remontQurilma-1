@@ -29,7 +29,8 @@ def dispute_detail(request, pk):
                 disputes.withdraw(order, request.POST.get('note'))
                 messages.success(request, 'Nizo yopildi, buyurtma davom etadi. Ikkala tomonga xabar yuborildi.')
             else:
-                result = disputes.resolve(order, request.POST.getlist('release'), request.POST.get('note'))
+                result = disputes.resolve(order, request.POST.getlist('release'), request.POST.get('note'),
+                                          outcome=request.POST.get('outcome'))
                 messages.success(request, f"Nizo hal qilindi: ustaga {result['released']:,.0f} so'm, mijozga "
                                           f"{result['refunded']:,.0f} so'm.".replace(',', ' '))
                 if result['refunded']:
