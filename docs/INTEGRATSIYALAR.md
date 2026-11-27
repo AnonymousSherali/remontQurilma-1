@@ -42,8 +42,17 @@ ishlatgan ma'qul: sinov to'lovlari haqiqiy hisobotlarga aralashmaydi.
 4. **Sandbox** (test.paycom.uz): kassa ID, endpoint va sinov kalitini kiritib, barcha
    ssenariylarni ishga tushiring — noto'g'ri avtorizatsiya, noto'g'ri summa, mavjud bo'lmagan hisob,
    yaratish → bajarish → bekor qilish, takroriy so'rovlar. Hammasi yashil bo'lishi kerak.
-   Sandbox uchun avval saytda buyurtma yarating va narxni onlayn to'lov rejasida tasdiqlang —
-   sandbox'ga shu bosqichning raqami va summasi (tiyinda: so'm × 100) kerak.
+   Sandbox'ga to'lanmagan bosqich raqami va summasi (tiyinda) kerak — ularni buyruq tayyorlaydi:
+
+   ```bash
+   python manage.py payme_sandbox              # endpoint, milestone_id, summa, noto'g'ri qiymatlar
+   python manage.py payme_sandbox --cleanup    # sinovdan keyin tozalash
+   ```
+
+   Har bir to'liq sinov (yaratish → bajarish → bekor) bosqichni «ishlatadi» — keyingisi uchun buyruqni
+   qayta ishga tushiring. Sandbox tekshiradigan barcha holatlar lokal testlarda ham bor
+   (`payments/test_payme_sandbox.py`): xato kodlari -32504, -32700, -32601, -31001, -31050, -31003,
+   -31007, -31008, takroriy so'rovlar, 12 soatlik muddat, `GetStatement`.
 5. Haqiqiy kalitga o'tish: `PAYME_KEY=<haqiqiy kalit>`, `PAYME_TEST=False`; kichik summali
    haqiqiy to'lov qilib, admin → «To'lov bosqichlari» da holat «Ushlab turilibdi» bo'lganini va
    Payme kabinetidagi tranzaksiya bilan mosligini tekshiring.

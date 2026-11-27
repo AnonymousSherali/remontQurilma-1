@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-27 08:29+0500\n"
+"POT-Creation-Date: 2026-11-27 08:50+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,99 +73,103 @@ msgstr "У вас %(n)s активных заказов — сначала за�
 msgid "Lentadan olindi"
 msgstr "Взят из ленты"
 
-#: masters/forms.py:28
+#: masters/forms.py:32
 msgid "Karta raqami (Uzcard / Humo)"
 msgstr "Номер карты (Uzcard / Humo)"
 
-#: masters/forms.py:29
+#: masters/forms.py:33
 msgid "16 xonali raqam. Saytda ko'rinmaydi — faqat pul o'tkazish uchun."
 msgstr "16-значный номер. На сайте не показывается — только для выплат."
 
-#: masters/forms.py:33 masters/forms.py:73 templates/index.html:35
+#: masters/forms.py:37 masters/forms.py:84 templates/index.html:35
 #: templates/index.html:37 templates/masters/list.html:33
 #: templates/partials/request_form.html:65
 #: templates/partials/request_form.html:67
 msgid "Tuman yoki shahar"
 msgstr "Район или город"
 
-#: masters/forms.py:34
+#: masters/forms.py:38
 msgid "Joylashuvni aniqlay olmasangiz, tuman yoki shaharni tanlang."
 msgstr "Если не удаётся определить местоположение, выберите район или город."
 
-#: masters/forms.py:47
+#: masters/forms.py:51
 msgid ""
 "Masalan: 8 yillik tajriba, Bosch va Samsung servis markazida ishlaganman..."
 msgstr "Например: опыт 8 лет, работал в сервисном центре Bosch и Samsung..."
 
-#: masters/forms.py:49
+#: masters/forms.py:53
 msgid "Masalan: Chilonzor, 9-kvartal"
 msgstr "Например: Чиланзар, 9-й квартал"
 
-#: masters/forms.py:52
+#: masters/forms.py:56
 msgid "Ism familiya"
 msgstr "Имя и фамилия"
 
-#: masters/forms.py:52 templates/catalog.html:18 templates/index.html:52
+#: masters/forms.py:56 templates/catalog.html:18 templates/index.html:52
 msgid "Yo'nalishlar"
 msgstr "Направления"
 
-#: masters/forms.py:52
+#: masters/forms.py:56
 msgid "Tajriba (yil)"
 msgstr "Опыт (лет)"
 
-#: masters/forms.py:53
+#: masters/forms.py:57
 msgid "O'zingiz haqingizda"
 msgstr "О себе"
 
-#: masters/forms.py:53
+#: masters/forms.py:57
 msgid "Rasm"
 msgstr "Фото"
 
-#: masters/forms.py:53 templates/masters/detail.html:39
+#: masters/forms.py:57 templates/masters/detail.html:39
 msgid "Hudud"
 msgstr "Район работы"
 
-#: masters/forms.py:54
+#: masters/forms.py:58
 msgid "Xizmat radiusi (km)"
 msgstr "Радиус выезда (км)"
 
-#: masters/forms.py:55
+#: masters/forms.py:59
 msgid "Karta egasi"
 msgstr "Владелец карты"
 
-#: masters/forms.py:58
+#: masters/forms.py:62
 msgid ""
 "Saytda ko'rinadi. Aniq uy manzilini yozmang — tuman yoki mahalla yetarli."
 msgstr ""
 "Видно на сайте. Не указывайте точный домашний адрес — достаточно района или "
 "махалли."
 
-#: masters/forms.py:59
+#: masters/forms.py:63
 msgid "Qancha uzoqlikdagi buyurtmalarga borasiz"
 msgstr "На какое расстояние вы готовы выезжать"
 
-#: masters/forms.py:60
+#: masters/forms.py:64
 msgid "Kartadagi ism familiya"
 msgstr "Имя и фамилия на карте"
 
-#: masters/forms.py:63
+#: masters/forms.py:67
 msgid "Ism familiyangizni kiriting"
 msgstr "Введите имя и фамилию"
 
-#: masters/forms.py:64
+#: masters/forms.py:68
 msgid "Kamida bitta yo'nalishni tanlang"
 msgstr "Выберите хотя бы одно направление"
 
-#: masters/forms.py:78
+#: masters/forms.py:75
+msgid "Ism familiyani harflar bilan yozing (maxsus belgilarsiz)."
+msgstr "Укажите имя и фамилию буквами (без специальных символов)."
+
+#: masters/forms.py:89
 msgid "Karta raqami 16 ta raqamdan iborat bo'lishi kerak"
 msgstr "Номер карты должен состоять из 16 цифр"
 
-#: masters/forms.py:84 repair_service/photos.py:35
+#: masters/forms.py:95 repair_service/photos.py:35
 #, python-format
 msgid "Rasm hajmi %(mb)s MB dan oshmasligi kerak"
 msgstr "Размер фото не должен превышать %(mb)s МБ"
 
-#: masters/forms.py:98
+#: masters/forms.py:109
 msgid ""
 "Joylashuvingizni aniqlang (\"Joylashuvimni aniqlash\" tugmasi) yoki tumanni "
 "tanlang"
@@ -173,104 +177,104 @@ msgstr ""
 "Определите местоположение (кнопка «Определить моё местоположение») или "
 "выберите район"
 
-#: masters/forms.py:101
+#: masters/forms.py:112
 msgid "Joylashuv O'zbekiston hududidan tashqarida. Qaytadan aniqlang."
 msgstr "Местоположение за пределами Узбекистана. Определите заново."
 
-#: masters/forms.py:111 masters/forms.py:172 masters/forms.py:258
+#: masters/forms.py:122 masters/forms.py:183 masters/forms.py:269
 #: templates/masters/register.html:20 templates/partials/otp_gate.html:10
 msgid "Telefon raqam"
 msgstr "Номер телефона"
 
-#: masters/forms.py:114 templates/masters/login.html:20
+#: masters/forms.py:125 templates/masters/login.html:20
 msgid "Parol"
 msgstr "Пароль"
 
-#: masters/forms.py:115 masters/forms.py:260
+#: masters/forms.py:126 masters/forms.py:271
 msgid "Parolni takrorlang"
 msgstr "Повторите пароль"
 
-#: masters/forms.py:117
+#: masters/forms.py:128
 msgid ""
 "Shaxsiy ma'lumotlarim qayta ishlanishiga va saytda e'lon qilinishiga roziman"
 msgstr "Согласен на обработку персональных данных и их публикацию на сайте"
 
-#: masters/forms.py:118
+#: masters/forms.py:129
 msgid "Davom etish uchun rozilik bering"
 msgstr "Чтобы продолжить, дайте согласие"
 
-#: masters/forms.py:131 masters/forms.py:270
+#: masters/forms.py:142 masters/forms.py:281
 msgid "Telefon raqamni SMS kod bilan tasdiqlang"
 msgstr "Подтвердите номер телефона кодом из SMS"
 
-#: masters/forms.py:134
+#: masters/forms.py:145
 msgid ""
 "Bu raqam bilan allaqachon ro'yxatdan o'tilgan. Kirish sahifasidan "
 "foydalaning."
 msgstr "Этот номер уже зарегистрирован. Воспользуйтесь страницей входа."
 
-#: masters/forms.py:141 masters/forms.py:280
+#: masters/forms.py:152 masters/forms.py:291
 msgid "Parollar mos kelmadi"
 msgstr "Пароли не совпадают"
 
-#: masters/forms.py:177
+#: masters/forms.py:188
 msgid "Telefon raqam yoki parol noto'g'ri."
 msgstr "Неверный номер телефона или пароль."
 
-#: masters/forms.py:178
+#: masters/forms.py:189
 msgid "Bu akkaunt bloklangan."
 msgstr "Этот аккаунт заблокирован."
 
-#: masters/forms.py:202
+#: masters/forms.py:213
 msgid "Usta haqida fikringiz (ixtiyoriy)"
 msgstr "Ваш отзыв о мастере (необязательно)"
 
-#: masters/forms.py:205 templates/partials/request_form.html:26
+#: masters/forms.py:216 templates/partials/request_form.html:26
 #: templates/support/_chat.html:16
 msgid "Ismingiz"
 msgstr "Ваше имя"
 
-#: masters/forms.py:205 templates/orders/_photos.html:38
+#: masters/forms.py:216 templates/orders/_photos.html:38
 msgid "Izoh"
 msgstr "Комментарий"
 
-#: masters/forms.py:205 masters/models.py:318
+#: masters/forms.py:216 masters/models.py:318
 msgid "Ish sifati"
 msgstr "Качество работы"
 
-#: masters/forms.py:206 masters/models.py:319
+#: masters/forms.py:217 masters/models.py:319
 msgid "O'z vaqtida kelishi"
 msgstr "Пунктуальность"
 
-#: masters/forms.py:206 masters/models.py:320
+#: masters/forms.py:217 masters/models.py:320
 msgid "Narx adolatliligi"
 msgstr "Справедливость цены"
 
-#: masters/forms.py:206 masters/models.py:321
+#: masters/forms.py:217 masters/models.py:321
 msgid "Muomala madaniyati"
 msgstr "Вежливость"
 
-#: masters/forms.py:209
+#: masters/forms.py:220
 msgid "Baho qo'ying"
 msgstr "Поставьте оценку"
 
-#: masters/forms.py:231
+#: masters/forms.py:242
 msgid "Ish narxi (so'm)"
 msgstr "Стоимость работы (сум)"
 
-#: masters/forms.py:233
+#: masters/forms.py:244
 msgid "To'lov tartibi"
 msgstr "Порядок оплаты"
 
-#: masters/forms.py:234 templates/catalog.html:38
+#: masters/forms.py:245 templates/catalog.html:38
 msgid "Narxga nima kiradi"
 msgstr "Что входит в цену"
 
-#: masters/forms.py:235
+#: masters/forms.py:246
 msgid "Masalan: nasos almashtirish, ehtiyot qism narxi bilan"
 msgstr "Например: замена насоса, с учётом стоимости запчасти"
 
-#: masters/forms.py:249
+#: masters/forms.py:260
 #, python-format
 msgid ""
 "Narx katalogdagidan %(diff)s%% farq qiladi. Mijoz tushunishi uchun sababini "
@@ -279,85 +283,85 @@ msgstr ""
 "Цена отличается от каталожной на %(diff)s%%. Укажите причину, чтобы клиент "
 "понял (например: дополнительная запчасть, сложный доступ)."
 
-#: masters/forms.py:259
+#: masters/forms.py:270
 msgid "Yangi parol"
 msgstr "Новый пароль"
 
-#: masters/forms.py:273
+#: masters/forms.py:284
 msgid "Bu raqam bilan ro'yxatdan o'tilmagan"
 msgstr "Этот номер не зарегистрирован"
 
-#: masters/forms.py:296 templates/masters/work_schedule.html:18
+#: masters/forms.py:307 templates/masters/work_schedule.html:18
 msgid "Ish kunlari"
 msgstr "Рабочие дни"
 
-#: masters/forms.py:297 masters/schedule.py:19
+#: masters/forms.py:308 masters/schedule.py:19
 msgid "Du"
 msgstr "Пн"
 
-#: masters/forms.py:297 masters/schedule.py:19
+#: masters/forms.py:308 masters/schedule.py:19
 msgid "Se"
 msgstr "Вт"
 
-#: masters/forms.py:297 masters/schedule.py:19
+#: masters/forms.py:308 masters/schedule.py:19
 msgid "Ch"
 msgstr "Ср"
 
-#: masters/forms.py:297 masters/schedule.py:19
+#: masters/forms.py:308 masters/schedule.py:19
 msgid "Pa"
 msgstr "Чт"
 
-#: masters/forms.py:297 masters/schedule.py:19
+#: masters/forms.py:308 masters/schedule.py:19
 msgid "Ju"
 msgstr "Пт"
 
-#: masters/forms.py:297 masters/schedule.py:19
+#: masters/forms.py:308 masters/schedule.py:19
 msgid "Sh"
 msgstr "Сб"
 
-#: masters/forms.py:297 masters/schedule.py:19
+#: masters/forms.py:308 masters/schedule.py:19
 msgid "Ya"
 msgstr "Вс"
 
-#: masters/forms.py:298
+#: masters/forms.py:309
 msgid "Boshlanishi"
 msgstr "Начало"
 
-#: masters/forms.py:299
+#: masters/forms.py:310
 msgid "Tugashi"
 msgstr "Конец"
 
-#: masters/forms.py:305
+#: masters/forms.py:316
 msgid ""
 "Boshlanish va tugash vaqtini birga kiriting (yoki ikkalasini bo'sh "
 "qoldiring)."
 msgstr "Укажите время начала и окончания вместе (или оставьте оба пустыми)."
 
-#: masters/forms.py:307
+#: masters/forms.py:319
 msgid "Ish tugash vaqti boshlanishidan keyin bo'lishi kerak."
 msgstr "Время окончания должно быть позже начала."
 
-#: masters/forms.py:312
+#: masters/forms.py:324
 msgid "Qachondan"
 msgstr "С"
 
-#: masters/forms.py:313
+#: masters/forms.py:325
 msgid "Qachongacha"
 msgstr "По"
 
-#: masters/forms.py:314 templates/orders/_photos.html:38
+#: masters/forms.py:326 templates/orders/_photos.html:38
 msgid "Izoh (ixtiyoriy)"
 msgstr "Подпись (необязательно)"
 
-#: masters/forms.py:324
+#: masters/forms.py:336
 msgid "Tugash sanasi boshlanishidan oldin bo'lmasligi kerak."
 msgstr "Дата окончания не может быть раньше начала."
 
-#: masters/forms.py:326
+#: masters/forms.py:338
 msgid "O'tgan sanani belgilab bo'lmaydi."
 msgstr "Нельзя указать прошедшую дату."
 
-#: masters/forms.py:328
+#: masters/forms.py:340
 msgid "Bir martada ko'pi bilan 90 kun."
 msgstr "Не более 90 дней за раз."
 
@@ -432,7 +436,7 @@ msgstr "Время работы"
 msgid "Boshlang'ich kurs"
 msgstr "Вводный курс"
 
-#: masters/reliability.py:112
+#: masters/reliability.py:134
 msgid ""
 "Buyurtmani faqat albatta bora olsangiz qabul qiling — voz kechish ballni "
 "ko'p tushiradi."
@@ -440,7 +444,7 @@ msgstr ""
 "Принимайте заказ, только если точно сможете приехать, — отказ сильно снижает"
 " балл."
 
-#: masters/reliability.py:114
+#: masters/reliability.py:136
 msgid ""
 "Kelish vaqtini real belgilang; kechiksangiz, mijozga yozib vaqtni "
 "o'zgartiring."
@@ -448,14 +452,14 @@ msgstr ""
 "Назначайте реальное время приезда; если опаздываете, напишите клиенту и "
 "измените время."
 
-#: masters/reliability.py:116
+#: masters/reliability.py:138
 msgid ""
 "Yangi buyurtmaga tezroq javob bering — Telegram yoki bildirishnomalarni "
 "yoqing."
 msgstr ""
 "Отвечайте на новые заказы быстрее — включите Telegram или уведомления."
 
-#: masters/reliability.py:118
+#: masters/reliability.py:140
 msgid ""
 "Narx va ish hajmini oldindan aniq kelishing, ishdan oldin va keyin rasmga "
 "oling."
@@ -463,33 +467,33 @@ msgstr ""
 "Заранее точно согласуйте цену и объём работ, фотографируйте до и после "
 "работы."
 
-#: masters/schedule.py:63
+#: masters/schedule.py:77
 msgid "Har kuni"
 msgstr "Ежедневно"
 
-#: masters/schedule.py:76
+#: masters/schedule.py:90
 msgid "Dam olishda"
 msgstr "В отпуске"
 
-#: masters/schedule.py:81
+#: masters/schedule.py:95
 msgid "Hozir ishlamaydi"
 msgstr "Сейчас не работает"
 
-#: masters/schedule.py:85
+#: masters/schedule.py:99
 #, python-format
 msgid "ertaga %(t)s"
 msgstr "завтра %(t)s"
 
-#: masters/schedule.py:88
+#: masters/schedule.py:102
 #, python-format
 msgid "Hozir ishlamaydi — %(when)s dan"
 msgstr "Сейчас не работает — с %(when)s"
 
-#: masters/schedule.py:96
+#: masters/schedule.py:110
 msgid "Bu kun dam olish kuningiz sifatida belgilangan."
 msgstr "Этот день отмечен как ваш выходной."
 
-#: masters/schedule.py:97
+#: masters/schedule.py:111
 msgid "Bu vaqt ish jadvalingizdan tashqarida."
 msgstr "Это время вне вашего графика работы."
 
@@ -992,26 +996,34 @@ msgid "Xatolik yuz berdi. Keyinroq urinib ko'ring."
 msgstr "Произошла ошибка. Попробуйте позже."
 
 #: repair_service/context_processors.py:18
+msgid "Sahifa eskirgan. Uni yangilab, qaytadan urinib ko'ring."
+msgstr "Страница устарела. Обновите её и попробуйте ещё раз."
+
+#: repair_service/context_processors.py:19
+msgid "Yopish"
+msgstr "Закрыть"
+
+#: repair_service/context_processors.py:20
 msgid "Havola nusxalandi"
 msgstr "Ссылка скопирована"
 
-#: repair_service/context_processors.py:19
+#: repair_service/context_processors.py:21
 msgid "Aniqlanmoqda…"
 msgstr "Определяем…"
 
-#: repair_service/context_processors.py:20
+#: repair_service/context_processors.py:22
 msgid "✓ Joylashuv aniqlandi"
 msgstr "✓ Местоположение определено"
 
-#: repair_service/context_processors.py:21
+#: repair_service/context_processors.py:23
 msgid "Brauzeringiz joylashuvni aniqlay olmaydi. Tumanni tanlang."
 msgstr "Браузер не умеет определять местоположение. Выберите район."
 
-#: repair_service/context_processors.py:22
+#: repair_service/context_processors.py:24
 msgid "Joylashuv faqat HTTPS orqali ishlaydi. Hozircha tumanni tanlang."
 msgstr "Геолокация работает только по HTTPS. Пока выберите район."
 
-#: repair_service/context_processors.py:23
+#: repair_service/context_processors.py:25
 msgid ""
 "Joylashuvga ruxsat berilmadi. Brauzer sozlamalaridan ruxsat bering yoki "
 "tumanni tanlang."
@@ -1019,40 +1031,40 @@ msgstr ""
 "Доступ к местоположению запрещён. Разрешите его в настройках браузера или "
 "выберите район."
 
-#: repair_service/context_processors.py:24
+#: repair_service/context_processors.py:26
 msgid "Joylashuvni aniqlab bo'lmadi. Tumanni tanlang."
 msgstr "Не удалось определить местоположение. Выберите район."
 
-#: repair_service/context_processors.py:25
+#: repair_service/context_processors.py:27
 msgid "✓ Joylashuv xaritada belgilandi"
 msgstr "✓ Местоположение отмечено на карте"
 
-#: repair_service/context_processors.py:26
+#: repair_service/context_processors.py:28
 msgid "baho"
 msgstr "оценок"
 
-#: repair_service/context_processors.py:27
+#: repair_service/context_processors.py:29
 msgid "Profilni ochish →"
 msgstr "Открыть профиль →"
 
-#: repair_service/context_processors.py:28
+#: repair_service/context_processors.py:30
 msgid "Siz"
 msgstr "Вы"
 
-#: repair_service/context_processors.py:29
+#: repair_service/context_processors.py:31
 msgid "🔔 Bildirishnomalar yoqilgan"
 msgstr "🔔 Уведомления включены"
 
-#: repair_service/context_processors.py:30
+#: repair_service/context_processors.py:32
 msgid "🔔 Bildirishnomalarni yoqish"
 msgstr "🔔 Включить уведомления"
 
-#: repair_service/context_processors.py:31
+#: repair_service/context_processors.py:33
 msgid ""
 "Brauzerda bildirishnomalar taqiqlangan. Sayt sozlamalaridan ruxsat bering."
 msgstr "Уведомления запрещены в браузере. Разрешите их в настройках сайта."
 
-#: repair_service/context_processors.py:32
+#: repair_service/context_processors.py:34
 msgid ""
 "iPhone'da bildirishnoma uchun avval saytni «Ulashish → Bosh ekranga "
 "qo'shish» orqali o'rnating."
@@ -1382,19 +1394,19 @@ msgstr "точка"
 msgid "soat"
 msgstr "час"
 
-#: repair_service/nps.py:34 repair_service/nps.py:36
+#: repair_service/nps.py:35 repair_service/nps.py:37
 msgid "0 dan 10 gacha baho tanlang."
 msgstr "Выберите оценку от 0 до 10."
 
-#: repair_service/nps.py:38
+#: repair_service/nps.py:39
 msgid "So'rovnoma buyurtma tasdiqlangandan keyin."
 msgstr "Опрос доступен после подтверждения заказа."
 
-#: repair_service/nps.py:43
+#: repair_service/nps.py:44
 msgid "Javobingiz allaqachon qabul qilingan. Rahmat!"
 msgstr "Ваш ответ уже принят. Спасибо!"
 
-#: repair_service/nps.py:74
+#: repair_service/nps.py:78
 #, python-format
 msgid ""
 "Ishdan mamnunmisiz? Bizni do'stingizga tavsiya qilasizmi — 0 dan 10 gacha "
@@ -1566,6 +1578,29 @@ msgstr "Сейчас нельзя загрузить фото этого тип�
 #, python-format
 msgid "Bitta buyurtmaga ko'pi bilan %(n)s ta rasm"
 msgstr "Не более %(n)s фото на заказ"
+
+#: repair_service/pwa.py:45
+msgid "ustalar"
+msgstr "мастера"
+
+#: repair_service/pwa.py:50
+msgid "Uyingiz uchun ishonchli ustalar: santexnik, elektrik, maishiy texnika."
+msgstr "Надёжные мастера для дома: сантехник, электрик, бытовая техника."
+
+#: repair_service/pwa.py:58 templates/base.html:91 templates/base.html:132
+#: templates/index.html:22
+msgid "Usta topish"
+msgstr "Найти мастера"
+
+#: repair_service/pwa.py:59 templates/base.html:94
+#: templates/orders/customer.html:17 templates/orders/my_orders.html:4
+#: templates/orders/my_orders.html:10
+msgid "Mening buyurtmalarim"
+msgstr "Мои заказы"
+
+#: repair_service/pwa.py:60
+msgid "Usta kabineti"
+msgstr "Кабинет мастера"
 
 #: repair_service/schedule.py:40 repair_service/schedule.py:141
 msgid "Bugun"
@@ -2100,10 +2135,6 @@ msgstr ""
 msgid "Mijozlarga"
 msgstr "Клиентам"
 
-#: templates/base.html:91 templates/base.html:132 templates/index.html:22
-msgid "Usta topish"
-msgstr "Найти мастера"
-
 #: templates/base.html:92 templates/catalog.html:4 templates/catalog.html:10
 msgid "Narxlar katalogi"
 msgstr "Каталог цен"
@@ -2113,11 +2144,6 @@ msgstr "Каталог цен"
 #: templates/orders/my_orders.html:34
 msgid "Ariza qoldirish"
 msgstr "Оставить заявку"
-
-#: templates/base.html:94 templates/orders/customer.html:17
-#: templates/orders/my_orders.html:4 templates/orders/my_orders.html:10
-msgid "Mening buyurtmalarim"
-msgstr "Мои заказы"
 
 #: templates/base.html:95 templates/index.html:233
 #: templates/masters/for_masters.html:13 templates/masters/for_masters.html:56

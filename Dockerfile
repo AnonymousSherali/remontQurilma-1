@@ -21,4 +21,4 @@ USER app
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -fs http://127.0.0.1:8000/healthz/ || exit 1
 # Har ishga tushganda migratsiya (bir nechta nusxa bo'lsa — alohida «migrate» xizmatiga o'tkazing)
-CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py createcachetable && gunicorn -c deploy/gunicorn.conf.py --bind 0.0.0.0:8000 config.wsgi"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py createcachetable && python manage.py setup_roles && gunicorn -c deploy/gunicorn.conf.py --bind 0.0.0.0:8000 config.wsgi"]

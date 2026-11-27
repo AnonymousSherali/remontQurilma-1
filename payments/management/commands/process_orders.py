@@ -60,4 +60,18 @@ class Command(BaseCommand):
                           f"o'chirilgan hujjat fayllari: {purged}; ishonchlilik yangilandi: {rated}; "
                           f"kampaniya xabarlari: {campaign_messages}")
         if failed:
+            _alert_staff(failed)
             raise CommandError('Xato bilan tugagan qadamlar: ' + ', '.join(failed))
+
+
+def _alert_staff(failed):
+    """Administratorlar Telegram chatiga — bir xil xato haqida soatiga bir martadan ko'p emas."""
+    from django.conf import settings
+    from django.core.cache import cache
+    chat_id = getattr(settings, 'TELEGRAM_CHAT_ID', '')
+    key = 'process_orders:alert:' + ','.join(failed)
+    if not chat_id or not cache.add(key, 1, 6 * 60 * 60):
+        return
+    from telegram_bot import client
+    client.send_message(chat_id, '🚨 Soatlik cron (process_orders) xato bilan tugadi: ' + ', '.join(failed)
+                        + '\nLog: /srv/techservice/logs/cron.log (Docker: docker compose logs cron)', background=False)

@@ -9,10 +9,10 @@ Administrator ikkala tomonni eshitib (yozishma, rasmlar, tarix — bitta sahifad
 - withdraw(order, note) — kelishildi, ish davom etadi: buyurtma nizodan oldingi holatiga qaytadi.
 """
 
-from django.utils.html import escape
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone, translation
+from django.utils.html import escape
 from django.utils.translation import gettext as _
 
 from payments.models import Milestone

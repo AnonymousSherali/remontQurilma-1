@@ -16,6 +16,7 @@ git reset --quiet --hard "origin/$BRANCH"
 "$VENV/bin/pip" install --quiet -r requirements.txt -r requirements-prod.txt
 "$VENV/bin/python" manage.py check --deploy --fail-level ERROR
 "$VENV/bin/python" manage.py migrate --noinput
+"$VENV/bin/python" manage.py setup_roles >/dev/null   # admin rollari (Operator, Moliyachi, ...)
 "$VENV/bin/python" manage.py collectstatic --noinput --verbosity 0
 "$VENV/bin/python" manage.py compilemessages --ignore "venv/*" --verbosity 0
 "$VENV/bin/python" manage.py createcachetable

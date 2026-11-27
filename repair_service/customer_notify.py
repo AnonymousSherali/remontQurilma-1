@@ -5,10 +5,10 @@ Ustaga — yangi buyurtma kelganda va mijoz tasdiqlaganda/nizo ochganda.
 SMS buyurtma yaratilgan tilda yuboriladi.
 """
 
-from django.utils.html import escape
 from django.conf import settings
 from django.urls import reverse
 from django.utils import translation
+from django.utils.html import escape
 from django.utils.translation import gettext as _
 
 from otp.sms import send_sms

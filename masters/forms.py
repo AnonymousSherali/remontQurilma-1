@@ -1,3 +1,4 @@
+import re
 from decimal import Decimal
 
 from django import forms
@@ -17,6 +18,9 @@ from .locations import DISTRICT_CHOICES, district_coords, location_groups
 from .models import RATING_CHOICES, Category, Master, Review
 
 MAX_PHOTO_MB = 3
+
+
+NAME_FORBIDDEN = re.compile(r'[<>{}\[\]=|\\/@#$%^*;:"]')
 
 
 class MasterProfileForm(forms.ModelForm):
@@ -63,6 +67,13 @@ class MasterProfileForm(forms.ModelForm):
             'full_name': {'required': _('Ism familiyangizni kiriting')},
             'categories': {'required': _("Kamida bitta yo'nalishni tanlang")},
         }
+
+    def clean_full_name(self):
+        # Ism xaritada, Excel'da, Telegram'da chiqadi: HTML/formula belgilari va harfsiz qiymat rad etiladi
+        name = ' '.join((self.cleaned_data.get('full_name') or '').split())
+        if NAME_FORBIDDEN.search(name) or not any(ch.isalpha() for ch in name) or name[:1] in '=+-@':
+            raise forms.ValidationError(_("Ism familiyani harflar bilan yozing (maxsus belgilarsiz)."))
+        return name
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -303,7 +314,8 @@ class WorkScheduleForm(forms.Form):
         start, end = cleaned.get('work_from'), cleaned.get('work_to')
         if bool(start) != bool(end):
             raise forms.ValidationError(_("Boshlanish va tugash vaqtini birga kiriting (yoki ikkalasini bo'sh qoldiring)."))
-        if start and end and start >= end:
+        if start and end and start == end:
+            # start > end — tungi smena (masalan 20:00–02:00), bu ruxsat etiladi
             raise forms.ValidationError(_("Ish tugash vaqti boshlanishidan keyin bo'lishi kerak."))
         return cleaned
 

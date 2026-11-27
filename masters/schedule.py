@@ -28,28 +28,42 @@ def works_on(master, day):
     return (not master.work_days or day.weekday() in master.work_days) and not is_day_off(master, day)
 
 
+def overnight(master):
+    """Tungi smena: masalan 20:00–02:00 (tugash ertasi kuni)."""
+    return bool(master.work_from and master.work_to and master.work_from > master.work_to)
+
+
 def is_working(master, moment=None):
     """Hozir (yoki berilgan vaqtda) ish vaqtimi."""
     moment = timezone.localtime(moment or timezone.now())
-    if not works_on(master, moment.date()):
+    now, today = moment.time(), moment.date()
+    if overnight(master):
+        if now >= master.work_from:
+            return works_on(master, today)
+        if now < master.work_to:      # kechagi smenaning davomi
+            return works_on(master, today - timedelta(days=1))
+        return False
+    if not works_on(master, today):
         return False
     if master.work_from and master.work_to:
-        return master.work_from <= moment.time() < master.work_to
+        return master.work_from <= now < master.work_to
     return True
 
 
 def next_working_start(master, moment=None, horizon=30):
-    """Keyingi ish boshlanishi (lokal datetime) yoki None."""
+    """Keyingi ish boshlanishi (lokal datetime) yoki None. Hozir ish vaqti bo'lsa — hozir."""
     moment = timezone.localtime(moment or timezone.now())
+    if is_working(master, moment):
+        return moment
     start_time = master.work_from or time(0, 0)
     for offset in range(horizon):
         day = moment.date() + timedelta(days=offset)
         if not works_on(master, day):
             continue
         start = timezone.make_aware(datetime.combine(day, start_time))
-        if offset == 0 and master.work_to and moment.time() >= master.work_to:
+        if start < moment:
             continue
-        return max(start, moment) if offset == 0 else start
+        return start
     return None
 
 

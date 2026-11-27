@@ -2,3 +2,4 @@
 gunicorn>=23.0,<24
 psycopg[binary]>=3.2,<4   # PostgreSQL
 redis>=5.0                # kesh (REDIS_URL)
+sentry-sdk[django]>=2.0,<3   # xatolar monitoringi (SENTRY_DSN berilsa)

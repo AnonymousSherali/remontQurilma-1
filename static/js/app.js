@@ -26,6 +26,18 @@
   }, (function () { var el = document.getElementById('js-i18n'); return el ? JSON.parse(el.textContent) : {}; })());
 
   // ---------------- Toast ----------------
+  // JSON javobni o'qish: HTML sahifa (403 CSRF, 500) qaytsa "tarmoq xatosi" emas, aniq sabab ko'rsatiladi
+  function readJson(res) {
+    var type = res.headers.get('content-type') || '';
+    if (type.indexOf('json') === -1) { var e = new Error('http ' + res.status); e.status = res.status; throw e; }
+    return res.json();
+  }
+  function errorText(err) {
+    if (err && err.status === 403) { return T.expired; }
+    if (err && err.status) { return T.genericError; }
+    return T.network;
+  }
+
   function toast(message, type) {
     var stack = document.querySelector('.toast-stack');
     if (!stack) {
@@ -208,7 +220,7 @@
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         credentials: 'same-origin',
       }).then(function (res) {
-        return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+        return readJson(res).then(function (data) { return { ok: res.ok, data: data }; });
       }).then(function (r) {
         release();
         if (r.ok && r.data.success) {
@@ -232,9 +244,9 @@
           return;
         }
         toast(r.data.message || T.genericError, 'error');
-      }).catch(function () {
+      }).catch(function (err) {
         release();
-        toast(T.network, 'error');
+        toast(errorText(err), 'error');
       });
     });
   });
@@ -278,7 +290,7 @@
       return fetch(url, {
         method: 'POST', body: body, credentials: 'same-origin',
         headers: { 'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest' },
-      }).then(function (r) { return r.json(); });
+      }).then(readJson);
     }
 
     sendBtn.addEventListener('click', function () {
@@ -292,7 +304,7 @@
         sendBtn.textContent = T.resend;
         codeIn.focus();
         if (data.debug_code) { debug.hidden = false; debug.textContent = T.debugCode + ' ' + data.debug_code; }
-      }).catch(function () { sendBtn.classList.remove('is-loading'); err.textContent = T.network; });
+      }).catch(function (e) { sendBtn.classList.remove('is-loading'); err.textContent = errorText(e); });
     });
 
     codeIn.addEventListener('input', function () {
@@ -311,7 +323,7 @@
         var target = box.dataset.fillTarget && document.querySelector(box.dataset.fillTarget);
         if (target) { target.value = phoneIn.value; target.readOnly = true; }
         document.dispatchEvent(new CustomEvent('otp:verified', { detail: { phone: data.phone } }));
-      }).catch(function () { err.textContent = T.network; });
+      }).catch(function (e) { err.textContent = errorText(e); });
     });
   });
 
@@ -383,7 +395,7 @@
         method: 'POST', body: body, credentials: 'same-origin',
         headers: { 'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value,
                    'X-Requested-With': 'XMLHttpRequest' },
-      }).then(function (r) { return r.json(); }).then(function (d) {
+      }).then(readJson).then(function (d) {
         busy = false;
         if (d.error) { err.textContent = d.error; return; }
         input.value = '';
@@ -391,7 +403,7 @@
         form.querySelectorAll('[data-once]').forEach(function (el) { el.hidden = true; });
         apply(d);
         log.scrollTop = log.scrollHeight;
-      }).catch(function () { busy = false; err.textContent = T.network; });
+      }).catch(function (e) { busy = false; err.textContent = errorText(e); });
     });
   });
 
@@ -499,7 +511,8 @@
     e.preventDefault();
     var dialog = document.createElement('dialog');
     dialog.className = 'lightbox';
-    dialog.innerHTML = '<button type="button" aria-label="×">✕</button><img alt="">';
+    dialog.innerHTML = '<button type="button">✕</button><img alt="">';
+    dialog.querySelector('button').setAttribute('aria-label', T.close);
     dialog.querySelector('img').src = link.href;
     dialog.addEventListener('close', function () { dialog.remove(); });
     dialog.addEventListener('click', function (ev) { if (ev.target !== dialog.querySelector('img')) { dialog.close(); } });

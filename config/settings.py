@@ -222,6 +222,21 @@ LOGGING = {
     },
 }
 
+# --- Xatolar monitoringi (ixtiyoriy): SENTRY_DSN berilsa va sentry-sdk o'rnatilgan bo'lsa ---
+# Shaxsiy ma'lumot (telefon, IP, cookie) yuborilmaydi: send_default_pii=False.
+SENTRY_DSN = os.environ.get('SENTRY_DSN', '')
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+    except ImportError:  # pragma: no cover — requirements-prod.txt da bor
+        sentry_sdk = None
+    if sentry_sdk is not None:
+        sentry_sdk.init(
+            dsn=SENTRY_DSN, send_default_pii=False,
+            environment=os.environ.get('SENTRY_ENVIRONMENT', 'production'),
+            traces_sample_rate=float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', '0')),
+        )
+
 # --- Kirish ---
 LOGIN_URL = 'masters:login'
 LOGIN_REDIRECT_URL = 'masters:dashboard'

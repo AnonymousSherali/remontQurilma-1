@@ -10,11 +10,11 @@
 
 from datetime import timedelta
 
-from django.utils.html import escape
 from django.conf import settings
 from django.core.cache import cache
 from django.urls import reverse
 from django.utils import timezone, translation
+from django.utils.html import escape
 from django.utils.translation import gettext as _
 
 from .models import SupportMessage, SupportThread
