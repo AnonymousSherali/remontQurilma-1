@@ -13,6 +13,7 @@ ID_DOCUMENTS_KEEP_DAYS > 0 bo'lsa, tasdiqlangandan shuncha kun o'tgach fayllar o
 import logging
 from datetime import timedelta
 
+from django.utils.html import escape
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -112,7 +113,7 @@ def _notify_admin(master):
         return
     from telegram_bot import client
     url = _absolute(reverse('admin:masters_master_change', args=[master.pk]))
-    client.send_message(chat_id, f'🪪 Usta hujjat yukladi: {master.full_name}\n{url}')
+    client.send_message(chat_id, f'🪪 Usta hujjat yukladi: {escape(master.full_name)}\n{url}')
 
 
 def purge_old(now=None):

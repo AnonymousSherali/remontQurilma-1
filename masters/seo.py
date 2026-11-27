@@ -14,7 +14,7 @@ from django.utils.translation import gettext as _
 from repair_service.models import Service
 
 from .locations import DISTRICT_CHOICES, district_coords, district_name, is_city, nearest_city
-from .models import Category, Master
+from .models import Category
 from .services import DEFAULT_RADIUS_KM, SORT_DISTANCE, SORT_RATING, search_masters
 
 

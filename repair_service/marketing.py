@@ -60,7 +60,9 @@ def audience(campaign, now=None):
         cutoff = (now or timezone.now()) - timedelta(days=campaign.inactive_days)
         recent = SR.objects.filter(created_at__gte=cutoff).values('phone')
         consents = consents.exclude(phone__in=recent)
-    elif campaign.audience == Campaign.AUDIENCE_CATEGORY and campaign.category_id:
+    elif campaign.audience == Campaign.AUDIENCE_CATEGORY:
+        if not campaign.category_id:
+            return []   # kategoriya tanlanmagan/o'chirilgan — hammaga yubormaymiz
         consents = consents.filter(phone__in=SR.objects.filter(category_id=campaign.category_id).values('phone'))
     return [(c.phone, c) for c in consents.order_by('pk')]
 
@@ -90,6 +92,14 @@ def compose(campaign, language, unsubscribe_url=''):
     return '\n'.join(parts)
 
 
+def _telegram(chat_id, text):
+    """Yuborildimi. Xato bo'lsa — keyingi kanal (SMS) sinab ko'riladi."""
+    from django.utils.html import escape
+    from telegram_bot import client
+    result = client.send_message(chat_id, escape(text), background=False)
+    return result is not None or not client.enabled()
+
+
 def _deliver_customer(campaign, consent):
     from . import webpush
     unsub = _absolute(reverse('repair_service:unsubscribe', args=[consent.token]))
@@ -104,9 +114,8 @@ def _deliver_customer(campaign, consent):
         chat_id = (SR.objects.filter(phone=consent.phone, telegram_chat_id__isnull=False)
                    .order_by('-created_at').values_list('telegram_chat_id', flat=True).first())
         if chat_id:
-            from telegram_bot import client
-            client.send_message(chat_id, text, background=False)
-            return 'telegram', True
+            if _telegram(chat_id, text):
+                return 'telegram', True
     if campaign.use_sms:
         from otp.sms import send_sms
         try:
@@ -127,9 +136,8 @@ def _deliver_master(campaign, master):
         if subs and any(webpush.send(sub, settings.SITE_INFO['name'], text, url) for sub in subs):
             return 'push', True
     if campaign.use_telegram and master.telegram_chat_id:
-        from telegram_bot import client
-        client.send_message(master.telegram_chat_id, text, background=False)
-        return 'telegram', True
+        if _telegram(master.telegram_chat_id, text):
+            return 'telegram', True
     if campaign.use_sms:
         from otp.sms import send_sms
         try:

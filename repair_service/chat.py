@@ -42,14 +42,26 @@ def other(actor):
     return MASTER if actor == CUSTOMER else CUSTOMER
 
 
+def _messages(order, viewer):
+    """Usta faqat o'z davridagi yozishmani ko'radi: oldingi usta voz kechgan bo'lsa, o'sha suhbat unga ochilmaydi."""
+    qs = order.messages.all()
+    if viewer == MASTER:
+        released = (order.events.filter(status=SR.STATUS_NEW, actor=MASTER).order_by('-created_at')
+                    .values_list('created_at', flat=True).first())
+        if released:
+            qs = qs.filter(created_at__gt=released)
+    return qs
+
+
 def unread_count(order, viewer):
-    return order.messages.filter(sender=other(viewer), read_at__isnull=True).count()
+    return _messages(order, viewer).filter(sender=other(viewer), read_at__isnull=True).count()
 
 
 def fetch(order, viewer, after=0):
     """Xabarlar ro'yxati; qarshi tomonning xabarlari o'qilgan deb belgilanadi."""
-    order.messages.filter(sender=other(viewer), read_at__isnull=True).update(read_at=timezone.now())
-    return list(order.messages.filter(pk__gt=after))
+    qs = _messages(order, viewer)
+    qs.filter(sender=other(viewer), read_at__isnull=True).update(read_at=timezone.now())
+    return list(qs.filter(pk__gt=after))
 
 
 def serialize(message, viewer):
@@ -112,7 +124,7 @@ def notify(message):
 def context(order, viewer, can_act=True):
     """Buyurtma sahifasi uchun. viewer — CUSTOMER yoki MASTER."""
     visible = order.master_id is not None and order.status != SR.STATUS_NEW and (
-        can_send(order) or order.messages.exists())
+        can_send(order) or _messages(order, viewer).exists())
     if not visible:
         return {'chat': None}
     return {'chat': {

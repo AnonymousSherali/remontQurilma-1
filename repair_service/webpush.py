@@ -128,6 +128,7 @@ def send(subscription, title, body='', url='/', ttl=24 * 3600):
     """Bitta obunaga yuboradi. Qaytaradi: True — yuborildi, False — obuna eskirgan (o'chirildi) yoki xato."""
     payload = json.dumps({'title': str(title), 'body': str(body)[:300], 'url': url}, ensure_ascii=False).encode()
     SENT.append((subscription.endpoint, json.loads(payload)))
+    del SENT[:-200]   # ishlab turgan saytda xotira cheksiz o'smasin
     if not enabled():
         return False
     if not endpoint_allowed(subscription.endpoint):

@@ -112,12 +112,20 @@ def prepare_weekly(now=None, force=False):
             fee=sum((m.fee_amount for m in items), 0), amount=amount, card=master.payout_card,
             holder=master.payout_holder, note=f'Haftalik {today:%d.%m.%Y}', created_at=now,
             status=Payout.STATUS_PREPARED, provider=provider.name)
-        Milestone.objects.filter(pk__in=[m.pk for m in items]).update(payout=payout)
+        # Qulf + shart: shu orada admin qo'lda to'lab qo'ygan bosqich ikkinchi marta o'tkazilmasin
+        ids = list(Milestone.objects.select_for_update().filter(
+            pk__in=[m.pk for m in items], payout__isnull=True, paid_out_at__isnull=True,
+            state=Milestone.STATE_RELEASED).values_list('pk', flat=True))
+        if len(ids) != len(items):
+            payout.delete()
+            continue
+        Milestone.objects.filter(pk__in=ids).update(payout=payout)
         status, ref, error = provider.send(payout)
         if status == Payout.STATUS_PAID:
             confirm(payout, ref=ref)
         elif status == Payout.STATUS_FAILED:
             Payout.objects.filter(pk=payout.pk).update(status=Payout.STATUS_FAILED, note=(payout.note + ' ' + error)[:255])
+            Milestone.objects.filter(payout=payout).update(payout=None)   # keyingi safar qayta urinish
         created.append(payout)
     if created:
         transaction.on_commit(lambda: _notify_admin(created))
@@ -140,8 +148,10 @@ def confirm(payout, user=None, ref=''):
     return payout
 
 
+@transaction.atomic
 def cancel_prepared(payout):
     """Tayyorlangan o'tkazmani bekor qilish — bosqichlar yana «to'lanishi kerak» ro'yxatiga qaytadi."""
+    payout = Payout.objects.select_for_update().get(pk=payout.pk)
     if payout.status == Payout.STATUS_PAID:
         return False
     payout.milestones.update(payout=None)
@@ -206,12 +216,12 @@ def _text(value):
     """Karta/telefon raqami Excel'da son bo'lib buzilmasligi va formula sifatida
     bajarilmasligi uchun (=, +, -, @ bilan boshlanuvchi matn)."""
     value = str(value or '')
-    return "'" + value if value[:1] in ('=', '+', '-', '@') else value
+    return "'" + value if value[:1] in ('=', '+', '-', '@', '\t', '\r', '|', '%') else value
 
 
 def pending_xlsx(rows=None):
     rows = pending() if rows is None else rows
-    data = [[r['master'].full_name, _text(r['master'].phone), card_display(r['master'].payout_card),
+    data = [[_text(r['master'].full_name), _text(r['master'].phone), card_display(r['master'].payout_card),
              _text(r['master'].payout_holder), r['count'], int(r['gross']), int(r['fee']), int(r['amount']),
              ', '.join(f'#{m.order_id}' for m in r['milestones'])] for r in rows]
     total = totals(rows)
@@ -222,7 +232,7 @@ def pending_xlsx(rows=None):
 
 
 def history_xlsx(queryset):
-    data = [[timezone.localtime(p.created_at).strftime('%d.%m.%Y %H:%M'), p.master.full_name,
+    data = [[timezone.localtime(p.created_at).strftime('%d.%m.%Y %H:%M'), _text(p.master.full_name),
              _text(p.master.phone), card_display(p.card), _text(p.holder), p.count, int(p.gross), int(p.fee),
              int(p.amount), _text(p.note)] for p in queryset.select_related('master')]
     return _workbook("O'tkazmalar",

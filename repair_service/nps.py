@@ -9,6 +9,7 @@
 
 from datetime import timedelta
 
+from django.utils.html import escape
 from django.conf import settings
 from django.db import IntegrityError, transaction
 from django.urls import reverse
@@ -53,7 +54,7 @@ def _alert_admin(response):
     order = response.order
     url = settings.SITE_URL.rstrip('/') + reverse('admin:repair_service_servicerequest_change', args=[order.pk])
     client.send_message(chat_id, f'😟 Norozi mijoz (NPS {response.score}/10): #{order.pk}, {order.phone}\n'
-                                 f'{response.comment[:300] or "(izohsiz)"}\n{url}')
+                                 f'{escape(response.comment[:300]) or "(izohsiz)"}\n{url}')
 
 
 def send_invites(now=None):

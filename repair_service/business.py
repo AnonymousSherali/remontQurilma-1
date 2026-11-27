@@ -58,13 +58,17 @@ def request_transfer(milestone):
 @transaction.atomic
 def confirm_transfer(payment):
     """Administrator: pul bank hisobiga tushdi."""
-    from payments import services
     payment = Payment.objects.select_for_update().get(pk=payment.pk)
     if payment.provider != Payment.PROVIDER_BANK or payment.state != Payment.STATE_CREATED:
         return False
+    from payments.payables import MilestonePayable
+    payable = MilestonePayable(payment.milestone)
+    if not payable.can_complete(payment):
+        # Bosqich boshqa usulda to'langan, buyurtma bekor qilingan yoki summa mos emas — admin qo'lda hal qiladi
+        return False
     payment.state, payment.performed_at = Payment.STATE_PERFORMED, timezone.now()
     payment.save(update_fields=['state', 'performed_at'])
-    services.mark_held(payment.milestone)
+    payable.mark_paid()
     from repair_service import workflow
     workflow.record(payment.milestone.order, payment.milestone.order.status, workflow.ADMIN,
                     note=f"Bank o'tkazmasi tushdi: {invoice_number(payment.milestone)}")

@@ -66,10 +66,13 @@ def tr(obj, field):
 
 
 @register.simple_tag
-def telegram_order_link(order):
-    """Mijoz uchun "Telegram'da kuzatish" havolasi (bot sozlanmagan bo'lsa bo'sh)."""
+def telegram_order_link(order, can_act=False):
+    """Mijoz uchun "Telegram'da kuzatish" havolasi (bot sozlanmagan yoki SMS-kod tasdiqlanmagan bo'lsa bo'sh)."""
+    if not can_act:
+        return ''
     from telegram_bot.client import deep_link
-    return deep_link('o' + order.review_token.hex)
+    from telegram_bot.order_links import make
+    return deep_link(make(order))
 
 
 @register.simple_tag

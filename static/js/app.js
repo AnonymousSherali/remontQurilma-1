@@ -356,10 +356,14 @@
       if (busy || document.hidden || box.offsetParent === null || box.dataset.idle) { return; }
       fetch(box.dataset.url + '?after=' + last, {
         credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' },
-      }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) { apply(d); } })
+      }).then(function (r) {
+        // Ruxsat yo'q yoki suhbat yopilgan — so'rovlarni to'xtatamiz
+        if (r.status === 403 || r.status === 404) { clearInterval(timer); return null; }
+        return r.ok ? r.json() : null;
+      }).then(function (d) { if (d) { apply(d); } })
         .catch(function () {});
     }
-    setInterval(poll, 8000);
+    var timer = setInterval(poll, 8000);
     document.addEventListener('visibilitychange', poll);
 
     if (!form) { return; }
@@ -518,14 +522,21 @@
       map.behaviors.disable('scrollZoom');
 
       var collection = new ymaps.GeoObjectCollection();
+      // Yandex balon matnini HTML sifatida chiqaradi — usta kiritgan ism va h.k. qochiriladi (XSS)
+      var esc = function (v) {
+        return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      };
       points.forEach(function (p) {
+        var url = /^\/(?!\/)/.test(p.url || '') ? p.url : '#';
         collection.add(new ymaps.Placemark([p.lat, p.lng], {
-          hintContent: p.name,
-          balloonContentHeader: p.name,
-          balloonContentBody: (p.categories || []).join(', ') +
+          hintContent: esc(p.name),
+          balloonContentHeader: esc(p.name),
+          balloonContentBody: esc((p.categories || []).join(', ')) +
             (p.reviews_count ? '<br>★ ' + p.rating.toFixed(1) + ' (' + p.reviews_count + ' ' + T.reviews + ')' : '') +
             (p.distance_km != null ? '<br>' + p.distance_km + ' km' : ''),
-          balloonContentFooter: '<a href="' + p.url + '">' + T.openProfile + '</a>',
+          balloonContentFooter: '<a href="' + esc(url) + '">' + esc(T.openProfile) + '</a>',
         }, { preset: 'islands#greenRepairShopIcon' }));
       });
       map.geoObjects.add(collection);

@@ -7,7 +7,9 @@ from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import action, display
 
-from . import payouts, refunds, services, tariffs
+from config.admin_perms import require_perms
+
+from . import payouts, refunds, tariffs
 from .models import Milestone, Payment, Payout, PromoCode, PromoRedemption, Purchase, Quote, Refund
 
 STATE_COLORS = {"To'lanmagan": 'default', 'Ushlab turilibdi': 'warning', 'Ustaga chiqarildi': 'success',
@@ -34,9 +36,10 @@ class MilestoneAdmin(ModelAdmin):
     list_filter = ['state', 'order__status']
     search_fields = ['order__id', 'order__name', 'order__phone', 'order__master__full_name']
     readonly_fields = ['order', 'position', 'title', 'amount', 'discount', 'release_status', 'fee_percent', 'state',
-                       'held_at', 'released_at', 'refunded_at']
+                       'held_at', 'released_at', 'refunded_at', 'paid_out_at', 'payout']
     inlines = [PaymentInline]
-    actions = ['force_release', 'refund', 'mark_paid_out']
+    # Ushlab turilgan pulni chiqarish/qaytarish — faqat «Nizolar» sahifasi orqali (qoidalar, tarix, xabarnomalar)
+    actions = ['mark_paid_out']
 
     def has_add_permission(self, request):
         return False
@@ -48,24 +51,6 @@ class MilestoneAdmin(ModelAdmin):
     @display(description='Ustaga')
     def master_amount_display(self, obj):
         return f'{obj.master_amount:,.0f}'.replace(',', ' ')
-
-    @action(description="Nizo: ustaga chiqarish (usta foydasiga)", icon='paid')
-    def force_release(self, request, queryset):
-        count = 0
-        for m in queryset.filter(state=Milestone.STATE_HELD):
-            m.state, m.released_at = Milestone.STATE_RELEASED, timezone.now()
-            m.save(update_fields=['state', 'released_at'])
-            count += 1
-        messages.success(request, f'{count} ta bosqich ustaga chiqarildi.')
-
-    @action(description="Nizo: mijozga qaytarish (pulni to'lov tizimi kabinetidan qaytaring!)", icon='undo')
-    def refund(self, request, queryset):
-        count = 0
-        for m in queryset.filter(state=Milestone.STATE_HELD):
-            services.refund(m)
-            count += 1
-        messages.warning(request, f"{count} ta bosqich mijozga qaytarishga yuborildi — «Pul qaytarishlar» "
-                                  "navbatini ko'ring.")
 
     @action(description="Ustaning kartasiga o'tkazildi deb belgilash", icon='account_balance')
     def mark_paid_out(self, request, queryset):
@@ -99,6 +84,12 @@ class QuoteAdmin(ModelAdmin):
     search_fields = ['order__id', 'order__name', 'order__phone']
     readonly_fields = ['order', 'proposed_at', 'decided_at']
 
+    def get_readonly_fields(self, request, obj=None):
+        # Tasdiqlangan narx asosida bosqichlar yaratilgan — o'zgartirish pulni buzadi
+        if obj and obj.status == Quote.STATUS_APPROVED:
+            return ['order', 'amount', 'plan', 'note', 'status', 'proposed_at', 'decided_at']
+        return self.readonly_fields
+
 
 @admin.register(Payment)
 class PaymentAdmin(ModelAdmin):
@@ -111,8 +102,12 @@ class PaymentAdmin(ModelAdmin):
     @action(description="Bank o'tkazmasi tushdi — bosqichni to'langan qilish", icon='account_balance')
     def confirm_bank_transfer(self, request, queryset):
         from repair_service.business import confirm_transfer
-        done = sum(1 for p in queryset.filter(provider=Payment.PROVIDER_BANK) if confirm_transfer(p))
+        rows = list(queryset.filter(provider=Payment.PROVIDER_BANK, state=Payment.STATE_CREATED))
+        done = sum(1 for p in rows if confirm_transfer(p))
         messages.success(request, f"{done} ta bank o'tkazmasi tasdiqlandi — buyurtmalar davom etadi.")
+        if done < len(rows):
+            messages.warning(request, f"{len(rows) - done} ta o'tkazma tasdiqlanmadi: bosqich boshqa usulda "
+                                      "to'langan, buyurtma bekor qilingan yoki summa o'zgargan. Qo'lda tekshiring.")
     readonly_fields = [f.name for f in Payment._meta.fields]
 
     def has_add_permission(self, request):
@@ -191,7 +186,8 @@ class PayoutAdmin(ModelAdmin):
         return False  # moliyaviy yozuv — o'chirilmaydi
 
     def get_urls(self):
-        return [path('pending/', self.admin_site.admin_view(self.pending_view), name='payments_payout_pending'),
+        return [path('pending/', self.admin_site.admin_view(
+            require_perms('payments.view_payout', 'payments.change_payout')(self.pending_view)), name='payments_payout_pending'),
                 *super().get_urls()]
 
     def changelist_view(self, request, extra_context=None):

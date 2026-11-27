@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 19:40+0500\n"
+"POT-Creation-Date: 2026-11-27 08:29+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
+#: masters/documents.py:45 masters/documents.py:62
 msgid "Hujjatlar allaqachon yuborilgan."
 msgstr "Документы уже отправлены."
 
+#: masters/documents.py:49
 #, python-format
 msgid "Yuklang: %(list)s"
 msgstr "Загрузите: %(list)s"
 
+#: masters/documents.py:80
 #, python-format
 msgid ""
 "Hujjatlaringiz tasdiqlandi — profilingiz saytda ko'rinadi. Kabinet: %(url)s"
 msgstr ""
 "Ваши документы подтверждены — профиль виден на сайте. Кабинет: %(url)s"
 
+#: masters/documents.py:90
 #, python-format
 msgid "Hujjatlaringiz qabul qilinmadi: %(reason)s. Qayta yuklang: %(url)s"
 msgstr "Документы не приняты: %(reason)s. Загрузите заново: %(url)s"
 
+#: masters/feed.py:94
 msgid ""
 "Buyurtma olish uchun profilingiz tasdiqlangan va «buyurtma qabul qilaman» "
 "holatida bo'lishi kerak"
@@ -42,12 +47,15 @@ msgstr ""
 "Чтобы брать заказы, профиль должен быть подтверждён и в статусе «принимаю "
 "заказы»"
 
+#: masters/feed.py:97
 msgid "Bu buyurtmani boshqa usta olib bo'ldi"
 msgstr "Этот заказ уже взял другой мастер"
 
+#: masters/feed.py:99
 msgid "Bu buyurtma sizning yo'nalishingiz yoki hududingizga to'g'ri kelmaydi"
 msgstr "Этот заказ не подходит по вашему направлению или району"
 
+#: masters/feed.py:101
 #, python-format
 msgid ""
 "Dastlabki daqiqalarda buyurtmani faqat PRO ustalar oladi. Siz %(time)s dan "
@@ -56,81 +64,108 @@ msgstr ""
 "В первые минуты заказ могут взять только мастера PRO. Вы сможете взять его с"
 " %(time)s."
 
+#: masters/feed.py:105
 #, python-format
 msgid "Sizda %(n)s ta faol buyurtma bor — avval ularni yakunlang"
 msgstr "У вас %(n)s активных заказов — сначала завершите их"
 
+#: masters/feed.py:111
 msgid "Lentadan olindi"
 msgstr "Взят из ленты"
 
+#: masters/forms.py:28
 msgid "Karta raqami (Uzcard / Humo)"
 msgstr "Номер карты (Uzcard / Humo)"
 
+#: masters/forms.py:29
 msgid "16 xonali raqam. Saytda ko'rinmaydi — faqat pul o'tkazish uchun."
 msgstr "16-значный номер. На сайте не показывается — только для выплат."
 
+#: masters/forms.py:33 masters/forms.py:73 templates/index.html:35
+#: templates/index.html:37 templates/masters/list.html:33
+#: templates/partials/request_form.html:65
+#: templates/partials/request_form.html:67
 msgid "Tuman yoki shahar"
 msgstr "Район или город"
 
+#: masters/forms.py:34
 msgid "Joylashuvni aniqlay olmasangiz, tuman yoki shaharni tanlang."
 msgstr "Если не удаётся определить местоположение, выберите район или город."
 
+#: masters/forms.py:47
 msgid ""
 "Masalan: 8 yillik tajriba, Bosch va Samsung servis markazida ishlaganman..."
 msgstr "Например: опыт 8 лет, работал в сервисном центре Bosch и Samsung..."
 
+#: masters/forms.py:49
 msgid "Masalan: Chilonzor, 9-kvartal"
 msgstr "Например: Чиланзар, 9-й квартал"
 
+#: masters/forms.py:52
 msgid "Ism familiya"
 msgstr "Имя и фамилия"
 
+#: masters/forms.py:52 templates/catalog.html:18 templates/index.html:52
 msgid "Yo'nalishlar"
 msgstr "Направления"
 
+#: masters/forms.py:52
 msgid "Tajriba (yil)"
 msgstr "Опыт (лет)"
 
+#: masters/forms.py:53
 msgid "O'zingiz haqingizda"
 msgstr "О себе"
 
+#: masters/forms.py:53
 msgid "Rasm"
 msgstr "Фото"
 
+#: masters/forms.py:53 templates/masters/detail.html:39
 msgid "Hudud"
 msgstr "Район работы"
 
+#: masters/forms.py:54
 msgid "Xizmat radiusi (km)"
 msgstr "Радиус выезда (км)"
 
+#: masters/forms.py:55
 msgid "Karta egasi"
 msgstr "Владелец карты"
 
+#: masters/forms.py:58
 msgid ""
 "Saytda ko'rinadi. Aniq uy manzilini yozmang — tuman yoki mahalla yetarli."
 msgstr ""
 "Видно на сайте. Не указывайте точный домашний адрес — достаточно района или "
 "махалли."
 
+#: masters/forms.py:59
 msgid "Qancha uzoqlikdagi buyurtmalarga borasiz"
 msgstr "На какое расстояние вы готовы выезжать"
 
+#: masters/forms.py:60
 msgid "Kartadagi ism familiya"
 msgstr "Имя и фамилия на карте"
 
+#: masters/forms.py:63
 msgid "Ism familiyangizni kiriting"
 msgstr "Введите имя и фамилию"
 
+#: masters/forms.py:64
 msgid "Kamida bitta yo'nalishni tanlang"
 msgstr "Выберите хотя бы одно направление"
 
+#: masters/forms.py:78
 msgid "Karta raqami 16 ta raqamdan iborat bo'lishi kerak"
 msgstr "Номер карты должен состоять из 16 цифр"
 
+#: masters/forms.py:84 repair_service/photos.py:35
 #, python-format
 msgid "Rasm hajmi %(mb)s MB dan oshmasligi kerak"
 msgstr "Размер фото не должен превышать %(mb)s МБ"
 
+#: masters/forms.py:98
 msgid ""
 "Joylashuvingizni aniqlang (\"Joylashuvimni aniqlash\" tugmasi) yoki tumanni "
 "tanlang"
@@ -138,78 +173,104 @@ msgstr ""
 "Определите местоположение (кнопка «Определить моё местоположение») или "
 "выберите район"
 
+#: masters/forms.py:101
 msgid "Joylashuv O'zbekiston hududidan tashqarida. Qaytadan aniqlang."
 msgstr "Местоположение за пределами Узбекистана. Определите заново."
 
+#: masters/forms.py:111 masters/forms.py:172 masters/forms.py:258
+#: templates/masters/register.html:20 templates/partials/otp_gate.html:10
 msgid "Telefon raqam"
 msgstr "Номер телефона"
 
+#: masters/forms.py:114 templates/masters/login.html:20
 msgid "Parol"
 msgstr "Пароль"
 
+#: masters/forms.py:115 masters/forms.py:260
 msgid "Parolni takrorlang"
 msgstr "Повторите пароль"
 
+#: masters/forms.py:117
 msgid ""
 "Shaxsiy ma'lumotlarim qayta ishlanishiga va saytda e'lon qilinishiga roziman"
 msgstr "Согласен на обработку персональных данных и их публикацию на сайте"
 
+#: masters/forms.py:118
 msgid "Davom etish uchun rozilik bering"
 msgstr "Чтобы продолжить, дайте согласие"
 
+#: masters/forms.py:131 masters/forms.py:270
 msgid "Telefon raqamni SMS kod bilan tasdiqlang"
 msgstr "Подтвердите номер телефона кодом из SMS"
 
+#: masters/forms.py:134
 msgid ""
 "Bu raqam bilan allaqachon ro'yxatdan o'tilgan. Kirish sahifasidan "
 "foydalaning."
 msgstr "Этот номер уже зарегистрирован. Воспользуйтесь страницей входа."
 
+#: masters/forms.py:141 masters/forms.py:280
 msgid "Parollar mos kelmadi"
 msgstr "Пароли не совпадают"
 
+#: masters/forms.py:177
 msgid "Telefon raqam yoki parol noto'g'ri."
 msgstr "Неверный номер телефона или пароль."
 
+#: masters/forms.py:178
 msgid "Bu akkaunt bloklangan."
 msgstr "Этот аккаунт заблокирован."
 
+#: masters/forms.py:202
 msgid "Usta haqida fikringiz (ixtiyoriy)"
 msgstr "Ваш отзыв о мастере (необязательно)"
 
+#: masters/forms.py:205 templates/partials/request_form.html:26
+#: templates/support/_chat.html:16
 msgid "Ismingiz"
 msgstr "Ваше имя"
 
+#: masters/forms.py:205 templates/orders/_photos.html:38
 msgid "Izoh"
 msgstr "Комментарий"
 
+#: masters/forms.py:205 masters/models.py:318
 msgid "Ish sifati"
 msgstr "Качество работы"
 
+#: masters/forms.py:206 masters/models.py:319
 msgid "O'z vaqtida kelishi"
 msgstr "Пунктуальность"
 
+#: masters/forms.py:206 masters/models.py:320
 msgid "Narx adolatliligi"
 msgstr "Справедливость цены"
 
+#: masters/forms.py:206 masters/models.py:321
 msgid "Muomala madaniyati"
 msgstr "Вежливость"
 
+#: masters/forms.py:209
 msgid "Baho qo'ying"
 msgstr "Поставьте оценку"
 
+#: masters/forms.py:231
 msgid "Ish narxi (so'm)"
 msgstr "Стоимость работы (сум)"
 
+#: masters/forms.py:233
 msgid "To'lov tartibi"
 msgstr "Порядок оплаты"
 
+#: masters/forms.py:234 templates/catalog.html:38
 msgid "Narxga nima kiradi"
 msgstr "Что входит в цену"
 
+#: masters/forms.py:235
 msgid "Masalan: nasos almashtirish, ehtiyot qism narxi bilan"
 msgstr "Например: замена насоса, с учётом стоимости запчасти"
 
+#: masters/forms.py:249
 #, python-format
 msgid ""
 "Narx katalogdagidan %(diff)s%% farq qiladi. Mijoz tushunishi uchun sababini "
@@ -218,92 +279,121 @@ msgstr ""
 "Цена отличается от каталожной на %(diff)s%%. Укажите причину, чтобы клиент "
 "понял (например: дополнительная запчасть, сложный доступ)."
 
+#: masters/forms.py:259
 msgid "Yangi parol"
 msgstr "Новый пароль"
 
+#: masters/forms.py:273
 msgid "Bu raqam bilan ro'yxatdan o'tilmagan"
 msgstr "Этот номер не зарегистрирован"
 
+#: masters/forms.py:296 templates/masters/work_schedule.html:18
 msgid "Ish kunlari"
 msgstr "Рабочие дни"
 
+#: masters/forms.py:297 masters/schedule.py:19
 msgid "Du"
 msgstr "Пн"
 
+#: masters/forms.py:297 masters/schedule.py:19
 msgid "Se"
 msgstr "Вт"
 
+#: masters/forms.py:297 masters/schedule.py:19
 msgid "Ch"
 msgstr "Ср"
 
+#: masters/forms.py:297 masters/schedule.py:19
 msgid "Pa"
 msgstr "Чт"
 
+#: masters/forms.py:297 masters/schedule.py:19
 msgid "Ju"
 msgstr "Пт"
 
+#: masters/forms.py:297 masters/schedule.py:19
 msgid "Sh"
 msgstr "Сб"
 
+#: masters/forms.py:297 masters/schedule.py:19
 msgid "Ya"
 msgstr "Вс"
 
+#: masters/forms.py:298
 msgid "Boshlanishi"
 msgstr "Начало"
 
+#: masters/forms.py:299
 msgid "Tugashi"
 msgstr "Конец"
 
+#: masters/forms.py:305
 msgid ""
 "Boshlanish va tugash vaqtini birga kiriting (yoki ikkalasini bo'sh "
 "qoldiring)."
 msgstr "Укажите время начала и окончания вместе (или оставьте оба пустыми)."
 
+#: masters/forms.py:307
 msgid "Ish tugash vaqti boshlanishidan keyin bo'lishi kerak."
 msgstr "Время окончания должно быть позже начала."
 
+#: masters/forms.py:312
 msgid "Qachondan"
 msgstr "С"
 
+#: masters/forms.py:313
 msgid "Qachongacha"
 msgstr "По"
 
+#: masters/forms.py:314 templates/orders/_photos.html:38
 msgid "Izoh (ixtiyoriy)"
 msgstr "Подпись (необязательно)"
 
+#: masters/forms.py:324
 msgid "Tugash sanasi boshlanishidan oldin bo'lmasligi kerak."
 msgstr "Дата окончания не может быть раньше начала."
 
+#: masters/forms.py:326
 msgid "O'tgan sanani belgilab bo'lmaydi."
 msgstr "Нельзя указать прошедшую дату."
 
+#: masters/forms.py:328
 msgid "Bir martada ko'pi bilan 90 kun."
 msgstr "Не более 90 дней за раз."
 
+#: masters/locations.py:135
 msgid "Toshkent shahri"
 msgstr "Город Ташкент"
 
+#: masters/models.py:95
 msgid "Yuklanmagan"
 msgstr "Не загружены"
 
+#: masters/models.py:96 templates/masters/documents.html:19
 msgid "Tekshirilmoqda"
 msgstr "На проверке"
 
+#: masters/models.py:97 templates/masters/dashboard.html:15
 msgid "Tasdiqlangan"
 msgstr "Подтверждён"
 
+#: masters/models.py:98 payments/models.py:20
 msgid "Rad etilgan"
 msgstr "Отклонено"
 
+#: masters/models.py:295
 msgid "Pasport yoki ID-karta (rasmli sahifa)"
 msgstr "Паспорт или ID-карта (страница с фото)"
 
+#: masters/models.py:296
 msgid "Hujjat bilan selfi"
 msgstr "Селфи с документом"
 
+#: masters/models.py:297
 msgid "Malaka sertifikati yoki diplom"
 msgstr "Сертификат о квалификации или диплом"
 
+#: masters/onboarding.py:30
 #, python-format
 msgid ""
 "Tabriklaymiz, profilingiz tasdiqlandi! Sizga %(days)s kun bepul TOP — "
@@ -312,27 +402,37 @@ msgstr ""
 "Поздравляем, ваш профиль подтверждён! Вам %(days)s дней ТОП бесплатно — вы в"
 " первых строках поиска. Кабинет: %(url)s"
 
+#: masters/onboarding.py:49
 msgid "Profil rasmi"
 msgstr "Фото профиля"
 
+#: masters/onboarding.py:50
 msgid "O'zingiz haqingizda (tajriba, ixtisos)"
 msgstr "О себе (опыт, специализация)"
 
+#: masters/onboarding.py:51
 msgid "Hujjatlar tasdiqlangan"
 msgstr "Документы подтверждены"
 
+#: masters/onboarding.py:52
 msgid "Pul olish uchun karta"
 msgstr "Карта для выплат"
 
+#: masters/onboarding.py:54
 msgid "Telegram yoki bildirishnomalar — buyurtmani darhol bilish uchun"
 msgstr "Telegram или уведомления — чтобы сразу узнавать о заказах"
 
+#: masters/onboarding.py:55 templates/masters/dashboard.html:27
+#: templates/masters/detail.html:40 templates/masters/work_schedule.html:3
+#: templates/masters/work_schedule.html:11
 msgid "Ish vaqti"
 msgstr "Время работы"
 
+#: masters/onboarding.py:56 templates/masters/dashboard.html:45
 msgid "Boshlang'ich kurs"
 msgstr "Вводный курс"
 
+#: masters/reliability.py:112
 msgid ""
 "Buyurtmani faqat albatta bora olsangiz qabul qiling — voz kechish ballni "
 "ko'p tushiradi."
@@ -340,6 +440,7 @@ msgstr ""
 "Принимайте заказ, только если точно сможете приехать, — отказ сильно снижает"
 " балл."
 
+#: masters/reliability.py:114
 msgid ""
 "Kelish vaqtini real belgilang; kechiksangiz, mijozga yozib vaqtni "
 "o'zgartiring."
@@ -347,12 +448,14 @@ msgstr ""
 "Назначайте реальное время приезда; если опаздываете, напишите клиенту и "
 "измените время."
 
+#: masters/reliability.py:116
 msgid ""
 "Yangi buyurtmaga tezroq javob bering — Telegram yoki bildirishnomalarni "
 "yoqing."
 msgstr ""
 "Отвечайте на новые заказы быстрее — включите Telegram или уведомления."
 
+#: masters/reliability.py:118
 msgid ""
 "Narx va ish hajmini oldindan aniq kelishing, ishdan oldin va keyin rasmga "
 "oling."
@@ -360,57 +463,72 @@ msgstr ""
 "Заранее точно согласуйте цену и объём работ, фотографируйте до и после "
 "работы."
 
+#: masters/schedule.py:63
 msgid "Har kuni"
 msgstr "Ежедневно"
 
+#: masters/schedule.py:76
 msgid "Dam olishda"
 msgstr "В отпуске"
 
+#: masters/schedule.py:81
 msgid "Hozir ishlamaydi"
 msgstr "Сейчас не работает"
 
+#: masters/schedule.py:85
 #, python-format
 msgid "ertaga %(t)s"
 msgstr "завтра %(t)s"
 
+#: masters/schedule.py:88
 #, python-format
 msgid "Hozir ishlamaydi — %(when)s dan"
 msgstr "Сейчас не работает — с %(when)s"
 
+#: masters/schedule.py:96
 msgid "Bu kun dam olish kuningiz sifatida belgilangan."
 msgstr "Этот день отмечен как ваш выходной."
 
+#: masters/schedule.py:97
 msgid "Bu vaqt ish jadvalingizdan tashqarida."
 msgstr "Это время вне вашего графика работы."
 
+#: masters/seo.py:55
 #, python-format
 msgid "%(name)s shahri"
 msgstr "город %(name)s"
 
+#: masters/seo.py:55
 #, python-format
 msgid "%(name)s tumani"
 msgstr "район %(name)s"
 
+#: masters/seo.py:56
 #, python-format
 msgid "%(name)s shahrida"
 msgstr "в городе %(name)s"
 
+#: masters/seo.py:56
 #, python-format
 msgid "%(name)s tumanida"
 msgstr "в районе %(name)s"
 
+#: masters/seo.py:58
 #, python-format
 msgid "%(category)s %(place)s: %(n)s ta usta, baholar va narxlar"
 msgstr "%(category)s %(place)s: мастеров — %(n)s, отзывы и цены"
 
+#: masters/seo.py:62
 #, python-format
 msgid "%(category)s: tekshirilgan ustalar"
 msgstr "%(category)s: проверенные мастера"
 
+#: masters/seo.py:63
 #, python-format
 msgid "%(category)s: %(n)s ta tekshirilgan usta, baholar va narxlar"
 msgstr "%(category)s: проверенных мастеров — %(n)s, отзывы и цены"
 
+#: masters/seo.py:65 templates/masters/list.html:17
 #, python-format
 msgid "%(n)s ta tekshirilgan usta"
 msgid_plural "%(n)s ta tekshirilgan usta"
@@ -418,23 +536,31 @@ msgstr[0] "%(n)s проверенный мастер"
 msgstr[1] "%(n)s проверенных мастера"
 msgstr[2] "%(n)s проверенных мастеров"
 
+#: masters/seo.py:67
 #, python-format
 msgid "o'rtacha baho %(avg)s (%(reviews)s ta baho)"
 msgstr "средняя оценка %(avg)s (отзывов: %(reviews)s)"
 
+#: masters/seo.py:69
 #, python-format
 msgid "narxlar %(price)s so'mdan"
 msgstr "цены от %(price)s сум"
 
+#: masters/seo.py:70
 msgid "Ariza bepul, pul ish bajarilgach ustaga o'tadi."
 msgstr "Заявка бесплатна, деньги переходят мастеру после выполнения работы."
 
+#: masters/seo.py:72 templates/orders/unsubscribe.html:19
+#: templates/result.html:15
 msgid "Bosh sahifa"
 msgstr "Главная"
 
+#: masters/seo.py:72 templates/base.html:49 templates/masters/list.html:4
+#: templates/masters/list.html:15
 msgid "Ustalar"
 msgstr "Мастера"
 
+#: masters/templates/masters/widgets/stars.html:4
 #, python-format
 msgid "%(n)s yulduz"
 msgid_plural "%(n)s yulduz"
@@ -442,17 +568,21 @@ msgstr[0] "%(n)s звезда"
 msgstr[1] "%(n)s звезды"
 msgstr[2] "%(n)s звёзд"
 
+#: masters/templatetags/ui.py:114
 #, python-format
 msgid "~%(n)s daqiqa"
 msgstr "~%(n)s мин"
 
+#: masters/templatetags/ui.py:117
 #, python-format
 msgid "~%(n)s soat"
 msgstr "~%(n)s ч"
 
+#: masters/views.py:60
 msgid "Joriy joylashuvingiz"
 msgstr "Ваше текущее местоположение"
 
+#: masters/views.py:214
 msgid ""
 "Ro'yxatdan o'tdingiz! Profilingiz administrator tekshiruvidan so'ng saytda "
 "ko'rinadi."
@@ -460,206 +590,270 @@ msgstr ""
 "Вы зарегистрированы! Профиль появится на сайте после проверки "
 "администратором."
 
+#: masters/views.py:226
 msgid "Parol yangilandi."
 msgstr "Пароль обновлён."
 
+#: masters/views.py:251
 msgid "Kabinetdan foydalanish uchun usta sifatida ro'yxatdan o'ting."
 msgstr "Чтобы пользоваться кабинетом, зарегистрируйтесь как мастер."
 
+#: masters/views.py:286 templates/masters/dashboard.html:71
 msgid "Yangi"
 msgstr "Новые"
 
+#: masters/views.py:286 templates/masters/dashboard.html:59
 msgid "Jarayonda"
 msgstr "В работе"
 
+#: masters/views.py:286 templates/masters/dashboard.html:60
 msgid "Bajarilgan"
 msgstr "Выполненные"
 
+#: masters/views.py:287
 msgid "Bekor / nizo"
 msgstr "Отменённые / споры"
 
+#: masters/views.py:334
 msgid "Buyurtma sizniki! Mijoz bilan bog'laning va kelish vaqtini kelishing."
 msgstr "Заказ ваш! Свяжитесь с клиентом и договоритесь о времени приезда."
 
+#: masters/views.py:344
 msgid "Profil saqlandi."
 msgstr "Профиль сохранён."
 
+#: masters/views.py:376
 msgid "Kurs tugadi — rahmat! Endi siz platforma qoidalarini bilasiz."
 msgstr "Курс пройден — спасибо! Теперь вы знаете правила платформы."
 
+#: masters/views.py:397
 msgid "Dam olish kuni o'chirildi."
 msgstr "Выходной удалён."
 
+#: masters/views.py:403
 msgid "Dam olish kunlari saqlandi — bu kunlarda qidiruvda ko'rinmaysiz."
 msgstr "Выходные сохранены — в эти дни вас не будет в поиске."
 
+#: masters/views.py:412
 msgid "Ish jadvali saqlandi."
 msgstr "График работы сохранён."
 
+#: masters/views.py:432
 msgid "Hujjatlar yuborildi. Administrator 1 ish kuni ichida tekshiradi."
 msgstr ""
 "Документы отправлены. Администратор проверит их в течение 1 рабочего дня."
 
+#: masters/views.py:450
 msgid "Endi siz buyurtma qabul qilasiz."
 msgstr "Теперь вы принимаете заказы."
 
+#: masters/views.py:451
 msgid "Siz qidiruvdan vaqtincha yashirildingiz. Yangi buyurtmalar kelmaydi."
 msgstr "Вы временно скрыты из поиска. Новые заказы не поступят."
 
+#: masters/views.py:526
 msgid "Kelish vaqti saqlandi — mijozga xabar yuborildi."
 msgstr "Время приезда сохранено — клиенту отправлено уведомление."
 
+#: masters/views.py:528
 #, python-format
 msgid "Diqqat: shu vaqtga yaqin boshqa buyurtmangiz bor (#%(id)s)."
 msgstr "Внимание: на близкое время у вас есть другой заказ (#%(id)s)."
 
+#: masters/views.py:545
 msgid "Mijozga xabar yuborildi — u natijani tasdiqlaydi."
 msgstr "Клиенту отправлено уведомление — он подтвердит результат."
 
+#: masters/views.py:560
 msgid "Buyurtmadan voz kechdingiz. U boshqa ustalarga taklif qilinadi."
 msgstr "Вы отказались от заказа. Он будет предложен другим мастерам."
 
+#: masters/views.py:563
 msgid ""
 "Ish bajarildi deb belgilandi. Mijoz natijani tasdiqlashi va baholashi kerak."
 msgstr ""
 "Работа отмечена как выполненная. Клиент должен подтвердить результат и "
 "оставить оценку."
 
+#: masters/views.py:565
 #, python-format
 msgid "Buyurtma #%(id)s: %(status)s"
 msgstr "Заказ #%(id)s: %(status)s"
 
+#: masters/views.py:585
 msgid "Narx taklifi mijozga yuborildi."
 msgstr "Предложение цены отправлено клиенту."
 
+#: masters/views.py:607 repair_service/order_views.py:443
 msgid "Rasm o'chirildi."
 msgstr "Фото удалено."
 
+#: otp/services.py:45
 #, python-format
 msgid "Kodni qayta yuborish uchun %(sec)s soniya kuting"
 msgstr "Повторная отправка кода возможна через %(sec)s с"
 
+#: otp/services.py:47
 msgid "Bu raqamga juda ko'p kod yuborildi. Bir soatdan keyin urinib ko'ring."
 msgstr "На этот номер отправлено слишком много кодов. Попробуйте через час."
 
+#: otp/services.py:49
 msgid "Juda ko'p so'rov. Keyinroq urinib ko'ring."
 msgstr "Слишком много запросов. Попробуйте позже."
 
+#: otp/services.py:59
 #, python-format
 msgid "%(site)s: tasdiqlash kodi %(code)s. Hech kimga aytmang."
 msgstr "%(site)s: код подтверждения %(code)s. Никому не сообщайте."
 
+#: otp/services.py:70
 msgid "Kod muddati o'tgan yoki yuborilmagan. Yangi kod oling."
 msgstr "Срок действия кода истёк или код не отправлялся. Запросите новый."
 
+#: otp/services.py:72 otp/services.py:77
 msgid "Urinishlar soni tugadi. Yangi kod oling."
 msgstr "Попытки исчерпаны. Запросите новый код."
 
+#: otp/services.py:85
 #, python-format
 msgid "Kod noto'g'ri. Qolgan urinishlar: %(n)s"
 msgstr "Неверный код. Осталось попыток: %(n)s"
 
+#: payments/models.py:18
 msgid "Mijoz javobini kutmoqda"
 msgstr "Ожидает ответа клиента"
 
+#: payments/models.py:19
 msgid "Kelishilgan"
 msgstr "Согласовано"
 
+#: payments/models.py:59
 msgid "To'lanmagan"
 msgstr "Не оплачено"
 
+#: payments/models.py:60 templates/orders/_money.html:8
 msgid "Ushlab turilibdi"
 msgstr "Удерживается"
 
+#: payments/models.py:61
 msgid "Ustaga chiqarildi"
 msgstr "Выплачено мастеру"
 
+#: payments/models.py:62
 msgid "Qaytarildi"
 msgstr "Возвращено"
 
+#: payments/models.py:141
 msgid "Foiz"
 msgstr "Процент"
 
+#: payments/models.py:141
 msgid "Qat'iy summa"
 msgstr "Фиксированная сумма"
 
+#: payments/models.py:143
 msgid "Aksiya"
 msgstr "Акция"
 
+#: payments/models.py:143
 msgid "Referal (do'stga)"
 msgstr "Реферальный (для друга)"
 
+#: payments/models.py:144
 msgid "Referal mukofoti"
 msgstr "Реферальная награда"
 
+#: payments/models.py:245
 msgid "To'lov kutilmoqda"
 msgstr "Ожидает оплаты"
 
+#: payments/models.py:246 templates/business/invoice.html:6
 msgid "To'langan"
 msgstr "Оплачено"
 
+#: payments/models.py:247
 msgid "Bekor qilingan"
 msgstr "Отменено"
 
+#: payments/payouts.py:166
 #, python-format
 msgid "%(amount)s so'm kartangizga (•••• %(card)s) o'tkazildi. Rahmat!"
 msgstr "%(amount)s сум переведено на вашу карту (•••• %(card)s). Спасибо!"
 
+#: payments/plans.py:21
 msgid "To'liq summa — tasdiqlangandan keyin"
 msgstr "Полная сумма — после подтверждения"
 
+#: payments/plans.py:24
 msgid "Avans (materiallar uchun) — ish boshlanganda"
 msgstr "Аванс (на материалы) — при начале работ"
 
+#: payments/plans.py:25
 msgid "Qolgan qism — tasdiqlangandan keyin"
 msgstr "Остаток — после подтверждения"
 
+#: payments/plans.py:28
 msgid "1-qism — ish boshlanganda"
 msgstr "1-я часть — при начале работ"
 
+#: payments/plans.py:29
 msgid "2-qism — ish bajarilganda"
 msgstr "2-я часть — после выполнения"
 
+#: payments/plans.py:30
 msgid "3-qism — tasdiqlangandan keyin"
 msgstr "3-я часть — после подтверждения"
 
+#: payments/plans.py:36
 msgid "Ish yakunida to'liq (pul oldindan platformada ushlab turiladi)"
 msgstr "Полностью по завершении (деньги заранее удерживаются на платформе)"
 
+#: payments/plans.py:37
 msgid "30% avans + 70% yakunda"
 msgstr "Аванс 30% + 70% по завершении"
 
+#: payments/plans.py:38
 msgid "3 teng qism: boshlanganda / bajarilganda / tasdiqlanganda"
 msgstr "3 равные части: при начале / после выполнения / после подтверждения"
 
+#: payments/plans.py:39
 msgid "Naqd yoki to'g'ridan-to'g'ri ustaga (platforma kafolatisiz)"
 msgstr "Наличными или напрямую мастеру (без гарантии платформы)"
 
+#: payments/promos.py:59
 msgid "Promo-kodni kiriting."
 msgstr "Введите промокод."
 
+#: payments/promos.py:63
 msgid "Promo-kod topilmadi yoki muddati tugagan."
 msgstr "Промокод не найден или срок его действия истёк."
 
+#: payments/promos.py:65
 msgid "O'z taklif kodingizni ishlata olmaysiz — uni do'stlaringizga bering."
 msgstr ""
 "Нельзя использовать собственный код приглашения — отправьте его друзьям."
 
+#: payments/promos.py:67
 msgid "Bu kod boshqa raqam uchun berilgan."
 msgstr "Этот код выдан для другого номера."
 
+#: payments/promos.py:72
 msgid "Bu promo-kodning limiti tugagan."
 msgstr "Лимит этого промокода исчерпан."
 
+#: payments/promos.py:74
 msgid "Bu promo-kodni allaqachon ishlatgansiz."
 msgstr "Вы уже использовали этот промокод."
 
+#: payments/promos.py:81
 msgid "Bu promo-kod faqat birinchi buyurtma uchun."
 msgstr "Этот промокод действует только на первый заказ."
 
+#: payments/promos.py:113
 msgid "Promo-kodni faqat birinchi to'lovgacha qo'shish mumkin."
 msgstr "Промокод можно добавить только до первой оплаты."
 
+#: payments/promos.py:203
 #, python-format
 msgid ""
 "Do'stingiz siz bergan kod bilan buyurtma qildi. Rahmat! Keyingi "
@@ -668,6 +862,7 @@ msgstr ""
 "Ваш друг сделал заказ по вашему коду. Спасибо! Скидка %(p)s%% на следующий "
 "заказ: %(code)s (действует %(days)s дней)."
 
+#: payments/promos.py:238
 #, python-format
 msgid ""
 "Siz taklif qilgan usta %(name)s birinchi buyurtmasini bajardi. Sizga "
@@ -676,6 +871,7 @@ msgstr ""
 "Приглашённый вами мастер %(name)s выполнил первый заказ. Вам %(days)s дней "
 "ТОП бесплатно!"
 
+#: payments/refunds.py:140
 #, python-format
 msgid ""
 "%(amount)s so'm qaytarildi (#%(id)s buyurtma). Pul kartangizga to'lov tizimi"
@@ -684,51 +880,74 @@ msgstr ""
 "%(amount)s сум возвращено (заказ #%(id)s). Деньги поступят на карту в сроки "
 "платёжной системы. %(url)s"
 
+#: payments/services.py:63 payments/services.py:69
 msgid "Narxni hozir o'zgartirib bo'lmaydi"
 msgstr "Сейчас цену изменить нельзя"
 
+#: payments/services.py:65
 msgid "Summa musbat bo'lishi kerak"
 msgstr "Сумма должна быть положительной"
 
+#: payments/services.py:84 payments/services.py:108
 msgid "Bu taklif allaqachon ko'rib chiqilgan"
 msgstr "Это предложение уже рассмотрено"
 
+#: payments/services.py:86
+msgid "Usta narxni o'zgartirdi — yangi taklif bilan tanishib chiqing"
+msgstr "Мастер изменил цену — ознакомьтесь с новым предложением"
+
+#: payments/services.py:88
+msgid "Bu buyurtma bo'yicha to'lovlar bor — administratorga murojaat qiling"
+msgstr "По этому заказу уже есть платежи — обратитесь к администратору"
+
+#: payments/services.py:155
 msgid "Bu bosqich mablag'ini hozir chiqarib bo'lmaydi"
 msgstr "Сейчас нельзя выплатить средства этого этапа"
 
+#: payments/services.py:167
 msgid "Faqat ushlab turilgan mablag' qaytariladi"
 msgstr "Вернуть можно только удерживаемые средства"
 
+#: payments/tariffs.py:23
 msgid "TOP — 7 kun"
 msgstr "ТОП — 7 дней"
 
+#: payments/tariffs.py:24
 msgid "TOP — 30 kun"
 msgstr "ТОП — 30 дней"
 
+#: payments/tariffs.py:25
 msgid "PRO — 30 kun"
 msgstr "PRO — 30 дней"
 
+#: payments/views.py:40
 msgid ""
 "To'lov qabul qilindi. Mablag' bosqich bajarilguncha platformada ushlab "
 "turiladi."
 msgstr "Оплата принята. Деньги удерживаются на платформе до выполнения этапа."
 
+#: payments/views.py:91
 msgid "Tarif faollashtirildi."
 msgstr "Тариф активирован."
 
+#: repair_service/chat.py:80 repair_service/support.py:52
 msgid "Xabar matnini yozing."
 msgstr "Введите текст сообщения."
 
+#: repair_service/chat.py:82 repair_service/support.py:54
 #, python-format
 msgid "Xabar %(n)s belgidan oshmasligi kerak."
 msgstr "Сообщение не должно превышать %(n)s символов."
 
+#: repair_service/chat.py:84
 msgid "Bu buyurtmada yozishma yopilgan."
 msgstr "Переписка по этому заказу закрыта."
 
+#: repair_service/chat.py:92 repair_service/support.py:60
 msgid "Juda ko'p xabar. Bir daqiqadan keyin urinib ko'ring."
 msgstr "Слишком много сообщений. Попробуйте через минуту."
 
+#: repair_service/chat.py:112
 #, python-format
 msgid ""
 "Usta yozdi: «%(text)s»\n"
@@ -737,48 +956,62 @@ msgstr ""
 "Мастер написал: «%(text)s»\n"
 "%(url)s"
 
+#: repair_service/chat.py:113
 #, python-format
 msgid "Usta sizga xabar yozdi. O'qish: %(url)s"
 msgstr "Мастер написал вам сообщение. Прочитать: %(url)s"
 
+#: repair_service/chat.py:118
 #, python-format
 msgid "#%(id)s — mijoz yozdi: «%(text)s»"
 msgstr "#%(id)s — клиент написал: «%(text)s»"
 
+#: repair_service/chat.py:119
 #, python-format
 msgid "#%(id)s buyurtma bo'yicha mijoz xabar yozdi. O'qish: %(url)s"
 msgstr "Клиент написал сообщение по заказу #%(id)s. Прочитать: %(url)s"
 
+#: repair_service/context_processors.py:13
 msgid "Qayta yuborish"
 msgstr "Отправить повторно"
 
+#: repair_service/context_processors.py:14
 msgid "Sinov rejimi, kod:"
 msgstr "Тестовый режим, код:"
 
+#: repair_service/context_processors.py:15
 msgid "Tarmoq xatosi. Qaytadan urinib ko'ring."
 msgstr "Ошибка сети. Попробуйте ещё раз."
 
+#: repair_service/context_processors.py:16
 msgid "Formadagi xatolarni to'g'rilang"
 msgstr "Исправьте ошибки в форме"
 
+#: repair_service/context_processors.py:17
 msgid "Xatolik yuz berdi. Keyinroq urinib ko'ring."
 msgstr "Произошла ошибка. Попробуйте позже."
 
+#: repair_service/context_processors.py:18
 msgid "Havola nusxalandi"
 msgstr "Ссылка скопирована"
 
+#: repair_service/context_processors.py:19
 msgid "Aniqlanmoqda…"
 msgstr "Определяем…"
 
+#: repair_service/context_processors.py:20
 msgid "✓ Joylashuv aniqlandi"
 msgstr "✓ Местоположение определено"
 
+#: repair_service/context_processors.py:21
 msgid "Brauzeringiz joylashuvni aniqlay olmaydi. Tumanni tanlang."
 msgstr "Браузер не умеет определять местоположение. Выберите район."
 
+#: repair_service/context_processors.py:22
 msgid "Joylashuv faqat HTTPS orqali ishlaydi. Hozircha tumanni tanlang."
 msgstr "Геолокация работает только по HTTPS. Пока выберите район."
 
+#: repair_service/context_processors.py:23
 msgid ""
 "Joylashuvga ruxsat berilmadi. Brauzer sozlamalaridan ruxsat bering yoki "
 "tumanni tanlang."
@@ -786,31 +1019,40 @@ msgstr ""
 "Доступ к местоположению запрещён. Разрешите его в настройках браузера или "
 "выберите район."
 
+#: repair_service/context_processors.py:24
 msgid "Joylashuvni aniqlab bo'lmadi. Tumanni tanlang."
 msgstr "Не удалось определить местоположение. Выберите район."
 
+#: repair_service/context_processors.py:25
 msgid "✓ Joylashuv xaritada belgilandi"
 msgstr "✓ Местоположение отмечено на карте"
 
+#: repair_service/context_processors.py:26
 msgid "baho"
 msgstr "оценок"
 
+#: repair_service/context_processors.py:27
 msgid "Profilni ochish →"
 msgstr "Открыть профиль →"
 
+#: repair_service/context_processors.py:28
 msgid "Siz"
 msgstr "Вы"
 
+#: repair_service/context_processors.py:29
 msgid "🔔 Bildirishnomalar yoqilgan"
 msgstr "🔔 Уведомления включены"
 
+#: repair_service/context_processors.py:30
 msgid "🔔 Bildirishnomalarni yoqish"
 msgstr "🔔 Включить уведомления"
 
+#: repair_service/context_processors.py:31
 msgid ""
 "Brauzerda bildirishnomalar taqiqlangan. Sayt sozlamalaridan ruxsat bering."
 msgstr "Уведомления запрещены в браузере. Разрешите их в настройках сайта."
 
+#: repair_service/context_processors.py:32
 msgid ""
 "iPhone'da bildirishnoma uchun avval saytni «Ulashish → Bosh ekranga "
 "qo'shish» orqali o'rnating."
@@ -818,67 +1060,100 @@ msgstr ""
 "На iPhone для уведомлений сначала установите сайт: «Поделиться → На экран "
 "«Домой»»."
 
+#: repair_service/customer_notify.py:42 telegram_bot/handlers.py:86
+#: telegram_bot/handlers.py:135
 msgid "Buyurtmani ochish"
 msgstr "Открыть заказ"
 
+#: repair_service/customer_notify.py:62
 #, python-format
 msgid "Buyurtmangiz #%(id)s qabul qilindi. Holatini kuzating: %(url)s"
 msgstr "Ваш заказ #%(id)s принят. Следите за статусом: %(url)s"
 
+#: repair_service/customer_notify.py:75
 #, python-format
 msgid "Yangi buyurtma #%(id)s: %(name)s. Kabinet: %(url)s"
 msgstr "Новый заказ #%(id)s: %(name)s. Кабинет: %(url)s"
 
+#: repair_service/customer_notify.py:86
 #, python-format
 msgid "Usta %(master)s buyurtmangizni qabul qildi. Tel: %(phone)s. %(url)s"
 msgstr "Мастер %(master)s принял ваш заказ. Тел.: %(phone)s. %(url)s"
 
+#: repair_service/customer_notify.py:87
 #, python-format
 msgid "Usta %(master)s yetib keldi. %(url)s"
 msgstr "Мастер %(master)s на месте. %(url)s"
 
+#: repair_service/customer_notify.py:88
 #, python-format
 msgid "Usta ishni yakunladi. Natijani tasdiqlang va baholang: %(url)s"
 msgstr "Мастер завершил работу. Подтвердите результат и оцените: %(url)s"
 
+#: repair_service/customer_notify.py:89
 #, python-format
 msgid "Usta buyurtmadan voz kechdi. Boshqa usta qidiryapmiz: %(url)s"
 msgstr "Мастер отказался от заказа. Ищем другого мастера: %(url)s"
 
+#: repair_service/customer_notify.py:102
 #, python-format
 msgid "Mijoz #%(id)s buyurtmani tasdiqladi."
 msgstr "Клиент подтвердил заказ #%(id)s."
 
+#: repair_service/customer_notify.py:103
 #, python-format
 msgid "Mijoz #%(id)s buyurtmani bekor qildi."
 msgstr "Клиент отменил заказ #%(id)s."
 
+#: repair_service/customer_notify.py:104
 #, python-format
 msgid "Mijoz #%(id)s buyurtma bo'yicha nizo ochdi. Administrator bog'lanadi."
 msgstr "Клиент открыл спор по заказу #%(id)s. С вами свяжется администратор."
 
+#: repair_service/customer_notify.py:113
+#, python-format
+msgid ""
+"Buyurtma avtomatik tasdiqlandi, mablag' ustaga o'tkazildi. Muammo bo'lsa "
+"kafolat orqali murojaat qiling: %(url)s"
+msgstr ""
+"Заказ подтверждён автоматически, средства переданы мастеру. Если есть "
+"проблема — обратитесь по гарантии: %(url)s"
+
+#: repair_service/customer_notify.py:117
+#, python-format
+msgid "#%(id)s buyurtma avtomatik tasdiqlandi."
+msgstr "Заказ #%(id)s подтверждён автоматически."
+
+#: repair_service/customer_notify.py:123
 #, python-format
 msgid "Usta narx taklif qildi: %(amount)s so'm. Ko'rib chiqing: %(url)s"
 msgstr "Мастер предложил цену: %(amount)s сум. Посмотрите: %(url)s"
 
+#: repair_service/customer_notify.py:143
 msgid "✋ Olish"
 msgstr "✋ Взять"
 
+#: repair_service/customer_notify.py:144 templates/masters/dashboard.html:23
+#: templates/masters/feed.html:4 templates/masters/feed.html:13
 msgid "Ochiq buyurtmalar"
 msgstr "Открытые заказы"
 
+#: repair_service/disputes.py:85
 #, python-format
 msgid "Nizo hal qilindi: ustaga %(r)s so'm, mijozga %(f)s so'm. %(note)s"
 msgstr "Спор решён: мастеру %(r)s сум, клиенту %(f)s сум. %(note)s"
 
+#: repair_service/disputes.py:106
 #, python-format
 msgid "Nizo yopildi, ish davom etadi. %(note)s"
 msgstr "Спор закрыт, работа продолжается. %(note)s"
 
+#: repair_service/disputes.py:120
 #, python-format
 msgid "Nizo yopildi, ish davom etadi. Administrator: %(note)s %(url)s"
 msgstr "Спор закрыт, работа продолжается. Администратор: %(note)s %(url)s"
 
+#: repair_service/disputes.py:122
 #, python-format
 msgid ""
 "Nizo hal qilindi: %(amount)s so'm sizga qaytariladi. Administrator: %(note)s"
@@ -887,16 +1162,19 @@ msgstr ""
 "Спор решён: вам будет возвращено %(amount)s сум. Администратор: %(note)s "
 "%(url)s"
 
+#: repair_service/disputes.py:124
 #, python-format
 msgid "Nizo hal qilindi. Administrator: %(note)s %(url)s"
 msgstr "Спор решён. Администратор: %(note)s %(url)s"
 
+#: repair_service/disputes.py:129
 #, python-format
 msgid ""
 "#%(id)s bo'yicha nizo yopildi, ishni davom ettiring. Administrator: %(note)s"
 msgstr ""
 "Спор по заказу #%(id)s закрыт, продолжайте работу. Администратор: %(note)s"
 
+#: repair_service/disputes.py:131
 #, python-format
 msgid ""
 "#%(id)s bo'yicha nizo hal qilindi: sizga %(amount)s so'm. Administrator: "
@@ -904,161 +1182,219 @@ msgid ""
 msgstr ""
 "Спор по заказу #%(id)s решён: вам %(amount)s сум. Администратор: %(note)s"
 
+#: repair_service/forms.py:36
 msgid "Shaxsiy ma'lumotlarni qayta ishlashga rozilik bering"
 msgstr "Дайте согласие на обработку персональных данных"
 
+#: repair_service/forms.py:45
 msgid "Ismingizni kiriting"
 msgstr "Введите ваше имя"
 
+#: repair_service/forms.py:46
 msgid "Telefon raqamni kiriting"
 msgstr "Введите номер телефона"
 
+#: repair_service/forms.py:55
 msgid "Bu usta hozir buyurtma qabul qilmaydi"
 msgstr "Этот мастер сейчас не принимает заказы"
 
+#: repair_service/forms.py:70
 msgid "Ism kamida 2 ta belgidan iborat bo'lishi kerak"
 msgstr "Имя должно содержать не менее 2 символов"
 
+#: repair_service/forms.py:81
 msgid "Spam aniqlandi"
 msgstr "Обнаружен спам"
 
+#: repair_service/forms.py:94
 msgid "Kunni bugundan boshlab 30 kun ichida tanlang"
 msgstr "Выберите день в пределах 30 дней, начиная с сегодня"
 
+#: repair_service/forms.py:101
 msgid "STIR 9 ta raqamdan iborat bo'lishi kerak"
 msgstr "ИНН должен состоять из 9 цифр"
 
+#: repair_service/forms.py:110
 msgid "Miqdor 1 dan 999 gacha bo'lishi kerak"
 msgstr "Количество должно быть от 1 до 999"
 
+#: repair_service/forms.py:120
 msgid "Bu usta tanlangan xizmatni bajarmaydi. Boshqa ustani tanlang."
 msgstr "Этот мастер не выполняет выбранную услугу. Выберите другого мастера."
 
+#: repair_service/forms.py:130
 msgid "Tashkilot nomini kiriting"
 msgstr "Укажите название организации"
 
+#: repair_service/forms.py:132
 msgid "Tashkilot STIR raqamini kiriting"
 msgstr "Укажите ИНН организации"
 
+#: repair_service/forms.py:141
 msgid "Bu usta hozir buyurtma qabul qilmayapti. Boshqa ustani tanlang."
 msgstr "Этот мастер сейчас не принимает заказы. Выберите другого мастера."
 
+#: repair_service/marketing.py:87
 #, python-format
 msgid "Promo-kod: %(code)s"
 msgstr "Промокод: %(code)s"
 
+#: repair_service/marketing.py:91
 #, python-format
 msgid "Obunani bekor qilish: %(url)s"
 msgstr "Отписаться: %(url)s"
 
+#: repair_service/models.py:24
 msgid "Yaratildi"
 msgstr "Создан"
 
+#: repair_service/models.py:25 repair_service/workflow.py:33
 msgid "Qabul qilindi"
 msgstr "Принят"
 
+#: repair_service/models.py:26 repair_service/workflow.py:35
 msgid "Joyida"
 msgstr "На месте"
 
+#: repair_service/models.py:27 repair_service/workflow.py:37
 msgid "Ishda"
 msgstr "В работе"
 
+#: repair_service/models.py:28 repair_service/workflow.py:39
 msgid "Bajarildi"
 msgstr "Выполнен"
 
+#: repair_service/models.py:29 repair_service/workflow.py:41
 msgid "Tasdiqlandi"
 msgstr "Подтверждён"
 
+#: repair_service/models.py:30
 msgid "Bekor qilindi"
 msgstr "Отменён"
 
+#: repair_service/models.py:31
 msgid "Nizo"
 msgstr "Спор"
 
+#: repair_service/models.py:73
 msgid "Ertalab 08:00–12:00"
 msgstr "Утром 08:00–12:00"
 
+#: repair_service/models.py:74
 msgid "Kunduzi 12:00–16:00"
 msgstr "Днём 12:00–16:00"
 
+#: repair_service/models.py:75
 msgid "Kechqurun 16:00–20:00"
 msgstr "Вечером 16:00–20:00"
 
+#: repair_service/models.py:76
 msgid "Kech 20:00–22:00"
 msgstr "Поздно 20:00–22:00"
 
+#: repair_service/models.py:172 templates/business/act.html:8
+#: templates/business/act.html:21 templates/index.html:95
+#: templates/partials/order_timeline.html:10
 msgid "Buyurtmachi"
 msgstr "Заказчик"
 
+#: repair_service/models.py:173 templates/index.html:96
+#: templates/index.html:193 templates/orders/_warranty.html:18
+#: templates/orders/customer.html:142
+#: templates/partials/order_timeline.html:10
 msgid "Usta"
 msgstr "Мастер"
 
+#: repair_service/models.py:174 templates/orders/_warranty.html:19
 msgid "Administrator"
 msgstr "Администратор"
 
+#: repair_service/models.py:175
 msgid "Tizim"
 msgstr "Система"
 
+#: repair_service/models.py:453 templates/orders/customer.html:171
+#: templates/orders/master.html:111
 msgid "Muammo"
 msgstr "Проблема"
 
+#: repair_service/models.py:454 templates/masters/detail.html:68
 msgid "Oldin"
 msgstr "До"
 
+#: repair_service/models.py:455 templates/masters/detail.html:69
 msgid "Keyin"
 msgstr "После"
 
+#: repair_service/models.py:493
 msgid "Ustaga yuborildi"
 msgstr "Отправлено мастеру"
 
+#: repair_service/models.py:494
 msgid "Usta tuzatdi"
 msgstr "Мастер исправил"
 
+#: repair_service/models.py:495
 msgid "Hal bo'ldi"
 msgstr "Решено"
 
+#: repair_service/models.py:496
 msgid "Administratorda"
 msgstr "У администратора"
 
+#: repair_service/models.py:497
 msgid "Rad etildi"
 msgstr "Отклонено"
 
+#: repair_service/models.py:498
 msgid "Kompensatsiya to'landi"
 msgstr "Компенсация выплачена"
 
+#: repair_service/models.py:539
 msgid "Qat'iy narx"
 msgstr "Фиксированная цена"
 
+#: repair_service/models.py:540
 msgid "...dan (minimal narx)"
 msgstr "от ... (минимальная цена)"
 
+#: repair_service/models.py:545
 msgid "xizmat"
 msgstr "услуга"
 
+#: repair_service/models.py:546
 msgid "dona"
 msgstr "шт."
 
+#: repair_service/models.py:547
 msgid "metr"
 msgstr "м"
 
+#: repair_service/models.py:548
 msgid "m²"
 msgstr "м²"
 
+#: repair_service/models.py:549
 msgid "nuqta"
 msgstr "точка"
 
+#: repair_service/models.py:550
 msgid "soat"
 msgstr "час"
 
+#: repair_service/nps.py:34 repair_service/nps.py:36
 msgid "0 dan 10 gacha baho tanlang."
 msgstr "Выберите оценку от 0 до 10."
 
+#: repair_service/nps.py:38
 msgid "So'rovnoma buyurtma tasdiqlangandan keyin."
 msgstr "Опрос доступен после подтверждения заказа."
 
+#: repair_service/nps.py:43
 msgid "Javobingiz allaqachon qabul qilingan. Rahmat!"
 msgstr "Ваш ответ уже принят. Спасибо!"
 
+#: repair_service/nps.py:74
 #, python-format
 msgid ""
 "Ishdan mamnunmisiz? Bizni do'stingizga tavsiya qilasizmi — 0 dan 10 gacha "
@@ -1066,12 +1402,15 @@ msgid ""
 msgstr ""
 "Довольны работой? Порекомендуете нас другу — оцените от 0 до 10: %(url)s"
 
+#: repair_service/order_views.py:61
 msgid "Bank o'tkazmasi (schyot)"
 msgstr "Банковский перевод (счёт)"
 
+#: repair_service/order_views.py:85 repair_service/order_views.py:317
 msgid "Avval telefon raqamingizni SMS kod bilan tasdiqlang."
 msgstr "Сначала подтвердите номер телефона кодом из SMS."
 
+#: repair_service/order_views.py:89
 msgid ""
 "Muammoni qisqacha yozing (kamida 10 ta belgi) — administrator shunga qarab "
 "qaror qiladi."
@@ -1079,9 +1418,11 @@ msgstr ""
 "Кратко опишите проблему (не менее 10 символов) — администратор примет "
 "решение на её основе."
 
+#: repair_service/order_views.py:100
 msgid "Buyurtma holati yangilandi."
 msgstr "Статус заказа обновлён."
 
+#: repair_service/order_views.py:114
 msgid ""
 "Narx kelishildi. Endi birinchi qismni to'lang — pul ustaga darhol o'tmaydi, "
 "bosqich bajarilguncha platformada ushlab turiladi."
@@ -1089,36 +1430,50 @@ msgstr ""
 "Цена согласована. Оплатите первую часть — деньги не уходят мастеру сразу, а "
 "удерживаются на платформе до выполнения этапа."
 
+#: repair_service/order_views.py:117
 msgid "Narx kelishildi. To'lovni ustaga to'g'ridan-to'g'ri qilasiz."
 msgstr "Цена согласована. Оплату вы производите мастеру напрямую."
 
+#: repair_service/order_views.py:120
 msgid "Taklif rad etildi. Usta yangi narx taklif qilishi mumkin."
 msgstr "Предложение отклонено. Мастер может предложить новую цену."
 
+#: repair_service/order_views.py:124
 msgid "Taklif topilmadi"
 msgstr "Предложение не найдено"
 
+#: repair_service/order_views.py:135
+msgid "Bu buyurtma bo'yicha hozir to'lov qabul qilinmaydi"
+msgstr "Сейчас оплата по этому заказу не принимается"
+
+#: repair_service/order_views.py:160
 #, python-format
 msgid "To'lov chiqarildi: %(t)s"
 msgstr "Оплата выплачена: %(t)s"
 
+#: repair_service/order_views.py:161
 msgid "Mablag' ustaga chiqarildi. Rahmat!"
 msgstr "Средства выплачены мастеру. Спасибо!"
 
+#: repair_service/order_views.py:191
 msgid "Aksiyalar haqida xabar olasiz. Istalgan vaqtda bekor qilish mumkin."
 msgstr ""
 "Вы будете получать сообщения об акциях. Отписаться можно в любой момент."
 
+#: repair_service/order_views.py:194
 msgid "Aksiya xabarlari o'chirildi."
 msgstr "Сообщения об акциях отключены."
 
+#: repair_service/order_views.py:219
 msgid "Promo-kod olib tashlandi."
 msgstr "Промокод удалён."
 
+#: repair_service/order_views.py:227
 #, python-format
 msgid "Promo-kod qo'llandi: %(d)s so'm chegirma."
 msgstr "Промокод применён: скидка %(d)s сум."
 
+#: repair_service/order_views.py:230
 msgid ""
 "Promo-kod saqlandi. Chegirma usta narx taklif qilgach, onlayn to'lovda "
 "hisoblanadi."
@@ -1126,6 +1481,7 @@ msgstr ""
 "Промокод сохранён. Скидка будет рассчитана при онлайн-оплате, после того как"
 " мастер предложит цену."
 
+#: repair_service/order_views.py:276
 msgid ""
 "Murojaatingiz ustaga yuborildi. Muammoni rasmga olib qo'shsangiz, tezroq hal"
 " bo'ladi."
@@ -1133,114 +1489,153 @@ msgstr ""
 "Обращение отправлено мастеру. Добавьте фото проблемы — так она решится "
 "быстрее."
 
+#: repair_service/order_views.py:289
 msgid "Rahmat! Murojaat yopildi."
 msgstr "Спасибо! Обращение закрыто."
 
+#: repair_service/order_views.py:292
 msgid "Murojaat administratorga o'tkazildi. Siz bilan bog'lanamiz."
 msgstr "Обращение передано администратору. Мы свяжемся с вами."
 
+#: repair_service/order_views.py:322
 #, python-format
 msgid "%(name)s hozir buyurtma qabul qilmayapti. Boshqa ustani tanlang."
 msgstr "%(name)s сейчас не принимает заказы. Выберите другого мастера."
 
+#: repair_service/order_views.py:325
 msgid "Bu usta hozir saytda ishlamayapti. Boshqa ustani tanlang."
 msgstr "Этот мастер сейчас не работает на сайте. Выберите другого мастера."
 
+#: repair_service/order_views.py:336
 msgid "Juda ko'p ariza yuborildi. Iltimos, birozdan keyin urinib ko'ring."
 msgstr "Слишком много заявок. Пожалуйста, попробуйте позже."
 
+#: repair_service/order_views.py:352
 #, python-format
 msgid "Qayta chaqiruv: #%(id)s"
 msgstr "Повторный вызов: #%(id)s"
 
+#: repair_service/order_views.py:356
 #, python-format
 msgid "Buyurtma %(name)sga yuborildi. Usta tez orada bog'lanadi."
 msgstr "Заказ отправлен мастеру %(name)s. Мастер скоро свяжется с вами."
 
+#: repair_service/order_views.py:416
 msgid "Rasm tanlang"
 msgstr "Выберите фото"
 
+#: repair_service/order_views.py:423 repair_service/order_views.py:424
+#: telegram_bot/handlers.py:199
 #, python-format
 msgid "%(n)s ta rasm yuklandi"
 msgstr "Загружено фото: %(n)s"
 
+#: repair_service/order_views.py:454
 msgid "Ish rasmlari usta portfoliosida ko'rsatiladi."
 msgstr "Фото работы будут показаны в портфолио мастера."
 
+#: repair_service/order_views.py:455 templates/orders/customer.html:127
 msgid "Ish rasmlari usta portfoliosida ko'rsatilmaydi."
 msgstr "Фото работы не будут показаны в портфолио мастера."
 
+#: repair_service/order_views.py:506
 msgid "Rahmat! Fikringiz xizmatni yaxshilashga yordam beradi."
 msgstr "Спасибо! Ваш отзыв помогает улучшать сервис."
 
+#: repair_service/phone.py:13
 msgid "Telefon raqamini to'g'ri kiriting: +998 (XX) XXX-XX-XX"
 msgstr "Введите номер в формате: +998 (XX) XXX-XX-XX"
 
+#: repair_service/photos.py:42
 msgid "Faqat JPG, PNG yoki WEBP rasm yuklang"
 msgstr "Загружайте только JPG, PNG или WEBP"
 
+#: repair_service/photos.py:44
 msgid "Rasm juda katta"
 msgstr "Изображение слишком большое"
 
+#: repair_service/photos.py:47
 msgid "Bu fayl rasm emas yoki buzilgan"
 msgstr "Файл не является изображением или повреждён"
 
+#: repair_service/photos.py:87
 msgid "Hozir bu turdagi rasm yuklab bo'lmaydi"
 msgstr "Сейчас нельзя загрузить фото этого типа"
 
+#: repair_service/photos.py:91
 #, python-format
 msgid "Bitta buyurtmaga ko'pi bilan %(n)s ta rasm"
 msgstr "Не более %(n)s фото на заказ"
 
+#: repair_service/schedule.py:40 repair_service/schedule.py:141
 msgid "Bugun"
 msgstr "Сегодня"
 
+#: repair_service/schedule.py:40 repair_service/schedule.py:141
 msgid "Ertaga"
 msgstr "Завтра"
 
+#: repair_service/schedule.py:53
 msgid "Sana va vaqtni to'g'ri kiriting."
 msgstr "Укажите дату и время правильно."
 
+#: repair_service/schedule.py:74
 msgid "Kelish vaqtini hozir o'zgartirib bo'lmaydi."
 msgstr "Сейчас время приезда изменить нельзя."
 
+#: repair_service/schedule.py:76
 msgid "O'tib ketgan vaqtni belgilab bo'lmaydi."
 msgstr "Нельзя указать прошедшее время."
 
+#: repair_service/schedule.py:78
 #, python-format
 msgid "Kelish vaqti %(n)s kundan uzoq bo'lmasligi kerak."
 msgstr "Время приезда должно быть не позже чем через %(n)s дней."
 
+#: repair_service/schedule.py:84
 #, python-format
 msgid "Kelish vaqti o'zgartirildi: %(t)s"
 msgstr "Время приезда изменено: %(t)s"
 
+#: repair_service/schedule.py:84
 #, python-format
 msgid "Kelish vaqti: %(t)s"
 msgstr "Время приезда: %(t)s"
 
+#: repair_service/schedule.py:94
 #, python-format
 msgid "Usta kelish vaqtini o'zgartirdi: %(t)s. %(url)s"
 msgstr "Мастер изменил время приезда: %(t)s. %(url)s"
 
+#: repair_service/schedule.py:95
 #, python-format
 msgid "Usta %(t)s da keladi. %(url)s"
 msgstr "Мастер приедет %(t)s. %(url)s"
 
+#: repair_service/schedule.py:114
 #, python-format
 msgid "Eslatma: usta bugun %(t)s da keladi. %(url)s"
 msgstr "Напоминание: мастер приедет сегодня в %(t)s. %(url)s"
 
+#: repair_service/schedule.py:116
+#, python-format
+msgid "Eslatma: usta ertaga %(t)s da keladi. %(url)s"
+msgstr "Напоминание: мастер придёт завтра в %(t)s. %(url)s"
+
+#: repair_service/schedule.py:120
 #, python-format
 msgid "Eslatma: #%(id)s buyurtma — %(t)s da. %(url)s"
 msgstr "Напоминание: заказ #%(id)s — в %(t)s. %(url)s"
 
+#: repair_service/support.py:45
 msgid "Operator"
 msgstr "Оператор"
 
+#: repair_service/support.py:45 templates/orders/master.html:103
 msgid "Mijoz"
 msgstr "Клиент"
 
+#: repair_service/support.py:117
 #, python-format
 msgid ""
 "Operator javob berdi: «%(text)s»\n"
@@ -1249,47 +1644,62 @@ msgstr ""
 "Оператор ответил: «%(text)s»\n"
 "%(url)s"
 
+#: repair_service/support.py:130
 #, python-format
 msgid "Operator javob berdi. O'qish: %(url)s"
 msgstr "Оператор ответил. Прочитать: %(url)s"
 
+#: repair_service/views.py:126
 msgid ""
 "Juda ko'p ariza yuborildi. Iltimos, birozdan keyin urinib ko'ring yoki "
 "qo'ng'iroq qiling."
 msgstr "Слишком много заявок. Попробуйте чуть позже или позвоните нам."
 
+#: repair_service/views.py:148
 #, python-format
 msgid "Arizangiz %(master)sga yuborildi. Usta tez orada qo'ng'iroq qiladi."
 msgstr "Заявка отправлена мастеру %(master)s. Он скоро перезвонит."
 
+#: repair_service/views.py:151
 msgid ""
 "Arizangiz qabul qilindi! Operatorimiz eng yaqin ustani topib, siz bilan "
 "bog'lanadi."
 msgstr ""
 "Заявка принята! Оператор подберёт ближайшего мастера и свяжется с вами."
 
+#: repair_service/views.py:164
 msgid "Arizangiz uchun rahmat!"
 msgstr "Спасибо за заявку!"
 
+#: repair_service/views.py:227 templates/base.html:124
+#: templates/legal/base_legal.html:21 templates/masters/register.html:43
 msgid "Ommaviy oferta"
 msgstr "Публичная оферта"
 
+#: repair_service/views.py:231 templates/base.html:124
+#: templates/legal/base_legal.html:21 templates/masters/documents.html:40
+#: templates/masters/register.html:43
 msgid "Maxfiylik siyosati"
 msgstr "Политика конфиденциальности"
 
+#: repair_service/warranty.py:110
 msgid "Muammoni batafsilroq yozing (kamida 10 ta belgi)."
 msgstr "Опишите проблему подробнее (не менее 10 символов)."
 
+#: repair_service/warranty.py:113
 msgid "Bu buyurtma uchun kafolat muddati tugagan yoki kafolat berilmagan."
 msgstr ""
 "Гарантийный срок по этому заказу истёк или гарантия не предоставляется."
 
+#: repair_service/warranty.py:115
 msgid "Bu buyurtma bo'yicha kafolat murojaati allaqachon ochilgan."
 msgstr "По этому заказу уже открыто гарантийное обращение."
 
+#: repair_service/warranty.py:117
 msgid "Kafolat murojaati ochildi"
 msgstr "Открыто гарантийное обращение"
 
+#: repair_service/warranty.py:119
 #, python-format
 msgid ""
 "Kafolat murojaati: #%(id)s buyurtma bo'yicha mijoz muammo bildirdi. Bepul "
@@ -1298,12 +1708,15 @@ msgstr ""
 "Гарантийное обращение: клиент сообщил о проблеме по заказу #%(id)s. "
 "Исправьте бесплатно: %(url)s"
 
+#: repair_service/warranty.py:127 repair_service/warranty.py:148
 msgid "Bu murojaat holatini o'zgartirib bo'lmaydi."
 msgstr "Статус этого обращения изменить нельзя."
 
+#: repair_service/warranty.py:131
 msgid "Kafolat: usta muammoni tuzatdi"
 msgstr "Гарантия: мастер устранил проблему"
 
+#: repair_service/warranty.py:133
 #, python-format
 msgid ""
 "Usta kafolat bo'yicha muammoni tuzatganini bildirdi. Tekshirib tasdiqlang: "
@@ -1312,13 +1725,16 @@ msgstr ""
 "Мастер сообщил, что устранил проблему по гарантии. Проверьте и подтвердите: "
 "%(url)s"
 
+#: repair_service/warranty.py:149
 msgid "Kafolat: muammo hal bo'ldi"
 msgstr "Гарантия: проблема решена"
 
+#: repair_service/warranty.py:151
 #, python-format
 msgid "Mijoz #%(id)s buyurtma bo'yicha kafolat murojaatini yopdi. Rahmat!"
 msgstr "Клиент закрыл гарантийное обращение по заказу #%(id)s. Спасибо!"
 
+#: repair_service/warranty.py:159
 msgid ""
 "Avval ustaga tuzatish uchun vaqt bering — javob bo'lmasa, administratorga "
 "o'tkazishingiz mumkin."
@@ -1326,14 +1742,17 @@ msgstr ""
 "Сначала дайте мастеру время на исправление — если ответа не будет, вы "
 "сможете передать обращение администратору."
 
+#: repair_service/warranty.py:163
 msgid "Kafolat: administratorga o'tkazildi"
 msgstr "Гарантия: передано администратору"
 
+#: repair_service/warranty.py:165
 #, python-format
 msgid ""
 "#%(id)s buyurtma bo'yicha kafolat murojaati administratorga o'tkazildi."
 msgstr "Гарантийное обращение по заказу #%(id)s передано администратору."
 
+#: repair_service/warranty.py:184
 #, python-format
 msgid ""
 "Kafolat murojaatingiz bo'yicha kompensatsiya belgilandi. Operator siz bilan "
@@ -1342,100 +1761,140 @@ msgstr ""
 "По вашему гарантийному обращению назначена компенсация. Оператор свяжется с "
 "вами: %(url)s"
 
+#: repair_service/warranty.py:189
 #, python-format
 msgid "Kafolat murojaatingiz ko'rib chiqildi. Javob: %(url)s"
 msgstr "Ваше гарантийное обращение рассмотрено. Ответ: %(url)s"
 
+#: repair_service/warranty.py:191
 #, python-format
 msgid "Kafolat murojaatingiz yopildi: %(url)s"
 msgstr "Ваше гарантийное обращение закрыто: %(url)s"
 
+#: repair_service/workflow.py:31
 msgid "Buyurtma yaratildi"
 msgstr "Заказ создан"
 
+#: repair_service/workflow.py:32
 msgid "Vazifa, manzil va qulay vaqtni tasvirlaysiz."
 msgstr "Вы описываете задачу, адрес и удобное время."
 
+#: repair_service/workflow.py:34
 msgid "Usta ishni olishini tasdiqlaydi."
 msgstr "Мастер подтверждает, что берёт работу."
 
+#: repair_service/workflow.py:36
 msgid "Usta kelganini belgilaydi — buni buyurtmada darhol ko'rasiz."
 msgstr "Мастер отмечает, что прибыл — вы сразу видите это в заказе."
 
+#: repair_service/workflow.py:38
 msgid "Ish haqiqatan boshlanganda status o'zgaradi."
 msgstr "Статус меняется, когда работа действительно началась."
 
+#: repair_service/workflow.py:40
 msgid "Usta o'z tomonidan buyurtmani yopadi."
 msgstr "Мастер закрывает заказ со своей стороны."
 
+#: repair_service/workflow.py:42
 msgid "Siz natijani tekshirasiz, tasdiqlaysiz va baholaysiz."
 msgstr "Вы проверяете результат, подтверждаете и оцениваете."
 
+#: repair_service/workflow.py:47
 msgid "Qabul qilish"
 msgstr "Принять"
 
+#: repair_service/workflow.py:48
 msgid "Joyga yetib keldim"
 msgstr "Я на месте"
 
+#: repair_service/workflow.py:49
 msgid "Ishni boshladim"
 msgstr "Начал работу"
 
+#: repair_service/workflow.py:50
 msgid "Ish bajarildi"
 msgstr "Работа выполнена"
 
+#: repair_service/workflow.py:53
 msgid "Voz kechish"
 msgstr "Отказаться"
 
+#: repair_service/workflow.py:55 templates/masters/review_verify.html:4
 msgid "Natijani tasdiqlash"
 msgstr "Подтвердить результат"
 
+#: repair_service/workflow.py:56
 msgid "Buyurtmani bekor qilish"
 msgstr "Отменить заказ"
 
+#: repair_service/workflow.py:58
 msgid "Muammo bor (nizo ochish)"
 msgstr "Есть проблема (открыть спор)"
 
+#: repair_service/workflow.py:98 telegram_bot/handlers.py:272
+#: telegram_bot/handlers.py:279
 msgid "Noma'lum amal"
 msgstr "Неизвестное действие"
 
+#: repair_service/workflow.py:101 repair_service/workflow.py:147
 msgid "Bu amalni hozirgi bosqichda bajarib bo'lmaydi"
 msgstr "Это действие недоступно на текущем этапе"
 
+#: repair_service/workflow.py:103
 msgid "Buyurtmaga usta biriktirilmagan"
 msgstr "К заказу не назначен мастер"
 
+#: repair_service/workflow.py:107
 msgid "Ishni boshlashdan oldin narxni taklif qiling va mijoz rozi bo'lsin"
 msgstr "Перед началом работ предложите цену и получите согласие клиента"
 
+#: repair_service/workflow.py:114
 #, python-format
 msgid "Avval to'lang: %(names)s"
 msgstr "Сначала оплатите: %(names)s"
 
+#: repair_service/workflow.py:115
 #, python-format
 msgid "Mijoz hali to'lamagan: %(names)s. To'lovdan keyin davom eting."
 msgstr "Клиент ещё не оплатил: %(names)s. Продолжите после оплаты."
 
+#: repair_service/workflow.py:149
 msgid ""
 "Mijoz to'lov qilgan — voz kechish uchun administratorga murojaat qiling"
 msgstr "Клиент уже внёс оплату — для отказа обратитесь к администратору"
 
+#: repair_service/workflow.py:152
+msgid ""
+"Mijoz to'lovni boshlagan — voz kechish uchun administratorga murojaat qiling"
+msgstr "Клиент начал оплату — чтобы отказаться, обратитесь к администратору"
+
+#: repair_service/workflow.py:163
 #, python-format
 msgid "Usta voz kechdi: %(name)s"
 msgstr "Мастер отказался: %(name)s"
 
+#: repair_service/workflow.py:193
 #, python-format
 msgid "Avtomatik: mijoz %(h)s soat ichida javob bermadi"
 msgstr "Автоматически: клиент не ответил в течение %(h)s ч"
 
+#: telegram_bot/handlers.py:63
 msgid "Saytda ochish"
 msgstr "Открыть на сайте"
 
-msgid "Havola noto'g'ri yoki eskirgan."
-msgstr "Ссылка неверна или устарела."
+#: telegram_bot/handlers.py:77
+msgid ""
+"Havola noto'g'ri yoki eskirgan. Buyurtma sahifasidan «Botni ochish» ni qayta"
+" bosing."
+msgstr ""
+"Ссылка неверна или устарела. Нажмите «Открыть бота» на странице заказа ещё "
+"раз."
 
+#: telegram_bot/handlers.py:80
 msgid "Buyurtma topilmadi."
 msgstr "Заказ не найден."
 
+#: telegram_bot/handlers.py:84
 #, python-format
 msgid ""
 "✅ Buyurtma #%(id)s ulandi. Endi barcha o'zgarishlar shu yerga keladi.\n"
@@ -1446,15 +1905,18 @@ msgstr ""
 "\n"
 "Текущий статус: <b>%(status)s</b>"
 
+#: telegram_bot/handlers.py:92
 msgid ""
 "Ulash havolasi eskirgan. Kabinetdan qaytadan «Telegram'ni ulash» ni bosing."
 msgstr ""
 "Ссылка для подключения устарела. Нажмите «Подключить Telegram» в кабинете "
 "ещё раз."
 
+#: telegram_bot/handlers.py:99
 msgid "Bu chat boshqa akkauntga ulangan."
 msgstr "Этот чат подключён к другому аккаунту."
 
+#: telegram_bot/handlers.py:102
 #, python-format
 msgid ""
 "✅ Salom, %(name)s! Akkauntingiz ulandi. Yangi buyurtmalar shu yerga tugmalar bilan keladi.\n"
@@ -1467,6 +1929,7 @@ msgstr ""
 "/buyurtmalar — активные заказы\n"
 "/stop — отключить"
 
+#: telegram_bot/handlers.py:113
 #, python-format
 msgid ""
 "Assalomu alaykum! Bu %(site)s boti.\n"
@@ -1479,64 +1942,86 @@ msgstr ""
 "• Заказчикам: нажмите «Следить в Telegram» на странице заказа.\n"
 "• Мастерам: нажмите «Подключить Telegram» в кабинете."
 
+#: telegram_bot/handlers.py:115
 msgid "Saytga o'tish"
 msgstr "Перейти на сайт"
 
+#: telegram_bot/handlers.py:125
 msgid "Faol buyurtmalar yo'q."
 msgstr "Активных заказов нет."
 
+#: telegram_bot/handlers.py:131
 msgid "Ulangan buyurtmalar yo'q."
 msgstr "Подключённых заказов нет."
 
+#: telegram_bot/handlers.py:142
 msgid "Xabarlar o'chirildi. Endi xabarlar SMS orqali keladi."
 msgstr "Уведомления отключены. Теперь они будут приходить по SMS."
 
+#: telegram_bot/handlers.py:163
 #, python-format
 msgid "PRO ustalar ustunligi: %(time)s dan olishingiz mumkin"
 msgstr "Преимущество PRO: вы сможете взять с %(time)s"
 
+#: telegram_bot/handlers.py:192
 msgid "Rasmni yuklab bo'lmadi. Qaytadan yuboring."
 msgstr "Не удалось загрузить фото. Отправьте ещё раз."
 
+#: telegram_bot/handlers.py:201
 #, python-format
 msgid "✅ #%(id)s buyurtmaga qo'shildi: %(n)s ta rasm («%(kind)s»)"
 msgstr "✅ Добавлено к заказу #%(id)s: %(n)s фото («%(kind)s»)"
 
+#: telegram_bot/handlers.py:217 telegram_bot/handlers.py:222
 msgid "Rasm biriktiriladigan faol buyurtma yo'q."
 msgstr "Нет активного заказа, к которому можно прикрепить фото."
 
+#: telegram_bot/handlers.py:231
 msgid "Bu rasm(lar) qaysi buyurtma uchun?"
 msgstr "К какому заказу относятся эти фото?"
 
+#: telegram_bot/handlers.py:242
 msgid "Rasm topilmadi yoki muddati o'tdi — qaytadan yuboring"
 msgstr "Фото не найдено или срок истёк — отправьте ещё раз"
 
+#: telegram_bot/handlers.py:254
 msgid "Avval kabinetda Telegram'ni ulang"
 msgstr "Сначала подключите Telegram в кабинете"
 
+#: telegram_bot/handlers.py:260
 msgid "Buyurtma sizniki!"
 msgstr "Заказ ваш!"
 
+#: telegram_bot/handlers.py:281
 msgid "Bu buyurtma sizga tegishli emas"
 msgstr "Этот заказ не ваш"
 
+#: telegram_bot/handlers.py:312
 msgid ""
 "Buyruqlar: /buyurtmalar, /stop. Rasm yuborsangiz — buyurtmaga biriktiriladi."
 msgstr ""
 "Команды: /buyurtmalar, /stop. Отправьте фото — оно прикрепится к заказу."
 
+#: telegram_bot/views.py:47
 msgid "Telegram bot hali sozlanmagan. Administratorga murojaat qiling."
 msgstr "Telegram-бот ещё не настроен. Обратитесь к администратору."
 
+#: telegram_bot/views.py:60
 msgid "Telegram uzildi. Xabarlar SMS orqali keladi."
 msgstr "Telegram отключён. Уведомления будут приходить по SMS."
 
+#: templates/admin/dispute_detail.html:3 templates/admin/disputes.html:3
+#: templates/admin/index.html:4 templates/admin/payouts_pending.html:4
+#: templates/admin/stats.html:4 templates/admin/support_list.html:3
+#: templates/admin/support_thread.html:3
 msgid "Django site admin"
 msgstr "Администрирование сайта"
 
+#: templates/base.html:8
 msgid "uyingiz uchun ishonchli ustalar"
 msgstr "надёжные мастера для вашего дома"
 
+#: templates/base.html:9
 msgid ""
 "Santexnik, elektrik, kir yuvish mashinasi va maishiy texnika ustalari. Eng "
 "yaqin tekshirilgan ustani toping, baholarini ko'ring va ariza qoldiring."
@@ -1545,9 +2030,11 @@ msgstr ""
 "Найдите ближайшего проверенного мастера, посмотрите отзывы и оставьте "
 "заявку."
 
+#: templates/base.html:13
 msgid "ishonchli ustalar"
 msgstr "надёжные мастера"
 
+#: templates/base.html:14
 msgid ""
 "Eng yaqin tekshirilgan ustani toping, baholarini ko'ring va bepul ariza "
 "qoldiring. Pul ish bajarilgach ustaga o'tadi."
@@ -1555,36 +2042,53 @@ msgstr ""
 "Найдите ближайшего проверенного мастера, посмотрите отзывы и оставьте "
 "бесплатную заявку. Деньги переходят мастеру после выполнения работы."
 
+#: templates/base.html:39
 msgid "Asosiy mazmunga o'tish"
 msgstr "Перейти к основному содержимому"
 
+#: templates/base.html:46
 msgid "Menyu"
 msgstr "Меню"
 
+#: templates/base.html:47
 msgid "Asosiy menyu"
 msgstr "Главное меню"
 
+#: templates/base.html:51 templates/catalog.html:9 templates/index.html:122
+#: templates/masters/detail.html:83
 msgid "Narxlar"
 msgstr "Цены"
 
+#: templates/base.html:52 templates/masters/_seo_block.html:31
 msgid "Qanday ishlaydi"
 msgstr "Как это работает"
 
+#: templates/base.html:53
 msgid "Buyurtmalarim"
 msgstr "Мои заказы"
 
+#: templates/base.html:55 templates/masters/dashboard.html:4
+#: templates/masters/documents.html:12 templates/masters/feed.html:10
+#: templates/masters/lessons.html:9 templates/masters/profile_edit.html:11
+#: templates/masters/work_schedule.html:10 templates/orders/master.html:13
+#: templates/payments/tariffs.html:10
 msgid "Kabinet"
 msgstr "Кабинет"
 
+#: templates/base.html:59 templates/masters/login.html:25
 msgid "Usta bo'lish"
 msgstr "Стать мастером"
 
+#: templates/base.html:60 templates/masters/login.html:4
+#: templates/masters/login.html:22 templates/masters/register.html:45
 msgid "Kirish"
 msgstr "Войти"
 
+#: templates/base.html:62
 msgid "Til"
 msgstr "Язык"
 
+#: templates/base.html:86
 msgid ""
 "Uyingizdagi nosozliklar uchun tekshirilgan ustalar. Faqat haqiqiy mijozlar "
 "qoldirgan baholar. Pul ish bajarilgandagina ustaga o'tadi."
@@ -1592,61 +2096,88 @@ msgstr ""
 "Проверенные мастера для домашнего ремонта. Только настоящие отзывы клиентов."
 " Деньги переходят мастеру только после выполнения работы."
 
+#: templates/base.html:89
 msgid "Mijozlarga"
 msgstr "Клиентам"
 
+#: templates/base.html:91 templates/base.html:132 templates/index.html:22
 msgid "Usta topish"
 msgstr "Найти мастера"
 
+#: templates/base.html:92 templates/catalog.html:4 templates/catalog.html:10
 msgid "Narxlar katalogi"
 msgstr "Каталог цен"
 
+#: templates/base.html:93 templates/catalog.html:58
+#: templates/masters/_seo_block.html:38 templates/masters/list.html:89
+#: templates/orders/my_orders.html:34
 msgid "Ariza qoldirish"
 msgstr "Оставить заявку"
 
+#: templates/base.html:94 templates/orders/customer.html:17
+#: templates/orders/my_orders.html:4 templates/orders/my_orders.html:10
 msgid "Mening buyurtmalarim"
 msgstr "Мои заказы"
 
+#: templates/base.html:95 templates/index.html:233
+#: templates/masters/for_masters.html:13 templates/masters/for_masters.html:56
 msgid "Savollar"
 msgstr "Вопросы"
 
+#: templates/base.html:99
 msgid "Ustalarga"
 msgstr "Мастерам"
 
+#: templates/base.html:101
 msgid "Nega bizda ishlash kerak"
 msgstr "Почему стоит работать у нас"
 
+#: templates/base.html:102 templates/masters/for_masters.html:50
+#: templates/masters/register.html:12 templates/masters/register.html:44
 msgid "Ro'yxatdan o'tish"
 msgstr "Регистрация"
 
+#: templates/base.html:103
 msgid "Kabinetga kirish"
 msgstr "Вход в кабинет"
 
+#: templates/base.html:107
 msgid "Bog'lanish"
 msgstr "Контакты"
 
+#: templates/base.html:118
 msgid "Xizmatlar"
 msgstr "Услуги"
 
+#: templates/base.html:123
 msgid "Barcha huquqlar himoyalangan."
 msgstr "Все права защищены."
 
+#: templates/base.html:131
 msgid "Qo'ng'iroq"
 msgstr "Позвонить"
 
+#: templates/base.html:138 templates/support/thread.html:3
 msgid "Yordam"
 msgstr "Помощь"
 
+#: templates/base.html:139 templates/base.html:140
+#: templates/support/thread.html:11
 msgid "Operator bilan yozishma"
 msgstr "Чат с оператором"
 
+#: templates/business/_doc_base.html:10 templates/business/invoice.html:20
+#: templates/orders/customer.html:4 templates/orders/master.html:4
+#: templates/orders/reorder.html:12
 #, python-format
 msgid "Buyurtma #%(id)s"
 msgstr "Заказ #%(id)s"
 
+#: templates/business/_doc_base.html:11
 msgid "Chop etish / PDF"
 msgstr "Печать / PDF"
 
+#: templates/business/_doc_base.html:16
 msgid ""
 "Elektron hisob-faktura (ESF) soliq tizimi operatori orqali alohida "
 "yuboriladi."
@@ -1654,42 +2185,59 @@ msgstr ""
 "Электронная счёт-фактура (ЭСФ) направляется отдельно через оператора "
 "налоговой системы."
 
+#: templates/business/act.html:3 templates/orders/customer.html:94
 msgid "Bajarilgan ishlar dalolatnomasi"
 msgstr "Акт выполненных работ"
 
+#: templates/business/act.html:5
 #, python-format
 msgid ""
 "Bajarilgan ishlar (ko'rsatilgan xizmatlar) dalolatnomasi № %(id)s — %(d)s"
 msgstr "Акт выполненных работ (оказанных услуг) № %(id)s — %(d)s"
 
+#: templates/business/act.html:7 templates/business/act.html:21
 msgid "Ijrochi"
 msgstr "Исполнитель"
 
+#: templates/business/act.html:7 templates/business/act.html:8
+#: templates/business/invoice.html:9 templates/business/invoice.html:14
+#: templates/legal/base_legal.html:17 templates/orders/customer.html:91
+#: templates/partials/request_form.html:118
 msgid "STIR"
 msgstr "ИНН"
 
+#: templates/business/act.html:7
 msgid "Ishni bajargan usta"
 msgstr "Мастер, выполнивший работу"
 
+#: templates/business/act.html:11 templates/business/invoice.html:18
 msgid "Ish / xizmat"
 msgstr "Работа / услуга"
 
+#: templates/business/act.html:11 templates/business/invoice.html:18
 msgid "Summa, so'm"
 msgstr "Сумма, сум"
 
+#: templates/business/act.html:13 templates/legal/base_legal.html:18
+#: templates/orders/customer.html:168 templates/orders/master.html:107
+#: templates/orders/reorder.html:26 templates/partials/request_form.html:55
 msgid "Manzil"
 msgstr "Адрес"
 
+#: templates/business/act.html:16 templates/orders/_money.html:9
 msgid "Jami"
 msgstr "Итого"
 
+#: templates/business/act.html:17 templates/business/invoice.html:24
 #, python-format
 msgid "Shu jumladan QQS %(p)s%%: %(v)s so'm"
 msgstr "В том числе НДС %(p)s%%: %(v)s сум"
 
+#: templates/business/act.html:17 templates/business/invoice.html:24
 msgid "QQSsiz"
 msgstr "Без НДС"
 
+#: templates/business/act.html:20
 msgid ""
 "Yuqoridagi ishlar to'liq va o'z vaqtida bajarildi. Buyurtmachining hajm, "
 "sifat va muddat bo'yicha e'tirozlari yo'q."
@@ -1697,38 +2245,49 @@ msgstr ""
 "Вышеперечисленные работы выполнены полностью и в срок. Заказчик претензий по"
 " объёму, качеству и срокам не имеет."
 
+#: templates/business/invoice.html:3
 msgid "To'lov uchun schyot"
 msgstr "Счёт на оплату"
 
+#: templates/business/invoice.html:5
 #, python-format
 msgid "To'lov uchun schyot № %(n)s — %(d)s"
 msgstr "Счёт на оплату № %(n)s — %(d)s"
 
+#: templates/business/invoice.html:8
 msgid "Oluvchi (ijrochi)"
 msgstr "Получатель (исполнитель)"
 
+#: templates/business/invoice.html:11
 msgid "Hisob raqami"
 msgstr "Расчётный счёт"
 
+#: templates/business/invoice.html:11
 msgid "Bank"
 msgstr "Банк"
 
+#: templates/business/invoice.html:11
 msgid "MFO"
 msgstr "МФО"
 
+#: templates/business/invoice.html:13
 msgid "To'lovchi (buyurtmachi)"
 msgstr "Плательщик (заказчик)"
 
+#: templates/business/invoice.html:23
 msgid "Jami to'lash kerak"
 msgstr "Итого к оплате"
 
+#: templates/business/invoice.html:27
 msgid "To'lov maqsadi"
 msgstr "Назначение платежа"
 
+#: templates/business/invoice.html:27
 #, python-format
 msgid "Schyot № %(n)s bo'yicha, buyurtma #%(id)s uchun xizmat haqi"
 msgstr "Оплата по счёту № %(n)s, услуги по заказу #%(id)s"
 
+#: templates/business/invoice.html:28
 msgid ""
 "To'lov maqsadida schyot raqamini albatta ko'rsating — pul shu raqam bo'yicha"
 " avtomatik bog'lanadi. Pul tushgach ish davom etadi va bu sahifada "
@@ -1738,12 +2297,15 @@ msgstr ""
 "сопоставляется. После поступления денег работа продолжится, а на этой "
 "странице появится отметка «Оплачено»."
 
+#: templates/business/invoice.html:29
 msgid "Rahbar"
 msgstr "Руководитель"
 
+#: templates/business/invoice.html:29
 msgid "Bosh hisobchi"
 msgstr "Главный бухгалтер"
 
+#: templates/catalog.html:5
 msgid ""
 "Santexnik, elektrik va maishiy texnika ta'mirlash narxlari: aniq summa, "
 "narxga nima kiradi va qancha vaqt ketadi."
@@ -1751,6 +2313,7 @@ msgstr ""
 "Цены на услуги сантехника, электрика и ремонт бытовой техники: точная сумма,"
 " что входит в цену и сколько займёт времени."
 
+#: templates/catalog.html:11
 msgid ""
 "Platforma narxlari — ish boshlanishidan oldin bilasiz. Usta joyida boshqa "
 "narx aytsa, sababini yozishi shart va siz farqni ko'rasiz."
@@ -1758,27 +2321,37 @@ msgstr ""
 "Цены платформы — вы знаете их до начала работ. Если мастер на месте назовёт "
 "другую цену, он обязан указать причину, а вы увидите разницу."
 
+#: templates/catalog.html:15
 msgid "Xizmatni qidiring: kran, rozetka, konditsioner…"
 msgstr "Найдите услугу: кран, розетка, кондиционер…"
 
+#: templates/catalog.html:15 templates/catalog.html:16
+#: templates/masters/list.html:54
 msgid "Qidirish"
 msgstr "Найти"
 
+#: templates/catalog.html:19 templates/index.html:77
+#: templates/masters/dashboard.html:118 templates/masters/list.html:26
 msgid "Barchasi"
 msgstr "Все"
 
+#: templates/catalog.html:30
 msgid "Umumiy"
 msgstr "Общее"
 
+#: templates/catalog.html:34
 msgid "Ommabop"
 msgstr "Популярное"
 
+#: templates/catalog.html:45
 msgid "Tanlangan"
 msgstr "Выбрано"
 
+#: templates/catalog.html:45 templates/catalog.html:58
 msgid "Buyurtma berish"
 msgstr "Заказать"
 
+#: templates/catalog.html:52
 msgid ""
 "Hech narsa topilmadi. Boshqacha yozib ko'ring yoki ariza qoldiring — "
 "operator narxni aytadi."
@@ -1786,9 +2359,11 @@ msgstr ""
 "Ничего не найдено. Попробуйте другой запрос или оставьте заявку — оператор "
 "назовёт цену."
 
+#: templates/catalog.html:59
 msgid "Ro'yxatdan xizmatni tanlang yoki muammoni yozing."
 msgstr "Выберите услугу из списка или опишите проблему."
 
+#: templates/catalog.html:62
 msgid ""
 "Diagnostikadan keyin usta aniq narxni taklif qiladi; siz rozi "
 "bo'lmaguningizcha ish boshlanmaydi."
@@ -1796,15 +2371,19 @@ msgstr ""
 "После диагностики мастер предложит точную цену; без вашего согласия работа "
 "не начнётся."
 
+#: templates/index.html:8
 msgid "Santexnik · Elektrik · Maishiy texnika"
 msgstr "Сантехник · Электрик · Бытовая техника"
 
+#: templates/index.html:9
 msgid "Uyingizdagi nosozlik uchun"
 msgstr "Для любой поломки в доме —"
 
+#: templates/index.html:9
 msgid "eng yaqin ishonchli usta"
 msgstr "ближайший надёжный мастер"
 
+#: templates/index.html:10
 msgid ""
 "Yo'nalishni tanlang, joylashuvingizni yoqing — yaqin atrofdagi tekshirilgan "
 "ustalarni haqiqiy mijozlar baholari bilan ko'rasiz. Pul ish bajarilgandagina"
@@ -1814,39 +2393,52 @@ msgstr ""
 "рядом с отзывами настоящих клиентов. Деньги переходят мастеру только после "
 "выполнения работы."
 
+#: templates/index.html:14
 msgid "tekshirilgan usta"
 msgstr "проверенных мастеров"
 
+#: templates/index.html:15
 msgid "bajarilgan buyurtma"
 msgstr "выполненных заказов"
 
+#: templates/index.html:16
 msgid "o'rtacha baho"
 msgstr "средняя оценка"
 
+#: templates/index.html:21
 msgid "Usta qidirish"
 msgstr "Поиск мастера"
 
+#: templates/index.html:25 templates/partials/request_form.html:44
 msgid "Qanday usta kerak?"
 msgstr "Какой мастер нужен?"
 
+#: templates/index.html:27
 msgid "Barcha yo'nalishlar"
 msgstr "Все направления"
 
+#: templates/index.html:32 templates/masters/list.html:53
+#: templates/partials/request_form.html:73
 msgid "Joylashuvimni aniqlash"
 msgstr "Определить моё местоположение"
 
+#: templates/index.html:33 templates/partials/request_form.html:72
 msgid "yoki"
 msgstr "или"
 
+#: templates/index.html:42
 msgid "Ustalarni ko'rsatish"
 msgstr "Показать мастеров"
 
+#: templates/index.html:53
 msgid "Qanday ish kerak?"
 msgstr "Какая работа нужна?"
 
+#: templates/index.html:54
 msgid "Har bir yo'nalishda faqat tekshiruvdan o'tgan ustalar."
 msgstr "В каждом направлении — только проверенные мастера."
 
+#: templates/index.html:61
 #, python-format
 msgid "%(n)s ta usta"
 msgid_plural "%(n)s ta usta"
@@ -1854,24 +2446,31 @@ msgstr[0] "%(n)s мастер"
 msgstr[1] "%(n)s мастера"
 msgstr[2] "%(n)s мастеров"
 
+#: templates/index.html:61
 msgid "Tez orada"
 msgstr "Скоро"
 
+#: templates/index.html:74
 msgid "Eng yaxshilar"
 msgstr "Лучшие"
 
+#: templates/index.html:75
 msgid "Yuqori baholangan ustalar"
 msgstr "Мастера с высоким рейтингом"
 
+#: templates/index.html:89
 msgid "Buyurtma statuslari"
 msgstr "Статусы заказа"
 
+#: templates/index.html:91
 msgid "Har bir qadam —"
 msgstr "Каждый шаг —"
 
+#: templates/index.html:91
 msgid "ikkalasiga ko'rinadi"
 msgstr "виден обоим"
 
+#: templates/index.html:92
 msgid ""
 "Buyurtmachi va usta statuslarni navbat bilan belgilaydi. Hech kim "
 "yo'qolmaydi: kim qaysi bosqichda va buyurtma bilan hozir nima bo'layotgani "
@@ -1880,12 +2479,15 @@ msgstr ""
 "Заказчик и мастер отмечают статусы по очереди. Никто не потеряется: видно, "
 "кто на каком этапе и что сейчас происходит с заказом."
 
+#: templates/index.html:105
 msgid "Xavfsiz to'lov"
 msgstr "Безопасная оплата"
 
+#: templates/index.html:106
 msgid "Pul ish bajarilgandagina ustaga o'tadi"
 msgstr "Деньги переходят мастеру только после выполнения работы"
 
+#: templates/index.html:107
 msgid ""
 "Usta narxni oldindan aytadi. Siz rozi bo'lgach, to'lov platformada ushlab "
 "turiladi va har bir bosqich bajarilganda ustaga o'tadi."
@@ -1893,9 +2495,11 @@ msgstr ""
 "Мастер называет цену заранее. После вашего согласия оплата удерживается на "
 "платформе и переходит мастеру по мере выполнения этапов."
 
+#: templates/index.html:110
 msgid "Narx oldindan"
 msgstr "Цена заранее"
 
+#: templates/index.html:110
 msgid ""
 "Usta smeta yuboradi. Rozi bo'lmaguningizcha ish boshlanmaydi va narx "
 "o'zgarmaydi."
@@ -1903,9 +2507,11 @@ msgstr ""
 "Мастер присылает смету. Пока вы не согласитесь, работа не начнётся, и цена "
 "не изменится."
 
+#: templates/index.html:111
 msgid "Pul ushlab turiladi"
 msgstr "Деньги удерживаются"
 
+#: templates/index.html:111
 msgid ""
 "To'lagan pulingiz ustaga emas, platformaga tushadi va bosqich bajarilguncha "
 "saqlanadi."
@@ -1913,9 +2519,11 @@ msgstr ""
 "Ваша оплата поступает не мастеру, а на платформу и хранится до выполнения "
 "этапа."
 
+#: templates/index.html:112
 msgid "Bosqichma-bosqich"
 msgstr "Поэтапно"
 
+#: templates/index.html:112
 #, python-format
 msgid ""
 "Katta ishda: 30%% avans va qolgani yakunda, yoki 3 teng qism — har biri o'z "
@@ -1924,9 +2532,11 @@ msgstr ""
 "Для крупной работы: 30%% аванс и остаток по завершении или 3 равные части — "
 "каждая на своём этапе."
 
+#: templates/index.html:113
 msgid "Nizo bo'lsa"
 msgstr "Если возник спор"
 
+#: templates/index.html:113
 msgid ""
 "«Muammo bor» deysiz — pul muzlatiladi va administrator ikkala tomonni "
 "eshitib hal qiladi."
@@ -1934,9 +2544,11 @@ msgstr ""
 "Нажимаете «Есть проблема» — деньги замораживаются, администратор выслушает "
 "обе стороны и примет решение."
 
+#: templates/index.html:123
 msgid "Narxni oldindan bilasiz"
 msgstr "Цену вы знаете заранее"
 
+#: templates/index.html:124
 msgid ""
 "Platforma narxlari. Usta joyida boshqa narx aytsa, sababini yozadi va siz "
 "farqni ko'rasiz."
@@ -1944,45 +2556,60 @@ msgstr ""
 "Цены платформы. Если мастер на месте назовёт другую цену, он укажет причину,"
 " а вы увидите разницу."
 
+#: templates/index.html:126 templates/masters/detail.html:84
 msgid "To'liq katalog"
 msgstr "Весь каталог"
 
+#: templates/index.html:142 templates/orders/customer.html:165
+#: templates/orders/master.html:108
 msgid "Xizmat"
 msgstr "Услуга"
 
+#: templates/index.html:142 templates/masters/detail.html:104
 msgid "Narx"
 msgstr "Цена"
 
+#: templates/index.html:144
 msgid "Ustani chaqirish (ta'mirlash buyurtma qilinsa)"
 msgstr "Вызов мастера (при заказе ремонта)"
 
+#: templates/index.html:144 templates/partials/price.html:2
 msgid "Bepul"
 msgstr "Бесплатно"
 
+#: templates/index.html:145
 msgid "Diagnostika (ta'mirlamasdan)"
 msgstr "Диагностика (без ремонта)"
 
+#: templates/index.html:145
 msgid "50 000 so'm"
 msgstr "50 000 сум"
 
+#: templates/index.html:146
 msgid "Kichik ta'mir (bitta detal almashtirish)"
 msgstr "Мелкий ремонт (замена одной детали)"
 
+#: templates/index.html:146
 msgid "100 000 so'mdan"
 msgstr "от 100 000 сум"
 
+#: templates/index.html:147
 msgid "Kapital ta'mir"
 msgstr "Капитальный ремонт"
 
+#: templates/index.html:147
 msgid "300 000 so'mdan"
 msgstr "от 300 000 сум"
 
+#: templates/index.html:159
 msgid "Vaqtingiz yo'qmi?"
 msgstr "Нет времени?"
 
+#: templates/index.html:160
 msgid "Ariza qoldiring — ustani o'zimiz topamiz"
 msgstr "Оставьте заявку — мастера подберём мы"
 
+#: templates/index.html:161
 msgid ""
 "Operatorimiz muammoingizga mos va sizga eng yaqin ustani biriktiradi. "
 "Buyurtma holatini SMS'dagi havola orqali kuzatasiz."
@@ -1990,30 +2617,39 @@ msgstr ""
 "Оператор подберёт подходящего мастера рядом с вами. Статус заказа можно "
 "отслеживать по ссылке из SMS."
 
+#: templates/index.html:168
 msgid "Arizani yuborib bo'lmadi:"
 msgstr "Не удалось отправить заявку:"
 
+#: templates/index.html:183
 msgid "Mijozlar fikri"
 msgstr "Отзывы клиентов"
 
+#: templates/index.html:184
 msgid "Mijozlarimiz nima deydi"
 msgstr "Что говорят наши клиенты"
 
+#: templates/index.html:190
 msgid "Baho qoldirildi, izohsiz."
 msgstr "Оценка без комментария."
 
+#: templates/index.html:215
 msgid "Maishiy texnika"
 msgstr "Бытовая техника"
 
+#: templates/index.html:216
 msgid "Ishlaydigan brendlarimiz"
 msgstr "Бренды, с которыми работаем"
 
+#: templates/index.html:234
 msgid "Ko'p beriladigan savollar"
 msgstr "Частые вопросы"
 
+#: templates/index.html:237
 msgid "Ariza qoldirish pullikmi?"
 msgstr "Оставить заявку — платно?"
 
+#: templates/index.html:237
 msgid ""
 "Yo'q, ariza qoldirish bepul. To'lov faqat usta bajargan ish uchun, narx "
 "ishni boshlashdan oldin kelishiladi."
@@ -2021,9 +2657,11 @@ msgstr ""
 "Нет, заявка бесплатная. Оплачивается только выполненная мастером работа, "
 "цена согласуется до начала."
 
+#: templates/index.html:238
 msgid "Pulim qayerda turadi va qachon ustaga o'tadi?"
 msgstr "Где хранятся мои деньги и когда они переходят мастеру?"
 
+#: templates/index.html:238
 msgid ""
 "Onlayn to'lagan pulingiz platformada ushlab turiladi. Ustaga u siz "
 "tasdiqlagan bosqichda o'tadi. Agar usta ishni yakunlagach siz 72 soat ichida"
@@ -2035,9 +2673,11 @@ msgstr ""
 "течение 72 часов, заказ подтвердится автоматически — мастер тоже должен быть"
 " защищён."
 
+#: templates/index.html:239
 msgid "Naqd to'lasam bo'ladimi?"
 msgstr "Можно заплатить наличными?"
 
+#: templates/index.html:239
 msgid ""
 "Ha, usta «naqd» rejani tanlashi mumkin. Lekin bu holda platforma pul "
 "bo'yicha kafolat bera olmaydi."
@@ -2045,9 +2685,11 @@ msgstr ""
 "Да, мастер может выбрать план «наличными». Но в этом случае платформа не "
 "даёт гарантий по оплате."
 
+#: templates/index.html:240
 msgid "Ish sifatsiz bo'lsa nima qilaman?"
 msgstr "Что делать, если работа выполнена плохо?"
 
+#: templates/index.html:240
 msgid ""
 "Buyurtma sahifasida «Muammo bor» tugmasini bosing. Ushlab turilgan pul "
 "muzlatiladi, administrator ikkala tomonni eshitib, pulni ustaga chiqaradi "
@@ -2057,9 +2699,11 @@ msgstr ""
 "заморожены, администратор выслушает обе стороны и выплатит их мастеру или "
 "вернёт вам."
 
+#: templates/index.html:241
 msgid "Ishga kafolat bormi?"
 msgstr "Есть ли гарантия на работу?"
 
+#: templates/index.html:241
 #, python-format
 msgid ""
 "Ha. Tasdiqlangan ishga %(n)s kun kafolat beriladi: o'sha muammo qaytalansa, "
@@ -2070,9 +2714,11 @@ msgstr ""
 " повторится, вы оставляете обращение на странице заказа, и мастер исправляет"
 " бесплатно. Если мастер не отвечает, подключается администратор."
 
+#: templates/index.html:242
 msgid "Ustalar qanday tekshiriladi?"
 msgstr "Как проверяются мастера?"
 
+#: templates/index.html:242
 msgid ""
 "Telefon raqami SMS orqali tasdiqlanadi, so'ng administrator shaxsini "
 "tekshiradi. Tasdiqlanmaguncha usta qidiruvda ko'rinmaydi."
@@ -2080,9 +2726,11 @@ msgstr ""
 "Номер телефона подтверждается по SMS, затем администратор проверяет "
 "личность. До подтверждения мастер не виден в поиске."
 
+#: templates/index.html:243
 msgid "Baholar soxta emasligini qanday bilaman?"
 msgstr "Как понять, что отзывы не фальшивые?"
 
+#: templates/index.html:243
 msgid ""
 "Baho faqat bajarilgan buyurtmadan keyin, buyurtmachi raqamini SMS bilan "
 "tasdiqlab qoldiriladi. Har bir buyurtma uchun bitta baho."
@@ -2090,9 +2738,11 @@ msgstr ""
 "Оценку можно оставить только после выполненного заказа, подтвердив номер "
 "заказчика по SMS. Один заказ — одна оценка."
 
+#: templates/index.html:244
 msgid "Joylashuvim nima uchun kerak?"
 msgstr "Зачем нужно моё местоположение?"
 
+#: templates/index.html:244
 msgid ""
 "Faqat sizga eng yaqin ustalarni ko'rsatish uchun. Koordinatalaringiz "
 "saqlanmaydi. Xohlamasangiz, tumanni tanlashingiz mumkin."
@@ -2100,9 +2750,11 @@ msgstr ""
 "Только чтобы показать ближайших мастеров. Координаты не сохраняются. Можно "
 "просто выбрать район."
 
+#: templates/index.html:253
 msgid "Siz ustamisiz?"
 msgstr "Вы мастер?"
 
+#: templates/index.html:254
 msgid ""
 "Yaqin atrofingizdagi mijozlardan buyurtma oling. To'lov oldindan "
 "kafolatlanadi, baholaringiz sizni boshqalardan ajratib turadi."
@@ -2110,12 +2762,15 @@ msgstr ""
 "Получайте заказы от клиентов рядом. Оплата гарантируется заранее, а рейтинг "
 "выделит вас среди других."
 
+#: templates/index.html:256
 msgid "Usta sifatida qo'shilish"
 msgstr "Присоединиться как мастер"
 
+#: templates/legal/base_legal.html:9
 msgid "Loyiha."
 msgstr "Проект."
 
+#: templates/legal/base_legal.html:9
 msgid ""
 "Bu matn yurist tomonidan hali tasdiqlanmagan namunaviy loyiha va yuridik "
 "kuchga ega emas."
@@ -2123,24 +2778,31 @@ msgstr ""
 "Этот текст — типовой проект, ещё не утверждённый юристом, и не имеет "
 "юридической силы."
 
+#: templates/legal/base_legal.html:12
 msgid "Oxirgi yangilanish"
 msgstr "Последнее обновление"
 
+#: templates/legal/base_legal.html:14
 msgid "Rekvizitlar"
 msgstr "Реквизиты"
 
+#: templates/legal/base_legal.html:16
 msgid "Nomi"
 msgstr "Наименование"
 
+#: templates/legal/base_legal.html:19
 msgid "Aloqa"
 msgstr "Контакты"
 
+#: templates/masters/_profile_fields.html:4
 msgid "Ish yo'nalishi"
 msgstr "Направление работы"
 
+#: templates/masters/_profile_fields.html:14
 msgid "Ish hududi"
 msgstr "Район работы"
 
+#: templates/masters/_profile_fields.html:15
 msgid ""
 "Mijozlar sizni masofa bo'yicha topadi. Aniq joylashuvingiz hech kimga "
 "ko'rsatilmaydi — xaritada ~1 km aniqlikda hudud chiqadi."
@@ -2148,48 +2810,62 @@ msgstr ""
 "Клиенты находят вас по расстоянию. Точное местоположение никому не "
 "показывается — на карте отображается район с точностью ~1 км."
 
+#: templates/masters/_profile_fields.html:19 templates/masters/list.html:13
+#: templates/masters/list.html:31
 msgid "Joylashuv"
 msgstr "Местоположение"
 
+#: templates/masters/_profile_fields.html:20
 msgid "Hozirgi joylashuvimni olish"
 msgstr "Взять текущее местоположение"
 
+#: templates/masters/_profile_fields.html:24
 msgid "Joylashuv saqlangan"
 msgstr "Местоположение сохранено"
 
+#: templates/masters/_profile_fields.html:25
 msgid "Joylashuvni xaritada belgilash"
 msgstr "Отметить местоположение на карте"
 
+#: templates/masters/_profile_fields.html:26
 msgid "Xarita yuklansa, joyingizni bosib ham belgilashingiz mumkin."
 msgstr "Если карта загрузилась, место можно отметить кликом."
 
+#: templates/masters/_seo_block.html:6
 #, python-format
 msgid "%(c)s: narxlar"
 msgstr "%(c)s: цены"
 
+#: templates/masters/_seo_block.html:10
 msgid "Barcha narxlar"
 msgstr "Все цены"
 
+#: templates/masters/_seo_block.html:15
 #, python-format
 msgid "%(c)s — Toshkent tumanlari"
 msgstr "%(c)s — районы Ташкента"
 
+#: templates/masters/_seo_block.html:19
 msgid "Viloyatlar"
 msgstr "Регионы"
 
+#: templates/masters/_seo_block.html:26
 #, python-format
 msgid "%(d)s: boshqa ustalar"
 msgstr "%(d)s: другие мастера"
 
+#: templates/masters/_seo_block.html:26
 msgid "Boshqa yo'nalishlar"
 msgstr "Другие направления"
 
+#: templates/masters/_seo_block.html:33
 msgid ""
 "Ustani tanlang yoki bepul ariza qoldiring — yaqin atrofdagi ustalar ko'radi."
 msgstr ""
 "Выберите мастера или оставьте бесплатную заявку — её увидят мастера "
 "поблизости."
 
+#: templates/masters/_seo_block.html:34
 msgid ""
 "Usta muammoni ko'rib narx taklif qiladi. Rozi bo'lmaguningizcha ish "
 "boshlanmaydi."
@@ -2197,72 +2873,94 @@ msgstr ""
 "Мастер осмотрит проблему и предложит цену. Работа не начнётся без вашего "
 "согласия."
 
+#: templates/masters/_seo_block.html:35
 msgid ""
 "Onlayn to'lov platformada ushlab turiladi va ish bajarilgach ustaga o'tadi."
 msgstr ""
 "Онлайн-оплата удерживается платформой и переходит мастеру после выполнения "
 "работы."
 
+#: templates/masters/_seo_block.html:36
 #, python-format
 msgid "Ishga %(n)s kun kafolat: muammo qaytalansa, usta bepul tuzatadi."
 msgstr ""
 "Гарантия на работу %(n)s дней: если проблема повторится, мастер исправит "
 "бесплатно."
 
+#: templates/masters/_seo_block.html:36
 msgid "Ishni tasdiqlab, ustani baholaysiz."
 msgstr "Вы подтверждаете работу и оцениваете мастера."
 
+#: templates/masters/dashboard.html:14
 #, python-format
 msgid "Salom, %(name)s"
 msgstr "Здравствуйте, %(name)s"
 
+#: templates/masters/dashboard.html:15
 msgid "Tekshiruvda"
 msgstr "На проверке"
 
+#: templates/masters/dashboard.html:16
 msgid "Buyurtma qabul qilyapman"
 msgstr "Принимаю заказы"
 
+#: templates/masters/dashboard.html:16
 msgid "Hozir bandman"
 msgstr "Сейчас занят"
 
+#: templates/masters/dashboard.html:21
 msgid "Band deb belgilash"
 msgstr "Отметить «занят»"
 
+#: templates/masters/dashboard.html:21
 msgid "Buyurtma qabul qilish"
 msgstr "Принимать заказы"
 
+#: templates/masters/dashboard.html:24 templates/masters/feed.html:23
+#: templates/payments/tariffs.html:4 templates/payments/tariffs.html:11
 msgid "Tariflar"
 msgstr "Тарифы"
 
+#: templates/masters/dashboard.html:25 templates/partials/master_card.html:23
 msgid "Profil"
 msgstr "Профиль"
 
+#: templates/masters/dashboard.html:26
 msgid "O'quv"
 msgstr "Обучение"
 
+#: templates/masters/dashboard.html:28
 msgid "Hujjatlar"
 msgstr "Документы"
 
+#: templates/masters/dashboard.html:29
 msgid "Ommaviy sahifa"
 msgstr "Публичная страница"
 
+#: templates/masters/dashboard.html:30 templates/orders/my_orders.html:17
 msgid "Chiqish"
 msgstr "Выйти"
 
+#: templates/masters/dashboard.html:35
 #, python-format
 msgid "#%(id)s buyurtma bo'yicha kafolat murojaati."
 msgstr "Гарантийное обращение по заказу #%(id)s."
 
+#: templates/masters/dashboard.html:35
 msgid "Mijoz muammo bildirdi — bepul tuzatib bering."
 msgstr "Клиент сообщил о проблеме — исправьте бесплатно."
 
+#: templates/masters/dashboard.html:35 templates/masters/dashboard.html:141
+#: templates/orders/my_orders.html:29
 msgid "Ochish"
 msgstr "Открыть"
 
+#: templates/masters/dashboard.html:39
 #, python-format
 msgid "Ishni boshlashga tayyorlik: %(d)s/%(t)s"
 msgstr "Готовность к работе: %(d)s/%(t)s"
 
+#: templates/masters/dashboard.html:45
 msgid ""
 "Platforma qoidalari bo'yicha qisqa darslar — 10 daqiqa. Xatolardan va "
 "nizolardan saqlaydi."
@@ -2270,48 +2968,63 @@ msgstr ""
 "Короткие уроки о правилах платформы — 10 минут. Помогают избежать ошибок и "
 "споров."
 
+#: templates/masters/dashboard.html:45
 msgid "Davom etish"
 msgstr "Продолжить"
 
+#: templates/masters/dashboard.html:48
 msgid "Hujjatlaringiz qabul qilinmadi."
 msgstr "Документы не приняты."
 
+#: templates/masters/dashboard.html:48
 msgid "Shaxsingizni tasdiqlang."
 msgstr "Подтвердите свою личность."
 
+#: templates/masters/dashboard.html:48
 msgid ""
 "Pasport va selfi yuklang — tekshirilgan ustalarga mijozlar ko'proq ishonadi."
 msgstr ""
 "Загрузите паспорт и селфи — проверенным мастерам клиенты доверяют больше."
 
+#: templates/masters/dashboard.html:48 templates/orders/_photos.html:39
 msgid "Yuklash"
 msgstr "Загрузить"
 
+#: templates/masters/dashboard.html:51
 msgid "Karta kiritilmagan."
 msgstr "Карта не указана."
 
+#: templates/masters/dashboard.html:51
 msgid "Hisobingizdagi pulni olish uchun profilda karta raqamini kiriting."
 msgstr "Чтобы получить деньги со счёта, укажите номер карты в профиле."
 
+#: templates/masters/dashboard.html:51
 msgid "Kiritish"
 msgstr "Указать"
 
+#: templates/masters/dashboard.html:54
 msgid "Profilingiz tekshirilmoqda."
 msgstr "Ваш профиль на проверке."
 
+#: templates/masters/dashboard.html:54
 msgid "Tasdiqlangandan keyin mijozlar sizni qidiruvda ko'radi."
 msgstr "После подтверждения клиенты увидят вас в поиске."
 
+#: templates/masters/dashboard.html:58
 msgid "Yangi buyurtmalar"
 msgstr "Новые заказы"
 
+#: templates/masters/dashboard.html:61
 msgid "Hisobingizda (so'm)"
 msgstr "На вашем счёте (сум)"
 
+#: templates/masters/dashboard.html:61
 #, python-format
 msgid "%(h)s kafolatlangan"
 msgstr "%(h)s гарантировано"
 
+#: templates/masters/dashboard.html:62 templates/masters/detail.html:31
+#: templates/masters/list.html:17
 #, python-format
 msgid "%(n)s ta baho"
 msgid_plural "%(n)s ta baho"
@@ -2319,32 +3032,41 @@ msgstr[0] "%(n)s оценка"
 msgstr[1] "%(n)s оценки"
 msgstr[2] "%(n)s оценок"
 
+#: templates/masters/dashboard.html:68
 msgid "Ishonchlilik"
 msgstr "Надёжность"
 
+#: templates/masters/dashboard.html:69
 #, python-format
 msgid ""
 "So'nggi %(d)s kun bo'yicha. Ball qidiruvdagi o'rningizga ta'sir qiladi."
 msgstr "За последние %(d)s дней. Балл влияет на ваше место в поиске."
 
+#: templates/masters/dashboard.html:75
 msgid "Qabul qilingan"
 msgstr "Принято"
 
+#: templates/masters/dashboard.html:76
 msgid "Voz kechilgan"
 msgstr "Отказов"
 
+#: templates/masters/dashboard.html:77
 msgid "O'z vaqtida kelish"
 msgstr "Приезд вовремя"
 
+#: templates/masters/dashboard.html:78
 msgid "Javob berish"
 msgstr "Ответ"
 
+#: templates/masters/dashboard.html:78
 msgid "daq"
 msgstr "мин"
 
+#: templates/masters/dashboard.html:79
 msgid "Nizolar"
 msgstr "Споры"
 
+#: templates/masters/dashboard.html:82
 msgid ""
 "Bir nechta buyurtmadan keyin ball paydo bo'ladi. Yangi ustalar qidiruvda "
 "jazolanmaydi."
@@ -2352,41 +3074,53 @@ msgstr ""
 "Балл появится после нескольких заказов. Новые мастера в поиске не "
 "понижаются."
 
+#: templates/masters/dashboard.html:88
 msgid "Taqvim"
 msgstr "Календарь"
 
+#: templates/masters/dashboard.html:97
 msgid "vaqti o'tdi"
 msgstr "время прошло"
 
+#: templates/masters/dashboard.html:104
 msgid "Vaqt belgilanmagan"
 msgstr "Время не назначено"
 
+#: templates/masters/dashboard.html:106 templates/orders/master.html:96
 msgid "Vaqtni belgilash"
 msgstr "Назначить время"
 
+#: templates/masters/dashboard.html:116
 msgid "Buyurtmalar"
 msgstr "Заказы"
 
+#: templates/masters/dashboard.html:117
 msgid "Holat bo'yicha filtr"
 msgstr "Фильтр по статусу"
 
+#: templates/masters/dashboard.html:145
 msgid "Bu bo'limda buyurtmalar yo'q."
 msgstr "В этом разделе нет заказов."
 
+#: templates/masters/dashboard.html:158
 msgid "Reytingingiz"
 msgstr "Ваш рейтинг"
 
+#: templates/masters/dashboard.html:169
 msgid "Hali baho yo'q. Ish yakunlangach mijoz tasdiqlaydi va sizni baholaydi."
 msgstr ""
 "Оценок пока нет. После завершения работы клиент подтвердит результат и "
 "оценит вас."
 
+#: templates/masters/dashboard.html:174
 msgid "Ulangan. Yangi buyurtmalar Telegram'ga tugmalar bilan keladi."
 msgstr "Подключено. Новые заказы приходят в Telegram с кнопками."
 
+#: templates/masters/dashboard.html:175
 msgid "Uzish"
 msgstr "Отключить"
 
+#: templates/masters/dashboard.html:177
 msgid ""
 "Buyurtmalarni Telegram'da oling va bir tugma bilan qabul qiling — saytga "
 "kirish shart emas."
@@ -2394,12 +3128,15 @@ msgstr ""
 "Получайте заказы в Telegram и принимайте одной кнопкой — заходить на сайт не"
 " нужно."
 
+#: templates/masters/dashboard.html:178
 msgid "Telegram'ni ulash"
 msgstr "Подключить Telegram"
 
+#: templates/masters/dashboard.html:181
 msgid "Telefonda ilova"
 msgstr "Приложение на телефоне"
 
+#: templates/masters/dashboard.html:182
 msgid ""
 "Saytni telefon ekraniga o'rnating va yangi buyurtma haqida darhol "
 "bildirishnoma oling."
@@ -2407,15 +3144,19 @@ msgstr ""
 "Установите сайт на экран телефона и сразу получайте уведомления о новых "
 "заказах."
 
+#: templates/masters/dashboard.html:184
 msgid "Ilovani o'rnatish"
 msgstr "Установить приложение"
 
+#: templates/masters/dashboard.html:185 templates/orders/customer.html:214
 msgid "Bildirishnomalarni yoqish"
 msgstr "Включить уведомления"
 
+#: templates/masters/dashboard.html:188
 msgid "Usta do'stingizni taklif qiling"
 msgstr "Пригласите знакомого мастера"
 
+#: templates/masters/dashboard.html:189
 #, python-format
 msgid ""
 "Taklif qilgan ustangiz tekshiruvdan o'tib, birinchi buyurtmasini bajarsa — "
@@ -2424,67 +3165,88 @@ msgstr ""
 "Если приглашённый мастер пройдёт проверку и выполнит первый заказ — вам "
 "%(d)s дней ТОП бесплатно."
 
+#: templates/masters/dashboard.html:191 templates/orders/customer.html:111
+#: templates/orders/master.html:61
 msgid "Havola"
 msgstr "Ссылка"
 
+#: templates/masters/dashboard.html:192 templates/orders/customer.html:112
+#: templates/orders/master.html:62
 msgid "Nusxa"
 msgstr "Копировать"
 
+#: templates/masters/dashboard.html:196
 msgid "To'lovlar"
 msgstr "Выплаты"
 
+#: templates/masters/dashboard.html:197
 #, python-format
 msgid "Keyingi to'lov: <strong>%(d)s</strong>"
 msgstr "Следующая выплата: <strong>%(d)s</strong>"
 
+#: templates/masters/dashboard.html:198
 #, python-format
 msgid "O'tkazilmoqda: %(a)s so'm"
 msgstr "Переводится: %(a)s сум"
 
+#: templates/masters/dashboard.html:199
 #, python-format
 msgid "Karta •••• %(c)s"
 msgstr "Карта •••• %(c)s"
 
+#: templates/masters/dashboard.html:199
 #, python-format
 msgid "%(m)s so'mdan kam summa keyingi haftaga o'tadi."
 msgstr "Сумма меньше %(m)s сум переносится на следующую неделю."
 
+#: templates/masters/dashboard.html:199
 msgid "Karta"
 msgstr "Карта"
 
+#: templates/masters/detail.html:9
 msgid "Barcha ustalar"
 msgstr "Все мастера"
 
+#: templates/masters/detail.html:15
 msgid "Profil hali tasdiqlanmagan — mijozlar uni ko'rmaydi."
 msgstr "Профиль ещё не подтверждён — клиенты его не видят."
 
+#: templates/masters/detail.html:22 templates/partials/master_card.html:6
 msgid "Tekshirilgan usta"
 msgstr "Проверенный мастер"
 
+#: templates/masters/detail.html:25
 #, python-format
 msgid "Odatda ~%(m)s daqiqada javob beradi"
 msgstr "Обычно отвечает за ~%(m)s мин"
 
+#: templates/masters/detail.html:26
 #, python-format
 msgid "O'z vaqtida keladi: %(p)s%%"
 msgstr "Приезжает вовремя: %(p)s%%"
 
+#: templates/masters/detail.html:29
 msgid "Administrator usta hujjatlarini tekshirgan"
 msgstr "Администратор проверил документы мастера"
 
+#: templates/masters/detail.html:29 templates/partials/master_card.html:7
 msgid "Hujjatlari tekshirilgan"
 msgstr "Документы проверены"
 
+#: templates/masters/detail.html:32
 msgid "Hali baholanmagan — birinchi mijoz bo'ling"
 msgstr "Оценок пока нет — станьте первым клиентом"
 
+#: templates/masters/detail.html:33
 #, python-format
 msgid "Ishga %(n)s kun kafolat"
 msgstr "Гарантия на работу %(n)s дней"
 
+#: templates/masters/detail.html:38
 msgid "Tajriba"
 msgstr "Опыт"
 
+#: templates/masters/detail.html:38
 #, python-format
 msgid "%(y)s yil"
 msgid_plural "%(y)s yil"
@@ -2492,70 +3254,93 @@ msgstr[0] "%(y)s год"
 msgstr[1] "%(y)s года"
 msgstr[2] "%(y)s лет"
 
+#: templates/masters/detail.html:41
 msgid "Xizmat radiusi"
 msgstr "Радиус выезда"
 
+#: templates/masters/detail.html:41
 #, python-format
 msgid "%(r)s km gacha boradi"
 msgstr "выезжает до %(r)s км"
 
+#: templates/masters/detail.html:43
 msgid "Usta haqida"
 msgstr "О мастере"
 
+#: templates/masters/detail.html:48
 msgid "Mezonlar bo'yicha baho"
 msgstr "Оценка по критериям"
 
+#: templates/masters/detail.html:63
 msgid "Bajarilgan ishlar"
 msgstr "Выполненные работы"
 
+#: templates/masters/detail.html:88
 msgid "Platforma narxlari. Usta aniq narxni ko'rib chiqqach taklif qiladi."
 msgstr "Цены платформы. Точную цену мастер предложит после осмотра."
 
+#: templates/masters/detail.html:93
 msgid "Mijozlar baholari"
 msgstr "Отзывы клиентов"
 
+#: templates/masters/detail.html:103
 msgid "Sifat"
 msgstr "Качество"
 
+#: templates/masters/detail.html:103 templates/orders/master.html:94
 msgid "Vaqt"
 msgstr "Время"
 
+#: templates/masters/detail.html:104
 msgid "Muomala"
 msgstr "Вежливость"
 
+#: templates/masters/detail.html:108
 msgid "Baholar faqat bajarilgan buyurtmadan keyin qoldiriladi."
 msgstr "Оценки оставляют только после выполненного заказа."
 
+#: templates/masters/detail.html:123
 msgid "Bu sizning profilingiz"
 msgstr "Это ваш профиль"
 
+#: templates/masters/detail.html:124
 msgid "Mijozlar shu sahifadan sizga ariza qoldiradi."
 msgstr "С этой страницы клиенты оставляют вам заявки."
 
+#: templates/masters/detail.html:125 templates/masters/profile_edit.html:4
+#: templates/masters/profile_edit.html:12
 msgid "Profilni tahrirlash"
 msgstr "Редактировать профиль"
 
+#: templates/masters/detail.html:127
 msgid "Usta hozir band"
 msgstr "Мастер сейчас занят"
 
+#: templates/masters/detail.html:128
 msgid "Usta vaqtincha yangi buyurtma qabul qilmayapti."
 msgstr "Мастер временно не принимает новые заказы."
 
+#: templates/masters/detail.html:129
 msgid "Boshqa ustani topish"
 msgstr "Найти другого мастера"
 
+#: templates/masters/detail.html:131 templates/masters/detail.html:144
 msgid "Ustani chaqirish"
 msgstr "Вызвать мастера"
 
+#: templates/masters/detail.html:132
 msgid "Arizani ustaga yuborish"
 msgstr "Отправить заявку мастеру"
 
+#: templates/masters/detail.html:137
 msgid "Ustaning ish hududi"
 msgstr "Район работы мастера"
 
+#: templates/masters/documents.html:4 templates/masters/documents.html:13
 msgid "Shaxsni tasdiqlash"
 msgstr "Проверка личности"
 
+#: templates/masters/documents.html:14
 msgid ""
 "Mijozlar uyiga begona odamni kiritadi — shuning uchun har bir ustaning "
 "shaxsini tekshiramiz. Tasdiqlangan ustalar profilida «Hujjatlari "
@@ -2565,24 +3350,30 @@ msgstr ""
 "каждого мастера. В профиле проверенных мастеров появляется значок «Документы"
 " проверены», и им доверяют больше."
 
+#: templates/masters/documents.html:17
 msgid "Hujjatlaringiz tasdiqlangan"
 msgstr "Ваши документы подтверждены"
 
+#: templates/masters/documents.html:19
 msgid ""
 "administrator 1 ish kuni ichida ko'rib chiqadi. Natija haqida xabar olasiz."
 msgstr ""
 "администратор проверит их в течение 1 рабочего дня. Вы получите уведомление "
 "о результате."
 
+#: templates/masters/documents.html:21
 msgid "Hujjatlar qabul qilinmadi"
 msgstr "Документы не приняты"
 
+#: templates/masters/documents.html:21
 msgid "Qayta yuklang."
 msgstr "Загрузите заново."
 
+#: templates/masters/documents.html:34
 msgid "ixtiyoriy"
 msgstr "необязательно"
 
+#: templates/masters/documents.html:36
 msgid ""
 "Rasm, F.I.Sh. va hujjat raqami aniq o'qiladigan bo'lsin. Yaltiramasin, "
 "burchaklari kesilmasin."
@@ -2590,6 +3381,7 @@ msgstr ""
 "Фото, ФИО и номер документа должны чётко читаться. Без бликов, углы не "
 "обрезаны."
 
+#: templates/masters/documents.html:37
 msgid ""
 "Hujjatni yuzingiz yonida ushlab rasmga tushing — yuz va hujjat aniq "
 "ko'rinsin."
@@ -2597,6 +3389,7 @@ msgstr ""
 "Сфотографируйтесь, держа документ рядом с лицом, — лицо и документ должны "
 "быть хорошо видны."
 
+#: templates/masters/documents.html:40
 msgid ""
 "Hujjatlar saytda e'lon qilinmaydi va mijozlarga ko'rsatilmaydi. Ular yopiq "
 "joyda saqlanadi va faqat tekshiruvchi administrator ko'radi. Rasmdagi "
@@ -2606,9 +3399,11 @@ msgstr ""
 " закрытом хранилище, их видит только проверяющий администратор. Данные о "
 "местоположении (GPS) в фото удаляются автоматически."
 
+#: templates/masters/documents.html:41
 msgid "Tekshiruvga yuborish"
 msgstr "Отправить на проверку"
 
+#: templates/masters/feed.html:14
 msgid ""
 "Yo'nalishingiz va hududingizga mos, hali ustasi yo'q buyurtmalar. Birinchi "
 "bo'lib olgan usta bajaradi."
@@ -2616,10 +3411,12 @@ msgstr ""
 "Заказы без мастера, подходящие по вашему направлению и району. Выполняет "
 "тот, кто взял первым."
 
+#: templates/masters/feed.html:16
 #, python-format
 msgid "Faol: %(a)s / %(l)s"
 msgstr "Активных: %(a)s / %(l)s"
 
+#: templates/masters/feed.html:20
 msgid ""
 "Buyurtma olish uchun profilingiz tasdiqlangan va «buyurtma qabul qilaman» "
 "holatida bo'lishi kerak."
@@ -2627,22 +3424,35 @@ msgstr ""
 "Чтобы брать заказы, профиль должен быть подтверждён и в статусе «принимаю "
 "заказы»."
 
+#: templates/masters/feed.html:23
 #, python-format
 msgid "PRO ustalar yangi buyurtmani %(m)s daqiqa oldin oladi."
 msgstr "Мастера PRO получают новый заказ на %(m)s минут раньше."
 
+#: templates/masters/feed.html:36 templates/masters/profile_edit.html:37
+#: templates/orders/_money.html:9 templates/orders/_money.html:21
+#: templates/orders/_money.html:45 templates/orders/_warranty.html:20
+#: templates/orders/customer.html:38 templates/orders/customer.html:93
+#: templates/orders/customer.html:166 templates/orders/master.html:49
+#: templates/orders/master.html:109 templates/payments/demo_checkout.html:15
+#: templates/payments/demo_checkout.html:18 templates/payments/tariffs.html:25
+#: templates/payments/tariffs.html:52
 msgid "so'm"
 msgstr "сум"
 
+#: templates/masters/feed.html:41
 msgid "Joylashuv ko'rsatilmagan"
 msgstr "Местоположение не указано"
 
+#: templates/masters/feed.html:53
 msgid "Olish"
 msgstr "Взять"
 
+#: templates/masters/feed.html:56
 msgid "PRO ustunligi"
 msgstr "Преимущество PRO"
 
+#: templates/masters/feed.html:62
 msgid ""
 "Hozircha mos ochiq buyurtma yo'q. Telegram'ni ulasangiz, yangi buyurtma "
 "chiqishi bilan xabar olasiz."
@@ -2650,6 +3460,7 @@ msgstr ""
 "Подходящих открытых заказов пока нет. Подключите Telegram — и получите "
 "уведомление, как только появится новый заказ."
 
+#: templates/masters/feed.html:64
 msgid ""
 "Mijozning ismi, telefoni va aniq manzili buyurtmani olganingizdan keyin "
 "ko'rinadi."
@@ -2657,9 +3468,11 @@ msgstr ""
 "Имя, телефон и точный адрес клиента будут видны после того, как вы возьмёте "
 "заказ."
 
+#: templates/masters/for_masters.html:3
 msgid "Ustalar uchun — buyurtmalarni bepul oling"
 msgstr "Мастерам — получайте заказы бесплатно"
 
+#: templates/masters/for_masters.html:4
 msgid ""
 "Santexnik, elektrik va maishiy texnika ustalari uchun: yaqin atrofdagi "
 "buyurtmalar, kafolatlangan to'lov, haqiqiy baholar. Ro'yxatdan o'tish bepul."
@@ -2667,12 +3480,15 @@ msgstr ""
 "Для сантехников, электриков и мастеров по бытовой технике: заказы рядом, "
 "гарантированная оплата, реальные отзывы. Регистрация бесплатная."
 
+#: templates/masters/for_masters.html:8 templates/masters/register.html:11
 msgid "Ustalar uchun"
 msgstr "Для мастеров"
 
+#: templates/masters/for_masters.html:9
 msgid "Uyingizga yaqin buyurtmalar — oylik to'lovsiz"
 msgstr "Заказы рядом с домом — без абонентской платы"
 
+#: templates/masters/for_masters.html:10
 msgid ""
 "Mijoz arizasi telefoningizga keladi, narxni o'zingiz aytasiz, pul ish "
 "bajarilgach kafolatlangan holda hisobingizga o'tadi."
@@ -2680,9 +3496,11 @@ msgstr ""
 "Заявка клиента приходит на телефон, цену называете вы, деньги после работы "
 "гарантированно поступают на ваш счёт."
 
+#: templates/masters/for_masters.html:12
 msgid "Bepul ro'yxatdan o'tish"
 msgstr "Бесплатная регистрация"
 
+#: templates/masters/for_masters.html:15
 #, python-format
 msgid ""
 "Tasdiqlangan har bir yangi ustaga %(d)s kun bepul TOP — qidiruvda birinchi "
@@ -2691,9 +3509,11 @@ msgstr ""
 "Каждому новому подтверждённому мастеру %(d)s дней ТОП бесплатно — в первых "
 "строках поиска."
 
+#: templates/masters/for_masters.html:22
 msgid "Yaqin buyurtmalar"
 msgstr "Заказы рядом"
 
+#: templates/masters/for_masters.html:22
 msgid ""
 "Yo'nalishingiz va xizmat radiusingizga mos arizalar. O'zingiz tanlaysiz — "
 "majburiy emas."
@@ -2701,9 +3521,11 @@ msgstr ""
 "Заявки по вашим направлениям и радиусу выезда. Выбираете сами — без "
 "обязательств."
 
+#: templates/masters/for_masters.html:23
 msgid "Kafolatlangan to'lov"
 msgstr "Гарантированная оплата"
 
+#: templates/masters/for_masters.html:23
 msgid ""
 "Mijoz oldindan to'laydi, pul bosqich bajarilgach sizga o'tadi. Bepul ishlab "
 "qolmaysiz."
@@ -2711,25 +3533,31 @@ msgstr ""
 "Клиент платит заранее, деньги переходят к вам после этапа. Вы не работаете "
 "бесплатно."
 
+#: templates/masters/for_masters.html:24
 msgid "Haqiqiy baholar"
 msgstr "Реальные отзывы"
 
+#: templates/masters/for_masters.html:24
 msgid "Baho faqat bajarilgan ishdan keyin. Yaxshi ish — ko'proq buyurtma."
 msgstr ""
 "Отзыв — только после выполненной работы. Хорошая работа — больше заказов."
 
+#: templates/masters/for_masters.html:25
 msgid "Telegram'da ishlash"
 msgstr "Работа в Telegram"
 
+#: templates/masters/for_masters.html:25
 msgid ""
 "Buyurtmani bir tugma bilan oling, holatni Telegram'dan belgilang, rasm "
 "yuboring."
 msgstr ""
 "Берите заказ одной кнопкой, отмечайте этапы в Telegram, отправляйте фото."
 
+#: templates/masters/for_masters.html:26
 msgid "Har hafta kartaga"
 msgstr "Каждую неделю на карту"
 
+#: templates/masters/for_masters.html:26
 #, python-format
 msgid ""
 "Komissiya faqat onlayn to'langan ishdan — %(f)s%% (PRO tarifida %(p)s%%). "
@@ -2738,9 +3566,11 @@ msgstr ""
 "Комиссия только с работ, оплаченных онлайн, — %(f)s%% (на тарифе PRO "
 "%(p)s%%). Абонентской платы нет."
 
+#: templates/masters/for_masters.html:27
 msgid "Adolatli nizolar"
 msgstr "Честные споры"
 
+#: templates/masters/for_masters.html:27
 msgid ""
 "Hamma narsa yozma: narx, bosqichlar, yozishma, rasmlar. Nizoda administrator"
 " dalilga qaraydi."
@@ -2748,40 +3578,52 @@ msgstr ""
 "Всё письменно: цена, этапы, переписка, фото. При споре администратор смотрит"
 " на доказательства."
 
+#: templates/masters/for_masters.html:35
 #, python-format
 msgid "So'nggi 30 kunda %(n)s ta ariza"
 msgstr "За последние 30 дней — заявок: %(n)s"
 
+#: templates/masters/for_masters.html:43
 msgid "Qanday boshlash"
 msgstr "Как начать"
 
+#: templates/masters/for_masters.html:45
 msgid "Ro'yxatdan o'ting"
 msgstr "Зарегистрируйтесь"
 
+#: templates/masters/for_masters.html:45
 msgid "telefon (SMS kod), yo'nalishlar, ish hududi. 5 daqiqa."
 msgstr "телефон (SMS-код), направления, район работы. 5 минут."
 
+#: templates/masters/for_masters.html:46
 msgid "Hujjat yuklang"
 msgstr "Загрузите документы"
 
+#: templates/masters/for_masters.html:46
 msgid "pasport va selfi; administrator 1 ish kunida tekshiradi."
 msgstr "паспорт и селфи; администратор проверит за 1 рабочий день."
 
+#: templates/masters/for_masters.html:47
 msgid "Qisqa kursdan o'ting"
 msgstr "Пройдите короткий курс"
 
+#: templates/masters/for_masters.html:47
 msgid "platforma qoidalari, 10 daqiqa."
 msgstr "правила платформы, 10 минут."
 
+#: templates/masters/for_masters.html:48
 msgid "Telegram'ni ulang va buyurtma oling"
 msgstr "Подключите Telegram и берите заказы"
 
+#: templates/masters/for_masters.html:48
 msgid "birinchi buyurtma odatda shu hafta."
 msgstr "первый заказ обычно на этой же неделе."
 
+#: templates/masters/for_masters.html:57
 msgid "Ro'yxatdan o'tish pullikmi?"
 msgstr "Регистрация платная?"
 
+#: templates/masters/for_masters.html:57
 msgid ""
 "Yo'q. Obuna to'lovi yo'q; komissiya faqat platforma orqali onlayn to'langan "
 "ishdan olinadi. Naqd to'lovda komissiya yo'q."
@@ -2789,9 +3631,11 @@ msgstr ""
 "Нет. Абонентской платы нет; комиссия берётся только с работ, оплаченных "
 "онлайн через платформу. С наличных комиссии нет."
 
+#: templates/masters/for_masters.html:58
 msgid "Narxni kim belgilaydi?"
 msgstr "Кто устанавливает цену?"
 
+#: templates/masters/for_masters.html:58
 #, python-format
 msgid ""
 "Siz. Muammoni ko'rib narx taklif qilasiz, mijoz rozi bo'lgach ish "
@@ -2801,9 +3645,11 @@ msgstr ""
 "клиента. Если цена отличается от каталожной больше чем на 20%%, указываете "
 "причину."
 
+#: templates/masters/for_masters.html:59
 msgid "Pulni qachon olaman?"
 msgstr "Когда я получу деньги?"
 
+#: templates/masters/for_masters.html:59
 #, python-format
 msgid ""
 "Bosqich bajarilgach pul hisobingizga o'tadi va har hafta kartangizga "
@@ -2812,9 +3658,11 @@ msgstr ""
 "После этапа деньги поступают на ваш счёт и каждую неделю переводятся на "
 "карту (от %(m)s сум)."
 
+#: templates/masters/for_masters.html:60
 msgid "Buyurtma olishga majburmanmi?"
 msgstr "Обязан ли я брать заказы?"
 
+#: templates/masters/for_masters.html:60
 msgid ""
 "Yo'q. Band bo'lsangiz «Band» rejimini yoqing yoki dam olish kunlarini "
 "belgilang — qidiruvdan vaqtincha yashirinasiz."
@@ -2822,73 +3670,95 @@ msgstr ""
 "Нет. Если заняты — включите режим «Занят» или отметьте выходные: вы временно"
 " скроетесь из поиска."
 
+#: templates/masters/lesson.html:9
 msgid "Barcha darslar"
 msgstr "Все уроки"
 
+#: templates/masters/lesson.html:10
 #, python-format
 msgid "Dars %(p)s / %(t)s"
 msgstr "Урок %(p)s / %(t)s"
 
+#: templates/masters/lesson.html:10
 msgid "o'qilgan"
 msgstr "прочитано"
 
+#: templates/masters/lesson.html:15
 msgid "Tushunarli — keyingi dars"
 msgstr "Понятно — следующий урок"
 
+#: templates/masters/lesson.html:15
 msgid "Kursni tugatish"
 msgstr "Завершить курс"
 
+#: templates/masters/lessons.html:3 templates/masters/lessons.html:10
 msgid "O'quv bo'limi"
 msgstr "Обучение"
 
+#: templates/masters/lessons.html:11
 msgid ""
 "Platforma qoidalari, narx, to'lov, nizo va kafolat haqida qisqa darslar."
 msgstr "Короткие уроки о правилах, цене, оплате, спорах и гарантии."
 
+#: templates/masters/lessons.html:13
 #, python-format
 msgid "Boshlang'ich kurs: %(d)s / %(t)s"
 msgstr "Вводный курс: %(d)s / %(t)s"
 
+#: templates/masters/lessons.html:21
 msgid "Hozircha dars yo'q."
 msgstr "Уроков пока нет."
 
+#: templates/masters/list.html:5
 #, python-format
 msgid "%(c)s: yaqin atrofdagi tekshirilgan ustalar, baholar va masofa."
 msgstr "%(c)s: проверенные мастера рядом, отзывы и расстояние."
 
+#: templates/masters/list.html:5
 msgid ""
 "Yaqin atrofdagi tekshirilgan ustalar: santexnik, elektrik, maishiy texnika."
 msgstr "Проверенные мастера рядом: сантехники, электрики, бытовая техника."
 
+#: templates/masters/list.html:17
 #, python-format
 msgid "narxlar %(p)s so'mdan"
 msgstr "цены от %(p)s сум"
 
+#: templates/masters/list.html:19
 #, python-format
 msgid "%(place)s atrofida %(r)s km radiusda"
 msgstr "%(place)s, радиус %(r)s км"
 
+#: templates/masters/list.html:19
 msgid "Joylashuvni yoqsangiz, eng yaqin ustalarni birinchi ko'rsatamiz"
 msgstr "Включите геолокацию — сначала покажем ближайших мастеров"
 
+#: templates/masters/list.html:24 templates/orders/customer.html:167
+#: templates/orders/master.html:110
 msgid "Yo'nalish"
 msgstr "Направление"
 
+#: templates/masters/list.html:33
 msgid "Joriy joylashuv"
 msgstr "Текущее местоположение"
 
+#: templates/masters/list.html:40
 msgid "Radius"
 msgstr "Радиус"
 
+#: templates/masters/list.html:46
 msgid "Saralash"
 msgstr "Сортировка"
 
+#: templates/masters/list.html:48
 msgid "Eng yaqin"
 msgstr "Ближайшие"
 
+#: templates/masters/list.html:49
 msgid "Eng yuqori baho"
 msgstr "Лучшие по рейтингу"
 
+#: templates/masters/list.html:62
 #, python-format
 msgid "%(n)s ta usta topildi"
 msgid_plural "%(n)s ta usta topildi"
@@ -2896,65 +3766,85 @@ msgstr[0] "Найден %(n)s мастер"
 msgstr[1] "Найдено %(n)s мастера"
 msgstr[2] "Найдено %(n)s мастеров"
 
+#: templates/masters/list.html:62
 msgid "Usta topilmadi"
 msgstr "Мастера не найдены"
 
+#: templates/masters/list.html:63
 msgid "Filtrlarni tozalash"
 msgstr "Сбросить фильтры"
 
+#: templates/masters/list.html:73
 msgid "Sahifalar"
 msgstr "Страницы"
 
+#: templates/masters/list.html:85
 msgid "Bu hududda hozircha mos usta yo'q"
 msgstr "В этом районе пока нет подходящих мастеров"
 
+#: templates/masters/list.html:86
 msgid ""
 "Radiusni kattalashtiring yoki ariza qoldiring — operatorimiz ustani o'zi "
 "topib beradi."
 msgstr "Увеличьте радиус или оставьте заявку — оператор подберёт мастера сам."
 
+#: templates/masters/list.html:88
 msgid "50 km gacha kengaytirish"
 msgstr "Расширить до 50 км"
 
+#: templates/masters/list.html:100
 msgid "Ustalar xaritasi"
 msgstr "Карта мастеров"
 
+#: templates/masters/list.html:101
 msgid ""
 "Xaritada ustalarning taxminiy hududi ko'rsatiladi (~1 km aniqlikda) — aniq "
 "manzil maxfiy."
 msgstr ""
 "На карте показан примерный район мастера (~1 км) — точный адрес скрыт."
 
+#: templates/masters/login.html:11
 msgid "Ustalar kabineti"
 msgstr "Кабинет мастера"
 
+#: templates/masters/login.html:12
 msgid "Ro'yxatdan o'tgan telefon raqamingiz va parolingiz bilan kiring."
 msgstr "Войдите по зарегистрированному номеру телефона и паролю."
 
+#: templates/masters/login.html:24
 msgid "Parolni unutdingizmi?"
 msgstr "Забыли пароль?"
 
+#: templates/masters/login.html:25
 msgid "Hali ro'yxatdan o'tmaganmisiz?"
 msgstr "Ещё не зарегистрированы?"
 
+#: templates/masters/login.html:26
 msgid "Buyurtmachimisiz?"
 msgstr "Вы заказчик?"
 
+#: templates/masters/login.html:26
 msgid "Buyurtmalarimga SMS bilan kirish"
 msgstr "Войти в мои заказы по SMS"
 
+#: templates/masters/password_reset.html:4
+#: templates/masters/password_reset.html:11
 msgid "Parolni tiklash"
 msgstr "Восстановление пароля"
 
+#: templates/masters/password_reset.html:12
 msgid "Ro'yxatdan o'tgan raqamingizga SMS kod yuboramiz."
 msgstr "Отправим SMS-код на зарегистрированный номер."
 
+#: templates/masters/password_reset.html:19
 msgid "Parolni saqlash"
 msgstr "Сохранить пароль"
 
+#: templates/masters/profile_edit.html:21
 msgid "Pul olish"
 msgstr "Получение денег"
 
+#: templates/masters/profile_edit.html:22
 msgid ""
 "Onlayn to'langan buyurtmalar uchun pul shu kartaga o'tkaziladi. Karta "
 "kiritilmagan bo'lsa, o'tkazma kechikadi."
@@ -2962,15 +3852,20 @@ msgstr ""
 "Деньги за заказы, оплаченные онлайн, переводятся на эту карту. Если карта не"
 " указана, перевод задержится."
 
+#: templates/masters/profile_edit.html:29
+#: templates/masters/work_schedule.html:30
 msgid "Saqlash"
 msgstr "Сохранить"
 
+#: templates/masters/profile_edit.html:30
 msgid "Ommaviy profilni ko'rish"
 msgstr "Открыть публичный профиль"
 
+#: templates/masters/profile_edit.html:35
 msgid "So'nggi o'tkazmalar"
 msgstr "Последние переводы"
 
+#: templates/masters/profile_edit.html:37
 #, python-format
 msgid "%(n)s ta to'lov"
 msgid_plural "%(n)s ta to'lov"
@@ -2978,9 +3873,11 @@ msgstr[0] "%(n)s платёж"
 msgstr[1] "%(n)s платежа"
 msgstr[2] "%(n)s платежей"
 
+#: templates/masters/register.html:4
 msgid "Usta sifatida ro'yxatdan o'tish"
 msgstr "Регистрация мастера"
 
+#: templates/masters/register.html:13
 msgid ""
 "Bepul. Profilingiz administrator tekshiruvidan so'ng (odatda 1 ish kuni) "
 "qidiruvda ko'rinadi."
@@ -2988,48 +3885,66 @@ msgstr ""
 "Бесплатно. Профиль появится в поиске после проверки администратором (обычно "
 "1 рабочий день)."
 
+#: templates/masters/register.html:21
 msgid "Raqamingizni SMS kod bilan tasdiqlang"
 msgstr "Подтвердите номер кодом из SMS"
 
+#: templates/masters/register.html:28
 msgid "Akkaunt"
 msgstr "Аккаунт"
 
+#: templates/masters/register.html:37
 msgid "Parol kamida 8 ta belgi, faqat raqamlardan iborat bo'lmasin."
 msgstr "Пароль — не менее 8 символов, не только из цифр."
 
+#: templates/masters/register.html:43
 msgid "Ro'yxatdan o'tish bilan siz shartlarni qabul qilasiz"
 msgstr "Регистрируясь, вы принимаете условия"
 
+#: templates/masters/register.html:45
 msgid "Akkauntingiz bormi?"
 msgstr "Уже есть аккаунт?"
 
+#: templates/masters/review_done.html:4
+#: templates/partials/request_form.html:162 templates/result.html:10
 msgid "Rahmat!"
 msgstr "Спасибо!"
 
+#: templates/masters/review_done.html:10
 msgid "Bu buyurtma allaqachon baholangan"
 msgstr "Этот заказ уже оценён"
 
+#: templates/masters/review_done.html:10
 msgid "Bahoingiz uchun rahmat!"
 msgstr "Спасибо за оценку!"
 
+#: templates/masters/review_done.html:11
 msgid "Har bir buyurtma uchun faqat bitta baho qoldiriladi."
 msgstr "За каждый заказ можно оставить только одну оценку."
 
+#: templates/masters/review_done.html:11
 msgid "Fikringiz usta va boshqa mijozlar uchun muhim."
 msgstr "Ваше мнение важно для мастера и других клиентов."
 
+#: templates/masters/review_done.html:13 templates/masters/review_form.html:14
+#: templates/orders/customer.html:14 templates/orders/customer.html:163
+#: templates/payments/demo_checkout.html:17
 msgid "Buyurtma"
 msgstr "Заказ"
 
+#: templates/masters/review_done.html:14
 msgid "Usta profili"
 msgstr "Профиль мастера"
 
+#: templates/masters/review_form.html:4 templates/masters/review_form.html:15
 msgid "Ustani baholang"
 msgstr "Оцените мастера"
 
+#: templates/masters/review_form.html:15
 msgid "Natijani tasdiqlang va baholang"
 msgstr "Подтвердите результат и оцените"
 
+#: templates/masters/review_form.html:18
 msgid ""
 "Yuborganingizda buyurtma tasdiqlanadi va ushlab turilgan to'lov ustaga "
 "o'tadi. Muammo bo'lsa, buyurtma sahifasida «Muammo bor» tugmasini bosing."
@@ -3037,36 +3952,48 @@ msgstr ""
 "После отправки заказ будет подтверждён, а удерживаемая оплата перейдёт "
 "мастеру. Если есть проблема, нажмите «Есть проблема» на странице заказа."
 
+#: templates/masters/review_form.html:19
 msgid "Har bir mezon bo'yicha 1 dan 5 gacha yulduz qo'ying."
 msgstr "Поставьте от 1 до 5 звёзд по каждому критерию."
 
+#: templates/masters/review_form.html:34
 msgid "Tasdiqlash va baholash"
 msgstr "Подтвердить и оценить"
 
+#: templates/masters/review_form.html:34
 msgid "Bahoni yuborish"
 msgstr "Отправить оценку"
 
+#: templates/masters/review_unavailable.html:4
 msgid "Baho qoldirib bo'lmaydi"
 msgstr "Оставить оценку нельзя"
 
+#: templates/masters/review_unavailable.html:10
 msgid "Hozircha baho qoldirib bo'lmaydi"
 msgstr "Пока оставить оценку нельзя"
 
+#: templates/masters/review_unavailable.html:12
 msgid "Bu buyurtma bekor qilingan."
 msgstr "Этот заказ отменён."
 
+#: templates/masters/review_unavailable.html:13
 msgid "Bu buyurtmaga hali usta biriktirilmagan."
 msgstr "К этому заказу ещё не назначен мастер."
 
+#: templates/masters/review_unavailable.html:14
 msgid "Usta ishni yakunlagach, havola faollashadi."
 msgstr "Ссылка заработает, когда мастер завершит работу."
 
+#: templates/masters/review_unavailable.html:16
+#: templates/masters/review_verify.html:13
 msgid "Buyurtma sahifasi"
 msgstr "Страница заказа"
 
+#: templates/masters/review_verify.html:10
 msgid "Natijani tasdiqlash va baholash"
 msgstr "Подтверждение результата и оценка"
 
+#: templates/masters/review_verify.html:11
 msgid ""
 "Tasdiqlaganingizdan keyin usta to'lovni oladi. Shuning uchun avval "
 "raqamingizni tasdiqlang."
@@ -3074,6 +4001,7 @@ msgstr ""
 "После подтверждения мастер получит оплату. Поэтому сначала подтвердите "
 "номер."
 
+#: templates/masters/work_schedule.html:12
 msgid ""
 "Mijozlar profilingizda ish vaqtingizni ko'radi. Ish vaqtidan tashqarida "
 "kartochkangizda «Hozir ishlamaydi» chiqadi; dam olish kunlarida qidiruvda "
@@ -3083,54 +4011,71 @@ msgstr ""
 "отображается «Сейчас не работает»; в выходные вас нет в поиске и не приходят"
 " новые заказы."
 
+#: templates/masters/work_schedule.html:13
 msgid "Hozir"
 msgstr "Сейчас"
 
+#: templates/masters/work_schedule.html:13
 msgid "ish vaqti"
 msgstr "рабочее время"
 
+#: templates/masters/work_schedule.html:29
 msgid "Soatlarni bo'sh qoldirsangiz — kun bo'yi ishlaysiz deb hisoblanadi."
 msgstr "Если не указать часы — считается, что вы работаете весь день."
 
+#: templates/masters/work_schedule.html:34
 msgid "Dam olish kunlari"
 msgstr "Выходные"
 
+#: templates/masters/work_schedule.html:38 templates/orders/_photos.html:18
 msgid "O'chirish"
 msgstr "Удалить"
 
+#: templates/masters/work_schedule.html:48
 msgid "Qo'shish"
 msgstr "Добавить"
 
+#: templates/orders/_chat.html:4
 msgid "Usta bilan yozishma"
 msgstr "Переписка с мастером"
 
+#: templates/orders/_chat.html:4
 msgid "Mijoz bilan yozishma"
 msgstr "Переписка с клиентом"
 
+#: templates/orders/_chat.html:6
 msgid ""
 "Yozishmani ko'rish va xabar yozish uchun yuqorida telefon raqamingizni "
 "tasdiqlang."
 msgstr ""
 "Чтобы видеть переписку и писать сообщения, подтвердите номер телефона выше."
 
+#: templates/orders/_chat.html:16
 msgid "Ustaga savol yozing: qachon keladi, nima olib kelishi kerak va h.k."
 msgstr "Напишите мастеру: когда приедет, что нужно привезти и т. д."
 
+#: templates/orders/_chat.html:16
 msgid "Mijozga yozing: kelish vaqti, kerakli ehtiyot qismlar va h.k."
 msgstr "Напишите клиенту: время приезда, нужные запчасти и т. д."
 
+#: templates/orders/_chat.html:20 templates/support/_chat.html:21
 msgid "Xabar"
 msgstr "Сообщение"
 
+#: templates/orders/_chat.html:21 templates/support/_chat.html:22
 msgid "Xabar yozing…"
 msgstr "Напишите сообщение…"
 
+#: templates/orders/_chat.html:22 templates/orders/_nps.html:13
+#: templates/support/_chat.html:23
 msgid "Yuborish"
 msgstr "Отправить"
 
+#: templates/orders/_chat.html:26
 msgid "Yozishma yopilgan — yangi xabar yuborib bo'lmaydi."
 msgstr "Переписка закрыта — новые сообщения отправить нельзя."
 
+#: templates/orders/_chat.html:29
 msgid ""
 "Nizo bo'lsa, administrator yozishmani ko'rishi mumkin. Karta ma'lumotlari va"
 " SMS kodlarni hech kimga yozmang."
@@ -3138,30 +4083,39 @@ msgstr ""
 "При споре администратор может просмотреть переписку. Никому не пишите данные"
 " карты и коды из SMS."
 
+#: templates/orders/_money.html:7
 msgid "Ustaga chiqarilgan"
 msgstr "Выплачено мастеру"
 
+#: templates/orders/_money.html:10
 msgid "Chegirma"
 msgstr "Скидка"
 
+#: templates/orders/_money.html:10
 msgid "platforma hisobidan, sizga to'liq"
 msgstr "за счёт платформы, вам — полностью"
 
+#: templates/orders/_money.html:18
 msgid "sizga"
 msgstr "вам"
 
+#: templates/orders/_money.html:18
 msgid "komissiya"
 msgstr "комиссия"
 
+#: templates/orders/_money.html:27 templates/payments/demo_checkout.html:22
 msgid "To'lash"
 msgstr "Оплатить"
 
+#: templates/orders/_money.html:32
 msgid "Bosqich bajarilganini tasdiqlaysizmi? Mablag' ustaga o'tadi."
 msgstr "Подтверждаете выполнение этапа? Деньги перейдут мастеру."
 
+#: templates/orders/_money.html:33
 msgid "Bosqichni tasdiqlab, to'lash"
 msgstr "Подтвердить этап и выплатить"
 
+#: templates/orders/_money.html:41
 msgid ""
 "Pul ustaga darhol o'tmaydi: bosqich bajarilguncha platformada ushlab "
 "turiladi. Muammo bo'lsa — «Muammo bor» tugmasi, pul admin hal qilguncha "
@@ -3171,6 +4125,7 @@ msgstr ""
 "этапа. Если возникла проблема — кнопка «Есть проблема», деньги "
 "замораживаются до решения администратора."
 
+#: templates/orders/_money.html:42
 msgid ""
 "Mijoz to'lagan qism «Ushlab turilibdi» — bu kafolat. Bosqich bajarilgach "
 "mijoz tasdiqlaydi yoki 48 soatdan keyin avtomatik chiqariladi."
@@ -3179,36 +4134,47 @@ msgstr ""
 "выполнения этапа клиент подтверждает его, иначе выплата произойдёт "
 "автоматически через 48 часов."
 
+#: templates/orders/_money.html:45
 msgid "Kelishilgan narx"
 msgstr "Согласованная цена"
 
+#: templates/orders/_money.html:45
 msgid "to'lov ustaga to'g'ridan-to'g'ri (platforma kafolatisiz)."
 msgstr "оплата мастеру напрямую (без гарантии платформы)."
 
+#: templates/orders/_nps.html:4
 msgid "Bizni do'stingizga tavsiya qilasizmi?"
 msgstr "Порекомендуете нас другу?"
 
+#: templates/orders/_nps.html:7
 msgid "0 — hech qachon, 10 — albatta"
 msgstr "0 — ни за что, 10 — обязательно"
 
+#: templates/orders/_nps.html:10
 msgid "Hech qachon"
 msgstr "Ни за что"
 
+#: templates/orders/_nps.html:10
 msgid "Albatta"
 msgstr "Обязательно"
 
+#: templates/orders/_nps.html:11
 msgid "Nimani yaxshilashimiz kerak? (ixtiyoriy)"
 msgstr "Что нам улучшить? (необязательно)"
 
+#: templates/orders/_photos.html:4 templates/orders/_photos.html:37
 msgid "Rasmlar"
 msgstr "Фото"
 
+#: templates/orders/_photos.html:17
 msgid "Rasmni o'chirasizmi?"
 msgstr "Удалить фото?"
 
+#: templates/orders/_photos.html:25
 msgid "Hozircha rasm yo'q."
 msgstr "Фото пока нет."
 
+#: templates/orders/_photos.html:41
 #, python-format
 msgid ""
 "JPG, PNG yoki WEBP, 10 MB gacha, ko'pi bilan %(n)s ta. Joylashuv "
@@ -3217,16 +4183,20 @@ msgstr ""
 "JPG, PNG или WEBP, до 10 МБ, не более %(n)s шт. Данные о местоположении "
 "(GPS) удаляются автоматически."
 
+#: templates/orders/_warranty.html:4
 msgid "Kafolat"
 msgstr "Гарантия"
 
+#: templates/orders/_warranty.html:5
 #, python-format
 msgid "%(d)s gacha"
 msgstr "до %(d)s"
 
+#: templates/orders/_warranty.html:6
 msgid "muddati tugagan"
 msgstr "срок истёк"
 
+#: templates/orders/_warranty.html:9
 #, python-format
 msgid ""
 "Bajarilgan ishga %(n)s kun kafolat. Shu muddatda o'sha muammo qaytalansa, "
@@ -3235,6 +4205,7 @@ msgstr ""
 "Гарантия на выполненную работу — %(n)s дней. Если за это время та же "
 "проблема повторится, мастер исправит бесплатно."
 
+#: templates/orders/_warranty.html:11
 #, python-format
 msgid ""
 "Bu ishga %(n)s kun kafolat berilgan. Kafolat murojaati bepul tuzatiladi."
@@ -3242,15 +4213,19 @@ msgstr ""
 "На эту работу дана гарантия %(n)s дней. Гарантийное обращение устраняется "
 "бесплатно."
 
+#: templates/orders/_warranty.html:20
 msgid "Kompensatsiya"
 msgstr "Компенсация"
 
+#: templates/orders/_warranty.html:25
 msgid "Muammo hal bo'ldi"
 msgstr "Проблема решена"
 
+#: templates/orders/_warranty.html:28
 msgid "Hal bo'lmadi — administratorga"
 msgstr "Не решено — администратору"
 
+#: templates/orders/_warranty.html:31
 #, python-format
 msgid ""
 "Usta %(h)s soat ichida javob bermasa, murojaatni administratorga "
@@ -3259,76 +4234,99 @@ msgstr ""
 "Если мастер не ответит в течение %(h)s часов, вы сможете передать обращение "
 "администратору."
 
+#: templates/orders/_warranty.html:33
 msgid "Administrator ko'rib chiqmoqda — siz bilan bog'lanamiz."
 msgstr "Администратор рассматривает — мы свяжемся с вами."
 
+#: templates/orders/_warranty.html:38
 msgid "Nima qilindi (ixtiyoriy)"
 msgstr "Что сделано (необязательно)"
 
+#: templates/orders/_warranty.html:40
 msgid "Tuzatdim"
 msgstr "Исправил"
 
+#: templates/orders/_warranty.html:49
 msgid "Muammo qaytalandimi? Kafolat bo'yicha murojaat"
 msgstr "Проблема повторилась? Обращение по гарантии"
 
+#: templates/orders/_warranty.html:51
 msgid "Nima bo'ldi?"
 msgstr "Что случилось?"
 
+#: templates/orders/_warranty.html:52
 msgid "Masalan: almashtirilgan kran yana oqyapti"
 msgstr "Например: заменённый кран снова течёт"
 
+#: templates/orders/_warranty.html:53
 msgid "Murojaat yuborish"
 msgstr "Отправить обращение"
 
+#: templates/orders/_warranty.html:57
 msgid "Murojaat qilish uchun yuqorida telefon raqamingizni tasdiqlang."
 msgstr "Чтобы оставить обращение, подтвердите номер телефона выше."
 
+#: templates/orders/customer.html:19
 #, python-format
 msgid "Usta %(t)s da keladi."
 msgstr "Мастер приедет %(t)s."
 
+#: templates/orders/customer.html:20
 msgid ""
 "Nizo ochilgan. Administrator ikkala tomon bilan bog'lanadi; to'lovlar "
 "muzlatilgan."
 msgstr ""
 "Открыт спор. Администратор свяжется с обеими сторонами; выплаты заморожены."
 
+#: templates/orders/customer.html:21
 msgid "Buyurtma bekor qilingan."
 msgstr "Заказ отменён."
 
+#: templates/orders/customer.html:30
 msgid "Buyurtmani boshqarish uchun raqamingizni tasdiqlang"
 msgstr "Подтвердите номер, чтобы управлять заказом"
 
+#: templates/orders/customer.html:35 templates/orders/customer.html:59
+#: templates/orders/master.html:34
 msgid "Narx va to'lov"
 msgstr "Цена и оплата"
 
+#: templates/orders/customer.html:37
 msgid "Usta taklif qilgan narx"
 msgstr "Цена, предложенная мастером"
 
+#: templates/orders/customer.html:40
 #, python-format
 msgid "Katalog bo'yicha: %(e)s so'm"
 msgstr "По каталогу: %(e)s сум"
 
+#: templates/orders/customer.html:41
 #, python-format
 msgid "katalogdan %(d)s%% qimmat"
 msgstr "на %(d)s%% дороже каталога"
 
+#: templates/orders/customer.html:42
 #, python-format
 msgid "katalogdan %(d)s%% arzon"
 msgstr "на %(d)s%% дешевле каталога"
 
+#: templates/orders/customer.html:43
 msgid "katalog narxiga mos"
 msgstr "соответствует каталогу"
 
+#: templates/orders/customer.html:48
 msgid "Narxga roziman"
 msgstr "Согласен с ценой"
 
+#: templates/orders/customer.html:49
 msgid "Rad etish"
 msgstr "Отклонить"
 
+#: templates/orders/customer.html:53
 msgid "Siz narx taklifini rad etdingiz. Usta yangi taklif yuborishi mumkin."
 msgstr "Вы отклонили предложение цены. Мастер может прислать новое."
 
+#: templates/orders/customer.html:60
 msgid ""
 "Usta muammoni ko'rib chiqib, narx taklif qiladi. Rozi bo'lmaguningizcha ish "
 "boshlanmaydi."
@@ -3336,15 +4334,19 @@ msgstr ""
 "Мастер осмотрит проблему и предложит цену. Работа не начнётся без вашего "
 "согласия."
 
+#: templates/orders/customer.html:65
 msgid "Amallar"
 msgstr "Действия"
 
+#: templates/orders/customer.html:78
 msgid "Nima muammo? Administrator ikkala tomonni eshitib, qaror qabul qiladi."
 msgstr "В чём проблема? Администратор выслушает обе стороны и примет решение."
 
+#: templates/orders/customer.html:79
 msgid "Masalan: kran yana oqyapti, usta qayta kelmayapti"
 msgstr "Например: кран снова течёт, мастер не приезжает повторно"
 
+#: templates/orders/customer.html:80
 msgid ""
 "Nizo ochilgach to'lovlar muzlatiladi. Rasmlarni pastdagi «Rasmlar» bo'limiga"
 " qo'shing."
@@ -3352,9 +4354,11 @@ msgstr ""
 "После открытия спора оплаты замораживаются. Добавьте фото в раздел «Фото» "
 "ниже."
 
+#: templates/orders/customer.html:81
 msgid "Nizo ochish"
 msgstr "Открыть спор"
 
+#: templates/orders/customer.html:85
 msgid ""
 "Tasdiqlashda ustani baholaysiz. Javob bermasangiz, 72 soatdan keyin buyurtma"
 " avtomatik tasdiqlanadi."
@@ -3362,15 +4366,19 @@ msgstr ""
 "При подтверждении вы оцениваете мастера. Если не ответите, через 72 часа "
 "заказ подтвердится автоматически."
 
+#: templates/orders/customer.html:93
 msgid "Schyot"
 msgstr "Счёт"
 
+#: templates/orders/customer.html:93
 msgid "to'lov kutilmoqda"
 msgstr "ожидает оплаты"
 
+#: templates/orders/customer.html:93
 msgid "to'langan"
 msgstr "оплачено"
 
+#: templates/orders/customer.html:96
 msgid ""
 "To'lov bosqichida «Bank o'tkazmasi (schyot)» ni tanlang — schyot ochiladi. "
 "Elektron hisob-faktura alohida yuboriladi."
@@ -3378,12 +4386,15 @@ msgstr ""
 "На этапе оплаты выберите «Банковский перевод (счёт)» — откроется счёт. "
 "Электронная счёт-фактура направляется отдельно."
 
+#: templates/orders/customer.html:101
 msgid "Ustani baholash"
 msgstr "Оценить мастера"
 
+#: templates/orders/customer.html:108
 msgid "Do'stingizga ustani tavsiya qiling"
 msgstr "Порекомендуйте мастера другу"
 
+#: templates/orders/customer.html:109
 #, python-format
 msgid ""
 "Do'stingiz birinchi buyurtmasida %(p)s%% chegirma oladi (ko'pi bilan %(m)s "
@@ -3393,9 +4404,11 @@ msgstr ""
 "Друг получит скидку %(p)s%% на первый заказ (не более %(m)s сум). Когда его "
 "заказ будет выполнен, вы тоже получите код скидки на следующий заказ."
 
+#: templates/orders/customer.html:115
 msgid "Kod"
 msgstr "Код"
 
+#: templates/orders/customer.html:115
 #, python-format
 msgid "%(n)s kishi ishlatdi"
 msgid_plural "%(n)s kishi ishlatdi"
@@ -3403,6 +4416,7 @@ msgstr[0] "Использовал %(n)s человек"
 msgstr[1] "Использовали %(n)s человека"
 msgstr[2] "Использовали %(n)s человек"
 
+#: templates/orders/customer.html:123
 msgid ""
 "Muammoni rasmga oling — usta nima kerakligini oldindan biladi va kerakli "
 "ehtiyot qismni olib keladi."
@@ -3410,6 +4424,7 @@ msgstr ""
 "Сфотографируйте проблему — мастер заранее поймёт, что нужно, и привезёт "
 "нужную запчасть."
 
+#: templates/orders/customer.html:127
 msgid ""
 "Ish rasmlari (oldin/keyin) buyurtma tasdiqlangach usta portfoliosida "
 "ko'rsatilishi mumkin."
@@ -3417,100 +4432,133 @@ msgstr ""
 "Фото работы (до/после) после подтверждения заказа могут быть показаны в "
 "портфолио мастера."
 
+#: templates/orders/customer.html:128
 msgid "Ko'rsatmaslik"
 msgstr "Не показывать"
 
+#: templates/orders/customer.html:128
 msgid "Ruxsat berish"
 msgstr "Разрешить"
 
+#: templates/orders/customer.html:133 templates/orders/master.html:76
 msgid "Tarix"
 msgstr "История"
 
+#: templates/orders/customer.html:152
 msgid "Shu ustani qayta chaqirish"
 msgstr "Вызвать этого мастера снова"
 
+#: templates/orders/customer.html:153
 msgid ""
 "Manzilingiz va ma'lumotlaringiz qayta yozilmaydi — faqat muammoni yozasiz."
 msgstr "Адрес и данные вводить заново не нужно — опишите только задачу."
 
+#: templates/orders/customer.html:155
 msgid "Usta hozir buyurtma qabul qilmayapti."
 msgstr "Мастер сейчас не принимает заказы."
 
+#: templates/orders/customer.html:155
 msgid "Boshqa usta topish"
 msgstr "Найти другого мастера"
 
+#: templates/orders/customer.html:159
 msgid "Operator sizga mos va yaqin ustani biriktirmoqda."
 msgstr "Оператор подбирает подходящего мастера рядом с вами."
 
+#: templates/orders/customer.html:166
 msgid "Taxminiy narx"
 msgstr "Ориентировочная цена"
 
+#: templates/orders/customer.html:166
 msgid "dan"
 msgstr "от"
 
+#: templates/orders/customer.html:169 templates/orders/master.html:86
 msgid "Kelish vaqti"
 msgstr "Время приезда"
 
+#: templates/orders/customer.html:170 templates/orders/reorder.html:43
+#: templates/partials/request_form.html:92
 msgid "Qulay vaqt"
 msgstr "Удобное время"
 
+#: templates/orders/customer.html:178
 msgid "Xabarlar Telegram'ga keladi."
 msgstr "Уведомления приходят в Telegram."
 
+#: templates/orders/customer.html:180
 msgid "Telegram'da kuzatish"
 msgstr "Следить в Telegram"
 
+#: templates/orders/customer.html:181
 msgid "Holat o'zgarishlari SMS o'rniga Telegram'ga keladi."
 msgstr "Изменения статуса будут приходить в Telegram вместо SMS."
 
+#: templates/orders/customer.html:182
 msgid "Botni ochish"
 msgstr "Открыть бота"
 
+#: templates/orders/customer.html:188 templates/orders/customer.html:194
+#: templates/partials/request_form.html:134
 msgid "Promo-kod"
 msgstr "Промокод"
 
+#: templates/orders/customer.html:190
 #, python-format
 msgid "chegirma %(d)s so'm"
 msgstr "скидка %(d)s сум"
 
+#: templates/orders/customer.html:190
 msgid "chegirma narx kelishilgach onlayn to'lovda hisoblanadi"
 msgstr "скидка рассчитается при онлайн-оплате после согласования цены"
 
+#: templates/orders/customer.html:191
 msgid "Olib tashlash"
 msgstr "Удалить"
 
+#: templates/orders/customer.html:194
 msgid "Kodni kiriting"
 msgstr "Введите код"
 
+#: templates/orders/customer.html:195
 msgid "Qo'llash"
 msgstr "Применить"
 
+#: templates/orders/customer.html:202
 msgid "Aksiyalar"
 msgstr "Акции"
 
+#: templates/orders/customer.html:203
 msgid "Aksiya va chegirmalar haqida xabar olasiz."
 msgstr "Вы получаете сообщения об акциях и скидках."
 
+#: templates/orders/customer.html:203
 msgid "Chegirmalar va aksiyalar haqida kamdan-kam xabar yuboramiz."
 msgstr "Изредка присылаем сообщения о скидках и акциях."
 
+#: templates/orders/customer.html:205 templates/orders/unsubscribe.html:3
 msgid "Obunani bekor qilish"
 msgstr "Отписаться"
 
+#: templates/orders/customer.html:206
 msgid "Xabar olishga roziman"
 msgstr "Согласен получать сообщения"
 
+#: templates/orders/customer.html:212
 msgid "Bildirishnomalar"
 msgstr "Уведомления"
 
+#: templates/orders/customer.html:213
 msgid "Usta qabul qilganda, kelganda va yozganda shu brauzerga xabar keladi."
 msgstr ""
 "Когда мастер примет заказ, приедет или напишет — придёт уведомление в этот "
 "браузер."
 
+#: templates/orders/customer.html:217
 msgid "Bu sahifa havolasini boshqalarga bermang."
 msgstr "Не передавайте ссылку на эту страницу другим."
 
+#: templates/orders/master.html:23
 msgid ""
 "Ishni boshlashdan oldin pastda narx taklif qiling — mijoz rozi bo'lgach "
 "davom etasiz."
@@ -3518,17 +4566,21 @@ msgstr ""
 "Перед началом работ предложите цену ниже — продолжите после согласия "
 "клиента."
 
+#: templates/orders/master.html:24
 msgid "Keyingi bosqichga o'tish uchun mijoz quyidagini to'lashi kerak"
 msgstr "Чтобы перейти к следующему этапу, клиент должен оплатить"
 
+#: templates/orders/master.html:24
 msgid "Bu sizning kafolatingiz — bepul ishlab qolmaysiz."
 msgstr "Это ваша гарантия — вы не будете работать бесплатно."
 
+#: templates/orders/master.html:25
 msgid ""
 "Mijoz nizo ochdi. Administrator siz bilan bog'lanadi; to'lovlar muzlatilgan."
 msgstr ""
 "Клиент открыл спор. Администратор свяжется с вами; выплаты заморожены."
 
+#: templates/orders/master.html:36
 #, python-format
 msgid ""
 "Taklifingiz (%(amount)s so'm) mijoz javobini kutmoqda. Kerak bo'lsa "
@@ -3537,28 +4589,35 @@ msgstr ""
 "Ваше предложение (%(amount)s сум) ожидает ответа клиента. При необходимости "
 "измените его."
 
+#: templates/orders/master.html:37
 msgid "Mijoz oldingi narxni rad etdi. Yangi taklif yuboring."
 msgstr "Клиент отклонил предыдущую цену. Отправьте новое предложение."
 
+#: templates/orders/master.html:38
 #, python-format
 msgid "Mijoz katalogdan tanlagan: %(e)s so'm."
 msgstr "Клиент выбрал в каталоге: %(e)s сум."
 
+#: templates/orders/master.html:38
 #, python-format
 msgid "Narx 20%% dan ko'p farq qilsa, sababini yozing — mijoz farqni ko'radi."
 msgstr ""
 "Если цена отличается более чем на 20%%, укажите причину — клиент увидит "
 "разницу."
 
+#: templates/orders/master.html:46
 msgid "Narxni mijozga yuborish"
 msgstr "Отправить цену клиенту"
 
+#: templates/orders/master.html:52
 msgid "Narx taklif qilish uchun buyurtmani qabul qiling."
 msgstr "Чтобы предложить цену, примите заказ."
 
+#: templates/orders/master.html:58
 msgid "Mijozga havola"
 msgstr "Ссылка для клиента"
 
+#: templates/orders/master.html:59
 msgid ""
 "Mijoz SMS oladi. Kerak bo'lsa, bu havolani o'zingiz ham yuboring — u "
 "natijani tasdiqlab, sizni baholaydi."
@@ -3566,6 +4625,7 @@ msgstr ""
 "Клиент получит SMS. При необходимости отправьте ссылку сами — по ней он "
 "подтвердит результат и оценит вас."
 
+#: templates/orders/master.html:72
 msgid ""
 "Ishdan oldin va keyin rasmga oling: mijoz natijani ko'radi, tasdiqlangan "
 "ishlar portfoliongizga chiqadi, nizoda esa dalil bo'ladi."
@@ -3573,37 +4633,49 @@ msgstr ""
 "Фотографируйте до и после работы: клиент видит результат, подтверждённые "
 "работы попадают в ваше портфолио, а в споре это доказательство."
 
+#: templates/orders/master.html:88
 msgid "Mijozga qulay"
 msgstr "Удобно клиенту"
 
+#: templates/orders/master.html:92
 msgid "Sana"
 msgstr "Дата"
 
+#: templates/orders/master.html:96
 msgid "Vaqtni o'zgartirish"
 msgstr "Изменить время"
 
+#: templates/orders/master.html:97
 msgid "Mijoz xabar oladi, vaqtdan oldin ikkalangizga eslatma boradi."
 msgstr ""
 "Клиент получит уведомление, перед визитом вам обоим придёт напоминание."
 
+#: templates/orders/master.html:105 templates/orders/reorder.html:22
 msgid "Ism"
 msgstr "Имя"
 
+#: templates/orders/master.html:106 templates/orders/reorder.html:23
+#: templates/partials/request_form.html:33
 msgid "Telefon"
 msgstr "Телефон"
 
+#: templates/orders/master.html:107
 msgid "xaritada"
 msgstr "на карте"
 
+#: templates/orders/master.html:109
 msgid "Katalog narxi"
 msgstr "Цена по каталогу"
 
+#: templates/orders/master.html:116
 msgid "Buyurtmani bekor qilasizmi?"
 msgstr "Отказаться от заказа?"
 
+#: templates/orders/master.html:117
 msgid "Buyurtmadan voz kechish"
 msgstr "Отказаться от заказа"
 
+#: templates/orders/master.html:119
 msgid ""
 "Joyga kelgandan keyin buyurtmani bir tomonlama bekor qilib bo'lmaydi. Muammo"
 " bo'lsa administratorga qo'ng'iroq qiling"
@@ -3611,6 +4683,7 @@ msgstr ""
 "После прибытия отменить заказ в одностороннем порядке нельзя. Если возникла "
 "проблема, позвоните администратору"
 
+#: templates/orders/my_orders.html:12
 msgid ""
 "Buyurtma qoldirgan telefon raqamingizni kiriting — SMS kod bilan kirasiz. "
 "Parol kerak emas."
@@ -3618,50 +4691,65 @@ msgstr ""
 "Введите номер, с которого оставляли заявку, — войдёте по SMS-коду. Пароль не"
 " нужен."
 
+#: templates/orders/my_orders.html:28
 msgid "Qayta chaqirish"
 msgstr "Вызвать снова"
 
+#: templates/orders/my_orders.html:33
 msgid "Bu raqam bilan buyurtma topilmadi."
 msgstr "По этому номеру заказы не найдены."
 
+#: templates/orders/reorder.html:4 templates/orders/reorder.html:13
 msgid "Ustani qayta chaqirish"
 msgstr "Повторный вызов мастера"
 
+#: templates/orders/reorder.html:30
 msgid "Bu safar nima qilish kerak?"
 msgstr "Что нужно сделать в этот раз?"
 
+#: templates/orders/reorder.html:31
 msgid "Masalan: boshqa xonadagi rozetkani ham almashtirish"
 msgstr "Например: заменить розетку ещё в одной комнате"
 
+#: templates/orders/reorder.html:32
 msgid "Oldingi buyurtma"
 msgstr "Предыдущий заказ"
 
+#: templates/orders/reorder.html:36 templates/partials/request_form.html:83
 msgid "Usta qachon kelsin?"
 msgstr "Когда приехать мастеру?"
 
+#: templates/orders/reorder.html:38 templates/partials/request_form.html:85
 msgid "Imkon qadar tez"
 msgstr "Как можно скорее"
 
+#: templates/orders/reorder.html:45 templates/partials/request_form.html:94
 msgid "Farqi yo'q"
 msgstr "Без разницы"
 
+#: templates/orders/reorder.html:52 templates/partials/request_form.html:145
 msgid ""
 "Shaxsiy ma'lumotlarim buyurtma bo'yicha bog'lanish uchun qayta ishlanishiga "
 "roziman"
 msgstr "Согласен на обработку персональных данных для связи по заказу"
 
+#: templates/orders/reorder.html:53 templates/partials/request_form.html:146
 msgid "Oferta"
 msgstr "Оферта"
 
+#: templates/orders/reorder.html:53 templates/partials/request_form.html:146
 msgid "maxfiylik siyosati"
 msgstr "политика конфиденциальности"
 
+#: templates/orders/reorder.html:55
 msgid "Ustaga yuborish"
 msgstr "Отправить мастеру"
 
+#: templates/orders/unsubscribe.html:12
 msgid "Obuna bekor qilindi"
 msgstr "Подписка отменена"
 
+#: templates/orders/unsubscribe.html:13
 msgid ""
 "Endi aksiya xabarlarini olmaysiz. Buyurtmalaringiz bo'yicha xabarlar "
 "avvalgidek keladi."
@@ -3669,28 +4757,35 @@ msgstr ""
 "Вы больше не будете получать сообщения об акциях. Уведомления о ваших "
 "заказах продолжат приходить."
 
+#: templates/orders/unsubscribe.html:15
 msgid "Aksiya xabarlaridan voz kechasizmi?"
 msgstr "Отказаться от сообщений об акциях?"
 
+#: templates/orders/unsubscribe.html:16
 msgid ""
 "Buyurtma holati haqidagi xabarlar bunga bog'liq emas — ular kelishda davom "
 "etadi."
 msgstr ""
 "Уведомления о статусе заказов от этого не зависят — они продолжат приходить."
 
+#: templates/orders/unsubscribe.html:17
 msgid "Ha, bekor qilish"
 msgstr "Да, отписаться"
 
+#: templates/partials/master_card.html:7
 msgid "Pullik joylashuv"
 msgstr "Платное размещение"
 
+#: templates/partials/master_card.html:12
 msgid "Hali baholanmagan"
 msgstr "Ещё нет оценок"
 
+#: templates/partials/master_card.html:18
 #, python-format
 msgid "%(d)s uzoqlikda"
 msgstr "в %(d)s от вас"
 
+#: templates/partials/master_card.html:19
 #, python-format
 msgid "%(y)s yil tajriba"
 msgid_plural "%(y)s yil tajriba"
@@ -3698,18 +4793,23 @@ msgstr[0] "опыт %(y)s год"
 msgstr[1] "опыт %(y)s года"
 msgstr[2] "опыт %(y)s лет"
 
+#: templates/partials/master_card.html:22
 msgid "Chaqirish"
 msgstr "Вызвать"
 
+#: templates/partials/order_timeline.html:3
 msgid "Buyurtma bosqichlari"
 msgstr "Этапы заказа"
 
+#: templates/partials/order_timeline.html:14
 msgid "hozir shu bosqichda"
 msgstr "текущий этап"
 
+#: templates/partials/otp_gate.html:6
 msgid "Telefon raqamingizni tasdiqlang"
 msgstr "Подтвердите номер телефона"
 
+#: templates/partials/otp_gate.html:7
 msgid ""
 "Raqamingizga 6 xonali kod yuboramiz. Bu sizning buyurtmangizni boshqa hech "
 "kim boshqara olmasligi uchun."
@@ -3717,41 +4817,53 @@ msgstr ""
 "Мы отправим 6-значный код. Так никто другой не сможет управлять вашим "
 "заказом."
 
+#: templates/partials/otp_gate.html:11
 msgid "Kod yuborish"
 msgstr "Получить код"
 
+#: templates/partials/otp_gate.html:15
 msgid "SMS kod"
 msgstr "Код из SMS"
 
+#: templates/partials/otp_gate.html:16
 msgid "Tasdiqlash"
 msgstr "Подтвердить"
 
+#: templates/partials/otp_gate.html:20
 msgid "Raqam tasdiqlandi"
 msgstr "Номер подтверждён"
 
+#: templates/partials/price.html:3
 #, python-format
 msgid "%(p)s so'm"
 msgstr "%(p)s сум"
 
+#: templates/partials/price.html:3
 #, python-format
 msgid "%(p)s so'mdan"
 msgstr "от %(p)s сум"
 
+#: templates/partials/request_form.html:12
 msgid "Tanlangan xizmat"
 msgstr "Выбранная услуга"
 
+#: templates/partials/request_form.html:17
 msgid "Miqdori"
 msgstr "Количество"
 
+#: templates/partials/request_form.html:28
 msgid "Masalan: Dilshod"
 msgstr "Например: Дилшод"
 
+#: templates/partials/request_form.html:46
 msgid "Bilmayman — operator yordam beradi"
 msgstr "Не знаю — подскажет оператор"
 
+#: templates/partials/request_form.html:57
 msgid "Tuman, ko'cha, uy"
 msgstr "Район, улица, дом"
 
+#: templates/partials/request_form.html:78
 msgid ""
 "Yaqin atrofdagi ustalar buyurtmangizni tezroq ko'rishi uchun. Ustaga aniq "
 "manzil faqat buyurtmani olgach ko'rinadi."
@@ -3759,29 +4871,37 @@ msgstr ""
 "Чтобы мастера поблизости быстрее увидели ваш заказ. Точный адрес мастер "
 "увидит только после того, как возьмёт заказ."
 
+#: templates/partials/request_form.html:99
 msgid ""
 "Aniq vaqtni usta buyurtmani qabul qilgach belgilaydi — sizga xabar keladi."
 msgstr ""
 "Точное время мастер назначит после принятия заказа — вам придёт уведомление."
 
+#: templates/partials/request_form.html:102
 msgid "Muammoni qisqacha yozing"
 msgstr "Кратко опишите проблему"
 
+#: templates/partials/request_form.html:104
 msgid "Masalan: oshxonada kran oqyapti / kir mashina suvni chiqarmayapti"
 msgstr "Например: течёт кран на кухне / стиральная машина не сливает воду"
 
+#: templates/partials/request_form.html:109
 msgid "Tashkilot nomidan (schyot va dalolatnoma bilan)"
 msgstr "От имени организации (со счётом и актом)"
 
+#: templates/partials/request_form.html:112
 msgid "Tashkilot nomi"
 msgstr "Название организации"
 
+#: templates/partials/request_form.html:113
 msgid "Masalan: «Baraka Savdo» MChJ"
 msgstr "Например: ООО «Baraka Savdo»"
 
+#: templates/partials/request_form.html:125
 msgid "Yuridik manzil (ixtiyoriy)"
 msgstr "Юридический адрес (необязательно)"
 
+#: templates/partials/request_form.html:128
 msgid ""
 "Bank o'tkazmasi orqali to'lash uchun schyot va ish yakunida bajarilgan "
 "ishlar dalolatnomasi beriladi."
@@ -3789,15 +4909,19 @@ msgstr ""
 "Для оплаты банковским переводом выдаётся счёт, по завершении — акт "
 "выполненных работ."
 
+#: templates/partials/request_form.html:132
 msgid "Promo-kod bormi?"
 msgstr "Есть промокод?"
 
+#: templates/partials/request_form.html:136
 msgid "Masalan: DABC123"
 msgstr "Например: DABC123"
 
+#: templates/partials/request_form.html:139
 msgid "Chegirma onlayn to'lovda qo'llanadi; usta narxni to'liq oladi."
 msgstr "Скидка действует при онлайн-оплате; мастер получает цену полностью."
 
+#: templates/partials/request_form.html:151
 msgid ""
 "Aksiya va chegirmalar haqida xabar olishga roziman (istalgan vaqtda bekor "
 "qilish mumkin)"
@@ -3805,24 +4929,32 @@ msgstr ""
 "Согласен получать сообщения об акциях и скидках (отписаться можно в любой "
 "момент)"
 
+#: templates/partials/request_form.html:156
 msgid "Usta chaqirish — bepul"
 msgstr "Вызвать мастера — бесплатно"
 
+#: templates/partials/request_form.html:156
 msgid "Ariza yuborish"
 msgstr "Отправить заявку"
 
+#: templates/partials/request_form.html:157
 msgid "Ariza bepul. Usta narxni oldindan aytadi."
 msgstr "Заявка бесплатная. Мастер называет цену заранее."
 
+#: templates/partials/request_form.html:165 templates/result.html:14
 msgid "Buyurtmani kuzatish"
 msgstr "Отслеживать заказ"
 
+#: templates/partials/request_form.html:166
 msgid "Yana ariza qoldirish"
 msgstr "Оставить ещё заявку"
 
+#: templates/payments/demo_checkout.html:4
+#: templates/payments/demo_checkout.html:12
 msgid "To'lov"
 msgstr "Оплата"
 
+#: templates/payments/demo_checkout.html:11
 msgid ""
 "SINOV REJIMI: haqiqiy pul yechilmaydi. Production'da bu yerda Payme sahifasi"
 " ochiladi."
@@ -3830,12 +4962,15 @@ msgstr ""
 "ТЕСТОВЫЙ РЕЖИМ: реальные деньги не списываются. В рабочей версии здесь "
 "откроется страница Payme."
 
+#: templates/payments/demo_checkout.html:14
 msgid "Tarif"
 msgstr "Тариф"
 
+#: templates/payments/demo_checkout.html:21
 msgid "Karta raqami"
 msgstr "Номер карты"
 
+#: templates/payments/demo_checkout.html:24
 msgid ""
 "Mablag' bosqich bajarilguncha platformada ushlab turiladi va shundan "
 "keyingina ustaga o'tadi."
@@ -3843,6 +4978,7 @@ msgstr ""
 "Деньги удерживаются на платформе до выполнения этапа и только потом "
 "переходят мастеру."
 
+#: templates/payments/tariffs.html:12
 msgid ""
 "Platformadan foydalanish bepul. Tariflar — ko'proq buyurtma olish uchun "
 "ixtiyoriy qo'shimcha."
@@ -3850,41 +4986,53 @@ msgstr ""
 "Пользоваться платформой бесплатно. Тарифы — необязательное дополнение, чтобы"
 " получать больше заказов."
 
+#: templates/payments/tariffs.html:15 templates/payments/tariffs.html:16
 msgid "gacha"
 msgstr "до"
 
+#: templates/payments/tariffs.html:15 templates/payments/tariffs.html:16
 msgid "Faol emas"
 msgstr "Не активен"
 
+#: templates/payments/tariffs.html:17
 msgid "Komissiyangiz"
 msgstr "Ваша комиссия"
 
+#: templates/payments/tariffs.html:28
 msgid "Qidiruvda yo'nalishingiz bo'yicha birinchi qatorlarda"
 msgstr "В первых строках поиска по вашему направлению"
 
+#: templates/payments/tariffs.html:29
 msgid "Profilda va kartochkada «TOP» belgisi"
 msgstr "Значок «ТОП» в профиле и карточке"
 
+#: templates/payments/tariffs.html:30
 msgid "Bosh sahifadagi ustalar ro'yxatida ustunlik"
 msgstr "Приоритет в списке мастеров на главной странице"
 
+#: templates/payments/tariffs.html:32
 #, python-format
 msgid "Komissiya %(b)s%% o'rniga %(a)s%%"
 msgstr "Комиссия %(a)s%% вместо %(b)s%%"
 
+#: templates/payments/tariffs.html:33
 msgid "Ochiq buyurtmalar sizga birinchi bo'lib keladi"
 msgstr "Открытые заказы приходят вам первым"
 
+#: templates/payments/tariffs.html:34
 #, python-format
 msgid "Bir vaqtda %(a)s tagacha buyurtma (%(b)s o'rniga)"
 msgstr "До %(a)s заказов одновременно (вместо %(b)s)"
 
+#: templates/payments/tariffs.html:35
 msgid "Profilda «PRO» belgisi"
 msgstr "Значок «PRO» в профиле"
 
+#: templates/payments/tariffs.html:40
 msgid "Sotib olish"
 msgstr "Купить"
 
+#: templates/payments/tariffs.html:46
 msgid ""
 "Faol tarif ustiga sotib olsangiz, muddat oxiridan boshlab uzayadi. TOP "
 "ustalar qidiruvda «TOP» belgisi bilan ko'rsatiladi — mijoz bu pullik "
@@ -3894,56 +5042,34 @@ msgstr ""
 "Мастера ТОП показываются в поиске со значком «ТОП» — клиент знает, что это "
 "платное размещение. Рейтинг и расстояние всё равно учитываются."
 
+#: templates/payments/tariffs.html:50
 msgid "Xaridlar tarixi"
 msgstr "История покупок"
 
+#: templates/result.html:4
 msgid "Ariza qabul qilindi"
 msgstr "Заявка принята"
 
+#: templates/result.html:4
 msgid "Xatolik"
 msgstr "Ошибка"
 
+#: templates/result.html:10
 msgid "Arizani yuborib bo'lmadi"
 msgstr "Не удалось отправить заявку"
 
+#: templates/result.html:12
 msgid "Buyurtma holatini SMS'dagi havola orqali kuzatishingiz mumkin."
 msgstr "Статус заказа можно отслеживать по ссылке из SMS."
 
+#: templates/support/_chat.html:11
 msgid "Savolingizni yozing — operator ish vaqtida tez javob beradi."
 msgstr "Напишите вопрос — оператор быстро ответит в рабочее время."
 
+#: templates/support/_chat.html:17
 msgid "Telefon (ixtiyoriy)"
 msgstr "Телефон (необязательно)"
 
+#: templates/support/_chat.html:27
 msgid "Telefon qoldirsangiz, javob haqida SMS keladi."
 msgstr "Оставьте телефон — придёт SMS об ответе."
-
-#~ msgid "Tuman"
-#~ msgstr "Район"
-
-#~ msgid "Tumanni tanlang"
-#~ msgstr "Выберите район"
-
-#, python-format
-#~ msgid "%(category)s — %(district)s tumani"
-#~ msgstr "%(category)s — район %(district)s"
-
-#, python-format
-#~ msgid "%(category)s — Toshkent"
-#~ msgstr "%(category)s — Ташкент"
-
-#~ msgid ""
-#~ "Shaxsiy ma'lumotlar faqat buyurtma bo'yicha bog'lanish uchun ishlatiladi."
-#~ msgstr "Персональные данные используются только для связи по заказу."
-
-#~ msgid "Buyruqlar: /buyurtmalar, /stop"
-#~ msgstr "Команды: /buyurtmalar, /stop"
-
-#~ msgid ""
-#~ "Yakuniy narx nosozlikka bog'liq — usta ko'rib chiqib, ishni boshlashdan "
-#~ "oldin aytadi."
-#~ msgstr ""
-#~ "Итоговая цена зависит от неисправности — мастер назовёт её до начала работ."
-
-#~ msgid "Mijoz hali to'lamagan"
-#~ msgstr "Клиент ещё не оплатил"

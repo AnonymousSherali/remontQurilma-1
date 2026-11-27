@@ -83,8 +83,11 @@ def record(order, status, actor, note='', master=None):
 
 
 @transaction.atomic
-def apply(order, actor, action, note=''):
-    """Holatni o'zgartiradi. Qoidaga zid bo'lsa WorkflowError."""
+def apply(order, actor, action, note='', recorded_as=None):
+    """Holatni o'zgartiradi. Qoidaga zid bo'lsa WorkflowError.
+
+    recorded_as — tarix va xabarnomalarda kim nomidan yoziladi (masalan avtomatik tasdiqda SYSTEM).
+    """
     from payments import services as payments
 
     order = SR.objects.select_for_update().get(pk=order.pk)
@@ -111,9 +114,16 @@ def apply(order, actor, action, note=''):
             raise WorkflowError(_('Avval to\'lang: %(names)s') % {'names': names})
         raise WorkflowError(_("Mijoz hali to'lamagan: %(names)s. To'lovdan keyin davom eting.") % {'names': names})
 
+    if target == SR.STATUS_CANCELLED:
+        # Mijoz bekor qildi: ushlab turilgan mablag' (masalan, oldindan to'lov) qaytariladi
+        from payments.models import Milestone
+        for milestone in order.milestones.filter(state=Milestone.STATE_HELD):
+            payments.refund(milestone)
+
     order.status = target
     order.save(update_fields=['status', 'updated_at'])
-    record(order, target, actor, note)
+    who = recorded_as or actor
+    record(order, target, who, note)
 
     if target == SR.STATUS_CONFIRMED:
         payments.release_on_confirm(order)
@@ -121,7 +131,7 @@ def apply(order, actor, action, note=''):
         transaction.on_commit(lambda: on_confirmed(order))   # referal mukofotlari
 
     from .customer_notify import notify_status_change
-    transaction.on_commit(lambda: notify_status_change(order, actor))
+    transaction.on_commit(lambda: notify_status_change(order, who))
     if target == SR.STATUS_DISPUTED:
         from .disputes import notify_admin_opened
         transaction.on_commit(lambda: notify_admin_opened(order, note))
@@ -130,13 +140,16 @@ def apply(order, actor, action, note=''):
 
 def release_to_feed(order, note=''):
     """Usta buyurtmadan voz kechdi: buyurtma bekor bo'lmaydi, boshqa ustalar uchun lentaga qaytadi."""
-    from payments.models import Milestone, Quote
+    from payments.models import Milestone, Payment, Quote
 
     sources = TRANSITIONS[(MASTER, 'cancel')][0]
     if order.status not in sources or order.master_id is None:
         raise WorkflowError(_("Bu amalni hozirgi bosqichda bajarib bo'lmaydi"))
     if order.milestones.exclude(state=Milestone.STATE_PENDING).exists():
         raise WorkflowError(_("Mijoz to'lov qilgan — voz kechish uchun administratorga murojaat qiling"))
+    if Payment.objects.filter(milestone__order=order).exists():
+        # To'lov urinishlari tarixi o'chirilmasin (PROTECT) — admin hal qiladi
+        raise WorkflowError(_("Mijoz to'lovni boshlagan — voz kechish uchun administratorga murojaat qiling"))
     master = order.master
     Quote.objects.filter(order=order).delete()  # narx shu usta bilan kelishilgan edi
     order.milestones.all().delete()
@@ -144,7 +157,9 @@ def release_to_feed(order, note=''):
     order.master = None
     order.status = SR.STATUS_NEW
     order.open_since = timezone.now()
-    order.save(update_fields=['master', 'status', 'open_since', 'updated_at'])
+    order.visit_at = None          # tashrif vaqti shu usta bilan kelishilgan edi
+    order.visit_reminded = False
+    order.save(update_fields=['master', 'status', 'open_since', 'visit_at', 'visit_reminded', 'updated_at'])
     record(order, SR.STATUS_NEW, MASTER, note or _('Usta voz kechdi: %(name)s') % {'name': master.full_name},
            master=master)
 
@@ -174,10 +189,10 @@ def auto_confirm(now=None):
         if now - completed_at < timedelta(hours=hours):
             continue
         try:
-            apply(order, CUSTOMER, 'confirm', note=_('Avtomatik: mijoz %(h)s soat ichida javob bermadi') % {'h': hours})
+            apply(order, CUSTOMER, 'confirm', recorded_as=SYSTEM,
+                  note=_('Avtomatik: mijoz %(h)s soat ichida javob bermadi') % {'h': hours})
         except WorkflowError:
             continue  # masalan, oxirgi qism to'lanmagan — admin ko'rib chiqadi
-        OrderEvent.objects.filter(order=order, status=SR.STATUS_CONFIRMED).update(actor=SYSTEM)
         done.append(order)
     return done
 

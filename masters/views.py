@@ -181,7 +181,7 @@ def for_masters(request):
     from datetime import timedelta
     month_ago = timezone.now() - timedelta(days=30)
     demand = (SR.objects.filter(created_at__gte=month_ago, category__isnull=False).order_by()
-              .values('category__name', 'category__icon').annotate(n=Count('id')).order_by('-n')[:6])
+              .values('category__name', 'category__name_ru', 'category__icon').annotate(n=Count('id')).order_by('-n')[:6])
     return render(request, 'masters/for_masters.html', {
         'fee': settings.PLATFORM_FEE_PERCENT, 'pro_fee': settings.PRO_FEE_PERCENT,
         'free_top_days': settings.NEW_MASTER_FREE_TOP_DAYS, 'payout_min': settings.PAYOUT_MIN_AMOUNT,

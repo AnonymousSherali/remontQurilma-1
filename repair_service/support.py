@@ -10,6 +10,7 @@
 
 from datetime import timedelta
 
+from django.utils.html import escape
 from django.conf import settings
 from django.core.cache import cache
 from django.urls import reverse
@@ -107,7 +108,7 @@ def _notify_staff(thread, text):
     from telegram_bot import client
     who = thread.name or (thread.master.full_name if thread.master_id else '') or thread.phone or 'mehmon'
     url = _absolute(reverse('admin_support_thread', args=[thread.pk]))
-    client.send_message(chat_id, f'💬 Yordam #{thread.pk} — {who}:\n{text[:300]}\n{url}')
+    client.send_message(chat_id, f'💬 Yordam #{thread.pk} — {escape(who)}:\n{escape(text[:300])}\n{url}')
 
 
 def _notify_visitor(thread, text):
@@ -121,7 +122,7 @@ def _notify_visitor(thread, text):
         webpush.notify(master.push_subscriptions.all(), settings.SITE_INFO['name'], message, link)
         if master.telegram_chat_id:
             from telegram_bot import client
-            client.send_message(master.telegram_chat_id, message)
+            client.send_message(master.telegram_chat_id, escape(message))
             return
     if thread.phone:
         from otp.sms import send_sms

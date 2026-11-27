@@ -32,10 +32,24 @@ def compute(master, now=None):
     since = now - timedelta(days=window)
     events = OrderEvent.objects.filter(master=master, actor=OrderEvent.ACTOR_MASTER, created_at__gte=since)
 
-    accept_events = list(events.filter(status=SR.STATUS_ACCEPTED).select_related('order'))
+    # Faqat haqiqiy "qabul qildi" o'tishlari (oldingi yozuv boshqa holatda bo'lgan): shu holatdagi
+    # boshqa yozuvlar (tashrif vaqti, rasm, izoh) hisoblanmaydi
+    feed_notes = ('Lentadan olindi', 'Взят из ленты')
+    candidate_orders = set(events.filter(status=SR.STATUS_ACCEPTED).values_list('order_id', flat=True))
+    accept_ids, previous = [], {}
+    for pk, order_id, status, event_master, actor, created in (
+            OrderEvent.objects.filter(order_id__in=candidate_orders).order_by('created_at', 'pk')
+            .values_list('pk', 'order_id', 'status', 'master_id', 'actor', 'created_at')):
+        if (status == SR.STATUS_ACCEPTED and previous.get(order_id) != SR.STATUS_ACCEPTED
+                and event_master == master.pk and actor == OrderEvent.ACTOR_MASTER and created >= since):
+            accept_ids.append(pk)
+        previous[order_id] = status
+    accept_events = list(OrderEvent.objects.filter(pk__in=accept_ids).select_related('order'))
     accepted = len(accept_events)
     declined = events.filter(status=SR.STATUS_NEW).count()
-    order_ids = {e.order_id for e in accept_events}
+    # Nizo va kechikish — faqat hozir shu ustada turgan buyurtmalar (voz kechgandan keyingisi boshqa ustaniki)
+    order_ids = set(SR.objects.filter(pk__in={e.order_id for e in accept_events}, master=master)
+                    .values_list('pk', flat=True))
     disputes = (OrderEvent.objects.filter(order_id__in=order_ids, status=SR.STATUS_DISPUTED)
                 .values('order').distinct().count())
 
@@ -55,10 +69,8 @@ def compute(master, now=None):
             late += 1
 
     # Javob tezligi: faqat ustaga to'g'ridan-to'g'ri kelgan buyurtmalar (lentadan olish — bir zumda)
-    from django.utils.translation import gettext
-    feed_note = gettext('Lentadan olindi')
     minutes = [(e.created_at - e.order.created_at).total_seconds() / 60 for e in accept_events
-               if e.note not in ('Lentadan olindi', feed_note) and e.created_at >= e.order.created_at]
+               if e.note not in feed_notes and e.created_at >= e.order.created_at]
     response = round(median(minutes)) if minutes else None
 
     data = {'accepted': accepted, 'declined': declined, 'disputes': disputes, 'late': late,

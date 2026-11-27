@@ -17,6 +17,7 @@ Payme summani tiyinda yuboradi (1 so'm = 100 tiyin).
 
 import base64
 import binascii
+import hmac
 import json
 import time
 
@@ -87,12 +88,12 @@ def _authorized(request):
         login, _, password = base64.b64decode(header[6:]).decode().partition(':')
     except (binascii.Error, UnicodeDecodeError):
         return False
-    return login == 'Paycom' and password == settings.PAYME_KEY
+    return hmac.compare_digest(login.encode(), b'Paycom') & hmac.compare_digest(password.encode(), settings.PAYME_KEY.encode())
 
 
-def _payable_for(params):
+def _payable_for(params, lock=False):
     account = params.get('account') or {}
-    payable = payables.resolve(account.get(settings.PAYME_ACCOUNT_KEY))
+    payable = payables.resolve(account.get(settings.PAYME_ACCOUNT_KEY), lock=lock)
     if payable is None or not payable.is_pending:
         raise PaymeError(ERR_ACCOUNT, settings.PAYME_ACCOUNT_KEY)
     try:
@@ -134,7 +135,7 @@ def create(params):
             raise PaymeError(ERR_CANNOT_PERFORM)
         return {'create_time': existing.provider_time, 'transaction': str(existing.pk), 'state': existing.state}
 
-    payable = _payable_for(params)
+    payable = _payable_for(params, lock=True)
     # Bitta to'lov uchun bir vaqtda faqat bitta ochiq tranzaksiya
     if payables.open_payments(payable, Payment.PROVIDER_PAYME).exists():
         raise PaymeError(ERR_ACCOUNT, settings.PAYME_ACCOUNT_KEY)
@@ -154,10 +155,14 @@ def perform(params):
     if _now_ms() - payment.provider_time > TIMEOUT_MS:
         _cancel_expired(payment)
         raise PaymeError(ERR_CANNOT_PERFORM)
+    payable = payables.for_payment(payment)
+    if not payable.can_complete(payment):
+        # Shu orada boshqa tizim orqali to'langan, buyurtma bekor qilingan yoki summa o'zgargan
+        raise PaymeError(ERR_CANNOT_PERFORM)
     payment.state = Payment.STATE_PERFORMED
     payment.performed_at = timezone.now()
     payment.save(update_fields=['state', 'performed_at'])
-    payables.for_payment(payment).mark_paid()
+    payable.mark_paid()
     return {'transaction': str(payment.pk), 'perform_time': _ms(payment.performed_at), 'state': payment.state}
 
 
@@ -170,7 +175,7 @@ def cancel(params):
         if payable.cancel_locked:
             raise PaymeError(ERR_CANNOT_CANCEL)  # pul ustaga chiqarilgan yoki tarif faollashgan
         payment.state = Payment.STATE_CANCELLED_AFTER_PERFORM
-        payable.cancel_paid()
+        payable.cancel_paid(payment)
     else:
         payment.state = Payment.STATE_CANCELLED
     payment.reason = params.get('reason')

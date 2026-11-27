@@ -12,6 +12,7 @@ from django.utils import translation
 from django.utils.translation import gettext as _
 
 
+@transaction.atomic
 def grant_welcome_bonus(master):
     """Usta tasdiqlangach chaqiriladi; takroriy chaqiruv xavfsiz."""
     from payments.models import Purchase

@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone, translation
 
 from payments import services as payments
-from repair_service import schedule, workflow
+from repair_service import workflow
 from repair_service.models import OrderEvent, ServiceRequest
 from repair_service.tests import make_master
 

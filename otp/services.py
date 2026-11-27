@@ -12,6 +12,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
+from django.db.models import F
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -70,12 +71,15 @@ def verify_code(phone, code, purpose):
     if record.attempts >= MAX_ATTEMPTS:
         raise OtpError(_("Urinishlar soni tugadi. Yangi kod oling."))
 
-    record.attempts += 1
+    # Atomik oshirish: parallel so'rovlar bilan 5 tadan ortiq urinish qilib bo'lmasin
+    if not PhoneCode.objects.filter(pk=record.pk, attempts__lt=MAX_ATTEMPTS, is_used=False).update(
+            attempts=F('attempts') + 1):
+        raise OtpError(_("Urinishlar soni tugadi. Yangi kod oling."))
+    record.refresh_from_db(fields=['attempts'])
     code = (code or '').strip()
     ok = len(code) == 6 and check_password(code, record.code_hash)  # check_password doimiy vaqtda solishtiradi
-    if ok:
-        record.is_used = True
-    record.save(update_fields=['attempts', 'is_used'])
+    if ok and not PhoneCode.objects.filter(pk=record.pk, is_used=False).update(is_used=True):
+        ok = False   # shu kod parallel so'rovda allaqachon ishlatildi
     if not ok:
         left = MAX_ATTEMPTS - record.attempts
         raise OtpError(_("Kod noto'g'ri. Qolgan urinishlar: %(n)s") % {'n': left})

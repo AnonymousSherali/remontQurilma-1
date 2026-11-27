@@ -163,7 +163,7 @@ def complete(request):
         payment.save(update_fields=['state', 'cancelled_at'])
         return _reply(data, ERR_CANCELLED, merchant_confirm_id=payment.pk)
 
-    if not payable.is_pending:
+    if not payable.can_complete(payment):  # to'langan, bekor qilingan yoki summa o'zgargan
         return _reply(data, ERR_ALREADY_PAID, merchant_confirm_id=payment.pk)
 
     payment.state = Payment.STATE_PERFORMED

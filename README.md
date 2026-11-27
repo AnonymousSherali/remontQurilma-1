@@ -115,7 +115,7 @@ o'sha yerdagi barcha testlardan o'tkazing.
 Avtomatik tasdiqlash va chiqarish uchun cron (har soatda):
 
 ```bash
-0 * * * *  cd /srv/techservice && venv/bin/python manage.py process_orders
+5 * * * *  cd /srv/techservice/app && /srv/techservice/venv/bin/python manage.py process_orders   # to'liq ro'yxat: deploy/cron.txt
 ```
 
 > ⚖️ Platforma hisobida boshqa shaxs (usta) uchun pul ushlab turish to'lov
@@ -680,7 +680,17 @@ Qisqacha:
   maxfiy papka). Hammasi tuzatilgach «no issues».
 - `python manage.py check_integrations [--live]` — Payme/Click/Uzum kalitlari, Eskiz, Telegram
   webhook va sayt manzilini tekshiradi; haqiqiy sinov tartibi — [docs/INTEGRATSIYALAR.md](docs/INTEGRATSIYALAR.md).
-- `/healthz/` — tashqi monitoring uchun (baza va kesh).
+- `/healthz/` — tashqi monitoring uchun (baza va kesh). `127.0.0.1` va `localhost` har doim ruxsat
+  etilgan — server ichidagi tekshiruv (Docker HEALTHCHECK, `deploy.sh`) `DisallowedHost` bermaydi.
+- `DJANGO_DEBUG` ko'rsatilmasa: `DJANGO_SECRET_KEY` berilgan bo'lsa — `False`, berilmagan bo'lsa
+  (dasturchi kompyuteri) — `True`.
+- Admin xodimlari: «Nizolar», «Yordam», «Statistika» va «To'lanishi kerak» sahifalari uchun
+  `is_staff` yetarli emas — mos model huquqi kerak (ko'rish: `view_*`, amal: `change_*`;
+  statistika — `payments.view_payment`).
+- Ushlab turilgan pulni chiqarish/qaytarish faqat «Nizolar» sahifasi orqali; platformada pul
+  bo'lmasa (naqd reja) qaror kimning foydasiga ekanini tanlaysiz.
+- Mijoz Telegram botni faqat SMS-kod bilan tasdiqlangan brauzerdan ulay oladi (30 daqiqalik
+  imzolangan havola) — buyurtma havolasining o'zi yetmaydi.
 - **HTTPS majburiy** — brauzerlar geolokatsiyani faqat HTTPS (yoki localhost) da beradi.
 - Shaxsga doir ma'lumotlar: 2026-yil 27-martdan kuchga kirgan o'zgartirishlarga
   ko'ra O'zbekistonda saqlash majburiyati asosan biometrik va genetik ma'lumotlarga

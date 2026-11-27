@@ -19,7 +19,15 @@ class MilestonePayable:
 
     @property
     def is_pending(self):
-        return self.obj.state == Milestone.STATE_PENDING
+        order = self.obj.order
+        return (self.obj.state == Milestone.STATE_PENDING
+                and order.status not in (order.STATUS_CANCELLED, order.STATUS_DISPUTED))
+
+    def can_complete(self, payment):
+        """To'lovni yakunlashdan oldin: bosqich hali to'lanmagan va summa o'zgarmagan (promo-kod va h.k.)."""
+        self.obj = Milestone.objects.select_for_update(of=('self',)).select_related('order').get(pk=self.obj.pk)
+        self.amount = self.obj.amount_due
+        return self.is_pending and payment.amount == self.amount
 
     def mark_paid(self):
         services.mark_held(self.obj)
@@ -30,8 +38,12 @@ class MilestonePayable:
         self.obj.refresh_from_db()
         return self.obj.state == Milestone.STATE_RELEASED
 
-    def cancel_paid(self):
-        if self.obj.state == Milestone.STATE_HELD:
+    def cancel_paid(self, payment):
+        """Provayder to'lovni qaytardi. Bosqichni boshqa to'lov moliyalashtirmagan bo'lsagina qaytarilgan deb belgilaymiz."""
+        if self.obj.state != Milestone.STATE_HELD:
+            return
+        other = Payment.objects.filter(milestone=self.obj, state=Payment.STATE_PERFORMED).exclude(pk=payment.pk)
+        if not other.exists():
             services.refund(self.obj, by_provider=True)
 
     def return_path(self):
@@ -49,6 +61,10 @@ class PurchasePayable:
     def is_pending(self):
         return self.obj.status == Purchase.STATUS_PENDING
 
+    def can_complete(self, payment):
+        self.obj = Purchase.objects.select_for_update(of=('self',)).select_related('master').get(pk=self.obj.pk)
+        return self.is_pending and payment.amount == self.obj.amount
+
     def mark_paid(self):
         tariffs.activate(self.obj)
 
@@ -58,7 +74,7 @@ class PurchasePayable:
         self.obj.refresh_from_db()
         return self.obj.status == Purchase.STATUS_PAID
 
-    def cancel_paid(self):
+    def cancel_paid(self, payment):
         pass
 
     def return_path(self):

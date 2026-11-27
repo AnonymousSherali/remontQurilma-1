@@ -5,6 +5,7 @@ Ustaga — yangi buyurtma kelganda va mijoz tasdiqlaganda/nizo ochganda.
 SMS buyurtma yaratilgan tilda yuboriladi.
 """
 
+from django.utils.html import escape
 from django.conf import settings
 from django.urls import reverse
 from django.utils import translation
@@ -38,7 +39,7 @@ def _to_customer(order, text):
     if order.telegram_chat_id:
         from telegram_bot import client
         with translation.override(order.language or 'uz'):
-            client.send_message(order.telegram_chat_id, text, [[(_('Buyurtmani ochish'), _customer_link(order))]])
+            client.send_message(order.telegram_chat_id, escape(text), [[(_('Buyurtmani ochish'), _customer_link(order))]])
     else:
         send_sms(order.phone, text, background=True)
 
@@ -50,7 +51,7 @@ def _to_master(order, sms_text, with_card=False):
     if master.telegram_chat_id:
         from telegram_bot import client
         from telegram_bot.handlers import master_buttons, order_card
-        text = f'{sms_text}\n\n{order_card(order)}' if with_card else sms_text
+        text = f'{escape(sms_text)}\n\n{order_card(order)}' if with_card else escape(sms_text)
         client.send_message(master.telegram_chat_id, text, master_buttons(order))
     else:
         send_sms(master.phone, sms_text, background=True)
@@ -105,6 +106,15 @@ def notify_status_change(order, actor):
             text = texts.get(order.status)
             if text:
                 _to_master(order, text % {'id': order.pk})
+
+    elif actor == OrderEvent.ACTOR_SYSTEM and order.status == SR.STATUS_CONFIRMED:
+        # Avtomatik tasdiq: mijoz muddat ichida javob bermadi
+        with translation.override(order.language or 'uz'):
+            _to_customer(order, _('Buyurtma avtomatik tasdiqlandi, mablag\' ustaga o\'tkazildi. '
+                                  'Muammo bo\'lsa kafolat orqali murojaat qiling: %(url)s') % {'url': _customer_link(order)})
+        if master:
+            with translation.override(settings.LANGUAGE_CODE):
+                _to_master(order, _('#%(id)s buyurtma avtomatik tasdiqlandi.') % {'id': order.pk})
 
 
 def notify_quote(order):

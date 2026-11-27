@@ -9,6 +9,7 @@ Administrator ikkala tomonni eshitib (yozishma, rasmlar, tarix — bitta sahifad
 - withdraw(order, note) — kelishildi, ish davom etadi: buyurtma nizodan oldingi holatiga qaytadi.
 """
 
+from django.utils.html import escape
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone, translation
@@ -51,7 +52,8 @@ def open_disputes():
 
 
 @transaction.atomic
-def resolve(order, released_ids, note):
+def resolve(order, released_ids, note, outcome=None):
+    """outcome ('master'/'customer') — ushlab turilgan mablag' bo'lmasa (masalan naqd reja), kim haqligini admin aytadi."""
     note = (note or '').strip()
     if not note:
         raise DisputeError("Qaror izohini yozing — ikkala tomon uni ko'radi.")
@@ -61,7 +63,10 @@ def resolve(order, released_ids, note):
     released_ids = {int(i) for i in released_ids}
     now = timezone.now()
     released = refunded = 0
-    for milestone in order.milestones.select_for_update().filter(state=Milestone.STATE_HELD):
+    held = list(order.milestones.select_for_update().filter(state=Milestone.STATE_HELD))
+    if not held and outcome not in ('master', 'customer'):
+        raise DisputeError("Ushlab turilgan mablag' yo'q — qaror kimning foydasiga ekanini tanlang.")
+    for milestone in held:
         if milestone.pk in released_ids:
             milestone.state, milestone.released_at = Milestone.STATE_RELEASED, now
             released += milestone.amount
@@ -71,8 +76,11 @@ def resolve(order, released_ids, note):
             from payments.refunds import request_refund
             transaction.on_commit(lambda m=milestone: request_refund(m, note=f'Nizo #{order.pk}'))
         milestone.save(update_fields=['state', 'released_at', 'refunded_at'])
-    any_released = released or order.milestones.filter(state=Milestone.STATE_RELEASED).exists()
-    order.status = SR.STATUS_CONFIRMED if any_released or not refunded else SR.STATUS_CANCELLED
+    if held:
+        any_released = released or order.milestones.filter(state=Milestone.STATE_RELEASED).exists()
+        order.status = SR.STATUS_CONFIRMED if any_released or not refunded else SR.STATUS_CANCELLED
+    else:
+        order.status = SR.STATUS_CONFIRMED if outcome == 'master' else SR.STATUS_CANCELLED
     order.save(update_fields=['status', 'updated_at'])
     summary = _("Nizo hal qilindi: ustaga %(r)s so'm, mijozga %(f)s so'm. %(note)s") % {
         'r': _money(released), 'f': _money(refunded), 'note': note}
@@ -133,4 +141,4 @@ def notify_admin_opened(order, reason=''):
 
     from telegram_bot import client
     url = settings.SITE_URL.rstrip('/') + reverse('admin_dispute', args=[order.pk])
-    client.send_message(chat_id, f'⚠️ Nizo: buyurtma #{order.pk}\n{reason[:300]}\n{url}')
+    client.send_message(chat_id, f'⚠️ Nizo: buyurtma #{order.pk}\n{escape(reason[:300])}\n{url}')
