@@ -29,11 +29,11 @@
   </div>
 </section>
 
-{% if demand %}
+{% get_current_language as LANG %}{% if demand %}
 <section class="section" style="padding-top:0">
   <div class="container">
     <h2>{% blocktranslate with n=requests_month %}So'nggi 30 kunda {{ n }} ta ariza{% endblocktranslate %}</h2>
-    <div class="chips">{% for d in demand %}<span class="chip">{{ d.category__icon }} {{ d.category__name }} · {{ d.n }}</span>{% endfor %}</div>
+    <div class="chips">{% for d in demand %}<span class="chip">{{ d.category__icon }} {% if LANG == 'ru' and d.category__name_ru %}{{ d.category__name_ru }}{% else %}{{ d.category__name }}{% endif %} · {{ d.n }}</span>{% endfor %}</div>
   </div>
 </section>
 {% endif %}

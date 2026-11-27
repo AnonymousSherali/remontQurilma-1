@@ -67,6 +67,8 @@ class MasterProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['categories'].queryset = Category.objects.filter(is_active=True)
+        from .templatetags.ui import tr
+        self.fields['categories'].label_from_instance = lambda c: tr(c, 'name')
         # Toshkent tumanlari va viloyat shaharlari guruhlab, joriy tilda
         self.fields['district'].choices = [('', _('Tuman yoki shahar'))] + location_groups()
 
