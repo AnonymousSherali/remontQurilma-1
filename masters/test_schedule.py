@@ -1,4 +1,4 @@
-from datetime import date, time, timedelta
+from datetime import datetime, date, time, timedelta
 
 from django.core.cache import cache
 from django.test import TestCase
@@ -65,9 +65,12 @@ class ScheduleTests(TestCase):
         self.client.post(url, {'work_days': [0, 1, 2, 3, 4, 5], 'work_from': '09:00', 'work_to': '18:00'})
         self.master.refresh_from_db()
         self.assertEqual((self.master.work_days, self.master.work_from), ([0, 1, 2, 3, 4, 5], time(9, 0)))
-        self.client.post(url, {'work_days': [0], 'work_from': '18:00', 'work_to': '09:00'})   # noto'g'ri
+        self.client.post(url, {'work_days': [0], 'work_from': '09:00', 'work_to': '09:00'})   # noto'g'ri
         self.master.refresh_from_db()
         self.assertEqual(self.master.work_days, [0, 1, 2, 3, 4, 5])
+        self.client.post(url, {'work_days': [0], 'work_from': '20:00', 'work_to': '02:00'})   # tungi smena
+        self.master.refresh_from_db()
+        self.assertEqual((self.master.work_days, self.master.work_to), ([0], time(2, 0)))
         self.client.post(url, {'work_days': list(range(7)), 'work_from': '', 'work_to': ''})
         self.master.refresh_from_db()
         self.assertEqual((self.master.work_days, self.master.work_from), ([], None))     # har kuni
@@ -89,3 +92,14 @@ class ScheduleTests(TestCase):
         response = self.client.post(reverse('masters:visit_set', args=[order.pk]),
                                     {'date': day.isoformat(), 'time': '22:30'}, follow=True)
         self.assertContains(response, 'ish jadvalingizdan tashqarida')
+
+    def test_tungi_smena(self):
+        from masters import schedule
+        self.master.work_days, self.master.work_from, self.master.work_to = [0], time(20, 0), time(2, 0)
+        monday = timezone.make_aware(datetime(2026, 11, 23, 21, 0))       # dushanba 21:00
+        self.assertTrue(schedule.is_working(self.master, monday))
+        self.assertTrue(schedule.is_working(self.master, monday + timedelta(hours=4)))      # seshanba 01:00
+        self.assertFalse(schedule.is_working(self.master, monday + timedelta(hours=6)))     # seshanba 03:00
+        self.assertFalse(schedule.is_working(self.master, monday - timedelta(hours=20)))    # dushanba 01:00
+        self.assertEqual(schedule.next_working_start(self.master, monday - timedelta(hours=5)),
+                         timezone.make_aware(datetime(2026, 11, 23, 20, 0)))

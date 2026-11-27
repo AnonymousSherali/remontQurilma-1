@@ -19,6 +19,8 @@ from repair_service.models import OrderEvent, ServiceRequest as SR
 from . import payouts, services
 from .models import Milestone, Payment, Refund
 from .payables import MilestonePayable
+from repair_service.tests import make_master
+
 from .tests import advance, make_order
 
 User = get_user_model()
@@ -209,3 +211,60 @@ class CronTests(TestCase):
             with self.assertRaises(CommandError):
                 call_command('process_orders', stdout=StringIO())
         nps.assert_called_once()
+
+
+class FollowUpTests(TestCase):
+    def test_reyting_har_soat_faqat_faol_ustalar(self):
+        from masters import reliability
+        busy = approved_order().master
+        idle = make_master('Bosh', '+998919999999')
+        with mock.patch.object(reliability, 'update', wraps=reliability.update) as update:
+            noon = timezone.make_aware(timezone.datetime(2026, 11, 27, 12, 0))
+            OrderEvent.objects.update(created_at=noon - timedelta(minutes=30))
+            reliability.update_all(now=noon)
+            self.assertEqual({c.args[0].pk for c in update.call_args_list}, {busy.pk})
+            update.reset_mock()
+            reliability.update_all(now=noon, full=True)
+            self.assertEqual({c.args[0].pk for c in update.call_args_list}, {busy.pk, idle.pk})
+
+    def test_manifest_ruscha(self):
+        data = json.loads(self.client.get('/manifest.webmanifest?lang=ru').content)
+        self.assertEqual(data['lang'], 'ru')
+        self.assertTrue(data['start_url'].startswith('/ru/'))
+        self.assertTrue(all(s['url'].startswith('/ru/') for s in data['shortcuts']))
+
+    def test_usta_ismi_tekshiriladi(self):
+        from masters.forms import MasterProfileForm
+        for bad in ('Ali <img src=x>', '=HYPERLINK(1)', '12345'):
+            form = MasterProfileForm(data={'full_name': bad})
+            form.is_valid()
+            self.assertIn('full_name', form.errors, bad)
+        form = MasterProfileForm(data={'full_name': "  O'tkir   G'aniyev "})
+        form.is_valid()
+        self.assertNotIn('full_name', form.errors)
+        self.assertEqual(form.cleaned_data['full_name'], "O'tkir G'aniyev")
+
+    def test_rollar(self):
+        from django.contrib.auth.models import Group
+        call_command('setup_roles', stdout=StringIO())
+        call_command('setup_roles', stdout=StringIO())   # takroriy — xavfsiz
+        finance = Group.objects.get(name='Moliyachi')
+        user = User.objects.create_user('fin', password='x', is_staff=True)
+        user.groups.add(finance)
+        self.client.force_login(user)
+        self.assertEqual(self.client.get(reverse('admin:payments_payout_pending')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('admin_support')).status_code, 403)
+
+    @override_settings(TELEGRAM_CHAT_ID='-100')
+    def test_cron_xatosi_adminga_xabar(self):
+        from django.core.cache import cache
+        from django.core.management.base import CommandError
+        from telegram_bot import client
+        cache.clear()
+        client.SENT.clear()
+        with mock.patch('payments.management.commands.process_orders.update_all', side_effect=RuntimeError):
+            for _ in range(2):
+                with self.assertRaises(CommandError):
+                    call_command('process_orders', stdout=StringIO())
+        alerts = [p for m, p in client.SENT if 'process_orders' in p.get('text', '')]
+        self.assertEqual(len(alerts), 1)   # takroriy xato — qayta yuborilmaydi

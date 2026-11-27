@@ -14,6 +14,7 @@ import math
 
 from django.core.cache import cache
 from django.db import IntegrityError
+from django.db.models import F, OuterRef, Subquery
 
 from .models import AnalyticsEvent, Experiment, ExperimentExposure
 
@@ -74,12 +75,16 @@ def results(exp):
     rows = []
     for variant in exp.variant_list:
         exposures = exp.exposures.filter(variant=variant)
-        visitors = list(exposures.values_list('visitor', flat=True))
-        n = len(visitors)
-        starts = (AnalyticsEvent.objects.filter(name=AnalyticsEvent.FORM_START, visitor__in=visitors)
-                  .values('visitor').distinct().count()) if n else 0
-        requests_n = (AnalyticsEvent.objects.filter(name=AnalyticsEvent.REQUEST, visitor__in=visitors)
-                      .values('visitor').distinct().count()) if n else 0
+        n = exposures.count()
+
+        def converted(name):
+            # Pastki so'rov (katta IN-ro'yxatsiz) va faqat variantni ko'rgandan KEYINGI harakat
+            first_seen = exposures.filter(visitor=OuterRef('visitor')).values('created_at')[:1]
+            return (AnalyticsEvent.objects.filter(name=name, visitor__in=exposures.values('visitor'))
+                    .annotate(seen=Subquery(first_seen)).filter(created_at__gte=F('seen'))
+                    .values('visitor').distinct().count()) if n else 0
+        starts = converted(AnalyticsEvent.FORM_START)
+        requests_n = converted(AnalyticsEvent.REQUEST)
         rows.append({'variant': variant, 'visitors': n, 'starts': starts, 'requests': requests_n,
                      'start_rate': round(starts * 100 / n, 1) if n else None,
                      'request_rate': round(requests_n * 100 / n, 1) if n else None})

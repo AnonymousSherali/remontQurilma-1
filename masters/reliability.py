@@ -88,16 +88,38 @@ def compute(master, now=None):
 
 
 def update(master, now=None):
+    from .models import Master
     score, data = compute(master, now)
+    if (score, data) != (master.reliability, master.reliability_data):
+        # queryset.update — post_save signallari (bonus va h.k.) har soat behuda ishlamasin
+        Master.objects.filter(pk=master.pk).update(reliability=score, reliability_data=data)
     master.reliability, master.reliability_data = score, data
-    master.save(update_fields=['reliability', 'reliability_data'])
     return score
 
 
-def update_all(now=None):
+FULL_RECOMPUTE_HOUR = 3   # har kuni shu soatda — barchasi (eskirgan voqealar oynadan chiqadi)
+
+
+def update_all(now=None, full=None):
+    """Har soat: faqat oxirgi 2 soatda voqeasi bo'lgan yoki tashrifi o'tgan ustalar; kuniga bir marta — hammasi."""
+    from repair_service.models import OrderEvent, ServiceRequest as SR
+
     from .models import Master
+    now = now or timezone.now()
+    if full is None:
+        full = timezone.localtime(now).hour == FULL_RECOMPUTE_HOUR
+    masters = Master.objects.filter(is_verified=True)
+    if not full:
+        recent = now - timedelta(hours=2)
+        active = set(OrderEvent.objects.filter(created_at__gte=recent, master__isnull=False)
+                     .values_list('master_id', flat=True))
+        # Kelmaganlik NO_SHOW_HOURS dan keyin aniqlanadi — o'sha paytga to'g'ri kelgan tashriflar
+        active |= set(SR.objects.filter(visit_at__gte=recent - timedelta(hours=NO_SHOW_HOURS),
+                                        visit_at__lte=now, master__isnull=False)
+                      .values_list('master_id', flat=True))
+        masters = masters.filter(pk__in=active)
     count = 0
-    for master in Master.objects.filter(is_verified=True):
+    for master in masters:
         update(master, now)
         count += 1
     return count

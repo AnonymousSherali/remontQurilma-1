@@ -9,6 +9,8 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.templatetags.static import static
 from django.views.decorators.cache import cache_control
+from django.utils import translation
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from otp import services as otp
@@ -31,12 +33,21 @@ def _assets_version():
 
 @cache_control(max_age=3600)
 def manifest(request):
+    """?lang=ru — ruscha (base.html joriy tilga qarab qo'shadi)."""
+    lang = 'ru' if request.GET.get('lang') == 'ru' else settings.LANGUAGE_CODE
+    with translation.override(lang):
+        return _manifest(lang)
+
+
+def _manifest(lang):
     name = settings.SITE_INFO['name']
+    prefix = '/ru' if lang == 'ru' else ''
+    suffix = _('ustalar')
     data = {
-        'name': f'{name} — ustalar', 'short_name': name, 'lang': 'uz', 'dir': 'ltr',
-        'start_url': '/?source=pwa', 'scope': '/', 'display': 'standalone',
-        'theme_color': '#059669', 'background_color': '#f6f8fb',
-        'description': "Uyingiz uchun ishonchli ustalar: santexnik, elektrik, maishiy texnika.",
+        'name': f'{name} — {suffix}', 'short_name': name, 'lang': lang, 'dir': 'ltr',
+        'start_url': f'{prefix}/?source=pwa', 'scope': '/', 'display': 'standalone',
+        'theme_color': '#047857', 'background_color': '#f6f8fb',
+        'description': _("Uyingiz uchun ishonchli ustalar: santexnik, elektrik, maishiy texnika."),
         'icons': [
             {'src': static('img/icons/icon-192.png'), 'sizes': '192x192', 'type': 'image/png'},
             {'src': static('img/icons/icon-512.png'), 'sizes': '512x512', 'type': 'image/png'},
@@ -44,9 +55,9 @@ def manifest(request):
              'purpose': 'maskable'},
         ],
         'shortcuts': [
-            {'name': 'Usta topish', 'url': '/ustalar/'},
-            {'name': 'Mening buyurtmalarim', 'url': '/buyurtmalarim/'},
-            {'name': 'Usta kabineti', 'url': '/kabinet/'},
+            {'name': _('Usta topish'), 'url': f'{prefix}/ustalar/'},
+            {'name': _('Mening buyurtmalarim'), 'url': f'{prefix}/buyurtmalarim/'},
+            {'name': _('Usta kabineti'), 'url': f'{prefix}/kabinet/'},
         ],
     }
     return HttpResponse(json.dumps(data, ensure_ascii=False), content_type='application/manifest+json')

@@ -13,12 +13,12 @@ ID_DOCUMENTS_KEEP_DAYS > 0 bo'lsa, tasdiqlangandan shuncha kun o'tgach fayllar o
 import logging
 from datetime import timedelta
 
-from django.utils.html import escape
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.urls import reverse
 from django.utils import timezone, translation
+from django.utils.html import escape
 from django.utils.translation import gettext as _
 
 from repair_service.photos import process_upload

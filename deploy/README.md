@@ -65,6 +65,7 @@ SMS_BACKEND=eskiz
 ```bash
 sudo -u techservice bash -c 'set -a; source .env; set +a; \
   /srv/techservice/venv/bin/python manage.py migrate && \
+  /srv/techservice/venv/bin/python manage.py setup_roles && \
   /srv/techservice/venv/bin/python manage.py collectstatic --noinput && \
   /srv/techservice/venv/bin/python manage.py createsuperuser && \
   /srv/techservice/venv/bin/python manage.py check --deploy'
@@ -133,8 +134,19 @@ sudo -u techservice /srv/techservice/app/deploy/scripts/deploy.sh
 
 ## Monitoring
 
-- `https://techservice.uz/healthz/` — tashqi monitoring (UptimeRobot, Better Stack) uchun; 503 = baza yoki kesh ishlamayapti.
-- Xatolar: `journalctl -u techservice -p err -f`; cron: `/srv/techservice/logs/`.
+1. **Sayt ishlayaptimi** — [UptimeRobot](https://uptimerobot.com) (bepul) da yangi monitor:
+   turi *HTTP(s) — Keyword*, manzil `https://techservice.uz/healthz/`, kalit so'z `"ok"`,
+   interval 5 daqiqa, ogohlantirish — Telegram yoki email. 503 = baza yoki kesh ishlamayapti.
+2. **Saytdagi xatolar** — [sentry.io](https://sentry.io) da *Django* loyihasi oching, DSN ni
+   `.env` ga `SENTRY_DSN=...` qilib yozing va qayta ishga tushiring (`sentry-sdk`
+   `requirements-prod.txt` da bor). Telefon, IP va cookie yuborilmaydi (`send_default_pii=False`).
+   Tekshirish: `python manage.py shell -c "import sentry_sdk; sentry_sdk.capture_message('sinov')"`.
+3. **Soatlik cron** — biror qadam xato bersa, `TELEGRAM_CHAT_ID` chatiga «🚨 process_orders xato
+   bilan tugadi» xabari keladi (bir xil xato — 6 soatda bir marta), qolgan qadamlar baribir bajariladi.
+4. Loglar: `journalctl -u techservice -p err -f`; cron: `/srv/techservice/logs/cron.log`
+   (Docker: `docker compose logs -f web cron`).
+
+`python manage.py launch_check` Sentry va Telegram ulanmagan bo'lsa ogohlantiradi.
 
 ## Ma'lumotlar joylashuvi
 

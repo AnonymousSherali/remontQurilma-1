@@ -686,7 +686,13 @@ Qisqacha:
   (dasturchi kompyuteri) — `True`.
 - Admin xodimlari: «Nizolar», «Yordam», «Statistika» va «To'lanishi kerak» sahifalari uchun
   `is_staff` yetarli emas — mos model huquqi kerak (ko'rish: `view_*`, amal: `change_*`;
-  statistika — `payments.view_payment`).
+  statistika — `payments.view_payment`). Tayyor rollar: `python manage.py setup_roles`
+  (deploy'da avtomatik) — **Operator** (yordam, arizalar, ustalarni tekshirish), **Nizo hakami**,
+  **Moliyachi** (o'tkazmalar, qaytarishlar, bank), **Marketolog** (aksiyalar, promo, A/B).
+  Xodimga: Admin → Foydalanuvchilar → «Xodim» + guruh.
+- Monitoring: `SENTRY_DSN` (ixtiyoriy, shaxsiy ma'lumotsiz), UptimeRobot → `/healthz/`, cron xatosi
+  Telegram'ga — batafsil [deploy/README.md](deploy/README.md#monitoring).
+- Payme sandbox: `python manage.py payme_sandbox` — sinov bosqichi va sandbox formasi qiymatlari.
 - Ushlab turilgan pulni chiqarish/qaytarish faqat «Nizolar» sahifasi orqali; platformada pul
   bo'lmasa (naqd reja) qaror kimning foydasiga ekanini tanlaysiz.
 - Mijoz Telegram botni faqat SMS-kod bilan tasdiqlangan brauzerdan ulay oladi (30 daqiqalik

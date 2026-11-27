@@ -200,9 +200,12 @@ def auto_confirm(now=None):
 def timeline(order):
     """Timeline uchun 6 qadam: holati (done/current/upcoming) va vaqti."""
     times = {}
-    for event in order.events.all():
+    for event in order.events.order_by('created_at', 'pk'):
+        if event.status == SR.STATUS_NEW and event.actor == MASTER:
+            times = {}      # usta voz kechdi — keyingi bosqichlar yangi ustadan boshlab ko'rsatiladi
+            continue
         times.setdefault(event.status, event.created_at)
-    times.setdefault(SR.STATUS_NEW, order.created_at)
+    times[SR.STATUS_NEW] = order.created_at
 
     flow_index = SR.FLOW.index(order.status) if order.status in SR.FLOW else None
     # Nizo yoki bekor: oxirgi erishilgan bosqichgacha "done"

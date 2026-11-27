@@ -37,6 +37,17 @@ class CategorySitemap(I18nSitemap):
     changefreq = 'daily'
 
     def items(self):
+        # Har bir yo'nalish × tuman uchun qidiruv og'ir — natija 1 soat keshlanadi
+        from django.core.cache import cache
+        cached = cache.get('sitemap:category-pages')
+        if cached is not None:
+            categories = {c.pk: c for c in Category.objects.filter(pk__in={pk for pk, _s in cached})}
+            return [(categories[pk], slug) for pk, slug in cached if pk in categories]
+        pages = self._pages()
+        cache.set('sitemap:category-pages', [(c.pk, slug) for c, slug in pages], 60 * 60)
+        return pages
+
+    def _pages(self):
         pages = []
         for category in Category.objects.filter(is_active=True):
             if seo.has_masters(category):

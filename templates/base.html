@@ -7,7 +7,7 @@
   <meta name="format-detection" content="telephone=no">
   <title>{% block title %}{{ SITE.name }} — {% translate "uyingiz uchun ishonchli ustalar" %}{% endblock %}</title>
   <meta name="description" content="{% block description %}{% translate "Santexnik, elektrik, kir yuvish mashinasi va maishiy texnika ustalari. Eng yaqin tekshirilgan ustani toping, baholarini ko'ring va ariza qoldiring." %}{% endblock %}">
-  <meta name="theme-color" content="#059669">
+  <meta name="theme-color" content="#047857">
   {% if noindex %}<meta name="robots" content="noindex, follow">{% endif %}
   {% block canonical %}<link rel="canonical" href="{% if canonical %}{{ canonical }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endif %}">{% endblock %}
   <meta property="og:title" content="{% block og_title %}{{ SITE.name }} — {% translate "ishonchli ustalar" %}{% endblock %}">
@@ -23,7 +23,7 @@
   {% for code, name in LANGS %}<link rel="alternate" hreflang="{{ code }}" href="{{ request.scheme }}://{{ request.get_host }}{% url_in_language code %}">{% endfor %}
   <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}{% url_in_language 'uz' %}">
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="manifest" href="/manifest.webmanifest{% if LANG == 'ru' %}?lang=ru{% endif %}">
   <link rel="apple-touch-icon" href="{% static 'img/icons/apple-touch-icon.png' %}">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="{{ SITE.name }}">

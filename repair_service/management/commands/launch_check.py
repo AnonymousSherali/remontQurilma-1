@@ -121,5 +121,10 @@ class Command(BaseCommand):
             self.bad("TELEGRAM_CHAT_ID yo'q — yangi ariza, nizo va yordam savollari haqida xabar olmaysiz", hard=False)
         else:
             self.ok('Administrator Telegram xabarlari yoqilgan')
+        if not getattr(settings, 'SENTRY_DSN', ''):
+            self.bad("SENTRY_DSN yo'q — saytdagi xatolar faqat logda qoladi (sentry.io yoki o'z Sentry'ingiz)",
+                     hard=False)
+        else:
+            self.ok('Xatolar monitoringi (Sentry) yoqilgan')
         if not settings.WEBPUSH_PRIVATE_KEY:
             self.bad("Brauzer bildirishnomalari o'chiq — python manage.py webpush_keys", hard=False)

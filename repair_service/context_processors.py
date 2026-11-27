@@ -15,6 +15,8 @@ def _js_i18n():
         'network': _("Tarmoq xatosi. Qaytadan urinib ko'ring."),
         'fixErrors': _("Formadagi xatolarni to'g'rilang"),
         'genericError': _("Xatolik yuz berdi. Keyinroq urinib ko'ring."),
+        'expired': _("Sahifa eskirgan. Uni yangilab, qaytadan urinib ko'ring."),
+        'close': _('Yopish'),
         'copied': _('Havola nusxalandi'),
         'locating': _('Aniqlanmoqda…'),
         'located': _('✓ Joylashuv aniqlandi'),

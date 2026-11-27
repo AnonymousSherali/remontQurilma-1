@@ -9,14 +9,15 @@
 
 from datetime import timedelta
 
-from django.utils.html import escape
 from django.conf import settings
 from django.db import IntegrityError, transaction
+from django.db.models import OuterRef, Subquery
 from django.urls import reverse
 from django.utils import timezone, translation
+from django.utils.html import escape
 from django.utils.translation import gettext as _
 
-from .models import NpsResponse, PushSubscription, ServiceRequest as SR
+from .models import NpsResponse, OrderEvent, PushSubscription, ServiceRequest as SR
 
 
 class NpsError(Exception):
@@ -63,9 +64,12 @@ def send_invites(now=None):
     now = now or timezone.now()
     hours = getattr(settings, 'NPS_INVITE_HOURS', 24)
     sent = 0
-    orders = (SR.objects.filter(status=SR.STATUS_CONFIRMED, nps_invited_at__isnull=True, nps__isnull=True,
-                                updated_at__lte=now - timedelta(hours=hours),
-                                updated_at__gte=now - timedelta(days=14))
+    # Tasdiqlangan vaqt — CONFIRMED voqeasidan (updated_at boshqa o'zgarishlarda ham yangilanadi)
+    confirmed_at = (OrderEvent.objects.filter(order=OuterRef('pk'), status=SR.STATUS_CONFIRMED)
+                    .order_by('-created_at').values('created_at')[:1])
+    orders = (SR.objects.filter(status=SR.STATUS_CONFIRMED, nps_invited_at__isnull=True, nps__isnull=True)
+              .annotate(confirmed_at=Subquery(confirmed_at))
+              .filter(confirmed_at__lte=now - timedelta(hours=hours), confirmed_at__gte=now - timedelta(days=14))
               .order_by('pk')[:200])
     for order in orders:
         if not SR.objects.filter(pk=order.pk, nps_invited_at__isnull=True).update(nps_invited_at=now):
